@@ -102,7 +102,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 👨‍💻 Author
 
-Built by [Your Name](https://github.com/YOUR_USERNAME) as part of my journey to land at FAANG companies.
+Built by [Vignesh Pathak](https://github.com/VighneshDev1411) as part of my journey to land at FAANG companies.
 
 ## ⭐ Support
 
