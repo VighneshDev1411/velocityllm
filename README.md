@@ -48,6 +48,43 @@ VelocityLLM is a production-ready LLM inference platform that provides:
 - [ ] Grafana monitoring dashboards
 - [ ] Auto-scaling worker pools
 
+## 📡 API Endpoints
+
+### Health & Info
+- `GET /` - API information
+- `GET /health` - Health check with service status
+
+### Models
+- `GET /api/v1/models` - List all available LLM models
+
+### Requests
+- `POST /api/v1/requests` - Create new inference request
+- `GET /api/v1/requests` - List all requests (with pagination)
+- `GET /api/v1/requests?id={uuid}` - Get single request
+- `PUT /api/v1/requests?id={uuid}` - Update request
+- `DELETE /api/v1/requests?id={uuid}` - Delete request
+- `GET /api/v1/requests/stats` - Get usage statistics
+
+### Query Parameters
+- `limit` - Number of results per page (default: 10, max: 100)
+- `offset` - Pagination offset (default: 0)
+
+### Example Request
+```bash
+curl -X POST http://localhost:8080/api/v1/requests \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "gpt-4",
+    "prompt": "What is AI?",
+    "response": "AI is...",
+    "tokens_total": 50,
+    "latency": 200,
+    "cost": 0.0015,
+    "status": "completed",
+    "provider": "openai"
+  }'
+```
+
 ## 🛠️ Tech Stack
 
 ### Backend
