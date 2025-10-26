@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/VighneshDev1411/velocityllm/internal/database"
 	"github.com/VighneshDev1411/velocityllm/pkg/types"
 )
 
@@ -13,6 +14,12 @@ var startTime = time.Now()
 func HealthHandler(w http.ResponseWriter, r *http.Request) {
 	uptime := time.Since(startTime)
 
+	// Check database health
+	dbStatus := "healthy"
+	if err := database.HealthCheck(); err != nil {
+		dbStatus = "unhealthy"
+	}
+
 	response := types.HealthResponse{
 		Status:    "healthy",
 		Version:   "0.1.0",
@@ -20,8 +27,8 @@ func HealthHandler(w http.ResponseWriter, r *http.Request) {
 		Timestamp: time.Now(),
 		Services: map[string]string{
 			"api":      "healthy",
-			"database": "not_configured", // Will update this later
-			"redis":    "not_configured", // Will update this later
+			"database": dbStatus,
+			"redis":    "not_configured",
 		},
 	}
 
@@ -37,9 +44,9 @@ func RootHandler(w http.ResponseWriter, r *http.Request) {
 		"endpoints": map[string]string{
 			"health":        "/health",
 			"api_v1":        "/api/v1",
+			"models":        "/api/v1/models",
 			"completions":   "/api/v1/completions (coming soon)",
 			"chat":          "/api/v1/chat/completions (coming soon)",
-			"models":        "/api/v1/models (coming soon)",
 			"documentation": "/api/v1/docs (coming soon)",
 		},
 	}
@@ -50,4 +57,17 @@ func RootHandler(w http.ResponseWriter, r *http.Request) {
 // NotFoundHandler handles 404 errors
 func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
 	types.WriteError(w, http.StatusNotFound, "Endpoint not found")
+}
+
+// GetModelsHandler returns all available models
+func GetModelsHandler(w http.ResponseWriter, r *http.Request) {
+	var models []types.Model
+
+	// Query database for all models
+	if err := database.GetDB().Find(&models).Error; err != nil {
+		types.WriteError(w, http.StatusInternalServerError, "Failed to fetch models")
+		return
+	}
+
+	types.WriteSuccess(w, "Models retrieved successfully", models)
 }

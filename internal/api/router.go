@@ -28,7 +28,10 @@ func (router *Router) SetupRoutes() {
 	// Health check endpoint
 	router.mux.HandleFunc("/health", HealthHandler)
 
-	// API v1 routes (placeholder for now)
+	// API v1 routes
+	router.mux.HandleFunc("/api/v1/models", GetModelsHandler)
+
+	// Catch-all for undefined API routes
 	router.mux.HandleFunc("/api/v1/", func(w http.ResponseWriter, r *http.Request) {
 		NotFoundHandler(w, r)
 	})

@@ -10,6 +10,7 @@ import (
 
 	"github.com/VighneshDev1411/velocityllm/internal/api"
 	"github.com/VighneshDev1411/velocityllm/internal/config"
+	"github.com/VighneshDev1411/velocityllm/internal/database"
 	"github.com/VighneshDev1411/velocityllm/pkg/utils"
 )
 
@@ -25,6 +26,22 @@ func main() {
 		cfg.App.Version,
 		cfg.App.Environment,
 	)
+
+	// Connect to database
+	if err := database.Connect(cfg); err != nil {
+		utils.Fatal("Failed to connect to database: %v", err)
+	}
+	defer database.Close()
+
+	// Run migrations
+	if err := database.Migrate(); err != nil {
+		utils.Fatal("Failed to run migrations: %v", err)
+	}
+
+	// Seed database with initial data
+	if err := database.Seed(); err != nil {
+		utils.Fatal("Failed to seed database: %v", err)
+	}
 
 	// Create router and setup routes
 	router := api.NewRouter()
@@ -44,6 +61,7 @@ func main() {
 		utils.Info("Server starting on %s", cfg.GetServerAddr())
 		utils.Info("Environment: %s", cfg.App.Environment)
 		utils.Info("Log Level: %s", cfg.App.LogLevel)
+		utils.Info("Database: Connected")
 		utils.Info("Press Ctrl+C to shutdown")
 
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
