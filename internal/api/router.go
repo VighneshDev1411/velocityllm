@@ -28,8 +28,12 @@ func (router *Router) SetupRoutes() {
 	// Health check endpoint
 	router.mux.HandleFunc("/health", HealthHandler)
 
-	// API v1 routes
+	// Model endpoints
 	router.mux.HandleFunc("/api/v1/models", GetModelsHandler)
+
+	// Request endpoints
+	router.mux.HandleFunc("/api/v1/requests", handleRequestRoutes)
+	router.mux.HandleFunc("/api/v1/requests/stats", GetRequestStatsHandler)
 
 	// Catch-all for undefined API routes
 	router.mux.HandleFunc("/api/v1/", func(w http.ResponseWriter, r *http.Request) {
@@ -37,6 +41,27 @@ func (router *Router) SetupRoutes() {
 	})
 
 	utils.Info("Routes configured successfully")
+}
+
+// handleRequestRoutes routes request operations based on HTTP method
+func handleRequestRoutes(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodGet:
+		// Check if ID is provided
+		if r.URL.Query().Get("id") != "" {
+			GetRequestHandler(w, r)
+		} else {
+			ListRequestsHandler(w, r)
+		}
+	case http.MethodPost:
+		CreateRequestHandler(w, r)
+	case http.MethodPut, http.MethodPatch:
+		UpdateRequestHandler(w, r)
+	case http.MethodDelete:
+		DeleteRequestHandler(w, r)
+	default:
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+	}
 }
 
 // GetHandler returns the HTTP handler with all middlewares applied
