@@ -1,0 +1,165 @@
+%-------------------------
+% Amazon SDE Intern Tailored Resume (ATS Optimized)
+%-------------------------
+
+\documentclass[letterpaper,11pt]{article}
+
+\usepackage{latexsym}
+\usepackage[empty]{fullpage}
+\usepackage{titlesec}
+\usepackage{marvosym}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+\usepackage[english]{babel}
+\usepackage{tabularx}
+\input{glyphtounicode}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% Adjust margins
+\addtolength{\oddsidemargin}{-0.5in}
+\addtolength{\evensidemargin}{-0.5in}
+\addtolength{\textwidth}{1in}
+\addtolength{\topmargin}{-.5in}
+\addtolength{\textheight}{1.0in}
+
+\urlstyle{same}
+\raggedbottom
+\raggedright
+\setlength{\tabcolsep}{0in}
+
+\titleformat{\section}{
+  \vspace{-4pt}\scshape\raggedright\large
+}{}{0em}{}[\color{black}\titlerule \vspace{-4pt}]
+
+\pdfgentounicode=1
+
+\newcommand{\resumeItem}[1]{\item\small{{#1 \vspace{-2pt}}}}
+\newcommand{\resumeSubheading}[4]{
+  \vspace{-2pt}\item
+    \begin{tabular*}{0.97\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \textbf{#1} & #2 \\
+      \textit{\small#3} & \textit{\small #4} \\
+    \end{tabular*}\vspace{-5pt}
+}
+\newcommand{\resumeProjectHeading}[2]{
+    \item
+    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+      \small#1 & #2 \\
+    \end{tabular*}\vspace{-5pt}
+}
+\newcommand{\resumeSubItem}[1]{\resumeItem{#1}\vspace{-4pt}}
+\renewcommand\labelitemii{$\vcenter{\hbox{\tiny$\bullet$}}$}
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=0.15in, label={}]}
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
+\newcommand{\resumeItemListStart}{\begin{itemize}[leftmargin=0.15in]}
+\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-4pt}}
+
+\begin{document}
+
+%----------HEADING----------
+\begin{center}
+    \textbf{\Huge \scshape Vignesh Pathak} \\ \vspace{1pt}
+    \small Chicago, IL $|$ +1-312-395-0345 $|$
+    \href{mailto:vigneshpathak14@gmail.com}{\underline{vigneshpathak14@gmail.com}} $|$
+    \href{https://www.linkedin.com/in/vignesh-pathak-4018b7192/}{\underline{linkedin.com/in/vignesh-pathak-4018b7192}} $|$
+    \href{https://github.com/VighneshDev1411}{\underline{github.com/VighneshDev1411}} $|$
+    \href{https://my-portfolio-eight-kappa-44.vercel.app/}{\underline{Portfolio}} \\[4pt]
+    % \textit{Software Development Engineer Intern | Cloud-Native Systems | AI & Full Stack Development}
+\end{center}
+
+%-----------EDUCATION-----------
+\section{Education}
+  \resumeSubHeadingListStart
+    \resumeSubheading
+      {University of Illinois Chicago (UIC)}{Chicago, IL}
+      {M.S. in Computer Science}{Aug. 2025 -- May 2027}
+        \resumeItemListStart
+          \resumeItem{\textbf{Coursework:} Computer Algorithms I, Intro to Data Science, Computability and Complexity}
+          \resumeItem{\textbf{Expected Graduation:} May 2027 | Eligible for Summer 2026 Internship (12 Weeks, 40 hrs/week)}
+        \resumeItemListEnd
+    \resumeSubheading
+      {G.H. Raisoni College of Engineering}{Nagpur, India}
+      {B.E. in Computer Science}{Jul. 2018 -- May 2022}
+  \resumeSubHeadingListEnd
+
+%-----------EXPERIENCE-----------
+\section{Experience}
+  \resumeSubHeadingListStart
+
+\resumeSubheading
+  {Accenture}{Pune, India}
+  {Data \& AI Engineering Analyst}{Nov. 2022 -- Jul. 2025}
+\resumeItemListStart
+  \resumeItem{Built and deployed \textbf{scalable, cloud-native, distributed systems} using \textbf{Python, FastAPI, and AWS}, applying \textbf{object-oriented design (OOD)} and \textbf{SDLC} principles.}
+  \resumeItem{Developed and maintained \textbf{GenAI-driven microservices} with \textbf{LangChain, LangGraph, and AI Agents}, automating enterprise workflows and enhancing developer productivity.}
+  \resumeItem{Collaborated in \textbf{agile sprints}, conducting code reviews, debugging, and optimizing backend APIs for maintainability and performance.}
+  \resumeItem{Delivered production-ready, \textbf{clean, maintainable code} with CI/CD pipelines, Dockerized deployments, and AWS-based model hosting.}
+\resumeItemListEnd
+
+\resumeSubheading
+  {Capgemini}{Mumbai, India}
+  {Java Full Stack Developer Intern}{Jan. 2022 -- May 2022}
+  \resumeItemListStart
+    \resumeItem{Developed full-stack \textbf{microservices-based applications} using \textbf{Spring Boot, Angular, and MongoDB} following software development lifecycle (SDLC) best practices.}
+    \resumeItem{Implemented and tested RESTful APIs with \textbf{Java + Spring Boot}, optimized \textbf{PostgreSQL} queries, and enhanced performance by 20\%.}
+    \resumeItem{Collaborated using \textbf{Git version control}, performed debugging and participated in peer \textbf{code reviews}.}
+    \resumeItem{Containerized and deployed services via \textbf{Docker}, gaining exposure to distributed system design and deployment.}
+  \resumeItemListEnd
+
+  \resumeSubHeadingListEnd
+
+%-----------PROJECTS-----------
+\section{Projects}
+\resumeSubHeadingListStart
+
+\resumeProjectHeading
+    {\textbf{VelocityLLM — High-Performance Distributed LLM Inference Engine}
+      \href{https://github.com/VighneshDev1411/velocityllm}{\underline{GitHub}}}{}
+      \resumeItemListStart
+        \resumeItem{Architected a \textbf{production-grade distributed system} in \textbf{Go} achieving \textbf{67\% cost reduction} vs. OpenAI API through intelligent semantic caching and smart model routing with sub-200ms latency targets.}
+        \resumeItem{Designed and implemented \textbf{RESTful microservices} with \textbf{PostgreSQL + GORM}, repository pattern, and clean architecture supporting CRUD operations, pagination, and real-time analytics (tokens, cost, cache hit rates).}
+        \resumeItem{Built scalable infrastructure with \textbf{Redis caching}, graceful shutdown, health checks, and middleware chains (recovery, logging, CORS) for \textbf{horizontal scaling with Kubernetes}.}
+        \resumeItem{Integrated multi-provider LLM support (OpenAI, Claude, Llama 3) with automated database seeding and statistics endpoints for operational monitoring.}
+      \resumeItemListEnd
+
+\resumeProjectHeading
+    {\textbf{CogniFlow — AI Workflow Automation Platform}
+      \href{https://github.com/VighneshDev1411/ai-automation-assistant}{\underline{GitHub}} $|$
+      \href{https://ai-automation-assistant.vercel.app/login}{\underline{Live Demo}}}{}
+      \resumeItemListStart
+        \resumeItem{Designed a \textbf{scalable distributed system} for AI workflow automation using \textbf{FastAPI, Celery, and Redis} with asynchronous task orchestration.}
+        \resumeItem{Developed AI-powered microservices integrating \textbf{Slack, Gmail, and Notion APIs} for summarization, ticketing, and email workflows.}
+        \resumeItem{Built a visual flow builder using \textbf{React Flow} and integrated backend via \textbf{AWS Cloud-native architecture}.}
+      \resumeItemListEnd
+
+\resumeProjectHeading
+    {\textbf{Smart Grocery App — AI-Powered Grocery Management}
+      \href{https://github.com/VighneshDev1411/SMART_GROCERY_IOS}{\underline{GitHub}}}{}
+      \resumeItemListStart
+        \resumeItem{Developed an \textbf{iOS AI application} with \textbf{SwiftUI frontend} and \textbf{FastAPI backend}, integrated via AWS-hosted APIs and cloud databases.}
+        \resumeItem{Applied \textbf{object-oriented design} and AI-based personalization logic for SmartCart recommendations and expiry alerts.}
+      \resumeItemListEnd
+\resumeSubHeadingListEnd
+
+%-----------SKILLS-----------
+\section{Technical Skills}
+ \begin{itemize}[leftmargin=0.15in, label={}]
+    \small{\item{
+     \textbf{Programming:} Go, Python, Java, C++, TypeScript, JavaScript, Swift, SQL \textbar{}
+     \textbf{Frameworks:} FastAPI, Spring Boot, React, Next.js, Angular, SwiftUI \textbar{}
+     \textbf{Cloud \& DevOps:} AWS (S3, Lambda, EC2, DynamoDB), Docker, Kubernetes, GitHub Actions, CI/CD \textbar{}
+     \textbf{AI/ML:} PyTorch, Transformers, NLP, LangChain, LangGraph, OpenAI APIs \textbar{}
+     \textbf{Databases:} PostgreSQL, MongoDB, Redis, GORM \textbar{}
+     \textbf{Software Engineering:} Object-Oriented Design (OOD), Data Structures \& Algorithms, System Design, Distributed Systems, Debugging, Version Control, Agile SDLC \textbar{}
+     \textbf{Tools:} Git, Postman, VS Code, JUnit, Copilot
+    }}
+ \end{itemize}
+
+\end{document}
