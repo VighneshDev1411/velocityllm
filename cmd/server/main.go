@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/VighneshDev1411/velocityllm/internal/api"
+	"github.com/VighneshDev1411/velocityllm/internal/cache"
 	"github.com/VighneshDev1411/velocityllm/internal/config"
 	"github.com/VighneshDev1411/velocityllm/internal/database"
 	"github.com/VighneshDev1411/velocityllm/pkg/utils"
@@ -43,6 +44,12 @@ func main() {
 		utils.Fatal("Failed to seed database: %v", err)
 	}
 
+	// Connect to Redis
+	if err := cache.Connect(cfg); err != nil {
+		utils.Fatal("Failed to connect to Redis: %v", err)
+	}
+	defer cache.Close()
+
 	// Create router and setup routes
 	router := api.NewRouter()
 	router.SetupRoutes()
@@ -62,6 +69,7 @@ func main() {
 		utils.Info("Environment: %s", cfg.App.Environment)
 		utils.Info("Log Level: %s", cfg.App.LogLevel)
 		utils.Info("Database: Connected")
+		utils.Info("Redis: Connected")
 		utils.Info("Press Ctrl+C to shutdown")
 
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {

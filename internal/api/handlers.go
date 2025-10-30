@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/VighneshDev1411/velocityllm/internal/cache"
 	"github.com/VighneshDev1411/velocityllm/internal/database"
 	"github.com/VighneshDev1411/velocityllm/pkg/types"
 )
@@ -20,6 +21,12 @@ func HealthHandler(w http.ResponseWriter, r *http.Request) {
 		dbStatus = "unhealthy"
 	}
 
+	// Check Redis health
+	redisStatus := "healthy"
+	if err := cache.HealthCheck(); err != nil {
+		redisStatus = "unhealthy"
+	}
+
 	response := types.HealthResponse{
 		Status:    "healthy",
 		Version:   "0.1.0",
@@ -28,7 +35,7 @@ func HealthHandler(w http.ResponseWriter, r *http.Request) {
 		Services: map[string]string{
 			"api":      "healthy",
 			"database": dbStatus,
-			"redis":    "not_configured",
+			"redis":    redisStatus,
 		},
 	}
 
@@ -45,6 +52,9 @@ func RootHandler(w http.ResponseWriter, r *http.Request) {
 			"health":        "/health",
 			"api_v1":        "/api/v1",
 			"models":        "/api/v1/models",
+			"requests":      "/api/v1/requests",
+			"request_stats": "/api/v1/requests/stats",
+			"cache":         "/api/v1/cache (coming soon)",
 			"completions":   "/api/v1/completions (coming soon)",
 			"chat":          "/api/v1/chat/completions (coming soon)",
 			"documentation": "/api/v1/docs (coming soon)",

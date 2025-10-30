@@ -2,10 +2,6 @@ package database
 
 import (
 	"testing"
-	"time"
-
-	"github.com/VighneshDev1411/velocityllm/pkg/types"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestRequestRepository_Create(t *testing.T) {
