@@ -41,6 +41,9 @@ func (router *Router) SetupRoutes() {
 	router.mux.HandleFunc("/api/v1/cache/flush", FlushAllCacheHandler)
 	router.mux.HandleFunc("/api/v1/cache/test", TestCacheHandler)
 
+	// Completion endpoints
+	router.mux.HandleFunc("/api/v1/completions", CompletionHandler)
+
 	// Catch-all for undefined API routes
 	router.mux.HandleFunc("/api/v1/", func(w http.ResponseWriter, r *http.Request) {
 		NotFoundHandler(w, r)
