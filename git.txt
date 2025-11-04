@@ -1,0 +1,243 @@
+# Coordinated Amplification and Misinformation Detection in Global YouTube Conflict Narratives
+
+[![Course](https://img.shields.io/badge/Course-CS%20418-blue)](https://github.com/yourusername/project)
+[![Team](https://img.shields.io/badge/Team-The%20Fact%20Finders-green)](https://github.com/yourusername/project)
+[![Fall 2025](https://img.shields.io/badge/Semester-Fall%202025-orange)](https://github.com/yourusername/project)
+
+## 📋 Table of Contents
+- [Overview](#overview)
+- [Team Members](#team-members)
+- [Problem Statement](#problem-statement)
+- [Core Hypotheses](#core-hypotheses)
+- [Data](#data)
+- [Methodology](#methodology)
+- [Project Structure](#project-structure)
+- [Deliverables](#deliverables)
+- [Installation & Setup](#installation--setup)
+- [Usage](#usage)
+- [Timeline](#timeline)
+- [Contributing](#contributing)
+- [License](#license)
+
+## 🎯 Overview
+
+This project aims to comprehensively map the ecosystem of coordinated misinformation and narrative manipulation surrounding a major global conflict on the YouTube platform. By combining Network Science, Anomaly Detection, and State-of-the-Art NLP techniques, we analyze the full lifecycle of misinformation narratives in multilingual YouTube content related to the Russia-Ukraine conflict.
+
+### Why This Matters
+
+- **Platform Integrity**: Essential for maintaining content health and preventing manipulation
+- **Societal Impact**: Misinformation during conflict has real-world consequences, requiring automated detection tools
+- **Scientific Novelty**: Combining Network Science, Anomaly Detection, and State-of-the-Art NLP to study the full narrative lifecycle
+
+## 👥 Team Members
+
+| Name | UIC Email | GitHub |
+|------|-----------|--------|
+| Srinath Ganesh | sgane34@uic.edu | [@srinath-ganesh](https://github.com/srinath-ganesh) |
+| Archit Rathod | arath21@uic.edu | [@Archit1706](https://github.com/Archit1706) |
+| Vishaal Dayashanker | vdaya@uic.edu | [@VishaalD07](https://github.com/VishaalD07) |
+| Harsh Shelke | hshel@uic.edu | [@harshelke180502](https://github.com/harshelke180502) |
+| Vignesh Pathak | vpath6@uic.edu | [@VighneshDev1411](https://github.com/VighneshDev1411) |
+
+**Course**: CS 418: Introduction to Data Science (Fall 2025)  
+**Team Name**: The Fact Finders
+
+## 🔍 Problem Statement
+
+YouTube serves as a major conduit for viral, multilingual political narratives. This project aims to:
+
+1. **Identify and characterize** the sophisticated, coordinated methods used by channels and users to amplify specific narratives
+2. **Detect** the resulting inorganic engagement patterns
+3. **Build** a machine learning model to classify comment-level misinformation in real-time
+
+Our focus is on content related to the Russia-Ukraine conflict, analyzing narratives across Russian, Ukrainian, and English language content.
+
+## 🔬 Core Hypotheses
+
+### H1: Coordination
+Misinformation is amplified by highly interconnected "clusters" of channels and commenters that exhibit coordinated behavior patterns.
+
+### H2: Anomalies
+Periods of intense real-world conflict will correlate with detectable, statistically significant engagement anomalies (surges) on YouTube.
+
+### H3: Evolution
+Narratives promoted by coordinated networks will shift predictably over time, aligning with external war events and developments.
+
+## 📊 Data
+
+### Data Sources & Pipeline
+
+- **Primary Source**: YouTube Data API (v3)
+- **Pipeline**: Async API requests → Data Cleaning/Normalization (Python) → Storage (BigQuery/Parquet)
+- **Key Preprocessing**: Multilingual text handling with translation pipeline for RU/UA/EN standardization
+
+### Data Scope
+
+| Data Type | Estimated Size | Primary Focus |
+|-----------|----------------|---------------|
+| Comments | ~5,000,000 | NLP, Commenter Networks |
+| Videos | ~400,000 | Engagement, Anomaly Detection |
+| Channels | ~1,000 | Network Centrality, Clustering |
+| Training Data | ~10,000 | ML Fine-tuning (FakeNewsNet, LIAR) |
+
+## 🛠️ Methodology
+
+### Analysis Types & Techniques
+
+| Analysis Type | Techniques | Expected Deliverable |
+|---------------|------------|---------------------|
+| **Network Analysis** (Tasks 2, 4) | Graph Construction, Hierarchical Clustering, PageRank Centrality | Graph visualizations of misinformation clusters; Top-10 Influencer rankings |
+| **Engagement Analysis** (Task 3) | Statistical Testing (Z-scores), Isolation Forests | Anomaly scores for channels; Visualizations of engagement spikes around key dates |
+| **NLP & Narrative** (Task 5) | Multilingual BERT/RoBERTa Fine-Tuning, Topic Modeling (LDA/BERTopic) | Classification Model Results; Narrative timeline plots showing topic shifts |
+
+## 📁 Project Structure
+
+```
+.
+├── task1_data_collection_and_cleanup/
+│   ├── channels/
+│   │   ├── channel_data_collection.ipynb
+│   │   └── channel_data_to_gcp_bq.ipynb
+│   ├── videos/
+│   │   ├── video_data_collection.ipynb
+│   │   ├── video_data_to_gcp_bq.ipynb
+│   │   ├── completed_ids.txt
+│   │   └── invalid_ids.txt
+│   └── comments/
+│       ├── comments_data_collection.ipynb
+│       ├── comment_data_to_gcp_bq.ipynb
+│       ├── all_video_ids.txt
+│       ├── video_ids.txt
+│       ├── completed_ids.txt
+│       └── invalid_video_ids.txt
+├── task2_network_analysis/
+│   └── (Graph visualizations, cluster analysis)
+├── task3_engagement_analysis_and_anomaly_detection/
+│   └── (Anomaly detection models, engagement spike visualizations)
+├── task4_commenter_level_graph_analysis/
+│   └── (Commenter-level network graphs, influencer analysis)
+├── task5_nlp_and_narrative_analysis/
+│   └── (Misinformation classifier, narrative timeline plots)
+└── README.md
+```
+
+### Task Breakdown
+
+1. **Task 1 - Data Lead**: Data Collection Scripts, Initial EDA (Distributions/Timelines), Report Methodology
+2. **Task 2 - Network**: Graph Visualizations, Cluster Analysis Report (Louvain/PageRank)
+3. **Task 3 - Anomaly**: Anomaly Detection Model (Isolation Forest), Engagement Spike Visualizations
+4. **Task 4 - Commenter**: Commenter-level Network Graph, Top-10 Influencer Trends
+5. **Task 5 - NLP**: Misinformation Classifier Model (BERT/RoBERTa) and Fine-Tuning Report, Narrative Timeline Plots
+
+## 🎁 Deliverables
+
+### Core Deliverables
+- Graph visualizations of misinformation clusters
+- Top-10 Influencer rankings across different time periods
+- Anomaly scores for channels with statistical significance
+- Visualizations of engagement spikes correlated with key conflict events
+- Classification Model Results with performance metrics
+- Narrative timeline plots showing topic evolution
+
+### Interactive Deliverable: Real-Time Misinformation Classifier
+
+**Tool**: An interactive web interface where users can input any YouTube comment
+
+**Model**: Fine-tuned multilingual BERT/RoBERTa model for text processing
+
+**Output**: Immediate classification as 'Likely Fake News' or 'Likely Truth' with confidence scores
+
+**System Type**: Interactive system integrating network cluster visualizations with real-time ML classification
+
+## 🚀 Installation & Setup
+
+### Prerequisites
+- Python 3.8+
+- YouTube Data API v3 key
+- Google Cloud Platform account with BigQuery access
+
+### Required Python Packages
+```bash
+pip install pandas numpy requests aiohttp
+pip install google-cloud-bigquery pandas-gbq
+pip install networkx python-louvain
+pip install scikit-learn scipy
+pip install transformers torch
+pip install bertopic
+```
+
+### API Configuration
+1. Obtain a YouTube Data API v3 key from [Google Cloud Console](https://console.cloud.google.com/)
+2. Set up Google Cloud BigQuery and obtain credentials
+3. Configure API keys in the respective collection notebooks
+
+## 💻 Usage
+
+### Data Collection
+1. Navigate to `task1_data_collection_and_cleanup/`
+2. Run data collection notebooks for channels, videos, and comments
+3. Upload collected data to BigQuery using the corresponding upload notebooks
+
+### Network Analysis
+1. Navigate to `task2_network_analysis/`
+2. Run network construction and visualization scripts
+3. Generate cluster analysis reports
+
+### Anomaly Detection
+1. Navigate to `task3_engagement_analysis_and_anomaly_detection/`
+2. Run engagement analysis and anomaly detection models
+3. Generate visualizations of engagement spikes
+
+### NLP & Classification
+1. Navigate to `task5_nlp_and_narrative_analysis/`
+2. Fine-tune BERT/RoBERTa models on misinformation datasets
+3. Run narrative analysis and generate timeline plots
+
+## 📅 Timeline
+
+### Phase 1: Data Collection (Oct 3 - Mid-Oct)
+- ✅ Finalize data schema and secure API access
+- ✅ Complete initial data collection
+- ✅ Begin data cleaning and joining
+
+### Phase 2: Analysis Setup (Mid-Oct - Late-Oct)
+- Prepare multilingual text processing pipeline
+- Begin network construction
+- Calculate baseline engagement metrics
+
+### Phase 3: Model Development (Late-Oct - Nov 14)
+- Complete all data collection and cleaning
+- Establish baseline statistical analyses
+- Finish initial network graph construction
+- Complete initial NLP model fine-tuning
+
+### Phase 4: Integration & Refinement (Nov 14 onwards)
+- Integrate all analysis components
+- Build interactive web interface
+- Finalize visualizations and reports
+
+## 🤝 Contributing
+
+This is an academic project for CS 418 at UIC. Team members should follow the work division outlined above and coordinate through the project GitHub repository.
+
+## 📄 License
+
+This project is part of coursework for CS 418: Introduction to Data Science at the University of Illinois Chicago (Fall 2025).
+
+## 📚 References
+
+- YouTube Data API v3 Documentation
+- FakeNewsNet Dataset
+- LIAR Dataset
+- BERT/RoBERTa Pre-trained Models
+- NetworkX Documentation
+- BERTopic Documentation
+
+---
+
+**Project Links**:
+- [GitHub Repository](https://github.com/yourusername/project)
+- [Project Recording](https://zoom.us/recording)
+
+For questions or issues, please contact any team member listed above.
+

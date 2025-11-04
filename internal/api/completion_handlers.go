@@ -3,17 +3,39 @@ package api
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/VighneshDev1411/velocityllm/internal/cache"
 	"github.com/VighneshDev1411/velocityllm/internal/database"
+	"github.com/VighneshDev1411/velocityllm/internal/router"
 	"github.com/VighneshDev1411/velocityllm/pkg/types"
 	"github.com/VighneshDev1411/velocityllm/pkg/utils"
 	"github.com/google/uuid"
 )
 
-// CompletionHandler handles LLM completion requests with caching
+// Global router instance
+var globalRouter *router.Router
+
+// InitRouter initializes the global router
+func InitRouter(config *router.RoutingConfig) {
+	if config == nil {
+		config = router.DefaultConfig()
+	}
+	globalRouter = router.NewRouter(config)
+	utils.Info("Router initialized with strategy: %s", config.Strategy)
+}
+
+// GetRouter returns the global router instance
+func GetRouter() *router.Router {
+	if globalRouter == nil {
+		InitRouter(nil)
+	}
+	return globalRouter
+}
+
+// CompletionHandler handles LLM completion requests with intelligent routing
 func CompletionHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		types.WriteError(w, http.StatusMethodNotAllowed, "Method not allowed")
@@ -28,8 +50,8 @@ func CompletionHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Validate required fields
-	if req.Model == "" || req.Prompt == "" {
-		types.WriteError(w, http.StatusBadRequest, "Model and prompt are required")
+	if req.Prompt == "" {
+		types.WriteError(w, http.StatusBadRequest, "Prompt is required")
 		return
 	}
 
@@ -37,15 +59,44 @@ func CompletionHandler(w http.ResponseWriter, r *http.Request) {
 	startTime := time.Now()
 
 	// Initialize cache service
-	cacheService := cache.NewCacheService(24 * time.Hour) // 24 hour cache TTL
+	cacheService := cache.NewCacheService(24 * time.Hour)
+
+	// Get router
+	routerInstance := GetRouter()
+
+	// Determine which model to use
+	var routingDecision *router.RoutingDecision
+	var err error
+
+	if req.Model != "" {
+		// User specified a model - use it directly
+		routingDecision, err = routerInstance.RouteWithModel(ctx, req.Model)
+		if err != nil {
+			utils.Error("Failed to route to specified model %s: %v", req.Model, err)
+			types.WriteError(w, http.StatusBadRequest, "Invalid or unavailable model: "+req.Model)
+			return
+		}
+	} else {
+		// Use intelligent routing
+		routingDecision, err = routerInstance.Route(ctx, req.Prompt)
+		if err != nil {
+			utils.Error("Failed to route request: %v", err)
+			types.WriteError(w, http.StatusInternalServerError, "Failed to select model")
+			return
+		}
+	}
+
+	selectedModel := routingDecision.SelectedModel
+	utils.Info("Selected model: %s (strategy: %s, reason: %s)",
+		selectedModel.Name, routingDecision.Strategy, routingDecision.Reason)
 
 	// Generate cache key
-	cacheKey := cacheService.GenerateKey(req.Prompt, req.Model)
+	cacheKey := cacheService.GenerateKey(req.Prompt, selectedModel.Name)
 
 	var response types.CompletionResponse
 
-	// Check cache (defaults to enabled unless explicitly disabled)
-	if req.UseCache != false {
+	// Check cache if enabled (default true)
+	if req.UseCache {
 		var cached types.CachedCompletion
 		found, err := cacheService.Get(ctx, cacheKey, &cached)
 		if err != nil {
@@ -58,7 +109,7 @@ func CompletionHandler(w http.ResponseWriter, r *http.Request) {
 
 			response = types.CompletionResponse{
 				ID:        uuid.New().String(),
-				Model:     req.Model,
+				Model:     selectedModel.Name,
 				Prompt:    req.Prompt,
 				Response:  cached.Response,
 				Tokens:    cached.Tokens,
@@ -69,10 +120,10 @@ func CompletionHandler(w http.ResponseWriter, r *http.Request) {
 				CreatedAt: time.Now().Format(time.RFC3339),
 			}
 
-			utils.Info("Cache HIT: model=%s, latency=%dms", req.Model, latency)
+			utils.Info("Cache HIT: model=%s, latency=%dms", selectedModel.Name, latency)
 
 			// Log request to database
-			logRequestToDatabase(req, response, true)
+			logRequestToDatabase(req, response, true, routingDecision)
 
 			types.WriteSuccess(w, "Completion retrieved from cache", response)
 			return
@@ -80,49 +131,37 @@ func CompletionHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Cache MISS - Generate new completion
-	utils.Info("Cache MISS: model=%s, generating new completion", req.Model)
+	utils.Info("Cache MISS: model=%s, generating new completion", selectedModel.Name)
 
-	// TODO: In future, this will call actual LLM API (OpenAI, Anthropic, etc.)
-	// For now, we'll simulate a response
-	generatedResponse := simulateCompletion(req)
+	// Generate response (simulated for now)
+	generatedResponse := simulateCompletion(req, selectedModel.Name)
 
 	latency := int(time.Since(startTime).Milliseconds())
 
-	// Calculate cost based on model
-	modelRepo := database.NewModelRepository()
-	modelInfo, err := modelRepo.GetByName(req.Model)
-	var cost float64
-	var provider string
-
-	if err == nil {
-		cost = float64(generatedResponse.Tokens) * modelInfo.CostPerToken
-		provider = modelInfo.Provider
-	} else {
-		cost = 0.0
-		provider = "unknown"
-	}
+	// Calculate cost
+	cost := float64(generatedResponse.Tokens) * selectedModel.CostPerToken
 
 	response = types.CompletionResponse{
 		ID:        uuid.New().String(),
-		Model:     req.Model,
+		Model:     selectedModel.Name,
 		Prompt:    req.Prompt,
 		Response:  generatedResponse.Response,
 		Tokens:    generatedResponse.Tokens,
 		Latency:   latency,
 		Cost:      cost,
 		CacheHit:  false,
-		Provider:  provider,
+		Provider:  selectedModel.Provider,
 		CreatedAt: time.Now().Format(time.RFC3339),
 	}
 
-	// Cache the response for future requests (defaults to enabled)
-	if req.UseCache != false {
+	// Cache the response for future requests
+	if req.UseCache {
 		cachedData := types.CachedCompletion{
 			Response: generatedResponse.Response,
 			Tokens:   generatedResponse.Tokens,
 			Cost:     cost,
-			Provider: provider,
-			Model:    req.Model,
+			Provider: selectedModel.Provider,
+			Model:    selectedModel.Name,
 			CachedAt: time.Now().Format(time.RFC3339),
 		}
 
@@ -134,35 +173,31 @@ func CompletionHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Log request to database
-	logRequestToDatabase(req, response, false)
+	logRequestToDatabase(req, response, false, routingDecision)
 
 	types.WriteSuccess(w, "Completion generated successfully", response)
 }
 
 // simulateCompletion simulates an LLM response (placeholder)
-func simulateCompletion(req types.CompletionRequest) struct {
+func simulateCompletion(req types.CompletionRequest, modelName string) struct {
 	Response string
 	Tokens   int
 } {
-	// Simulate processing time
-	time.Sleep(100 * time.Millisecond)
+	// Simulate processing time based on model
+	var delay time.Duration
+	if contains(modelName, "gpt-4") {
+		delay = 150 * time.Millisecond
+	} else if contains(modelName, "claude") {
+		delay = 120 * time.Millisecond
+	} else {
+		delay = 80 * time.Millisecond
+	}
+	time.Sleep(delay)
 
 	// Generate a simple response based on the model
-	var response string
-	switch req.Model {
-	case "gpt-4":
-		response = "This is a simulated GPT-4 response to: " + req.Prompt
-	case "gpt-3.5-turbo":
-		response = "This is a simulated GPT-3.5 Turbo response to: " + req.Prompt
-	case "claude-3-opus":
-		response = "This is a simulated Claude 3 Opus response to: " + req.Prompt
-	case "claude-3-sonnet":
-		response = "This is a simulated Claude 3 Sonnet response to: " + req.Prompt
-	default:
-		response = "This is a simulated response from " + req.Model + " to: " + req.Prompt
-	}
+	response := fmt.Sprintf("This is a simulated %s response to: %s", modelName, req.Prompt)
 
-	// Simulate token count (simple word count approximation)
+	// Simulate token count (simple approximation)
 	tokens := len(req.Prompt)/4 + len(response)/4
 
 	return struct {
@@ -175,12 +210,12 @@ func simulateCompletion(req types.CompletionRequest) struct {
 }
 
 // logRequestToDatabase logs the completion request to database
-func logRequestToDatabase(req types.CompletionRequest, resp types.CompletionResponse, cacheHit bool) {
+func logRequestToDatabase(req types.CompletionRequest, resp types.CompletionResponse, cacheHit bool, _ *router.RoutingDecision) {
 	request := types.Request{
-		Model:          req.Model,
+		Model:          resp.Model,
 		Prompt:         req.Prompt,
 		Response:       resp.Response,
-		TokensPrompt:   len(req.Prompt) / 4, // Rough approximation
+		TokensPrompt:   len(req.Prompt) / 4,
 		TokensResponse: resp.Tokens,
 		TokensTotal:    resp.Tokens,
 		Latency:        resp.Latency,
@@ -194,4 +229,26 @@ func logRequestToDatabase(req types.CompletionRequest, resp types.CompletionResp
 	if err := repo.Create(&request); err != nil {
 		utils.Error("Failed to log request to database: %v", err)
 	}
+}
+
+// contains checks if string contains substring (helper)
+func contains(s, substr string) bool {
+	return indexOf(s, substr) >= 0
+}
+
+// indexOf finds index of substring
+func indexOf(s, substr string) int {
+	for i := 0; i <= len(s)-len(substr); i++ {
+		match := true
+		for j := 0; j < len(substr); j++ {
+			if s[i+j] != substr[j] {
+				match = false
+				break
+			}
+		}
+		if match {
+			return i
+		}
+	}
+	return -1
 }
