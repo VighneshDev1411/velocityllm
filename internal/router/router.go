@@ -17,14 +17,20 @@ type Router struct {
 	complexityAnalyzer *ComplexityAnalyzer
 	modelRepo          *database.ModelRepository
 	stats              *RouterStats
+	circuitBreakers    *CircuitBreakerManager
+	retryStrategy      *RetryStrategy
+	healthChecker      *HealthChecker
 }
 
 // RouterStats tracks routing statistics
 type RouterStats struct {
-	TotalRequests      int64
-	RequestsByStrategy map[RoutingStrategy]int64
-	RequestsByModel    map[string]int64
-	AvgRoutingTime     time.Duration
+	TotalRequests       int64
+	RequestsByStrategy  map[RoutingStrategy]int64
+	RequestsByModel     map[string]int64
+	AvgRoutingTime      time.Duration
+	FailedRequests      int64
+	FallbackUsed        int64
+	CircuitBreakerTrips int64
 }
 
 // NewRouter creates a new router instance
@@ -33,7 +39,7 @@ func NewRouter(config *RoutingConfig) *Router {
 		config = DefaultConfig()
 	}
 
-	return &Router{
+	router := &Router{
 		config:             config,
 		algorithm:          GetAlgorithm(config.Strategy),
 		complexityAnalyzer: NewComplexityAnalyzer(),
@@ -43,6 +49,45 @@ func NewRouter(config *RoutingConfig) *Router {
 			RequestsByModel:    make(map[string]int64),
 		},
 	}
+
+	// Initialize circuit breakers if enabled
+	if config.EnableCircuitBreak {
+		cbConfig := CircuitBreakerConfig{
+			FailureThreshold: 5,
+			SuccessThreshold: 2,
+			Timeout:          30 * time.Second,
+		}
+		router.circuitBreakers = NewCircuitBreakerManager(cbConfig)
+		utils.Info("Circuit breakers enabled")
+	}
+
+	// Initialize retry strategy if enabled
+	if config.MaxRetries > 0 {
+		retryConfig := RetryConfig{
+			MaxAttempts:  config.MaxRetries,
+			InitialDelay: config.RetryDelay,
+			MaxDelay:     5 * time.Second,
+			Multiplier:   2.0,
+			Jitter:       true,
+		}
+		router.retryStrategy = NewRetryStrategy(retryConfig)
+		utils.Info("Retry enabled (max attempts: %d)", config.MaxRetries)
+	}
+
+	// Initialize health checker if enabled
+	if config.HealthCheckEnabled {
+		healthConfig := HealthCheckConfig{
+			CheckInterval:    config.HealthCheckInterval,
+			FailureThreshold: 3,
+			SuccessThreshold: 2,
+			Enabled:          true,
+		}
+		router.healthChecker = NewHealthChecker(healthConfig)
+		router.healthChecker.Start()
+		utils.Info("Health checker started")
+	}
+
+	return router
 }
 
 // Route selects the best model for a request
@@ -64,17 +109,25 @@ func (r *Router) Route(ctx context.Context, prompt string) (*RoutingDecision, er
 		return nil, fmt.Errorf("no available models")
 	}
 
-	// Step 3: Select model using configured algorithm
+	// Step 3: Filter out models with open circuit breakers
+	if r.circuitBreakers != nil {
+		models = r.filterHealthyModels(models)
+		if len(models) == 0 {
+			return nil, fmt.Errorf("no healthy models available (all circuit breakers open)")
+		}
+	}
+
+	// Step 4: Select model using configured algorithm
 	selectedModel, err := r.algorithm.SelectModel(models, analysis)
 	if err != nil {
 		return nil, fmt.Errorf("failed to select model: %w", err)
 	}
 
-	// Step 4: Calculate score for transparency
+	// Step 5: Calculate score for transparency
 	scorer := DefaultScorer()
 	score := scorer.ScoreModel(*selectedModel, analysis.TokenCount)
 
-	// Step 5: Create routing decision
+	// Step 6: Create routing decision
 	decision := &RoutingDecision{
 		SelectedModel: *selectedModel,
 		Strategy:      r.config.Strategy,
@@ -84,7 +137,7 @@ func (r *Router) Route(ctx context.Context, prompt string) (*RoutingDecision, er
 		Timestamp:     time.Now(),
 	}
 
-	// Step 6: Update statistics
+	// Step 7: Update statistics
 	routingTime := time.Since(startTime)
 	r.updateStats(decision, routingTime)
 
@@ -92,6 +145,73 @@ func (r *Router) Route(ctx context.Context, prompt string) (*RoutingDecision, er
 		decision.Strategy, decision.SelectedModel.Name, decision.Complexity, decision.Score, routingTime)
 
 	return decision, nil
+}
+
+// RouteWithFallback routes with automatic fallback on failure
+func (r *Router) RouteWithFallback(ctx context.Context, prompt string, fn func(model types.Model) error) error {
+	// Get routing decision
+	decision, err := r.Route(ctx, prompt)
+	if err != nil {
+		return err
+	}
+
+	// Get all available models for fallback chain
+	allModels, err := r.modelRepo.GetAvailable()
+	if err != nil {
+		return fmt.Errorf("failed to get models for fallback: %w", err)
+	}
+
+	// Build smart fallback chain
+	fallbackChain := SmartFallbackChain(decision.SelectedModel, allModels)
+
+	// Execute with fallback and retry
+	if r.retryStrategy != nil && r.config.EnableFallback {
+		return FallbackWithRetry(ctx, fallbackChain, r.retryStrategy.config, func(model types.Model) error {
+			return r.executeWithCircuitBreaker(ctx, model, fn)
+		})
+	} else if r.config.EnableFallback {
+		chain := NewFallbackChain(fallbackChain)
+		return chain.Execute(ctx, func(model types.Model) error {
+			return r.executeWithCircuitBreaker(ctx, model, fn)
+		})
+	} else {
+		return r.executeWithCircuitBreaker(ctx, decision.SelectedModel, fn)
+	}
+}
+
+// executeWithCircuitBreaker executes a function with circuit breaker protection
+func (r *Router) executeWithCircuitBreaker(ctx context.Context, model types.Model, fn func(model types.Model) error) error {
+	if r.circuitBreakers == nil {
+		// No circuit breaker - execute directly
+		return fn(model)
+	}
+
+	// Get circuit breaker for this model
+	breaker := r.circuitBreakers.GetBreaker(model.Name)
+
+	// Execute with circuit breaker protection
+	err := breaker.Call(func() error {
+		return fn(model)
+	})
+
+	if err != nil && err.Error() == "circuit breaker is OPEN" {
+		r.stats.CircuitBreakerTrips++
+		utils.Warn("Circuit breaker OPEN for model: %s", model.Name)
+	}
+
+	return err
+}
+
+// filterHealthyModels filters out models with open circuit breakers
+func (r *Router) filterHealthyModels(models []types.Model) []types.Model {
+	healthy := make([]types.Model, 0)
+	for _, model := range models {
+		breaker := r.circuitBreakers.GetBreaker(model.Name)
+		if breaker.GetState() != StateOpen {
+			healthy = append(healthy, model)
+		}
+	}
+	return healthy
 }
 
 // RouteWithModel routes to a specific model (bypass algorithm)
@@ -140,6 +260,30 @@ func (r *Router) GetStats() *RouterStats {
 	return r.stats
 }
 
+// GetCircuitBreakerStats returns circuit breaker statistics
+func (r *Router) GetCircuitBreakerStats() []map[string]interface{} {
+	if r.circuitBreakers == nil {
+		return nil
+	}
+	return r.circuitBreakers.GetAllStats()
+}
+
+// GetHealthStats returns health check statistics
+func (r *Router) GetHealthStats() map[string]interface{} {
+	if r.healthChecker == nil {
+		return nil
+	}
+	return r.healthChecker.GetHealthStats()
+}
+
+// GetModelHealth returns health status for all models
+func (r *Router) GetModelHealth() map[string]*ModelHealth {
+	if r.healthChecker == nil {
+		return nil
+	}
+	return r.healthChecker.GetAllHealth()
+}
+
 // ResetStats resets routing statistics
 func (r *Router) ResetStats() {
 	r.stats = &RouterStats{
@@ -157,6 +301,14 @@ func (r *Router) AnalyzePrompt(prompt string) *PromptAnalysis {
 // GetAvailableModels returns all available models
 func (r *Router) GetAvailableModels() ([]types.Model, error) {
 	return r.modelRepo.GetAvailable()
+}
+
+// Shutdown gracefully shuts down the router
+func (r *Router) Shutdown() {
+	if r.healthChecker != nil {
+		r.healthChecker.Stop()
+		utils.Info("Health checker stopped")
+	}
 }
 
 // generateReason generates a human-readable reason for model selection

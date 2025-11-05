@@ -53,14 +53,13 @@ func main() {
 	}
 	defer cache.Close()
 
-	// Create router and setup routes
-	router := api.NewRouter()
-	router.SetupRoutes()
+	// Setup routes
+	api.SetupRoutes()
 
 	// Create HTTP server
 	server := &http.Server{
 		Addr:         cfg.GetServerAddr(),
-		Handler:      router.GetHandler(),
+		Handler:      nil, // Uses http.DefaultServeMux
 		ReadTimeout:  cfg.Server.ReadTimeout,
 		WriteTimeout: cfg.Server.WriteTimeout,
 		IdleTimeout:  cfg.Server.IdleTimeout,

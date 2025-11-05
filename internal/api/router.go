@@ -6,82 +6,53 @@ import (
 	"github.com/VighneshDev1411/velocityllm/pkg/utils"
 )
 
-// Router holds all route definitions
-type Router struct {
-	mux *http.ServeMux
-}
+// SetupRoutes configures all API routes
+func SetupRoutes() {
+	// Health check
+	http.HandleFunc("/health", HealthHandler)
 
-// NewRouter creates a new router instance
-func NewRouter() *Router {
-	return &Router{
-		mux: http.NewServeMux(),
-	}
-}
+	// ============================================
+	// COMPLETION ENDPOINTS
+	// ============================================
+	http.HandleFunc("/api/v1/completions", CompletionHandler)
 
-// SetupRoutes configures all application routes
-func (router *Router) SetupRoutes() {
-	utils.Info("Setting up routes...")
+	// ============================================
+	// MODEL ENDPOINTS
+	// ============================================
+	http.HandleFunc("/api/v1/models", GetModelsHandler)
 
-	// Root endpoint
-	router.mux.HandleFunc("/", RootHandler)
+	// ============================================
+	// REQUEST HISTORY ENDPOINTS
+	// ============================================
+	http.HandleFunc("/api/v1/requests", ListRequestsHandler)
+	http.HandleFunc("/api/v1/requests/stats", GetRequestStatsHandler)
 
-	// Health check endpoint
-	router.mux.HandleFunc("/health", HealthHandler)
+	// ============================================
+	// CACHE ENDPOINTS
+	// ============================================
+	http.HandleFunc("/api/v1/cache/stats", GetCacheStatsHandler)
+	http.HandleFunc("/api/v1/cache/clear", ClearCacheHandler)
 
-	// Model endpoints
-	router.mux.HandleFunc("/api/v1/models", GetModelsHandler)
+	// ============================================
+	// ROUTER ENDPOINTS (Day 4 - NEW)
+	// ============================================
 
-	// Request endpoints
-	router.mux.HandleFunc("/api/v1/requests", handleRequestRoutes)
-	router.mux.HandleFunc("/api/v1/requests/stats", GetRequestStatsHandler)
+	// Router statistics and configuration
+	http.HandleFunc("/api/v1/router/stats", GetRouterStatsHandler)
+	http.HandleFunc("/api/v1/router/config", GetRouterConfigHandler)
+	http.HandleFunc("/api/v1/router/strategy", UpdateRouterStrategyHandler)
+	http.HandleFunc("/api/v1/router/stats/reset", ResetRouterStatsHandler)
 
-	// Cache endpoints
-	router.mux.HandleFunc("/api/v1/cache/stats", GetCacheStatsHandler)
-	router.mux.HandleFunc("/api/v1/cache/clear", ClearCacheHandler)
-	router.mux.HandleFunc("/api/v1/cache/flush", FlushAllCacheHandler)
-	router.mux.HandleFunc("/api/v1/cache/test", TestCacheHandler)
+	// Circuit breaker monitoring
+	http.HandleFunc("/api/v1/router/circuit-breakers", GetCircuitBreakerStatsHandler)
 
-	// Completion endpoints
-	router.mux.HandleFunc("/api/v1/completions", CompletionHandler)
+	// Health checking
+	http.HandleFunc("/api/v1/router/health/stats", GetHealthStatsHandler)
+	http.HandleFunc("/api/v1/router/health/models", GetModelHealthHandler)
 
-	// Catch-all for undefined API routes
-	router.mux.HandleFunc("/api/v1/", func(w http.ResponseWriter, r *http.Request) {
-		NotFoundHandler(w, r)
-	})
+	// Routing analysis
+	http.HandleFunc("/api/v1/router/analyze", AnalyzePromptHandler)
+	http.HandleFunc("/api/v1/router/decision", GetRoutingDecisionHandler)
 
-	utils.Info("Routes configured successfully")
-}
-
-// handleRequestRoutes routes request operations based on HTTP method
-func handleRequestRoutes(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case http.MethodGet:
-		// Check if ID is provided
-		if r.URL.Query().Get("id") != "" {
-			GetRequestHandler(w, r)
-		} else {
-			ListRequestsHandler(w, r)
-		}
-	case http.MethodPost:
-		CreateRequestHandler(w, r)
-	case http.MethodPut, http.MethodPatch:
-		UpdateRequestHandler(w, r)
-	case http.MethodDelete:
-		DeleteRequestHandler(w, r)
-	default:
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-	}
-}
-
-// GetHandler returns the HTTP handler with all middlewares applied
-func (router *Router) GetHandler() http.Handler {
-	// Apply middlewares in order: Recovery -> Logging -> CORS -> Routes
-	handler := Chain(
-		router.mux,
-		RecoveryMiddleware,
-		LoggingMiddleware,
-		CORSMiddleware,
-	)
-
-	return handler
+	utils.Info("All routes configured successfully")
 }
