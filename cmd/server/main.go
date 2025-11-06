@@ -44,14 +44,14 @@ func main() {
 		utils.Fatal("Failed to seed database: %v", err)
 	}
 
-	// Initialize router
-	api.InitRouter(nil) // nil = use default config
-
 	// Connect to Redis
 	if err := cache.Connect(cfg); err != nil {
 		utils.Fatal("Failed to connect to Redis: %v", err)
 	}
 	defer cache.Close()
+
+	// Initialize router (after database and Redis are ready)
+	api.InitRouter(nil) // nil = use default config
 
 	// Setup routes
 	api.SetupRoutes()
