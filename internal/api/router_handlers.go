@@ -16,7 +16,7 @@ func GetRouterStatsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	routerInstance := GetRouter()
+	routerInstance := router.GetGlobalRouter()
 	stats := routerInstance.GetStats()
 
 	response := map[string]interface{}{
@@ -39,7 +39,7 @@ func GetRouterConfigHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	routerInstance := GetRouter()
+	routerInstance := router.GetGlobalRouter()
 	config := routerInstance.GetConfig()
 
 	response := map[string]interface{}{
@@ -94,7 +94,7 @@ func UpdateRouterStrategyHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Update strategy
-	routerInstance := GetRouter()
+	routerInstance := router.GetGlobalRouter()
 	routerInstance.SetStrategy(router.RoutingStrategy(req.Strategy))
 
 	response := map[string]interface{}{
@@ -112,7 +112,7 @@ func GetCircuitBreakerStatsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	routerInstance := GetRouter()
+	routerInstance := router.GetGlobalRouter()
 	stats := routerInstance.GetCircuitBreakerStats()
 
 	if stats == nil {
@@ -130,7 +130,7 @@ func GetHealthStatsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	routerInstance := GetRouter()
+	routerInstance := router.GetGlobalRouter()
 	stats := routerInstance.GetHealthStats()
 
 	if stats == nil {
@@ -148,7 +148,7 @@ func GetModelHealthHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	routerInstance := GetRouter()
+	routerInstance := router.GetGlobalRouter()
 	health := routerInstance.GetModelHealth()
 
 	if health == nil {
@@ -199,7 +199,7 @@ func AnalyzePromptHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	routerInstance := GetRouter()
+	routerInstance := router.GetGlobalRouter()
 	analysis := routerInstance.AnalyzePrompt(req.Prompt)
 
 	response := map[string]interface{}{
@@ -221,7 +221,7 @@ func ResetRouterStatsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	routerInstance := GetRouter()
+	routerInstance := router.GetGlobalRouter()
 	routerInstance.ResetStats()
 
 	types.WriteSuccess(w, "Router statistics reset successfully", nil)
@@ -248,7 +248,7 @@ func GetRoutingDecisionHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	routerInstance := GetRouter()
+	routerInstance := router.GetGlobalRouter()
 	ctx := r.Context()
 
 	decision, err := routerInstance.Route(ctx, req.Prompt)

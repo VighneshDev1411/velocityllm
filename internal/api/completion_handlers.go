@@ -15,26 +15,6 @@ import (
 	"github.com/google/uuid"
 )
 
-// Global router instance
-var globalRouter *router.Router
-
-// InitRouter initializes the global router
-func InitRouter(config *router.RoutingConfig) {
-	if config == nil {
-		config = router.DefaultConfig()
-	}
-	globalRouter = router.NewRouter(config)
-	utils.Info("Router initialized with strategy: %s", config.Strategy)
-}
-
-// GetRouter returns the global router instance
-func GetRouter() *router.Router {
-	if globalRouter == nil {
-		InitRouter(nil)
-	}
-	return globalRouter
-}
-
 // CompletionHandler handles LLM completion requests with intelligent routing
 func CompletionHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
@@ -62,7 +42,7 @@ func CompletionHandler(w http.ResponseWriter, r *http.Request) {
 	cacheService := cache.NewCacheService(24 * time.Hour)
 
 	// Get router
-	routerInstance := GetRouter()
+	routerInstance := router.GetGlobalRouter()
 
 	// Determine which model to use
 	var routingDecision *router.RoutingDecision

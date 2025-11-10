@@ -401,3 +401,23 @@ func ValidateConfig(config *RoutingConfig) error {
 
 	return nil
 }
+
+// Global router instance
+var globalRouter *Router
+
+// InitGlobalRouter initializes the global router
+func InitGlobalRouter(config *RoutingConfig) {
+	if config == nil {
+		config = DefaultConfig()
+	}
+	globalRouter = NewRouter(config)
+	utils.Info("Global router initialized with strategy: %s", config.Strategy)
+}
+
+// GetGlobalRouter returns the global router instance
+func GetGlobalRouter() *Router {
+	if globalRouter == nil {
+		InitGlobalRouter(nil)
+	}
+	return globalRouter
+}

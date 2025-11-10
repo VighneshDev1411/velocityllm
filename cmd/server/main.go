@@ -1,7 +1,7 @@
 package main
 
 import (
-	"context"
+	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
@@ -12,88 +12,117 @@ import (
 	"github.com/VighneshDev1411/velocityllm/internal/cache"
 	"github.com/VighneshDev1411/velocityllm/internal/config"
 	"github.com/VighneshDev1411/velocityllm/internal/database"
+	"github.com/VighneshDev1411/velocityllm/internal/router"
+	"github.com/VighneshDev1411/velocityllm/internal/worker"
 	"github.com/VighneshDev1411/velocityllm/pkg/utils"
 )
 
 func main() {
+	// Print banner
+	printBanner()
+
 	// Load configuration
 	cfg, err := config.Load()
 	if err != nil {
 		utils.Fatal("Failed to load configuration: %v", err)
 	}
 
-	utils.Info("Starting %s v%s in %s mode",
-		cfg.App.Name,
-		cfg.App.Version,
-		cfg.App.Environment,
-	)
+	utils.Info("Starting VelocityLLM server...")
 
 	// Connect to database
 	if err := database.Connect(cfg); err != nil {
 		utils.Fatal("Failed to connect to database: %v", err)
 	}
-	defer database.Close()
+	utils.Info("Database connected successfully")
 
 	// Run migrations
 	if err := database.Migrate(); err != nil {
-		utils.Fatal("Failed to run migrations: %v", err)
+		utils.Fatal("Failed to migrate database: %v", err)
 	}
+	utils.Info("Database migration completed")
 
 	// Seed database with initial data
 	if err := database.Seed(); err != nil {
 		utils.Fatal("Failed to seed database: %v", err)
 	}
 
+	// Initialize router
+	router.InitGlobalRouter(nil) // nil = use default config
+
+	// ============================================
+	// WORKER POOL INITIALIZATION (Day 5 - NEW)
+	// ============================================
+
+	// Configure worker pool
+	workerConfig := worker.PoolConfig{
+		WorkerCount: 10,               // 10 concurrent workers
+		QueueSize:   100,              // Queue up to 100 jobs
+		Timeout:     30 * time.Second, // 30 second timeout
+	}
+
+	// Initialize and start worker pool
+	if err := worker.InitGlobalPool(workerConfig); err != nil {
+		utils.Fatal("Failed to initialize worker pool: %v", err)
+	}
+	utils.Info("Worker pool initialized: %d workers, queue size %d",
+		workerConfig.WorkerCount, workerConfig.QueueSize)
+
 	// Connect to Redis
 	if err := cache.Connect(cfg); err != nil {
 		utils.Fatal("Failed to connect to Redis: %v", err)
 	}
-	defer cache.Close()
+	utils.Info("Redis connected successfully")
 
-	// Initialize router (after database and Redis are ready)
-	api.InitRouter(nil) // nil = use default config
-
-	// Setup routes
+	// Setup API routes
 	api.SetupRoutes()
 
-	// Create HTTP server
+	// Start server
 	server := &http.Server{
 		Addr:         cfg.GetServerAddr(),
-		Handler:      nil, // Uses http.DefaultServeMux
+		Handler:      http.DefaultServeMux,
 		ReadTimeout:  cfg.Server.ReadTimeout,
 		WriteTimeout: cfg.Server.WriteTimeout,
 		IdleTimeout:  cfg.Server.IdleTimeout,
 	}
 
-	// Start server in a goroutine
+	// Graceful shutdown
 	go func() {
-		utils.Info("Server starting on %s", cfg.GetServerAddr())
-		utils.Info("Environment: %s", cfg.App.Environment)
-		utils.Info("Log Level: %s", cfg.App.LogLevel)
-		utils.Info("Database: Connected")
-		utils.Info("Redis: Connected")
-		utils.Info("Press Ctrl+C to shutdown")
+		sigChan := make(chan os.Signal, 1)
+		signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
+		<-sigChan
 
-		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			utils.Fatal("Server failed to start: %v", err)
-		}
+		utils.Info("Shutting down server...")
+
+		// Shutdown worker pool
+		worker.ShutdownGlobalPool()
+		utils.Info("Worker pool shutdown complete")
+
+		// Shutdown router
+		routerInstance := router.GetGlobalRouter()
+		routerInstance.Shutdown()
+
+		// Close database
+		database.Close()
+
+		os.Exit(0)
 	}()
 
-	// Wait for interrupt signal to gracefully shutdown the server
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-	<-quit
+	utils.Info("Server starting on %s", cfg.GetServerAddr())
+	utils.Info("API available at http://localhost:%d", cfg.Server.Port)
+	utils.Info("Press Ctrl+C to stop")
 
-	utils.Info("Shutting down server...")
-
-	// Create shutdown context with timeout
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-	defer cancel()
-
-	// Attempt graceful shutdown
-	if err := server.Shutdown(ctx); err != nil {
-		utils.Error("Server forced to shutdown: %v", err)
+	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		utils.Fatal("Server failed to start: %v", err)
 	}
+}
 
-	utils.Info("Server stopped gracefully")
+func printBanner() {
+	banner := `
+╦  ╦┌─┐┬  ┌─┐┌─┐┬┬─┐┬ ┬╦  ╦  ╔╦╗
+╚╗╔╝├┤ │  │ ││  │├┬┘└┬┘║  ║  ║║║
+ ╚╝ └─┘┴─┘└─┘└─┘┴┴└─ ┴ ╩═╝╩═╝╩ ╩
+    Production-Grade LLM Inference Engine
+    =====================================
+`
+	fmt.Println(banner)
 }

@@ -15,6 +15,10 @@ func SetupRoutes() {
 	// COMPLETION ENDPOINTS
 	// ============================================
 	http.HandleFunc("/api/v1/completions", CompletionHandler)
+	http.HandleFunc("/api/v1/completions/async", CompletionAsyncHandler)
+
+	// Job status checking
+	http.HandleFunc("/api/v1/jobs/", JobStatusHandler)
 
 	// ============================================
 	// MODEL ENDPOINTS
@@ -34,7 +38,7 @@ func SetupRoutes() {
 	http.HandleFunc("/api/v1/cache/clear", ClearCacheHandler)
 
 	// ============================================
-	// ROUTER ENDPOINTS (Day 4 - NEW)
+	// ROUTER ENDPOINTS (Day 4)
 	// ============================================
 
 	// Router statistics and configuration
@@ -53,6 +57,24 @@ func SetupRoutes() {
 	// Routing analysis
 	http.HandleFunc("/api/v1/router/analyze", AnalyzePromptHandler)
 	http.HandleFunc("/api/v1/router/decision", GetRoutingDecisionHandler)
+
+	// ============================================
+	// WORKER POOL ENDPOINTS (Day 5 - NEW)
+	// ============================================
+
+	// Worker pool statistics
+	http.HandleFunc("/api/v1/workers/stats", GetWorkerPoolStatsHandler)
+	http.HandleFunc("/api/v1/workers/health", GetWorkerPoolHealthHandler)
+	http.HandleFunc("/api/v1/workers/metrics", GetWorkerPoolMetricsHandler)
+
+	// Individual workers
+	http.HandleFunc("/api/v1/workers", GetWorkersHandler)
+
+	// Queue management
+	http.HandleFunc("/api/v1/workers/queue", GetQueueInfoHandler)
+
+	// Dynamic scaling
+	http.HandleFunc("/api/v1/workers/resize", ResizeWorkerPoolHandler)
 
 	utils.Info("All routes configured successfully")
 }
