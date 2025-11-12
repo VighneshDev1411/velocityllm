@@ -7,6 +7,7 @@ import (
 
 	"github.com/VighneshDev1411/velocityllm/internal/cache"
 	"github.com/VighneshDev1411/velocityllm/internal/database"
+	"github.com/VighneshDev1411/velocityllm/internal/metrics"
 	"github.com/VighneshDev1411/velocityllm/internal/router"
 	"github.com/VighneshDev1411/velocityllm/pkg/types"
 	"github.com/VighneshDev1411/velocityllm/pkg/utils"
@@ -103,6 +104,17 @@ func (w *Worker) processJob(ctx context.Context, job Job) JobResult {
 	routingDecision, err := routerInstance.Route(jobCtx, job.Request.Prompt)
 	if err != nil {
 		utils.Error("Worker %d: routing failed for job %s: %v", w.ID, job.ID, err)
+
+		// Record failed request metrics
+		collector := metrics.GetGlobalMetricsCollector()
+		collector.RecordRequest(
+			"unknown",
+			time.Since(startTime),
+			0.0,
+			false, // failure
+			false,
+		)
+
 		return JobResult{
 			Response: types.CompletionResponse{},
 			Error:    fmt.Errorf("routing failed: %w", err),
@@ -144,6 +156,16 @@ func (w *Worker) processJob(ctx context.Context, job Job) JobResult {
 
 			// Log to database
 			w.logRequestToDatabase(job.Request, response, true, routingDecision)
+
+			// Record metrics
+			collector := metrics.GetGlobalMetricsCollector()
+			collector.RecordRequest(
+				response.Model,
+				time.Since(startTime),
+				response.Cost,
+				true, // success
+				response.CacheHit,
+			)
 
 			return JobResult{
 				Response: response,
@@ -193,6 +215,16 @@ func (w *Worker) processJob(ctx context.Context, job Job) JobResult {
 
 	// Log to database
 	w.logRequestToDatabase(job.Request, response, false, routingDecision)
+
+	// Record metrics
+	collector := metrics.GetGlobalMetricsCollector()
+	collector.RecordRequest(
+		response.Model,
+		time.Since(startTime),
+		response.Cost,
+		true, // success
+		response.CacheHit,
+	)
 
 	return JobResult{
 		Response: response,
