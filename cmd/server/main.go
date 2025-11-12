@@ -12,6 +12,8 @@ import (
 	"github.com/VighneshDev1411/velocityllm/internal/cache"
 	"github.com/VighneshDev1411/velocityllm/internal/config"
 	"github.com/VighneshDev1411/velocityllm/internal/database"
+	"github.com/VighneshDev1411/velocityllm/internal/metrics"
+	"github.com/VighneshDev1411/velocityllm/internal/middleware"
 	"github.com/VighneshDev1411/velocityllm/internal/router"
 	"github.com/VighneshDev1411/velocityllm/internal/worker"
 	"github.com/VighneshDev1411/velocityllm/pkg/utils"
@@ -50,7 +52,7 @@ func main() {
 	router.InitGlobalRouter(nil) // nil = use default config
 
 	// ============================================
-	// WORKER POOL INITIALIZATION (Day 5 - NEW)
+	// WORKER POOL INITIALIZATION (Day 5)
 	// ============================================
 
 	// Configure worker pool
@@ -66,6 +68,51 @@ func main() {
 	}
 	utils.Info("Worker pool initialized: %d workers, queue size %d",
 		workerConfig.WorkerCount, workerConfig.QueueSize)
+
+	// ============================================
+	// RATE LIMITER INITIALIZATION (Day 5 - NEW)
+	// ============================================
+
+	rateLimiterConfig := middleware.RateLimiterConfig{
+		RequestsPerMinute: 100,
+		BurstSize:         20,
+		CleanupInterval:   5 * time.Minute,
+	}
+
+	middleware.InitGlobalRateLimiter(rateLimiterConfig)
+	utils.Info("Rate limiter initialized (default: %d req/min)",
+		rateLimiterConfig.RequestsPerMinute)
+
+	// ============================================
+	// BACKPRESSURE HANDLER INITIALIZATION (Day 5 - NEW)
+	// ============================================
+
+	backpressureConfig := middleware.BackpressureConfig{
+		EnableLoadShedding: true,
+		QueueThreshold:     80.0,
+		RejectLowPriority:  true,
+		AdaptiveThreshold:  true,
+	}
+
+	middleware.InitGlobalBackpressureHandler(backpressureConfig)
+	utils.Info("Backpressure handler initialized (threshold: %.1f%%)",
+		backpressureConfig.QueueThreshold)
+
+	// ============================================
+	// METRICS COLLECTOR INITIALIZATION (Day 5 - NEW)
+	// ============================================
+
+	metricsConfig := metrics.MetricsConfig{
+		EnableCollection:   true,
+		CollectionInterval: 10 * time.Second,
+		RetentionPeriod:    24 * time.Hour,
+		MaxDataPoints:      1000,
+		EnableTimeSeries:   true,
+	}
+
+	metrics.InitGlobalMetricsCollector(metricsConfig)
+	utils.Info("Metrics collector initialized (interval: %s)",
+		metricsConfig.CollectionInterval)
 
 	// Connect to Redis
 	if err := cache.Connect(cfg); err != nil {
@@ -109,6 +156,13 @@ func main() {
 
 	utils.Info("Server starting on %s", cfg.GetServerAddr())
 	utils.Info("API available at http://localhost:%d", cfg.Server.Port)
+	utils.Info("")
+	utils.Info("=== System Components Initialized ===")
+	utils.Info("✓ Worker Pool: %d workers", workerConfig.WorkerCount)
+	utils.Info("✓ Rate Limiter: %d req/min default", rateLimiterConfig.RequestsPerMinute)
+	utils.Info("✓ Backpressure: %.0f%% threshold", backpressureConfig.QueueThreshold)
+	utils.Info("✓ Metrics: Collecting every %s", metricsConfig.CollectionInterval)
+	utils.Info("")
 	utils.Info("Press Ctrl+C to stop")
 
 	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
