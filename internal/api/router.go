@@ -59,7 +59,7 @@ func SetupRoutes() {
 	http.HandleFunc("/api/v1/router/decision", GetRoutingDecisionHandler)
 
 	// ============================================
-	// WORKER POOL ENDPOINTS (Day 5 - NEW)
+	// WORKER POOL ENDPOINTS (Day 5 Morning)
 	// ============================================
 
 	// Worker pool statistics
@@ -75,6 +75,31 @@ func SetupRoutes() {
 
 	// Dynamic scaling
 	http.HandleFunc("/api/v1/workers/resize", ResizeWorkerPoolHandler)
+
+	// ============================================
+	// METRICS ENDPOINTS (Day 5 Afternoon - NEW)
+	// ============================================
+
+	// Performance metrics
+	http.HandleFunc("/api/v1/metrics/snapshot", GetMetricsSnapshotHandler)
+	http.HandleFunc("/api/v1/metrics/latency", GetLatencyMetricsHandler)
+	http.HandleFunc("/api/v1/metrics/throughput", GetThroughputMetricsHandler)
+	http.HandleFunc("/api/v1/metrics/cost", GetCostMetricsHandler)
+	http.HandleFunc("/api/v1/metrics/errors", GetErrorMetricsHandler)
+	http.HandleFunc("/api/v1/metrics/models", GetModelMetricsHandler)
+	http.HandleFunc("/api/v1/metrics/reset", ResetMetricsHandler)
+
+	// Rate limiter metrics
+	http.HandleFunc("/api/v1/metrics/rate-limiter", GetRateLimiterStatsHandler)
+	http.HandleFunc("/api/v1/metrics/rate-limiter/user", GetRateLimiterUserStatusHandler)
+
+	// Backpressure metrics
+	http.HandleFunc("/api/v1/metrics/backpressure", GetBackpressureStatsHandler)
+	http.HandleFunc("/api/v1/metrics/backpressure/status", GetBackpressureStatusHandler)
+	http.HandleFunc("/api/v1/metrics/backpressure/reset", ResetBackpressureStatsHandler)
+
+	// System health
+	http.HandleFunc("/api/v1/system/health", GetSystemHealthHandler)
 
 	utils.Info("All routes configured successfully")
 }
