@@ -69,10 +69,6 @@ func main() {
 	utils.Info("Worker pool initialized: %d workers, queue size %d",
 		workerConfig.WorkerCount, workerConfig.QueueSize)
 
-	// ============================================
-	// RATE LIMITER INITIALIZATION (Day 5 - NEW)
-	// ============================================
-
 	rateLimiterConfig := middleware.RateLimiterConfig{
 		RequestsPerMinute: 100,
 		BurstSize:         20,
@@ -82,10 +78,6 @@ func main() {
 	middleware.InitGlobalRateLimiter(rateLimiterConfig)
 	utils.Info("Rate limiter initialized (default: %d req/min)",
 		rateLimiterConfig.RequestsPerMinute)
-
-	// ============================================
-	// BACKPRESSURE HANDLER INITIALIZATION (Day 5 - NEW)
-	// ============================================
 
 	backpressureConfig := middleware.BackpressureConfig{
 		EnableLoadShedding: true,
@@ -97,10 +89,6 @@ func main() {
 	middleware.InitGlobalBackpressureHandler(backpressureConfig)
 	utils.Info("Backpressure handler initialized (threshold: %.1f%%)",
 		backpressureConfig.QueueThreshold)
-
-	// ============================================
-	// METRICS COLLECTOR INITIALIZATION (Day 5 - NEW)
-	// ============================================
 
 	metricsConfig := metrics.MetricsConfig{
 		EnableCollection:   true,
