@@ -77,7 +77,7 @@ func SetupRoutes() {
 	http.HandleFunc("/api/v1/workers/resize", ResizeWorkerPoolHandler)
 
 	// ============================================
-	// METRICS ENDPOINTS (Day 5 Afternoon - NEW)
+	// METRICS ENDPOINTS (Day 5 Afternoon)
 	// ============================================
 
 	// Performance metrics
@@ -100,6 +100,27 @@ func SetupRoutes() {
 
 	// System health
 	http.HandleFunc("/api/v1/system/health", GetSystemHealthHandler)
+
+	// ============================================
+	// OPTIMIZATION ENDPOINTS (Day 5 Evening - NEW)
+	// ============================================
+
+	// Connection pool statistics
+	http.HandleFunc("/api/v1/optimization/pools/db", GetDBPoolStatsHandler)
+	http.HandleFunc("/api/v1/optimization/pools/redis", GetRedisPoolStatsHandler)
+	http.HandleFunc("/api/v1/optimization/pools/http", GetHTTPPoolStatsHandler)
+	http.HandleFunc("/api/v1/optimization/pools", GetAllPoolStatsHandler)
+
+	// Pool management
+	http.HandleFunc("/api/v1/optimization/pools/db/resize", ResizeDBPoolHandler)
+
+	// Request batching
+	http.HandleFunc("/api/v1/optimization/batcher/stats", GetBatcherStatsHandler)
+	http.HandleFunc("/api/v1/optimization/batcher/pending", GetBatcherPendingHandler)
+
+	// Optimization summary
+	http.HandleFunc("/api/v1/optimization/summary", GetOptimizationSummaryHandler)
+	http.HandleFunc("/api/v1/optimization/metrics", GetOptimizationMetricsHandler)
 
 	utils.Info("All routes configured successfully")
 }
