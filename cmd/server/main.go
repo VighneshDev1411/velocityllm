@@ -48,11 +48,6 @@ func main() {
 		utils.Fatal("Failed to seed database: %v", err)
 	}
 
-	// ============================================
-	// CONNECTION POOLING INITIALIZATION (Day 5 Evening - NEW)
-	// ============================================
-
-	// Database connection pool
 	dbPoolConfig := optimization.PoolConfig{
 		MinConnections:    5,
 		MaxConnections:    20,
@@ -116,10 +111,6 @@ func main() {
 	utils.Info("Request batcher initialized (max batch: %d, wait: %s)",
 		batchConfig.MaxBatchSize, batchConfig.MaxWaitTime)
 
-	// ============================================
-	// WORKER POOL INITIALIZATION (Day 5 Morning)
-	// ============================================
-
 	workerConfig := worker.PoolConfig{
 		WorkerCount: 10,
 		QueueSize:   100,
@@ -132,10 +123,6 @@ func main() {
 	utils.Info("Worker pool initialized: %d workers, queue size %d",
 		workerConfig.WorkerCount, workerConfig.QueueSize)
 
-	// ============================================
-	// RATE LIMITER INITIALIZATION (Day 5 Afternoon)
-	// ============================================
-
 	rateLimiterConfig := middleware.RateLimiterConfig{
 		RequestsPerMinute: 100,
 		BurstSize:         20,
@@ -145,10 +132,6 @@ func main() {
 	middleware.InitGlobalRateLimiter(rateLimiterConfig)
 	utils.Info("Rate limiter initialized (default: %d req/min)",
 		rateLimiterConfig.RequestsPerMinute)
-
-	// ============================================
-	// BACKPRESSURE HANDLER INITIALIZATION (Day 5 Afternoon)
-	// ============================================
 
 	backpressureConfig := middleware.BackpressureConfig{
 		EnableLoadShedding: true,
