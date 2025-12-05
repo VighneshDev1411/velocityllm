@@ -16,7 +16,8 @@ func SetupRoutes() {
 	// ============================================
 	http.HandleFunc("/api/v1/completions", CompletionHandler)
 	http.HandleFunc("/api/v1/completions/async", CompletionAsyncHandler)
-
+	http.HandleFunc("/api/v1/completions/stream", CompletionStreamHandler)
+	
 	// Job status checking
 	http.HandleFunc("/api/v1/jobs/", JobStatusHandler)
 

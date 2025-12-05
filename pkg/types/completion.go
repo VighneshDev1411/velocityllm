@@ -33,3 +33,12 @@ type CachedCompletion struct {
 	Model    string  `json:"model"`
 	CachedAt string  `json:"cached_at"`
 }
+
+// StreamChunk represents a single chunk in a streaming response
+type StreamChunk struct {
+	ID      string `json:"id"`
+	Model   string `json:"model"`
+	Content string `json:"content"`
+	Index   int    `json:"index"`
+	Done    bool   `json:"done"`
+}
