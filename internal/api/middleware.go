@@ -33,8 +33,8 @@ func LoggingMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-// CORSMiddleware handles CORS headers
-func CORSMiddleware(next http.Handler) http.Handler {
+// HTTPCORSMiddleware handles CORS headers for standard http handlers
+func HTTPCORSMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Set CORS headers
 		w.Header().Set("Access-Control-Allow-Origin", "*")

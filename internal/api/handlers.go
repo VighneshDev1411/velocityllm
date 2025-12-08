@@ -29,13 +29,14 @@ func HealthHandler(w http.ResponseWriter, r *http.Request) {
 
 	response := types.HealthResponse{
 		Status:    "healthy",
+		Service:   "velocityllm",
 		Version:   "0.1.0",
-		Uptime:    uptime.String(),
+		Uptime:    int64(uptime.Seconds()),
 		Timestamp: time.Now(),
-		Services: map[string]string{
-			"api":      "healthy",
-			"database": dbStatus,
-			"redis":    redisStatus,
+		Checks: map[string]types.HealthCheck{
+			"api":      {Status: "healthy"},
+			"database": {Status: dbStatus},
+			"redis":    {Status: redisStatus},
 		},
 	}
 

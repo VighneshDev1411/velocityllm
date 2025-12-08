@@ -1,224 +1,493 @@
 package api
 
 import (
-	"context"
-	"encoding/json"
 	"fmt"
 	"net/http"
-	"strings"
 	"time"
 
-	"github.com/VighneshDev1411/velocityllm/internal/cache"
-	"github.com/VighneshDev1411/velocityllm/internal/router"
+	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
+	"github.com/VighneshDev1411/velocityllm/internal/streaming"
 	"github.com/VighneshDev1411/velocityllm/pkg/types"
 	"github.com/VighneshDev1411/velocityllm/pkg/utils"
-	"github.com/google/uuid"
 )
 
-// CompletionStreamHandler streams completion responses over Server-Sent Events (SSE)
-func CompletionStreamHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		types.WriteError(w, http.StatusMethodNotAllowed, "Method not allowed")
+// StreamHandlers handles streaming-related HTTP endpoints
+type StreamHandlers struct {
+	manager    *streaming.StreamManager
+	sseHandler *streaming.SSEHandler
+	logger     *utils.Logger
+}
+
+// NewStreamHandlers creates new stream handlers
+func NewStreamHandlers(manager *streaming.StreamManager, sseHandler *streaming.SSEHandler, logger *utils.Logger) *StreamHandlers {
+	return &StreamHandlers{
+		manager:    manager,
+		sseHandler: sseHandler,
+		logger:     logger,
+	}
+}
+
+// StreamCompletion handles streaming completion requests
+// POST /api/v1/stream/completion
+func (h *StreamHandlers) StreamCompletion(c *gin.Context) {
+	var req streaming.StreamRequest
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, types.ErrorResponse{
+			Success:   false,
+			Error:     "Invalid request body: " + err.Error(),
+			Timestamp: time.Now(),
+		})
 		return
 	}
 
-	// Ensure the writer supports flushing (required for SSE)
-	flusher, ok := w.(http.Flusher)
-	if !ok {
-		types.WriteError(w, http.StatusInternalServerError, "Streaming not supported by server")
-		return
-	}
-
-	var req types.CompletionRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		types.WriteError(w, http.StatusBadRequest, "Invalid request body")
-		return
-	}
-
+	// Validate request
 	if req.Prompt == "" {
-		types.WriteError(w, http.StatusBadRequest, "Prompt is required")
+		c.JSON(http.StatusBadRequest, types.ErrorResponse{
+			Success:   false,
+			Error:     "Invalid request: prompt is required",
+			Timestamp: time.Now(),
+		})
 		return
 	}
 
-	// Default to using cache unless explicitly disabled
-	if !req.UseCache {
-		req.UseCache = true
+	// Set defaults
+	if req.Model == "" {
+		req.Model = "gpt-3.5-turbo" // Default model
+	}
+	if req.MaxTokens == 0 {
+		req.MaxTokens = 1000
+	}
+	if req.Temperature == 0 {
+		req.Temperature = 0.7
 	}
 
-	ctx := r.Context()
-	startTime := time.Now()
+	// Generate request ID
+	requestID := uuid.New().String()
 
-	// Prepare SSE headers
-	w.Header().Set("Content-Type", "text/event-stream")
-	w.Header().Set("Cache-Control", "no-cache")
-	w.Header().Set("Connection", "keep-alive")
-	w.Header().Set("X-Accel-Buffering", "no")
+	h.logger.Info("Stream completion request",
+		"request_id", requestID,
+		"model", req.Model,
+		"prompt_length", len(req.Prompt),
+		"max_tokens", req.MaxTokens,
+	)
 
-	cacheService := cache.NewCacheService(24 * time.Hour)
-	routerInstance := router.GetGlobalRouter()
-
-	// Route to appropriate model
-	routingDecision, err := routeRequest(ctx, routerInstance, req)
-	if err != nil {
-		utils.Error("Streaming route failed: %v", err)
-		types.WriteError(w, http.StatusInternalServerError, "Failed to select model for streaming")
+	// Check if streaming is requested
+	if !req.Stream {
+		// For non-streaming requests, redirect to regular completion endpoint
+		c.JSON(http.StatusBadRequest, types.ErrorResponse{
+			Success:   false,
+			Error:     "Invalid request: stream must be true for this endpoint. Use /api/v1/completion for non-streaming",
+			Timestamp: time.Now(),
+		})
 		return
 	}
-	selectedModel := routingDecision.SelectedModel
 
-	cacheKey := cacheService.GenerateKey(req.Prompt, selectedModel.Name)
-	var fullResponse string
-	var tokens int
+	// Set SSE headers
+	c.Header("Content-Type", "text/event-stream")
+	c.Header("Cache-Control", "no-cache")
+	c.Header("Connection", "keep-alive")
+	c.Header("X-Accel-Buffering", "no")
 
-	// If cached, stream cached response as a single chunk
-	if req.UseCache {
-		var cached types.CachedCompletion
-		found, err := cacheService.Get(ctx, cacheKey, &cached)
-		if err != nil {
-			utils.Error("Cache get error (stream): %v", err)
-		}
+	// Create mock stream (in production, this would call your LLM inference engine)
+	chunkStream := h.sseHandler.SimulateStreamChunks(c.Request.Context(), req.Prompt, req.Model)
 
-		if found {
-			fullResponse = cached.Response
-			tokens = cached.Tokens
-
-			chunk := types.StreamChunk{
-				ID:      uuid.NewString(),
-				Model:   selectedModel.Name,
-				Content: cached.Response,
-				Index:   0,
-				Done:    false,
-			}
-			_ = sendSSE(w, chunk, flusher)
-
-			doneChunk := chunk
-			doneChunk.Done = true
-			doneChunk.Content = "[DONE]"
-			_ = sendSSE(w, doneChunk, flusher)
-
-			latency := int(time.Since(startTime).Milliseconds())
-			resp := types.CompletionResponse{
-				ID:        uuid.New().String(),
-				Model:     selectedModel.Name,
-				Prompt:    req.Prompt,
-				Response:  cached.Response,
-				Tokens:    cached.Tokens,
-				Latency:   latency,
-				Cost:      0.0,
-				CacheHit:  true,
-				Provider:  cached.Provider,
-				CreatedAt: time.Now().Format(time.RFC3339),
-			}
-
-			logRequestToDatabase(req, resp, true, routingDecision)
-			return
-		}
+	// Stream response to client
+	if err := h.sseHandler.StreamResponse(c.Writer, c.Request, requestID, chunkStream); err != nil {
+		h.logger.Error("Stream completion failed",
+			"request_id", requestID,
+			"error", err,
+		)
+		// Note: Can't send JSON error after SSE has started
+		return
 	}
 
-	// Cache miss - simulate streaming tokens
-	streamTokens := simulateStreaming(req, selectedModel.Name)
-	var builder strings.Builder
-
-	for idx, token := range streamTokens {
-		select {
-		case <-ctx.Done():
-			utils.Warn("Streaming cancelled by client")
-			return
-		default:
-		}
-
-		builder.WriteString(token)
-		if idx < len(streamTokens)-1 {
-			builder.WriteString(" ")
-		}
-
-		chunk := types.StreamChunk{
-			ID:      uuid.NewString(),
-			Model:   selectedModel.Name,
-			Content: token,
-			Index:   idx,
-			Done:    false,
-		}
-
-		if err := sendSSE(w, chunk, flusher); err != nil {
-			utils.Error("Failed to stream chunk: %v", err)
-			return
-		}
-
-		// Simulate real-time token generation
-		time.Sleep(60 * time.Millisecond)
-	}
-
-	fullResponse = builder.String()
-	tokens = len(strings.Fields(fullResponse))
-	latency := int(time.Since(startTime).Milliseconds())
-	cost := float64(tokens) * selectedModel.CostPerToken
-
-	// Final done signal
-	doneChunk := types.StreamChunk{
-		ID:      uuid.NewString(),
-		Model:   selectedModel.Name,
-		Content: "[DONE]",
-		Index:   len(streamTokens),
-		Done:    true,
-	}
-	_ = sendSSE(w, doneChunk, flusher)
-
-	resp := types.CompletionResponse{
-		ID:        uuid.New().String(),
-		Model:     selectedModel.Name,
-		Prompt:    req.Prompt,
-		Response:  fullResponse,
-		Tokens:    tokens,
-		Latency:   latency,
-		Cost:      cost,
-		CacheHit:  false,
-		Provider:  selectedModel.Provider,
-		CreatedAt: time.Now().Format(time.RFC3339),
-	}
-
-	// Cache final response for future non-streaming requests
-	if req.UseCache {
-		_ = cacheService.Set(ctx, cacheKey, types.CachedCompletion{
-			Response: fullResponse,
-			Tokens:   tokens,
-			Cost:     cost,
-			Provider: selectedModel.Provider,
-			Model:    selectedModel.Name,
-			CachedAt: time.Now().Format(time.RFC3339),
-		}, 24*time.Hour)
-	}
-
-	logRequestToDatabase(req, resp, false, routingDecision)
+	h.logger.Info("Stream completion successful",
+		"request_id", requestID,
+	)
 }
 
-// routeRequest selects model based on request parameters
-func routeRequest(ctx context.Context, routerInstance *router.Router, req types.CompletionRequest) (*router.RoutingDecision, error) {
-	if req.Model != "" {
-		return routerInstance.RouteWithModel(ctx, req.Model)
-	}
-	return routerInstance.Route(ctx, req.Prompt)
-}
+// GetStreamStatus retrieves the status of a specific stream
+// GET /api/v1/stream/status/:id
+func (h *StreamHandlers) GetStreamStatus(c *gin.Context) {
+	streamID := c.Param("id")
 
-// sendSSE writes a single SSE event to the response writer
-func sendSSE(w http.ResponseWriter, data interface{}, flusher http.Flusher) error {
-	payload, err := json.Marshal(data)
+	if streamID == "" {
+		c.JSON(http.StatusBadRequest, types.ErrorResponse{
+			Success:   false,
+			Error:     "Invalid request: stream_id is required",
+			Timestamp: time.Now(),
+		})
+		return
+	}
+
+	// Get stream status
+	status, err := h.manager.GetStreamStatus(streamID)
 	if err != nil {
-		return err
+		if err == streaming.ErrStreamNotFound {
+			c.JSON(http.StatusNotFound, types.ErrorResponse{
+				Success:   false,
+				Error:     "Stream not found: No active stream with the given ID",
+				Timestamp: time.Now(),
+			})
+			return
+		}
+
+		c.JSON(http.StatusInternalServerError, types.ErrorResponse{
+			Success:   false,
+			Error:     "Failed to get stream status: " + err.Error(),
+			Timestamp: time.Now(),
+		})
+		return
 	}
 
-	// SSE format: data: <json>\n\n
-	if _, err := fmt.Fprintf(w, "data: %s\n\n", payload); err != nil {
-		return err
-	}
-
-	flusher.Flush()
-	return nil
+	c.JSON(http.StatusOK, types.SuccessResponse{
+		Success:   true,
+		Data:      status,
+		Timestamp: time.Now(),
+	})
 }
 
-// simulateStreaming returns tokenized response for streaming
-func simulateStreaming(req types.CompletionRequest, modelName string) []string {
-	base := fmt.Sprintf("This is a streamed %s response to: %s", modelName, req.Prompt)
-	// Split into words to simulate token streaming
-	return strings.Fields(base)
+// CancelStream cancels an active stream
+// DELETE /api/v1/stream/:id
+func (h *StreamHandlers) CancelStream(c *gin.Context) {
+	streamID := c.Param("id")
+
+	if streamID == "" {
+		c.JSON(http.StatusBadRequest, types.ErrorResponse{
+			Success:   false,
+			Error:     "Invalid request: stream_id is required",
+			Timestamp: time.Now(),
+		})
+		return
+	}
+
+	h.logger.Info("Cancelling stream", "stream_id", streamID)
+
+	// Cancel the stream
+	if err := h.manager.CancelStream(streamID); err != nil {
+		if err == streaming.ErrStreamNotFound {
+			c.JSON(http.StatusNotFound, types.ErrorResponse{
+				Success:   false,
+				Error:     "Stream not found: No active stream with the given ID",
+				Timestamp: time.Now(),
+			})
+			return
+		}
+
+		c.JSON(http.StatusInternalServerError, types.ErrorResponse{
+			Success:   false,
+			Error:     "Failed to cancel stream: " + err.Error(),
+			Timestamp: time.Now(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, types.SuccessResponse{
+		Success:   true,
+		Message:   "Stream cancelled successfully",
+		Timestamp: time.Now(),
+		Data: map[string]interface{}{
+			"stream_id":    streamID,
+			"cancelled_at": time.Now(),
+		},
+	})
+}
+
+// GetStreamMetrics returns streaming performance metrics
+// GET /api/v1/stream/metrics
+func (h *StreamHandlers) GetStreamMetrics(c *gin.Context) {
+	metrics := h.manager.GetMetrics()
+
+	c.JSON(http.StatusOK, types.SuccessResponse{
+		Success:   true,
+		Data:      metrics,
+		Timestamp: time.Now(),
+	})
+}
+
+// GetActiveStreams returns all currently active streams
+// GET /api/v1/stream/active
+func (h *StreamHandlers) GetActiveStreams(c *gin.Context) {
+	streams := h.manager.GetActiveStreams()
+
+	// Build response
+	streamList := make([]map[string]interface{}, 0, len(streams))
+	for _, stream := range streams {
+		streamList = append(streamList, stream.GetMetadata())
+	}
+
+	c.JSON(http.StatusOK, types.SuccessResponse{
+		Success:   true,
+		Timestamp: time.Now(),
+		Data: map[string]interface{}{
+			"count":   len(streamList),
+			"streams": streamList,
+		},
+	})
+}
+
+// GetStreamStats returns detailed streaming statistics
+// GET /api/v1/stream/stats
+func (h *StreamHandlers) GetStreamStats(c *gin.Context) {
+	stats := h.manager.GetStats()
+
+	c.JSON(http.StatusOK, types.SuccessResponse{
+		Success:   true,
+		Data:      stats,
+		Timestamp: time.Now(),
+	})
+}
+
+// StreamHealthCheck checks the health of the streaming system
+// GET /api/v1/stream/health
+func (h *StreamHandlers) StreamHealthCheck(c *gin.Context) {
+	health := h.manager.HealthCheck()
+
+	status := http.StatusOK
+	if health["status"] == "critical" {
+		status = http.StatusServiceUnavailable
+	} else if health["status"] == "warning" {
+		status = http.StatusOK // Still operational
+	}
+
+	c.JSON(status, types.SuccessResponse{
+		Success:   health["status"] != "critical",
+		Data:      health,
+		Timestamp: time.Now(),
+	})
+}
+
+// TestStreamEndpoint is a simple test endpoint to verify streaming works
+// GET /api/v1/stream/test
+func (h *StreamHandlers) TestStreamEndpoint(c *gin.Context) {
+	requestID := uuid.New().String()
+
+	h.logger.Info("Test stream request", "request_id", requestID)
+
+	// Set SSE headers
+	c.Header("Content-Type", "text/event-stream")
+	c.Header("Cache-Control", "no-cache")
+	c.Header("Connection", "keep-alive")
+	c.Header("X-Accel-Buffering", "no")
+
+	// Create simple test stream
+	chunkStream := make(chan streaming.StreamChunk, 10)
+	go func() {
+		defer close(chunkStream)
+
+		words := []string{"Test", "streaming", "is", "working", "perfectly!"}
+		for i, word := range words {
+			select {
+			case <-c.Request.Context().Done():
+				return
+			case <-time.After(500 * time.Millisecond):
+				chunkStream <- streaming.StreamChunk{
+					ChunkID:   i,
+					Content:   word + " ",
+					Model:     "test",
+					Timestamp: time.Now(),
+					Done:      i == len(words)-1,
+				}
+			}
+		}
+	}()
+
+	// Stream response
+	if err := h.sseHandler.StreamResponse(c.Writer, c.Request, requestID, chunkStream); err != nil {
+		h.logger.Error("Test stream failed", "error", err)
+		return
+	}
+}
+
+// StreamChatCompletion handles streaming chat completion (OpenAI-compatible format)
+// POST /api/v1/stream/chat/completions
+func (h *StreamHandlers) StreamChatCompletion(c *gin.Context) {
+	var req struct {
+		Model       string                   `json:"model"`
+		Messages    []map[string]interface{} `json:"messages"`
+		Stream      bool                     `json:"stream"`
+		MaxTokens   int                      `json:"max_tokens"`
+		Temperature float32                  `json:"temperature"`
+	}
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, types.ErrorResponse{
+			Success:   false,
+			Error:     "Invalid request body: " + err.Error(),
+			Timestamp: time.Now(),
+		})
+		return
+	}
+
+	// Validate messages
+	if len(req.Messages) == 0 {
+		c.JSON(http.StatusBadRequest, types.ErrorResponse{
+			Success:   false,
+			Error:     "Invalid request: messages array is required and cannot be empty",
+			Timestamp: time.Now(),
+		})
+		return
+	}
+
+	// Extract last user message as prompt
+	var prompt string
+	for i := len(req.Messages) - 1; i >= 0; i-- {
+		msg := req.Messages[i]
+		if role, ok := msg["role"].(string); ok && role == "user" {
+			if content, ok := msg["content"].(string); ok {
+				prompt = content
+				break
+			}
+		}
+	}
+
+	if prompt == "" {
+		c.JSON(http.StatusBadRequest, types.ErrorResponse{
+			Success:   false,
+			Error:     "Invalid request: No user message found in messages array",
+			Timestamp: time.Now(),
+		})
+		return
+	}
+
+	// Set defaults
+	if req.Model == "" {
+		req.Model = "gpt-3.5-turbo"
+	}
+	if req.MaxTokens == 0 {
+		req.MaxTokens = 1000
+	}
+
+	requestID := uuid.New().String()
+
+	h.logger.Info("Stream chat completion request",
+		"request_id", requestID,
+		"model", req.Model,
+		"message_count", len(req.Messages),
+	)
+
+	// Set SSE headers
+	c.Header("Content-Type", "text/event-stream")
+	c.Header("Cache-Control", "no-cache")
+	c.Header("Connection", "keep-alive")
+	c.Header("X-Accel-Buffering", "no")
+
+	// Create stream
+	chunkStream := h.sseHandler.SimulateStreamChunks(c.Request.Context(), prompt, req.Model)
+
+	// Stream response
+	if err := h.sseHandler.StreamResponse(c.Writer, c.Request, requestID, chunkStream); err != nil {
+		h.logger.Error("Stream chat completion failed",
+			"request_id", requestID,
+			"error", err,
+		)
+		return
+	}
+}
+
+// BroadcastMessage broadcasts a message to all active streams (admin only)
+// POST /api/v1/stream/broadcast
+func (h *StreamHandlers) BroadcastMessage(c *gin.Context) {
+	var req struct {
+		Message string                 `json:"message" binding:"required"`
+		Type    string                 `json:"type"`
+		Data    map[string]interface{} `json:"data"`
+	}
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, types.ErrorResponse{
+			Success:   false,
+			Error:     "Invalid request body: " + err.Error(),
+			Timestamp: time.Now(),
+		})
+		return
+	}
+
+	// Set default type
+	if req.Type == "" {
+		req.Type = "system"
+	}
+
+	// Create broadcast event
+	event := streaming.StreamEvent{
+		ID:   uuid.New().String(),
+		Type: req.Type,
+		Data: map[string]interface{}{
+			"message": req.Message,
+		},
+		Timestamp: time.Now(),
+	}
+
+	// Add additional data if provided
+	if req.Data != nil {
+		for k, v := range req.Data {
+			event.Data[k] = v
+		}
+	}
+
+	h.logger.Info("Broadcasting message to all streams", "message", req.Message)
+
+	// Broadcast to all streams
+	h.manager.BroadcastEvent(event)
+
+	c.JSON(http.StatusOK, types.SuccessResponse{
+		Success:   true,
+		Message:   "Message broadcasted successfully",
+		Timestamp: time.Now(),
+		Data: map[string]interface{}{
+			"event_id":       event.ID,
+			"active_streams": len(h.manager.GetActiveStreams()),
+		},
+	})
+}
+
+// ExportStreamLogs exports streaming logs for analysis
+// GET /api/v1/stream/logs/export
+func (h *StreamHandlers) ExportStreamLogs(c *gin.Context) {
+	// Get query parameters
+	format := c.DefaultQuery("format", "json") // json or csv
+
+	streams := h.manager.GetActiveStreams()
+
+	if format == "csv" {
+		// Export as CSV
+		c.Header("Content-Type", "text/csv")
+		c.Header("Content-Disposition", "attachment; filename=stream_logs.csv")
+
+		// Write CSV header
+		c.Writer.Write([]byte("stream_id,request_id,type,status,start_time,event_count,bytes_sent\n"))
+
+		// Write data
+		for _, stream := range streams {
+			metadata := stream.GetMetadata()
+			line := []byte(fmt.Sprintf("%v,%v,%v,%v,%v,%v,%v\n",
+				metadata["id"],
+				metadata["request_id"],
+				metadata["type"],
+				metadata["status"],
+				metadata["start_time"],
+				metadata["event_count"],
+				metadata["bytes_sent"],
+			))
+			c.Writer.Write(line)
+		}
+	} else {
+		// Export as JSON
+		streamList := make([]map[string]interface{}, 0, len(streams))
+		for _, stream := range streams {
+			streamList = append(streamList, stream.GetMetadata())
+		}
+
+		c.JSON(http.StatusOK, types.SuccessResponse{
+			Success:   true,
+			Timestamp: time.Now(),
+			Data: map[string]interface{}{
+				"count":       len(streamList),
+				"streams":     streamList,
+				"exported_at": time.Now(),
+			},
+		})
+	}
 }

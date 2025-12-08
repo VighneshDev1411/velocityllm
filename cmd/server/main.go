@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"os"
@@ -9,224 +10,186 @@ import (
 	"time"
 
 	"github.com/VighneshDev1411/velocityllm/internal/api"
-	"github.com/VighneshDev1411/velocityllm/internal/cache"
-	"github.com/VighneshDev1411/velocityllm/internal/config"
-	"github.com/VighneshDev1411/velocityllm/internal/database"
-	"github.com/VighneshDev1411/velocityllm/internal/metrics"
-	"github.com/VighneshDev1411/velocityllm/internal/middleware"
-	"github.com/VighneshDev1411/velocityllm/internal/optimization"
-	"github.com/VighneshDev1411/velocityllm/internal/worker"
+	"github.com/VighneshDev1411/velocityllm/internal/streaming"
 	"github.com/VighneshDev1411/velocityllm/pkg/utils"
 )
 
+const (
+	defaultPort     = "8080"
+	shutdownTimeout = 30 * time.Second
+	readTimeout     = 60 * time.Second
+	writeTimeout    = 60 * time.Second
+	idleTimeout     = 120 * time.Second
+	maxHeaderBytes  = 1 << 20 // 1 MB
+)
+
 func main() {
-	// Print banner
-	printBanner()
+	// Initialize logger
+	logger := utils.NewLogger()
+	logger.Info("Starting VelocityLLM Server with Streaming Support")
 
-	// Load configuration
-	cfg, err := config.Load()
-	if err != nil {
-		utils.Fatal("Failed to load configuration: %v", err)
+	// Get port from environment or use default
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = defaultPort
 	}
 
-	utils.Info("Starting VelocityLLM server...")
+	// Initialize streaming components
+	logger.Info("Initializing streaming components")
 
-	// Connect to database
-	if err := database.Connect(cfg); err != nil {
-		utils.Fatal("Failed to connect to database: %v", err)
-	}
-	utils.Info("Database connected successfully")
+	// Create stream manager with configuration
+	streamManagerConfig := streaming.DefaultStreamManagerConfig()
+	streamManager := streaming.NewStreamManager(streamManagerConfig, logger)
 
-	// Run migrations
-	if err := database.Migrate(); err != nil {
-		utils.Fatal("Failed to migrate database: %v", err)
-	}
-	utils.Info("Database migration completed")
+	// Create SSE handler
+	sseHandler := streaming.NewSSEHandler(streamManager, logger)
 
-	// Seed database with initial data
-	if err := database.Seed(); err != nil {
-		utils.Fatal("Failed to seed database: %v", err)
-	}
+	logger.Info("Stream manager initialized",
+		"max_connections", streamManagerConfig.MaxConnections,
+		"idle_timeout", streamManagerConfig.IdleTimeout,
+		"cleanup_interval", streamManagerConfig.CleanupInterval,
+	)
 
-	dbPoolConfig := optimization.PoolConfig{
-		MinConnections:    5,
-		MaxConnections:    20,
-		MaxIdleTime:       5 * time.Minute,
-		MaxLifetime:       30 * time.Minute,
-		HealthCheckPeriod: 1 * time.Minute,
-		AcquireTimeout:    5 * time.Second,
-	}
+	// Initialize router
+	logger.Info("Setting up API routes")
+	router := api.NewRouter(streamManager, sseHandler, logger)
 
-	if err := optimization.InitGlobalDBPool(dbPoolConfig, cfg.GetDatabaseDSN()); err != nil {
-		utils.Fatal("Failed to initialize database pool: %v", err)
-	}
-	utils.Info("Database connection pool initialized: %d-%d connections",
-		dbPoolConfig.MinConnections, dbPoolConfig.MaxConnections)
-
-	// Redis connection pool
-	redisPoolConfig := optimization.PoolConfig{
-		MinConnections:    3,
-		MaxConnections:    10,
-		MaxIdleTime:       5 * time.Minute,
-		MaxLifetime:       30 * time.Minute,
-		HealthCheckPeriod: 1 * time.Minute,
-		AcquireTimeout:    5 * time.Second,
-	}
-
-	if err := optimization.InitGlobalRedisPool(redisPoolConfig, cfg.GetRedisAddr(), cfg.Redis.Password, cfg.Redis.DB); err != nil {
-		utils.Fatal("Failed to initialize Redis pool: %v", err)
-	}
-	utils.Info("Redis connection pool initialized: %d-%d connections",
-		redisPoolConfig.MinConnections, redisPoolConfig.MaxConnections)
-
-	// HTTP connection pool
-	httpPoolConfig := optimization.PoolConfig{
-		MinConnections:    5,
-		MaxConnections:    15,
-		MaxIdleTime:       5 * time.Minute,
-		MaxLifetime:       30 * time.Minute,
-		HealthCheckPeriod: 1 * time.Minute,
-		AcquireTimeout:    5 * time.Second,
-	}
-
-	if err := optimization.InitGlobalHTTPPool(httpPoolConfig, 30*time.Second); err != nil {
-		utils.Fatal("Failed to initialize HTTP pool: %v", err)
-	}
-	utils.Info("HTTP connection pool initialized: %d-%d connections",
-		httpPoolConfig.MinConnections, httpPoolConfig.MaxConnections)
-
-	// ============================================
-	// REQUEST BATCHING INITIALIZATION (Day 5 Evening - NEW)
-	// ============================================
-
-	batchConfig := optimization.BatchConfig{
-		Enabled:             true,
-		MaxBatchSize:        10,
-		MaxWaitTime:         100 * time.Millisecond,
-		MaxTokens:           4000,
-		SimilarityThreshold: 0.8,
-	}
-
-	optimization.InitGlobalRequestBatcher(batchConfig)
-	utils.Info("Request batcher initialized (max batch: %d, wait: %s)",
-		batchConfig.MaxBatchSize, batchConfig.MaxWaitTime)
-
-	workerConfig := worker.PoolConfig{
-		WorkerCount: 10,
-		QueueSize:   100,
-		Timeout:     30 * time.Second,
-	}
-
-	if err := worker.InitGlobalPool(workerConfig); err != nil {
-		utils.Fatal("Failed to initialize worker pool: %v", err)
-	}
-	utils.Info("Worker pool initialized: %d workers, queue size %d",
-		workerConfig.WorkerCount, workerConfig.QueueSize)
-
-	rateLimiterConfig := middleware.RateLimiterConfig{
-		RequestsPerMinute: 100,
-		BurstSize:         20,
-		CleanupInterval:   5 * time.Minute,
-	}
-
-	middleware.InitGlobalRateLimiter(rateLimiterConfig)
-	utils.Info("Rate limiter initialized (default: %d req/min)",
-		rateLimiterConfig.RequestsPerMinute)
-
-	backpressureConfig := middleware.BackpressureConfig{
-		EnableLoadShedding: true,
-		QueueThreshold:     80.0,
-		RejectLowPriority:  true,
-		AdaptiveThreshold:  true,
-	}
-
-	middleware.InitGlobalBackpressureHandler(backpressureConfig)
-	utils.Info("Backpressure handler initialized (threshold: %.1f%%)",
-		backpressureConfig.QueueThreshold)
-
-	// ============================================
-	// METRICS COLLECTOR INITIALIZATION (Day 5 Afternoon)
-	// ============================================
-
-	metricsConfig := metrics.MetricsConfig{
-		EnableCollection:   true,
-		CollectionInterval: 10 * time.Second,
-		RetentionPeriod:    24 * time.Hour,
-		MaxDataPoints:      1000,
-		EnableTimeSeries:   true,
-	}
-
-	metrics.InitGlobalMetricsCollector(metricsConfig)
-	utils.Info("Metrics collector initialized (interval: %s)",
-		metricsConfig.CollectionInterval)
-
-	// Connect to Redis (legacy, will be replaced by pool)
-	if err := cache.Connect(cfg); err != nil {
-		utils.Fatal("Failed to connect to Redis: %v", err)
-	}
-	utils.Info("Redis connected successfully")
-
-	// Setup API routes
-	api.SetupRoutes()
-
-	// Start server
-	port := fmt.Sprintf("%d", cfg.Server.Port)
-
+	// Configure HTTP server
 	server := &http.Server{
-		Addr:         ":" + port,
-		Handler:      http.DefaultServeMux,
-		ReadTimeout:  15 * time.Second,
-		WriteTimeout: 15 * time.Second,
-		IdleTimeout:  60 * time.Second,
+		Addr:           fmt.Sprintf(":%s", port),
+		Handler:        router.GetEngine(),
+		ReadTimeout:    readTimeout,
+		WriteTimeout:   writeTimeout,
+		IdleTimeout:    idleTimeout,
+		MaxHeaderBytes: maxHeaderBytes,
 	}
 
-	// Graceful shutdown
+	// Start server in goroutine
 	go func() {
-		sigChan := make(chan os.Signal, 1)
-		signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
-		<-sigChan
+		logger.Info("Server starting",
+			"port", port,
+			"read_timeout", readTimeout,
+			"write_timeout", writeTimeout,
+		)
 
-		utils.Info("Shutting down server...")
-
-		// Shutdown components in order
-		worker.ShutdownGlobalPool()
-		utils.Info("Worker pool shutdown complete")
-
-		database.Close()
-
-		os.Exit(0)
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			logger.Error("Server failed to start", "error", err)
+			os.Exit(1)
+		}
 	}()
 
-	utils.Info("Server starting on :%s", port)
-	utils.Info("API available at http://localhost:%s", port)
-	utils.Info("")
-	utils.Info("=== System Components Initialized ===")
-	utils.Info("✓ Connection Pools:")
-	utils.Info("  - Database: %d-%d connections", dbPoolConfig.MinConnections, dbPoolConfig.MaxConnections)
-	utils.Info("  - Redis: %d-%d connections", redisPoolConfig.MinConnections, redisPoolConfig.MaxConnections)
-	utils.Info("  - HTTP: %d-%d connections", httpPoolConfig.MinConnections, httpPoolConfig.MaxConnections)
-	utils.Info("✓ Request Batching: %d max batch, %s wait", batchConfig.MaxBatchSize, batchConfig.MaxWaitTime)
-	utils.Info("✓ Worker Pool: %d workers", workerConfig.WorkerCount)
-	utils.Info("✓ Rate Limiter: %d req/min default", rateLimiterConfig.RequestsPerMinute)
-	utils.Info("✓ Backpressure: %.0f%% threshold", backpressureConfig.QueueThreshold)
-	utils.Info("✓ Metrics: Collecting every %s", metricsConfig.CollectionInterval)
-	utils.Info("")
-	utils.Info("Total API Endpoints: 52")
-	utils.Info("")
-	utils.Info("Press Ctrl+C to stop")
+	logger.Info("🚀 VelocityLLM Server is running!",
+		"port", port,
+		"health_check", fmt.Sprintf("http://localhost:%s/api/v1/health", port),
+		"stream_test", fmt.Sprintf("http://localhost:%s/api/v1/stream/test", port),
+	)
 
-	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		utils.Fatal("Server failed to start: %v", err)
+	// Print available endpoints
+	printEndpoints(port, logger)
+
+	// Wait for interrupt signal to gracefully shutdown the server
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+
+	logger.Info("Shutting down server gracefully...")
+
+	// Create shutdown context with timeout
+	ctx, cancel := context.WithTimeout(context.Background(), shutdownTimeout)
+	defer cancel()
+
+	// Shutdown stream manager first
+	logger.Info("Shutting down stream manager")
+	if err := streamManager.Shutdown(ctx); err != nil {
+		logger.Error("Stream manager shutdown error", "error", err)
 	}
+
+	// Shutdown HTTP server
+	logger.Info("Shutting down HTTP server")
+	if err := server.Shutdown(ctx); err != nil {
+		logger.Error("Server forced to shutdown", "error", err)
+	}
+
+	logger.Info("Server exited successfully")
 }
 
-func printBanner() {
-	banner := `
-╦  ╦┌─┐┬  ┌─┐┌─┐┬┬─┐┬ ┬╦  ╦  ╔╦╗
-╚╗╔╝├┤ │  │ ││  │├┬┘└┬┘║  ║  ║║║
- ╚╝ └─┘┴─┘└─┘└─┘┴┴└─ ┴ ╩═╝╩═╝╩ ╩
-    Production-Grade LLM Inference Engine
-    =====================================
-`
-	fmt.Println(banner)
+// printEndpoints prints all available API endpoints
+func printEndpoints(port string, logger *utils.Logger) {
+	baseURL := fmt.Sprintf("http://localhost:%s", port)
+
+	logger.Info("\n" + `
+╔══════════════════════════════════════════════════════════════╗
+║             VelocityLLM Streaming API Endpoints              ║
+╚══════════════════════════════════════════════════════════════╝
+
+📡 STREAMING ENDPOINTS:
+   POST   ` + baseURL + `/api/v1/stream/completion
+          → Stream LLM completions with SSE
+   
+   POST   ` + baseURL + `/api/v1/stream/chat/completions
+          → OpenAI-compatible chat streaming
+   
+   GET    ` + baseURL + `/api/v1/stream/test?message=hello
+          → Test streaming functionality
+   
+   GET    ` + baseURL + `/api/v1/stream/status/:id
+          → Get stream status by ID
+   
+   DELETE ` + baseURL + `/api/v1/stream/:id
+          → Cancel active stream
+   
+   GET    ` + baseURL + `/api/v1/stream/active
+          → List all active streams
+
+📊 MONITORING ENDPOINTS:
+   GET    ` + baseURL + `/api/v1/stream/metrics
+          → Stream performance metrics
+   
+   GET    ` + baseURL + `/api/v1/stream/stats
+          → Detailed streaming statistics
+   
+   GET    ` + baseURL + `/api/v1/stream/health
+          → Streaming system health check
+   
+   GET    ` + baseURL + `/api/v1/stream/logs/export
+          → Export streaming logs (JSON/CSV)
+
+🔧 UTILITY ENDPOINTS:
+   POST   ` + baseURL + `/api/v1/stream/broadcast
+          → Broadcast message to all streams
+   
+   GET    ` + baseURL + `/api/v1/health
+          → API health check
+   
+   GET    ` + baseURL + `/api/v1/ping
+          → Simple ping test
+   
+   GET    ` + baseURL + `/api/v1/models
+          → List available models
+
+📚 EXAMPLE USAGE:
+
+   # Test streaming with curl:
+   curl -N ` + baseURL + `/api/v1/stream/test
+
+   # Stream a completion:
+   curl -N -X POST ` + baseURL + `/api/v1/stream/completion \
+     -H "Content-Type: application/json" \
+     -d '{
+       "prompt": "Tell me a story",
+       "model": "gpt-3.5-turbo",
+       "stream": true,
+       "max_tokens": 100
+     }'
+
+   # Get streaming metrics:
+   curl ` + baseURL + `/api/v1/stream/metrics
+
+   # Check active streams:
+   curl ` + baseURL + `/api/v1/stream/active
+
+╔══════════════════════════════════════════════════════════════╗
+║  Press Ctrl+C to shutdown gracefully                         ║
+╚══════════════════════════════════════════════════════════════╝
+	`)
 }

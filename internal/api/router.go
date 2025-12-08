@@ -1,127 +1,178 @@
 package api
 
 import (
-	"net/http"
+	"time"
 
+	"github.com/gin-gonic/gin"
+	"github.com/VighneshDev1411/velocityllm/internal/streaming"
 	"github.com/VighneshDev1411/velocityllm/pkg/utils"
 )
 
-// SetupRoutes configures all API routes
-func SetupRoutes() {
-	// Health check
-	http.HandleFunc("/health", HealthHandler)
+// Router manages all API routes
+type Router struct {
+	engine         *gin.Engine
+	streamHandlers *StreamHandlers
+	logger         *utils.Logger
+}
 
-	// ============================================
-	// COMPLETION ENDPOINTS
-	// ============================================
-	http.HandleFunc("/api/v1/completions", CompletionHandler)
-	http.HandleFunc("/api/v1/completions/async", CompletionAsyncHandler)
-	http.HandleFunc("/api/v1/completions/stream", CompletionStreamHandler)
-	
-	// Job status checking
-	http.HandleFunc("/api/v1/jobs/", JobStatusHandler)
+// NewRouter creates a new API router
+func NewRouter(
+	streamManager *streaming.StreamManager,
+	sseHandler *streaming.SSEHandler,
+	logger *utils.Logger,
+) *Router {
+	// Set Gin mode based on environment
+	gin.SetMode(gin.ReleaseMode) // Change to gin.DebugMode for development
 
-	// ============================================
-	// MODEL ENDPOINTS
-	// ============================================
-	http.HandleFunc("/api/v1/models", GetModelsHandler)
+	engine := gin.New()
 
-	// ============================================
-	// REQUEST HISTORY ENDPOINTS
-	// ============================================
-	http.HandleFunc("/api/v1/requests", ListRequestsHandler)
-	http.HandleFunc("/api/v1/requests/stats", GetRequestStatsHandler)
+	// Global middleware
+	engine.Use(gin.Recovery())
+	engine.Use(CORSMiddleware())
+	engine.Use(LoggerMiddleware(logger))
 
-	// ============================================
-	// CACHE ENDPOINTS
-	// ============================================
-	http.HandleFunc("/api/v1/cache/stats", GetCacheStatsHandler)
-	http.HandleFunc("/api/v1/cache/clear", ClearCacheHandler)
+	// Create handlers
+	streamHandlers := NewStreamHandlers(streamManager, sseHandler, logger)
 
-	// ============================================
-	// ROUTER ENDPOINTS (Day 4)
-	// ============================================
+	router := &Router{
+		engine:         engine,
+		streamHandlers: streamHandlers,
+		logger:         logger,
+	}
 
-	// Router statistics and configuration
-	http.HandleFunc("/api/v1/router/stats", GetRouterStatsHandler)
-	http.HandleFunc("/api/v1/router/config", GetRouterConfigHandler)
-	http.HandleFunc("/api/v1/router/strategy", UpdateRouterStrategyHandler)
-	http.HandleFunc("/api/v1/router/stats/reset", ResetRouterStatsHandler)
+	// Setup routes
+	router.setupRoutes()
 
-	// Circuit breaker monitoring
-	http.HandleFunc("/api/v1/router/circuit-breakers", GetCircuitBreakerStatsHandler)
+	return router
+}
 
-	// Health checking
-	http.HandleFunc("/api/v1/router/health/stats", GetHealthStatsHandler)
-	http.HandleFunc("/api/v1/router/health/models", GetModelHealthHandler)
+// setupRoutes configures all API routes
+func (r *Router) setupRoutes() {
+	// API v1 group
+	v1 := r.engine.Group("/api/v1")
 
-	// Routing analysis
-	http.HandleFunc("/api/v1/router/analyze", AnalyzePromptHandler)
-	http.HandleFunc("/api/v1/router/decision", GetRoutingDecisionHandler)
+	// Health check (no auth required)
+	v1.GET("/health", r.HealthCheck)
+	v1.GET("/ping", r.Ping)
 
-	// ============================================
-	// WORKER POOL ENDPOINTS (Day 5 Morning)
-	// ============================================
+	// Streaming endpoints
+	streamGroup := v1.Group("/stream")
+	{
+		// Main streaming endpoint
+		streamGroup.POST("/completion", r.streamHandlers.StreamCompletion)
 
-	// Worker pool statistics
-	http.HandleFunc("/api/v1/workers/stats", GetWorkerPoolStatsHandler)
-	http.HandleFunc("/api/v1/workers/health", GetWorkerPoolHealthHandler)
-	http.HandleFunc("/api/v1/workers/metrics", GetWorkerPoolMetricsHandler)
+		// OpenAI-compatible chat endpoint
+		streamGroup.POST("/chat/completions", r.streamHandlers.StreamChatCompletion)
 
-	// Individual workers
-	http.HandleFunc("/api/v1/workers", GetWorkersHandler)
+		// Stream management
+		streamGroup.GET("/status/:id", r.streamHandlers.GetStreamStatus)
+		streamGroup.DELETE("/:id", r.streamHandlers.CancelStream)
+		streamGroup.GET("/active", r.streamHandlers.GetActiveStreams)
 
-	// Queue management
-	http.HandleFunc("/api/v1/workers/queue", GetQueueInfoHandler)
+		// Monitoring & metrics
+		streamGroup.GET("/metrics", r.streamHandlers.GetStreamMetrics)
+		streamGroup.GET("/stats", r.streamHandlers.GetStreamStats)
+		streamGroup.GET("/health", r.streamHandlers.StreamHealthCheck)
 
-	// Dynamic scaling
-	http.HandleFunc("/api/v1/workers/resize", ResizeWorkerPoolHandler)
+		// Testing & utilities
+		streamGroup.GET("/test", r.streamHandlers.TestStreamEndpoint)
+		streamGroup.POST("/broadcast", r.streamHandlers.BroadcastMessage)
+		streamGroup.GET("/logs/export", r.streamHandlers.ExportStreamLogs)
+	}
 
-	// ============================================
-	// METRICS ENDPOINTS (Day 5 Afternoon)
-	// ============================================
+	// Legacy/Future endpoints placeholder
+	// Add your other endpoints here (database, cache, etc.)
+	v1.GET("/models", r.ListModels)
+	v1.GET("/stats", r.GetSystemStats)
+}
 
-	// Performance metrics
-	http.HandleFunc("/api/v1/metrics/snapshot", GetMetricsSnapshotHandler)
-	http.HandleFunc("/api/v1/metrics/latency", GetLatencyMetricsHandler)
-	http.HandleFunc("/api/v1/metrics/throughput", GetThroughputMetricsHandler)
-	http.HandleFunc("/api/v1/metrics/cost", GetCostMetricsHandler)
-	http.HandleFunc("/api/v1/metrics/errors", GetErrorMetricsHandler)
-	http.HandleFunc("/api/v1/metrics/models", GetModelMetricsHandler)
-	http.HandleFunc("/api/v1/metrics/reset", ResetMetricsHandler)
+// GetEngine returns the Gin engine
+func (r *Router) GetEngine() *gin.Engine {
+	return r.engine
+}
 
-	// Rate limiter metrics
-	http.HandleFunc("/api/v1/metrics/rate-limiter", GetRateLimiterStatsHandler)
-	http.HandleFunc("/api/v1/metrics/rate-limiter/user", GetRateLimiterUserStatusHandler)
+// HealthCheck returns the health status of the API
+func (r *Router) HealthCheck(c *gin.Context) {
+	c.JSON(200, gin.H{
+		"status":  "healthy",
+		"service": "VelocityLLM",
+		"version": "1.0.0",
+	})
+}
 
-	// Backpressure metrics
-	http.HandleFunc("/api/v1/metrics/backpressure", GetBackpressureStatsHandler)
-	http.HandleFunc("/api/v1/metrics/backpressure/status", GetBackpressureStatusHandler)
-	http.HandleFunc("/api/v1/metrics/backpressure/reset", ResetBackpressureStatsHandler)
+// Ping returns a simple pong response
+func (r *Router) Ping(c *gin.Context) {
+	c.JSON(200, gin.H{
+		"message": "pong",
+	})
+}
 
-	// System health
-	http.HandleFunc("/api/v1/system/health", GetSystemHealthHandler)
+// ListModels returns available models (placeholder)
+func (r *Router) ListModels(c *gin.Context) {
+	c.JSON(200, gin.H{
+		"models": []string{
+			"gpt-3.5-turbo",
+			"gpt-4",
+			"claude-2",
+			"llama-2",
+		},
+	})
+}
 
-	// ============================================
-	// OPTIMIZATION ENDPOINTS (Day 5 Evening - NEW)
-	// ============================================
+// GetSystemStats returns system statistics (placeholder)
+func (r *Router) GetSystemStats(c *gin.Context) {
+	c.JSON(200, gin.H{
+		"uptime_seconds": 3600,
+		"total_requests": 1000,
+		"active_streams": 5,
+	})
+}
 
-	// Connection pool statistics
-	http.HandleFunc("/api/v1/optimization/pools/db", GetDBPoolStatsHandler)
-	http.HandleFunc("/api/v1/optimization/pools/redis", GetRedisPoolStatsHandler)
-	http.HandleFunc("/api/v1/optimization/pools/http", GetHTTPPoolStatsHandler)
-	http.HandleFunc("/api/v1/optimization/pools", GetAllPoolStatsHandler)
+// CORSMiddleware handles CORS headers
+func CORSMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE, PATCH")
 
-	// Pool management
-	http.HandleFunc("/api/v1/optimization/pools/db/resize", ResizeDBPoolHandler)
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
 
-	// Request batching
-	http.HandleFunc("/api/v1/optimization/batcher/stats", GetBatcherStatsHandler)
-	http.HandleFunc("/api/v1/optimization/batcher/pending", GetBatcherPendingHandler)
+		c.Next()
+	}
+}
 
-	// Optimization summary
-	http.HandleFunc("/api/v1/optimization/summary", GetOptimizationSummaryHandler)
-	http.HandleFunc("/api/v1/optimization/metrics", GetOptimizationMetricsHandler)
+// LoggerMiddleware logs HTTP requests
+func LoggerMiddleware(logger *utils.Logger) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// Start timer
+		start := time.Now()
+		path := c.Request.URL.Path
+		raw := c.Request.URL.RawQuery
 
-	utils.Info("All routes configured successfully")
+		// Process request
+		c.Next()
+
+		// Calculate latency
+		latency := time.Since(start)
+
+		// Get status code
+		statusCode := c.Writer.Status()
+
+		// Build log message
+		if raw != "" {
+			path = path + "?" + raw
+		}
+
+		logger.Info("HTTP Request",
+			"method", c.Request.Method,
+			"path", path,
+			"status", statusCode,
+			"latency_ms", latency.Milliseconds(),
+			"client_ip", c.ClientIP(),
+		)
+	}
 }
