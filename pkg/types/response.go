@@ -1,7 +1,11 @@
 package types
 
 import (
+	"encoding/json"
+	"net/http"
 	"time"
+
+	"github.com/gin-gonic/gin"
 )
 
 // SuccessResponse represents a successful API response
@@ -302,4 +306,55 @@ func (s *StatsResponse) AddCategory(name string, data interface{}) {
 		s.Categories = make(map[string]interface{})
 	}
 	s.Categories[name] = data
+}
+
+// WriteSuccess writes a success response for plain HTTP handlers (3 args: w, message, data)
+func WriteSuccess(w http.ResponseWriter, message string, data interface{}) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(SuccessResponse{
+		Success:   true,
+		Message:   message,
+		Data:      data,
+		Timestamp: time.Now(),
+	})
+}
+
+// WriteError writes an error response for plain HTTP handlers (3 args: w, statusCode, message)
+func WriteError(w http.ResponseWriter, statusCode int, message string) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(statusCode)
+	json.NewEncoder(w).Encode(ErrorResponse{
+		Success:   false,
+		Error:     http.StatusText(statusCode),
+		Message:   message,
+		Timestamp: time.Now(),
+	})
+}
+
+// WriteJSON writes a raw JSON response for plain HTTP handlers
+func WriteJSON(w http.ResponseWriter, statusCode int, data interface{}) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(statusCode)
+	json.NewEncoder(w).Encode(data)
+}
+
+// GinWriteSuccess writes a success response for Gin handlers
+func GinWriteSuccess(c *gin.Context, statusCode int, data interface{}, message string) {
+	c.JSON(statusCode, SuccessResponse{
+		Success:   true,
+		Message:   message,
+		Data:      data,
+		Timestamp: time.Now(),
+	})
+}
+
+// GinWriteError writes an error response for Gin handlers
+func GinWriteError(c *gin.Context, statusCode int, error, message string) {
+	c.JSON(statusCode, ErrorResponse{
+		Success:   false,
+		Error:     error,
+		Message:   message,
+		Timestamp: time.Now(),
+	})
 }

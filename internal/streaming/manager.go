@@ -280,7 +280,7 @@ func (sm *StreamManager) GetStats() map[string]interface{} {
 	}
 
 	return map[string]interface{}{
-		"metrics":                   metrics,
+		"metrics":                   &metrics,
 		"active_connections":        len(sm.connections),
 		"active_by_type":            activeByType,
 		"oldest_stream_age_seconds": time.Since(oldestStream).Seconds(),

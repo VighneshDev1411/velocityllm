@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"sync"
@@ -237,7 +238,10 @@ func BackpressureMiddleware(bh *BackpressureHandler) func(http.Handler) http.Han
 			if !accept {
 				// Reject request with 503 Service Unavailable
 				w.Header().Set("Retry-After", "30")
-				types.WriteError(w, http.StatusServiceUnavailable, reason)
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusServiceUnavailable)
+				errorResp := types.NewErrorResponse("Service Unavailable", reason)
+				json.NewEncoder(w).Encode(errorResp)
 				utils.Debug("Request rejected by backpressure: %s", reason)
 				return
 			}

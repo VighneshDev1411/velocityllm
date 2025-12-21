@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"sync"
@@ -277,9 +278,11 @@ func RateLimitMiddleware(rl *RateLimiter) func(http.Handler) http.Handler {
 			if !result.Allowed {
 				// Rate limit exceeded
 				w.Header().Set("Retry-After", fmt.Sprintf("%d", int(result.RetryAfter.Seconds())))
-
-				types.WriteError(w, http.StatusTooManyRequests,
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusTooManyRequests)
+				errorResp := types.NewErrorResponse("Rate Limit Exceeded",
 					fmt.Sprintf("Rate limit exceeded. Try again in %s", result.RetryAfter))
+				json.NewEncoder(w).Encode(errorResp)
 
 				utils.Debug("Rate limit exceeded for %s (tier: %s)", identifier, tier)
 				return

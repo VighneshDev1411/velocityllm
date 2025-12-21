@@ -376,3 +376,42 @@ func (t *Timer) StopWithMessage(msg string) {
 	allFields := append(t.fields, "duration_ms", duration.Milliseconds())
 	t.logger.Info(msg, allFields...)
 }
+
+// Default global logger
+var defaultLogger *Logger
+
+func init() {
+	defaultLogger = NewLogger()
+}
+
+// SetDefaultLogger sets the default global logger
+func SetDefaultLogger(logger *Logger) {
+	defaultLogger = logger
+}
+
+// Package-level logging functions using the default logger
+
+// Debug logs a debug message using the default logger
+func Debug(msg string, fields ...interface{}) {
+	defaultLogger.Debug(msg, fields...)
+}
+
+// Info logs an info message using the default logger
+func Info(msg string, fields ...interface{}) {
+	defaultLogger.Info(msg, fields...)
+}
+
+// Warn logs a warning message using the default logger
+func Warn(msg string, fields ...interface{}) {
+	defaultLogger.Warn(msg, fields...)
+}
+
+// Error logs an error message using the default logger
+func Error(msg string, fields ...interface{}) {
+	defaultLogger.Error(msg, fields...)
+}
+
+// Fatal logs a fatal message using the default logger and exits
+func Fatal(msg string, fields ...interface{}) {
+	defaultLogger.Fatal(msg, fields...)
+}
