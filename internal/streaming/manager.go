@@ -6,8 +6,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/VighneshDev1411/velocityllm/pkg/utils"
+	"github.com/google/uuid"
 )
 
 // StreamManager manages all active streaming connections

@@ -3,9 +3,9 @@ package api
 import (
 	"time"
 
-	"github.com/gin-gonic/gin"
 	"github.com/VighneshDev1411/velocityllm/internal/streaming"
 	"github.com/VighneshDev1411/velocityllm/pkg/utils"
+	"github.com/gin-gonic/gin"
 )
 
 // Router manages all API routes

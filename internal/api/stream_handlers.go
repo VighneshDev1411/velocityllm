@@ -5,11 +5,11 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"github.com/VighneshDev1411/velocityllm/internal/streaming"
 	"github.com/VighneshDev1411/velocityllm/pkg/types"
 	"github.com/VighneshDev1411/velocityllm/pkg/utils"
+	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 // StreamHandlers handles streaming-related HTTP endpoints
@@ -35,9 +35,8 @@ func (h *StreamHandlers) StreamCompletion(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, types.ErrorResponse{
-			Success:   false,
-			Error:     "Invalid request body: " + err.Error(),
-			Timestamp: time.Now(),
+			Error:   "Invalid request body",
+			Message: err.Error(),
 		})
 		return
 	}
@@ -45,9 +44,8 @@ func (h *StreamHandlers) StreamCompletion(c *gin.Context) {
 	// Validate request
 	if req.Prompt == "" {
 		c.JSON(http.StatusBadRequest, types.ErrorResponse{
-			Success:   false,
-			Error:     "Invalid request: prompt is required",
-			Timestamp: time.Now(),
+			Error:   "Invalid request",
+			Message: "prompt is required",
 		})
 		return
 	}
@@ -77,9 +75,8 @@ func (h *StreamHandlers) StreamCompletion(c *gin.Context) {
 	if !req.Stream {
 		// For non-streaming requests, redirect to regular completion endpoint
 		c.JSON(http.StatusBadRequest, types.ErrorResponse{
-			Success:   false,
-			Error:     "Invalid request: stream must be true for this endpoint. Use /api/v1/completion for non-streaming",
-			Timestamp: time.Now(),
+			Error:   "Invalid request",
+			Message: "stream must be true for this endpoint. Use /api/v1/completion for non-streaming",
 		})
 		return
 	}
@@ -115,9 +112,8 @@ func (h *StreamHandlers) GetStreamStatus(c *gin.Context) {
 
 	if streamID == "" {
 		c.JSON(http.StatusBadRequest, types.ErrorResponse{
-			Success:   false,
-			Error:     "Invalid request: stream_id is required",
-			Timestamp: time.Now(),
+			Error:   "Invalid request",
+			Message: "stream_id is required",
 		})
 		return
 	}
@@ -127,25 +123,22 @@ func (h *StreamHandlers) GetStreamStatus(c *gin.Context) {
 	if err != nil {
 		if err == streaming.ErrStreamNotFound {
 			c.JSON(http.StatusNotFound, types.ErrorResponse{
-				Success:   false,
-				Error:     "Stream not found: No active stream with the given ID",
-				Timestamp: time.Now(),
+				Error:   "Stream not found",
+				Message: "No active stream with the given ID",
 			})
 			return
 		}
 
 		c.JSON(http.StatusInternalServerError, types.ErrorResponse{
-			Success:   false,
-			Error:     "Failed to get stream status: " + err.Error(),
-			Timestamp: time.Now(),
+			Error:   "Failed to get stream status",
+			Message: err.Error(),
 		})
 		return
 	}
 
 	c.JSON(http.StatusOK, types.SuccessResponse{
-		Success:   true,
-		Data:      status,
-		Timestamp: time.Now(),
+		Success: true,
+		Data:    status,
 	})
 }
 
@@ -156,9 +149,8 @@ func (h *StreamHandlers) CancelStream(c *gin.Context) {
 
 	if streamID == "" {
 		c.JSON(http.StatusBadRequest, types.ErrorResponse{
-			Success:   false,
-			Error:     "Invalid request: stream_id is required",
-			Timestamp: time.Now(),
+			Error:   "Invalid request",
+			Message: "stream_id is required",
 		})
 		return
 	}
@@ -169,25 +161,22 @@ func (h *StreamHandlers) CancelStream(c *gin.Context) {
 	if err := h.manager.CancelStream(streamID); err != nil {
 		if err == streaming.ErrStreamNotFound {
 			c.JSON(http.StatusNotFound, types.ErrorResponse{
-				Success:   false,
-				Error:     "Stream not found: No active stream with the given ID",
-				Timestamp: time.Now(),
+				Error:   "Stream not found",
+				Message: "No active stream with the given ID",
 			})
 			return
 		}
 
 		c.JSON(http.StatusInternalServerError, types.ErrorResponse{
-			Success:   false,
-			Error:     "Failed to cancel stream: " + err.Error(),
-			Timestamp: time.Now(),
+			Error:   "Failed to cancel stream",
+			Message: err.Error(),
 		})
 		return
 	}
 
 	c.JSON(http.StatusOK, types.SuccessResponse{
-		Success:   true,
-		Message:   "Stream cancelled successfully",
-		Timestamp: time.Now(),
+		Success: true,
+		Message: "Stream cancelled successfully",
 		Data: map[string]interface{}{
 			"stream_id":    streamID,
 			"cancelled_at": time.Now(),
@@ -201,9 +190,8 @@ func (h *StreamHandlers) GetStreamMetrics(c *gin.Context) {
 	metrics := h.manager.GetMetrics()
 
 	c.JSON(http.StatusOK, types.SuccessResponse{
-		Success:   true,
-		Data:      metrics,
-		Timestamp: time.Now(),
+		Success: true,
+		Data:    &metrics,
 	})
 }
 
@@ -219,8 +207,7 @@ func (h *StreamHandlers) GetActiveStreams(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, types.SuccessResponse{
-		Success:   true,
-		Timestamp: time.Now(),
+		Success: true,
 		Data: map[string]interface{}{
 			"count":   len(streamList),
 			"streams": streamList,
@@ -234,9 +221,8 @@ func (h *StreamHandlers) GetStreamStats(c *gin.Context) {
 	stats := h.manager.GetStats()
 
 	c.JSON(http.StatusOK, types.SuccessResponse{
-		Success:   true,
-		Data:      stats,
-		Timestamp: time.Now(),
+		Success: true,
+		Data:    stats,
 	})
 }
 
@@ -253,9 +239,8 @@ func (h *StreamHandlers) StreamHealthCheck(c *gin.Context) {
 	}
 
 	c.JSON(status, types.SuccessResponse{
-		Success:   health["status"] != "critical",
-		Data:      health,
-		Timestamp: time.Now(),
+		Success: health["status"] != "critical",
+		Data:    health,
 	})
 }
 
@@ -314,9 +299,8 @@ func (h *StreamHandlers) StreamChatCompletion(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, types.ErrorResponse{
-			Success:   false,
-			Error:     "Invalid request body: " + err.Error(),
-			Timestamp: time.Now(),
+			Error:   "Invalid request body",
+			Message: err.Error(),
 		})
 		return
 	}
@@ -324,9 +308,8 @@ func (h *StreamHandlers) StreamChatCompletion(c *gin.Context) {
 	// Validate messages
 	if len(req.Messages) == 0 {
 		c.JSON(http.StatusBadRequest, types.ErrorResponse{
-			Success:   false,
-			Error:     "Invalid request: messages array is required and cannot be empty",
-			Timestamp: time.Now(),
+			Error:   "Invalid request",
+			Message: "messages array is required and cannot be empty",
 		})
 		return
 	}
@@ -345,9 +328,8 @@ func (h *StreamHandlers) StreamChatCompletion(c *gin.Context) {
 
 	if prompt == "" {
 		c.JSON(http.StatusBadRequest, types.ErrorResponse{
-			Success:   false,
-			Error:     "Invalid request: No user message found in messages array",
-			Timestamp: time.Now(),
+			Error:   "Invalid request",
+			Message: "No user message found in messages array",
 		})
 		return
 	}
@@ -398,9 +380,8 @@ func (h *StreamHandlers) BroadcastMessage(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, types.ErrorResponse{
-			Success:   false,
-			Error:     "Invalid request body: " + err.Error(),
-			Timestamp: time.Now(),
+			Error:   "Invalid request body",
+			Message: err.Error(),
 		})
 		return
 	}
@@ -433,9 +414,8 @@ func (h *StreamHandlers) BroadcastMessage(c *gin.Context) {
 	h.manager.BroadcastEvent(event)
 
 	c.JSON(http.StatusOK, types.SuccessResponse{
-		Success:   true,
-		Message:   "Message broadcasted successfully",
-		Timestamp: time.Now(),
+		Success: true,
+		Message: "Message broadcasted successfully",
 		Data: map[string]interface{}{
 			"event_id":       event.ID,
 			"active_streams": len(h.manager.GetActiveStreams()),
@@ -481,8 +461,7 @@ func (h *StreamHandlers) ExportStreamLogs(c *gin.Context) {
 		}
 
 		c.JSON(http.StatusOK, types.SuccessResponse{
-			Success:   true,
-			Timestamp: time.Now(),
+			Success: true,
 			Data: map[string]interface{}{
 				"count":       len(streamList),
 				"streams":     streamList,

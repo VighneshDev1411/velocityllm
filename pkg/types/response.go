@@ -1,8 +1,6 @@
 package types
 
 import (
-	"encoding/json"
-	"net/http"
 	"time"
 )
 
@@ -304,34 +302,4 @@ func (s *StatsResponse) AddCategory(name string, data interface{}) {
 		s.Categories = make(map[string]interface{})
 	}
 	s.Categories[name] = data
-}
-
-// HTTP Response Utility Functions
-
-// WriteJSON writes a JSON response with the given status code
-func WriteJSON(w http.ResponseWriter, status int, data interface{}) error {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	return json.NewEncoder(w).Encode(data)
-}
-
-// WriteSuccess writes a successful JSON response
-func WriteSuccess(w http.ResponseWriter, message string, data interface{}) error {
-	response := SuccessResponse{
-		Success:   true,
-		Message:   message,
-		Data:      data,
-		Timestamp: time.Now(),
-	}
-	return WriteJSON(w, http.StatusOK, response)
-}
-
-// WriteError writes an error JSON response
-func WriteError(w http.ResponseWriter, status int, message string) error {
-	response := ErrorResponse{
-		Success:   false,
-		Error:     message,
-		Timestamp: time.Now(),
-	}
-	return WriteJSON(w, status, response)
 }

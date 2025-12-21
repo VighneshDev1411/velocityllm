@@ -376,38 +376,3 @@ func (t *Timer) StopWithMessage(msg string) {
 	allFields := append(t.fields, "duration_ms", duration.Milliseconds())
 	t.logger.Info(msg, allFields...)
 }
-
-// Package-level logger for backward compatibility
-var defaultLogger = NewLogger()
-
-// Package-level convenience functions
-
-// Debug logs a debug message using the default logger
-func Debug(format string, args ...interface{}) {
-	msg := fmt.Sprintf(format, args...)
-	defaultLogger.Debug(msg)
-}
-
-// Info logs an info message using the default logger
-func Info(format string, args ...interface{}) {
-	msg := fmt.Sprintf(format, args...)
-	defaultLogger.Info(msg)
-}
-
-// Warn logs a warning message using the default logger
-func Warn(format string, args ...interface{}) {
-	msg := fmt.Sprintf(format, args...)
-	defaultLogger.Warn(msg)
-}
-
-// Error logs an error message using the default logger
-func Error(format string, args ...interface{}) {
-	msg := fmt.Sprintf(format, args...)
-	defaultLogger.Error(msg)
-}
-
-// Fatal logs a fatal message using the default logger and exits
-func Fatal(format string, args ...interface{}) {
-	msg := fmt.Sprintf(format, args...)
-	defaultLogger.Fatal(msg)
-}
