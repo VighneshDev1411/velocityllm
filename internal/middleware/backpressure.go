@@ -15,6 +15,7 @@ import (
 
 // BackpressureHandler manages load shedding and backpressure
 type BackpressureHandler struct {
+	pool             *worker.WorkerPool
 	config           BackpressureConfig
 	active           atomic.Bool
 	requestsRejected atomic.Int64
@@ -24,8 +25,9 @@ type BackpressureHandler struct {
 }
 
 // NewBackpressureHandler creates a new backpressure handler
-func NewBackpressureHandler(config BackpressureConfig) *BackpressureHandler {
+func NewBackpressureHandler(pool *worker.WorkerPool, config BackpressureConfig) *BackpressureHandler {
 	bh := &BackpressureHandler{
+		pool:      pool,
 		config:    config,
 		lastCheck: time.Now(),
 	}
@@ -41,14 +43,15 @@ func (bh *BackpressureHandler) ShouldAcceptRequest(priority int) (bool, string) 
 		return true, ""
 	}
 
-	// Get current system state
-	pool := worker.GetGlobalPool()
-	queueSize := pool.GetQueueSize()
-	queueCapacity := pool.GetQueueCapacity()
-	queueUsage := float64(queueSize) / float64(queueCapacity) * 100
+	// Get current system state from metrics
+	metrics := bh.pool.GetMetrics()
+	queueUsage := metrics.QueueUtilization // Already a percentage
 
-	stats := pool.GetStats()
-	workerUtilization := float64(stats.ActiveWorkers) / float64(pool.GetWorkerCount()) * 100
+	// Calculate worker utilization
+	workerUtilization := float64(0)
+	if metrics.TotalWorkers > 0 {
+		workerUtilization = float64(metrics.BusyWorkers) / float64(metrics.TotalWorkers) * 100
+	}
 
 	// Update backpressure status
 	bh.updateStatus(queueUsage, workerUtilization)
@@ -154,13 +157,14 @@ func (bh *BackpressureHandler) calculateAdaptiveThreshold(workerUtilization floa
 
 // GetStatus returns current backpressure status
 func (bh *BackpressureHandler) GetStatus() BackpressureStatus {
-	pool := worker.GetGlobalPool()
-	queueSize := pool.GetQueueSize()
-	queueCapacity := pool.GetQueueCapacity()
-	queueUsage := float64(queueSize) / float64(queueCapacity) * 100
+	metrics := bh.pool.GetMetrics()
+	queueUsage := metrics.QueueUtilization // Already a percentage
 
-	stats := pool.GetStats()
-	workerUtilization := float64(stats.ActiveWorkers) / float64(pool.GetWorkerCount()) * 100
+	// Calculate worker utilization
+	workerUtilization := float64(0)
+	if metrics.TotalWorkers > 0 {
+		workerUtilization = float64(metrics.BusyWorkers) / float64(metrics.TotalWorkers) * 100
+	}
 
 	reason := ""
 	if bh.active.Load() {
@@ -368,16 +372,13 @@ var globalBackpressureHandler *BackpressureHandler
 var backpressureOnce sync.Once
 
 // InitGlobalBackpressureHandler initializes the global backpressure handler
-func InitGlobalBackpressureHandler(config BackpressureConfig) {
+func InitGlobalBackpressureHandler(pool *worker.WorkerPool, config BackpressureConfig) {
 	backpressureOnce.Do(func() {
-		globalBackpressureHandler = NewBackpressureHandler(config)
+		globalBackpressureHandler = NewBackpressureHandler(pool, config)
 	})
 }
 
 // GetGlobalBackpressureHandler returns the global backpressure handler
 func GetGlobalBackpressureHandler() *BackpressureHandler {
-	if globalBackpressureHandler == nil {
-		InitGlobalBackpressureHandler(DefaultBackpressureConfig())
-	}
 	return globalBackpressureHandler
 }

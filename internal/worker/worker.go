@@ -14,16 +14,17 @@ import (
 	"github.com/google/uuid"
 )
 
-// NewWorker creates a new worker
-func NewWorker(id int, jobsChan chan Job) *Worker {
+// NewJobWorker creates a new worker for job processing
+func NewJobWorker(id int, jobsChan chan Job) *Worker {
 	return &Worker{
-		ID:          id,
-		Status:      WorkerStatusIdle,
-		JobsChan:    jobsChan,
-		QuitChan:    make(chan bool),
-		CurrentJob:  nil,
-		JobsHandled: 0,
-		StartedAt:   time.Now(),
+		ID:            fmt.Sprintf("worker-%d", id),
+		Status:        WorkerStatusIdle,
+		jobChan:       make(chan *Job, 10),
+		stopChan:      make(chan struct{}),
+		doneChan:      make(chan struct{}),
+		StartTime:     time.Now(),
+		LastHeartbeat: time.Now(),
+		HealthScore:   100.0,
 	}
 }
 
@@ -96,12 +97,22 @@ func (w *Worker) processJob(ctx context.Context, job Job) JobResult {
 	queueWaitTime := time.Since(job.SubmittedAt)
 	utils.Debug("Job %s waited in queue for %v", job.ID, queueWaitTime)
 
+	// Type assert the request
+	req, ok := job.Request.(types.CompletionRequest)
+	if !ok {
+		return JobResult{
+			Response: types.CompletionResponse{},
+			Error:    fmt.Errorf("invalid request type"),
+			Duration: time.Since(startTime),
+		}
+	}
+
 	// Initialize cache and router
 	cacheService := cache.NewCacheService(24 * time.Hour)
 	routerInstance := router.GetGlobalRouter()
 
 	// Get routing decision
-	routingDecision, err := routerInstance.Route(jobCtx, job.Request.Prompt)
+	routingDecision, err := routerInstance.Route(jobCtx, req.Prompt)
 	if err != nil {
 		utils.Error("Worker %d: routing failed for job %s: %v", w.ID, job.ID, err)
 
@@ -126,10 +137,10 @@ func (w *Worker) processJob(ctx context.Context, job Job) JobResult {
 	utils.Debug("Worker %d: selected model %s for job %s", w.ID, selectedModel.Name, job.ID)
 
 	// Generate cache key
-	cacheKey := cacheService.GenerateKey(job.Request.Prompt, selectedModel.Name)
+	cacheKey := cacheService.GenerateKey(req.Prompt, selectedModel.Name)
 
 	// Check cache if enabled
-	if job.Request.UseCache {
+	if req.UseCache {
 		var cached types.CachedCompletion
 		found, err := cacheService.Get(jobCtx, cacheKey, &cached)
 		if err != nil {
@@ -142,7 +153,7 @@ func (w *Worker) processJob(ctx context.Context, job Job) JobResult {
 			response := types.CompletionResponse{
 				ID:        uuid.New().String(),
 				Model:     selectedModel.Name,
-				Prompt:    job.Request.Prompt,
+				Prompt:    req.Prompt,
 				Response:  cached.Response,
 				Tokens:    cached.Tokens,
 				Latency:   latency,
@@ -155,7 +166,7 @@ func (w *Worker) processJob(ctx context.Context, job Job) JobResult {
 			utils.Debug("Worker %d: cache HIT for job %s", w.ID, job.ID)
 
 			// Log to database
-			w.logRequestToDatabase(job.Request, response, true, routingDecision)
+			w.logRequestToDatabase(req, response, true, routingDecision)
 
 			// Record metrics
 			collector := metrics.GetGlobalMetricsCollector()
@@ -179,7 +190,7 @@ func (w *Worker) processJob(ctx context.Context, job Job) JobResult {
 	utils.Debug("Worker %d: cache MISS for job %s, generating completion", w.ID, job.ID)
 
 	// Simulate LLM call (in production, this would be actual API call)
-	generatedResponse := w.simulateCompletion(job.Request, selectedModel.Name)
+	generatedResponse := w.simulateCompletion(req, selectedModel.Name)
 
 	latency := int(time.Since(startTime).Milliseconds())
 	cost := float64(generatedResponse.Tokens) * selectedModel.CostPerToken
@@ -187,7 +198,7 @@ func (w *Worker) processJob(ctx context.Context, job Job) JobResult {
 	response := types.CompletionResponse{
 		ID:        uuid.New().String(),
 		Model:     selectedModel.Name,
-		Prompt:    job.Request.Prompt,
+		Prompt:    req.Prompt,
 		Response:  generatedResponse.Response,
 		Tokens:    generatedResponse.Tokens,
 		Latency:   latency,
@@ -198,7 +209,7 @@ func (w *Worker) processJob(ctx context.Context, job Job) JobResult {
 	}
 
 	// Cache the response
-	if job.Request.UseCache {
+	if req.UseCache {
 		cachedData := types.CachedCompletion{
 			Response: generatedResponse.Response,
 			Tokens:   generatedResponse.Tokens,
@@ -214,7 +225,7 @@ func (w *Worker) processJob(ctx context.Context, job Job) JobResult {
 	}
 
 	// Log to database
-	w.logRequestToDatabase(job.Request, response, false, routingDecision)
+	w.logRequestToDatabase(req, response, false, routingDecision)
 
 	// Record metrics
 	collector := metrics.GetGlobalMetricsCollector()
@@ -282,11 +293,6 @@ func (w *Worker) logRequestToDatabase(req types.CompletionRequest, resp types.Co
 	if err := repo.Create(&request); err != nil {
 		utils.Error("Worker %d: failed to log request: %v", w.ID, err)
 	}
-}
-
-// GetStatus returns the current worker status
-func (w *Worker) GetStatus() WorkerStatus {
-	return w.Status
 }
 
 // GetStats returns worker statistics

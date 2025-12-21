@@ -171,7 +171,7 @@ func GetModelHealthHandler(w http.ResponseWriter, r *http.Request) {
 			"successful_checks":     modelHealth.SuccessfulChecks,
 			"failed_checks":         modelHealth.FailedChecks,
 			"avg_response_time":     modelHealth.AvgResponseTime.String(),
-			"success_rate":          calculateSuccessRate(modelHealth),
+			"success_rate":          calculateModelHealthSuccessRate(modelHealth),
 		})
 	}
 
@@ -277,7 +277,7 @@ func GetRoutingDecisionHandler(w http.ResponseWriter, r *http.Request) {
 
 // Helper functions
 
-func calculateSuccessRate(health *router.ModelHealth) float64 {
+func calculateModelHealthSuccessRate(health *router.ModelHealth) float64 {
 	if health.TotalChecks == 0 {
 		return 0.0
 	}

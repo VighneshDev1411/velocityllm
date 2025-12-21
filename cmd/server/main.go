@@ -11,6 +11,7 @@ import (
 
 	"github.com/VighneshDev1411/velocityllm/internal/api"
 	"github.com/VighneshDev1411/velocityllm/internal/streaming"
+	"github.com/VighneshDev1411/velocityllm/internal/worker"
 	"github.com/VighneshDev1411/velocityllm/pkg/utils"
 )
 
@@ -26,7 +27,7 @@ const (
 func main() {
 	// Initialize logger
 	logger := utils.NewLogger()
-	logger.Info("Starting VelocityLLM Server with Streaming Support")
+	logger.Info("Starting VelocityLLM Server - Day 7: Worker Pool & gRPC")
 
 	// Get port from environment or use default
 	port := os.Getenv("PORT")
@@ -47,12 +48,23 @@ func main() {
 	logger.Info("Stream manager initialized",
 		"max_connections", streamManagerConfig.MaxConnections,
 		"idle_timeout", streamManagerConfig.IdleTimeout,
-		"cleanup_interval", streamManagerConfig.CleanupInterval,
+	)
+
+	// Initialize worker pool
+	logger.Info("Initializing worker pool")
+
+	workerPoolConfig := worker.DefaultWorkerPoolConfig()
+	workerPool := worker.NewWorkerPool(workerPoolConfig, logger)
+
+	logger.Info("Worker pool initialized",
+		"min_workers", workerPoolConfig.MinWorkers,
+		"max_workers", workerPoolConfig.MaxWorkers,
+		"queue_size", workerPoolConfig.QueueSize,
 	)
 
 	// Initialize router
 	logger.Info("Setting up API routes")
-	router := api.NewRouter(streamManager, sseHandler, logger)
+	router := api.NewRouter(streamManager, sseHandler, workerPool, logger)
 
 	// Configure HTTP server
 	server := &http.Server{
@@ -81,7 +93,6 @@ func main() {
 	logger.Info("🚀 VelocityLLM Server is running!",
 		"port", port,
 		"health_check", fmt.Sprintf("http://localhost:%s/api/v1/health", port),
-		"stream_test", fmt.Sprintf("http://localhost:%s/api/v1/stream/test", port),
 	)
 
 	// Print available endpoints
@@ -98,7 +109,13 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), shutdownTimeout)
 	defer cancel()
 
-	// Shutdown stream manager first
+	// Shutdown worker pool first
+	logger.Info("Shutting down worker pool")
+	if err := workerPool.Shutdown(ctx); err != nil {
+		logger.Error("Worker pool shutdown error", "error", err)
+	}
+
+	// Shutdown stream manager
 	logger.Info("Shutting down stream manager")
 	if err := streamManager.Shutdown(ctx); err != nil {
 		logger.Error("Stream manager shutdown error", "error", err)
@@ -119,76 +136,100 @@ func printEndpoints(port string, logger *utils.Logger) {
 
 	logger.Info("\n" + `
 ╔══════════════════════════════════════════════════════════════╗
-║             VelocityLLM Streaming API Endpoints              ║
+║         VelocityLLM API Endpoints - Day 7 Edition           ║
 ╚══════════════════════════════════════════════════════════════╝
 
-📡 STREAMING ENDPOINTS:
+📡 STREAMING ENDPOINTS (Day 6):
    POST   ` + baseURL + `/api/v1/stream/completion
-          → Stream LLM completions with SSE
-   
    POST   ` + baseURL + `/api/v1/stream/chat/completions
-          → OpenAI-compatible chat streaming
-   
-   GET    ` + baseURL + `/api/v1/stream/test?message=hello
-          → Test streaming functionality
-   
-   GET    ` + baseURL + `/api/v1/stream/status/:id
-          → Get stream status by ID
-   
-   DELETE ` + baseURL + `/api/v1/stream/:id
-          → Cancel active stream
-   
-   GET    ` + baseURL + `/api/v1/stream/active
-          → List all active streams
-
-📊 MONITORING ENDPOINTS:
+   GET    ` + baseURL + `/api/v1/stream/test
    GET    ` + baseURL + `/api/v1/stream/metrics
-          → Stream performance metrics
-   
-   GET    ` + baseURL + `/api/v1/stream/stats
-          → Detailed streaming statistics
-   
    GET    ` + baseURL + `/api/v1/stream/health
-          → Streaming system health check
-   
-   GET    ` + baseURL + `/api/v1/stream/logs/export
-          → Export streaming logs (JSON/CSV)
 
-🔧 UTILITY ENDPOINTS:
-   POST   ` + baseURL + `/api/v1/stream/broadcast
-          → Broadcast message to all streams
+⚙️  WORKER POOL ENDPOINTS (Day 7 - NEW!):
+   POST   ` + baseURL + `/api/v1/worker/jobs
+          → Submit a job to the worker pool
    
+   POST   ` + baseURL + `/api/v1/worker/jobs/batch
+          → Submit multiple jobs at once
+   
+   GET    ` + baseURL + `/api/v1/worker/jobs/:id
+          → Get job status by ID
+   
+   DELETE ` + baseURL + `/api/v1/worker/jobs/:id
+          → Cancel a pending/running job
+   
+   GET    ` + baseURL + `/api/v1/worker/workers/:id
+          → Get worker details by ID
+
+📊 WORKER MONITORING (Day 7 - NEW!):
+   GET    ` + baseURL + `/api/v1/worker/metrics
+          → Worker pool performance metrics
+   
+   GET    ` + baseURL + `/api/v1/worker/stats
+          → Detailed worker statistics
+   
+   GET    ` + baseURL + `/api/v1/worker/health
+          → Worker pool health check
+   
+   GET    ` + baseURL + `/api/v1/worker/config
+          → Worker pool configuration
+   
+   GET    ` + baseURL + `/api/v1/worker/queues
+          → Job queue statistics
+   
+   GET    ` + baseURL + `/api/v1/worker/performance
+          → Performance metrics
+
+🔧 SYSTEM ENDPOINTS:
    GET    ` + baseURL + `/api/v1/health
-          → API health check
+          → Overall system health
    
-   GET    ` + baseURL + `/api/v1/ping
-          → Simple ping test
-   
-   GET    ` + baseURL + `/api/v1/models
-          → List available models
+   GET    ` + baseURL + `/api/v1/stats
+          → System statistics (streaming + workers)
 
 📚 EXAMPLE USAGE:
 
-   # Test streaming with curl:
-   curl -N ` + baseURL + `/api/v1/stream/test
-
-   # Stream a completion:
-   curl -N -X POST ` + baseURL + `/api/v1/stream/completion \
+   # Submit a job to worker pool:
+   curl -X POST ` + baseURL + `/api/v1/worker/jobs \
      -H "Content-Type: application/json" \
      -d '{
-       "prompt": "Tell me a story",
-       "model": "gpt-3.5-turbo",
-       "stream": true,
-       "max_tokens": 100
+       "type": "inference",
+       "priority": "high",
+       "payload": {
+         "prompt": "Hello, world!",
+         "model": "gpt-3.5-turbo"
+       },
+       "timeout_seconds": 60
      }'
 
-   # Get streaming metrics:
-   curl ` + baseURL + `/api/v1/stream/metrics
+   # Check job status:
+   curl ` + baseURL + `/api/v1/worker/jobs/{job_id}
 
-   # Check active streams:
-   curl ` + baseURL + `/api/v1/stream/active
+   # Get worker pool metrics:
+   curl ` + baseURL + `/api/v1/worker/metrics
+
+   # Get worker pool health:
+   curl ` + baseURL + `/api/v1/worker/health
+
+   # Batch submit jobs:
+   curl -X POST ` + baseURL + `/api/v1/worker/jobs/batch \
+     -H "Content-Type: application/json" \
+     -d '{
+       "jobs": [
+         {"type": "inference", "priority": "high", "payload": {...}},
+         {"type": "inference", "priority": "normal", "payload": {...}}
+       ]
+     }'
+
+   # Stream completion (from Day 6):
+   curl -N -X POST ` + baseURL + `/api/v1/stream/completion \
+     -H "Content-Type: application/json" \
+     -d '{"prompt": "Hello", "stream": true}'
 
 ╔══════════════════════════════════════════════════════════════╗
+║  Day 7 Complete: Worker Pool + gRPC Ready! 🎉               ║
+║  Total Endpoints: 74+                                        ║
 ║  Press Ctrl+C to shutdown gracefully                         ║
 ╚══════════════════════════════════════════════════════════════╝
 	`)

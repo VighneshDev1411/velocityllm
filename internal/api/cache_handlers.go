@@ -3,7 +3,6 @@ package api
 import (
 	"encoding/json"
 	"net/http"
-	"sync"
 
 	"github.com/VighneshDev1411/velocityllm/internal/cache"
 	"github.com/VighneshDev1411/velocityllm/internal/worker"
@@ -11,8 +10,22 @@ import (
 	"github.com/VighneshDev1411/velocityllm/pkg/utils"
 )
 
+// CacheHandlers handles cache-related HTTP endpoints
+type CacheHandlers struct {
+	pool   *worker.WorkerPool
+	logger *utils.Logger
+}
+
+// NewCacheHandlers creates new cache handlers
+func NewCacheHandlers(pool *worker.WorkerPool, logger *utils.Logger) *CacheHandlers {
+	return &CacheHandlers{
+		pool:   pool,
+		logger: logger,
+	}
+}
+
 // CompletionAsyncHandler handles async completion requests
-func CompletionAsyncHandler(w http.ResponseWriter, r *http.Request) {
+func (h *CacheHandlers) CompletionAsyncHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		types.WriteError(w, http.StatusMethodNotAllowed, "Method not allowed")
 		return
@@ -36,12 +49,17 @@ func CompletionAsyncHandler(w http.ResponseWriter, r *http.Request) {
 		req.UseCache = true
 	}
 
-	// Get worker pool
-	pool := worker.GetGlobalPool()
+	// Create job payload
+	payload := map[string]interface{}{
+		"request": req,
+		"type":    "completion",
+	}
 
-	// Submit job asynchronously
-	jobID, resultChan, err := pool.SubmitAsync(req)
-	if err != nil {
+	// Create and submit job
+	job := worker.NewJob("completion", payload)
+	job.SetPriority(worker.PriorityNormal)
+
+	if err := h.pool.Submit(job); err != nil {
 		utils.Error("Failed to submit async request: %v", err)
 		types.WriteError(w, http.StatusInternalServerError, "Failed to submit request: "+err.Error())
 		return
@@ -49,36 +67,16 @@ func CompletionAsyncHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Return job ID immediately
 	response := map[string]interface{}{
-		"job_id":  jobID,
-		"status":  "processing",
+		"job_id":  job.ID,
+		"status":  string(job.GetStatus()),
 		"message": "Job submitted successfully. Use /api/v1/jobs/{job_id} to check status",
 	}
-
-	// Store result channel for later retrieval
-	storeJobResultChannel(jobID, resultChan)
 
 	types.WriteSuccess(w, "Job submitted", response)
 }
 
-// Job result storage (in production, use Redis or database)
-var jobResults = make(map[string]chan worker.JobResult)
-var jobResultsMutex sync.RWMutex
-
-func storeJobResultChannel(jobID string, resultChan chan worker.JobResult) {
-	jobResultsMutex.Lock()
-	defer jobResultsMutex.Unlock()
-	jobResults[jobID] = resultChan
-}
-
-func getJobResultChannel(jobID string) (chan worker.JobResult, bool) {
-	jobResultsMutex.RLock()
-	defer jobResultsMutex.RUnlock()
-	ch, exists := jobResults[jobID]
-	return ch, exists
-}
-
 // JobStatusHandler checks the status of an async job
-func JobStatusHandler(w http.ResponseWriter, r *http.Request) {
+func (h *CacheHandlers) JobStatusHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		types.WriteError(w, http.StatusMethodNotAllowed, "Method not allowed")
 		return
@@ -93,43 +91,51 @@ func JobStatusHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Get result channel
-	resultChan, exists := getJobResultChannel(jobID)
+	// Get job from worker pool
+	job, exists := h.pool.GetJob(jobID)
 	if !exists {
 		types.WriteError(w, http.StatusNotFound, "Job not found")
 		return
 	}
 
-	// Check if result is ready (non-blocking)
-	select {
-	case result := <-resultChan:
-		// Job completed
-		if result.Error != nil {
-			types.WriteError(w, http.StatusInternalServerError, "Job failed: "+result.Error.Error())
-			return
-		}
+	// Build response based on job status
+	status := job.GetStatus()
+	response := map[string]interface{}{
+		"job_id":     jobID,
+		"status":     string(status),
+		"created_at": job.CreatedAt,
+	}
 
-		response := map[string]interface{}{
-			"job_id":   jobID,
-			"status":   "completed",
-			"result":   result.Response,
-			"duration": result.Duration.String(),
-		}
+	// Add timing information if available
+	if !job.StartedAt.IsZero() {
+		response["started_at"] = job.StartedAt
+		response["duration_ms"] = job.Duration().Milliseconds()
+	}
+	if !job.QueuedAt.IsZero() {
+		response["queued_at"] = job.QueuedAt
+	}
+	if !job.CompletedAt.IsZero() {
+		response["completed_at"] = job.CompletedAt
+	}
 
+	// Add result or error based on status
+	switch status {
+	case worker.JobStatusCompleted:
+		response["result"] = job.Result
 		types.WriteSuccess(w, "Job completed", response)
-
+	case worker.JobStatusFailed, worker.JobStatusTimeout:
+		response["error"] = job.Error
+		types.WriteError(w, http.StatusInternalServerError, "Job failed: "+job.Error)
+	case worker.JobStatusCancelled:
+		types.WriteSuccess(w, "Job cancelled", response)
 	default:
 		// Job still processing
-		response := map[string]interface{}{
-			"job_id": jobID,
-			"status": "processing",
-		}
 		types.WriteSuccess(w, "Job in progress", response)
 	}
 }
 
 // GetCacheStatsHandler returns cache statistics
-func GetCacheStatsHandler(w http.ResponseWriter, r *http.Request) {
+func (h *CacheHandlers) GetCacheStatsHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		types.WriteError(w, http.StatusMethodNotAllowed, "Method not allowed")
 		return
@@ -146,7 +152,7 @@ func GetCacheStatsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // ClearCacheHandler clears the cache
-func ClearCacheHandler(w http.ResponseWriter, r *http.Request) {
+func (h *CacheHandlers) ClearCacheHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost && r.Method != http.MethodDelete {
 		types.WriteError(w, http.StatusMethodNotAllowed, "Method not allowed")
 		return

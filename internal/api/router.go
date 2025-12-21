@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/VighneshDev1411/velocityllm/internal/streaming"
+	"github.com/VighneshDev1411/velocityllm/internal/worker"
 	"github.com/VighneshDev1411/velocityllm/pkg/utils"
 	"github.com/gin-gonic/gin"
 )
@@ -12,6 +13,7 @@ import (
 type Router struct {
 	engine         *gin.Engine
 	streamHandlers *StreamHandlers
+	workerHandlers *WorkerHandlers
 	logger         *utils.Logger
 }
 
@@ -19,6 +21,7 @@ type Router struct {
 func NewRouter(
 	streamManager *streaming.StreamManager,
 	sseHandler *streaming.SSEHandler,
+	workerPool *worker.WorkerPool,
 	logger *utils.Logger,
 ) *Router {
 	// Set Gin mode based on environment
@@ -33,10 +36,12 @@ func NewRouter(
 
 	// Create handlers
 	streamHandlers := NewStreamHandlers(streamManager, sseHandler, logger)
+	workerHandlers := NewWorkerHandlers(workerPool, logger)
 
 	router := &Router{
 		engine:         engine,
 		streamHandlers: streamHandlers,
+		workerHandlers: workerHandlers,
 		logger:         logger,
 	}
 
@@ -80,6 +85,27 @@ func (r *Router) setupRoutes() {
 		streamGroup.GET("/logs/export", r.streamHandlers.ExportStreamLogs)
 	}
 
+	// Worker pool endpoints
+	workerGroup := v1.Group("/worker")
+	{
+		// Job management
+		workerGroup.POST("/jobs", r.workerHandlers.SubmitJob)
+		workerGroup.POST("/jobs/batch", r.workerHandlers.BatchSubmitJobs)
+		workerGroup.GET("/jobs/:id", r.workerHandlers.GetJobStatus)
+		workerGroup.DELETE("/jobs/:id", r.workerHandlers.CancelJob)
+
+		// Worker management
+		workerGroup.GET("/workers/:id", r.workerHandlers.GetWorkerDetails)
+		workerGroup.GET("/stats", r.workerHandlers.GetWorkerStats)
+
+		// Monitoring & metrics
+		workerGroup.GET("/metrics", r.workerHandlers.GetPoolMetrics)
+		workerGroup.GET("/health", r.workerHandlers.GetPoolHealth)
+		workerGroup.GET("/config", r.workerHandlers.GetPoolConfig)
+		workerGroup.GET("/queues", r.workerHandlers.GetQueueStats)
+		workerGroup.GET("/performance", r.workerHandlers.GetPerformanceStats)
+	}
+
 	// Legacy/Future endpoints placeholder
 	// Add your other endpoints here (database, cache, etc.)
 	v1.GET("/models", r.ListModels)
@@ -121,10 +147,23 @@ func (r *Router) ListModels(c *gin.Context) {
 
 // GetSystemStats returns system statistics (placeholder)
 func (r *Router) GetSystemStats(c *gin.Context) {
+	workerMetrics := r.workerHandlers.pool.GetMetrics()
+	streamMetrics := r.streamHandlers.manager.GetMetrics()
+
 	c.JSON(200, gin.H{
 		"uptime_seconds": 3600,
 		"total_requests": 1000,
-		"active_streams": 5,
+		"worker_pool": map[string]interface{}{
+			"total_workers":     workerMetrics.TotalWorkers,
+			"busy_workers":      workerMetrics.BusyWorkers,
+			"jobs_processed":    workerMetrics.TotalJobsProcessed,
+			"queue_utilization": workerMetrics.QueueUtilization,
+		},
+		"streaming": map[string]interface{}{
+			"active_streams":    streamMetrics.ActiveStreams,
+			"total_streams":     streamMetrics.TotalStreams,
+			"completed_streams": streamMetrics.CompletedStreams,
+		},
 	})
 }
 

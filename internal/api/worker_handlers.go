@@ -1,183 +1,471 @@
 package api
 
 import (
-	"encoding/json"
+	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/VighneshDev1411/velocityllm/internal/worker"
 	"github.com/VighneshDev1411/velocityllm/pkg/types"
+	"github.com/VighneshDev1411/velocityllm/pkg/utils"
+	"github.com/gin-gonic/gin"
 )
 
-// GetWorkerPoolStatsHandler returns worker pool statistics
-func GetWorkerPoolStatsHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		types.WriteError(w, http.StatusMethodNotAllowed, "Method not allowed")
-		return
-	}
-
-	pool := worker.GetGlobalPool()
-	stats := pool.GetStats()
-
-	response := map[string]interface{}{
-		"total_jobs_submitted":   stats.TotalJobsSubmitted,
-		"total_jobs_completed":   stats.TotalJobsCompleted,
-		"total_jobs_failed":      stats.TotalJobsFailed,
-		"total_jobs_in_progress": stats.TotalJobsInProgress,
-		"total_jobs_queued":      stats.TotalJobsQueued,
-		"active_workers":         stats.ActiveWorkers,
-		"idle_workers":           stats.IdleWorkers,
-		"avg_processing_time":    stats.AvgProcessingTime.String(),
-		"total_processing_time":  stats.TotalProcessingTime.String(),
-	}
-
-	types.WriteSuccess(w, "Worker pool statistics retrieved", response)
+// WorkerHandlers handles worker pool related HTTP endpoints
+type WorkerHandlers struct {
+	pool   *worker.WorkerPool
+	logger *utils.Logger
 }
 
-// GetWorkerPoolHealthHandler returns worker pool health status
-func GetWorkerPoolHealthHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		types.WriteError(w, http.StatusMethodNotAllowed, "Method not allowed")
-		return
+// NewWorkerHandlers creates new worker handlers
+func NewWorkerHandlers(pool *worker.WorkerPool, logger *utils.Logger) *WorkerHandlers {
+	return &WorkerHandlers{
+		pool:   pool,
+		logger: logger,
 	}
-
-	pool := worker.GetGlobalPool()
-	health := pool.GetHealthStatus()
-
-	types.WriteSuccess(w, "Worker pool health retrieved", health)
 }
 
-// GetWorkersHandler returns individual worker statistics
-func GetWorkersHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		types.WriteError(w, http.StatusMethodNotAllowed, "Method not allowed")
-		return
-	}
-
-	pool := worker.GetGlobalPool()
-	workers := pool.GetWorkerStats()
-
-	types.WriteSuccess(w, "Worker statistics retrieved", workers)
-}
-
-// GetQueueInfoHandler returns queue information
-func GetQueueInfoHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		types.WriteError(w, http.StatusMethodNotAllowed, "Method not allowed")
-		return
-	}
-
-	pool := worker.GetGlobalPool()
-
-	response := map[string]interface{}{
-		"current_size":  pool.GetQueueSize(),
-		"capacity":      pool.GetQueueCapacity(),
-		"is_full":       pool.IsQueueFull(),
-		"usage_percent": calculateQueueUsage(pool),
-	}
-
-	types.WriteSuccess(w, "Queue information retrieved", response)
-}
-
-// ResizeWorkerPoolHandler dynamically resizes the worker pool
-func ResizeWorkerPoolHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost && r.Method != http.MethodPut {
-		types.WriteError(w, http.StatusMethodNotAllowed, "Method not allowed")
-		return
-	}
-
+// SubmitJob submits a new job to the worker pool
+// POST /api/v1/worker/jobs
+func (h *WorkerHandlers) SubmitJob(c *gin.Context) {
 	var req struct {
-		WorkerCount int `json:"worker_count"`
+		Type     string                 `json:"type" binding:"required"`
+		Priority string                 `json:"priority"`
+		Payload  map[string]interface{} `json:"payload" binding:"required"`
+		Timeout  int                    `json:"timeout_seconds"`
+		Metadata map[string]string      `json:"metadata"`
 	}
 
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		types.WriteError(w, http.StatusBadRequest, "Invalid request body")
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, types.ErrorResponse{
+			Error:   "Invalid request body",
+			Message: err.Error(),
+		})
 		return
 	}
 
-	if req.WorkerCount < 1 {
-		types.WriteError(w, http.StatusBadRequest, "Worker count must be at least 1")
+	// Create job
+	job := worker.NewJob(req.Type, req.Payload)
+
+	// Set priority
+	if req.Priority != "" {
+		switch req.Priority {
+		case "low":
+			job.SetPriority(worker.PriorityLow)
+		case "normal":
+			job.SetPriority(worker.PriorityNormal)
+		case "high":
+			job.SetPriority(worker.PriorityHigh)
+		case "critical":
+			job.SetPriority(worker.PriorityCritical)
+		default:
+			c.JSON(http.StatusBadRequest, types.ErrorResponse{
+				Error:   "Invalid priority",
+				Message: "Priority must be: low, normal, high, or critical",
+			})
+			return
+		}
+	}
+
+	// Set timeout
+	if req.Timeout > 0 {
+		job.Timeout = time.Duration(req.Timeout) * time.Second
+	}
+
+	// Set metadata
+	if req.Metadata != nil {
+		job.Metadata = req.Metadata
+	}
+
+	// Submit to pool
+	if err := h.pool.Submit(job); err != nil {
+		c.JSON(http.StatusServiceUnavailable, types.ErrorResponse{
+			Error:   "Failed to submit job",
+			Message: err.Error(),
+		})
 		return
 	}
 
-	if req.WorkerCount > 100 {
-		types.WriteError(w, http.StatusBadRequest, "Worker count cannot exceed 100")
-		return
-	}
+	h.logger.Info("Job submitted",
+		"job_id", job.ID,
+		"type", job.Type,
+		"priority", job.Priority.String(),
+	)
 
-	pool := worker.GetGlobalPool()
-	if err := pool.Resize(req.WorkerCount); err != nil {
-		types.WriteError(w, http.StatusInternalServerError, "Failed to resize pool: "+err.Error())
-		return
-	}
-
-	response := map[string]interface{}{
-		"worker_count": req.WorkerCount,
-		"message":      "Worker pool resized successfully",
-	}
-
-	types.WriteSuccess(w, "Pool resized", response)
+	c.JSON(http.StatusAccepted, types.SuccessResponse{
+		Success: true,
+		Message: "Job submitted successfully",
+		Data: map[string]interface{}{
+			"job_id":     job.ID,
+			"type":       job.Type,
+			"priority":   job.Priority.String(),
+			"status":     job.GetStatus(),
+			"created_at": job.CreatedAt,
+		},
+	})
 }
 
-// GetWorkerPoolMetricsHandler returns detailed metrics
-func GetWorkerPoolMetricsHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		types.WriteError(w, http.StatusMethodNotAllowed, "Method not allowed")
+// GetJobStatus retrieves the status of a specific job
+// GET /api/v1/worker/jobs/:id
+func (h *WorkerHandlers) GetJobStatus(c *gin.Context) {
+	jobID := c.Param("id")
+
+	if jobID == "" {
+		c.JSON(http.StatusBadRequest, types.ErrorResponse{
+			Error:   "Invalid request",
+			Message: "job_id is required",
+		})
 		return
 	}
 
-	pool := worker.GetGlobalPool()
-	stats := pool.GetStats()
-	health := pool.GetHealthStatus()
-
-	// Calculate additional metrics
-	successRate := float64(0)
-	if stats.TotalJobsCompleted+stats.TotalJobsFailed > 0 {
-		successRate = float64(stats.TotalJobsCompleted) / float64(stats.TotalJobsCompleted+stats.TotalJobsFailed) * 100
+	// Get job
+	job, exists := h.pool.GetJob(jobID)
+	if !exists {
+		c.JSON(http.StatusNotFound, types.ErrorResponse{
+			Error:   "Job not found",
+			Message: "No job found with the given ID",
+		})
+		return
 	}
 
-	throughput := float64(0)
-	if stats.TotalProcessingTime > 0 {
-		throughput = float64(stats.TotalJobsCompleted) / stats.TotalProcessingTime.Seconds()
+	// Build response
+	jobData := map[string]interface{}{
+		"job_id":       job.ID,
+		"type":         job.Type,
+		"priority":     job.Priority.String(),
+		"status":       job.GetStatus(),
+		"created_at":   job.CreatedAt,
+		"queued_at":    job.QueuedAt,
+		"started_at":   job.StartedAt,
+		"completed_at": job.CompletedAt,
+		"worker_id":    job.WorkerID,
+		"retries":      job.Retries,
+		"max_retries":  job.MaxRetries,
 	}
 
-	response := map[string]interface{}{
-		"statistics": map[string]interface{}{
-			"total_submitted": stats.TotalJobsSubmitted,
-			"total_completed": stats.TotalJobsCompleted,
-			"total_failed":    stats.TotalJobsFailed,
-			"in_progress":     stats.TotalJobsInProgress,
-			"queued":          stats.TotalJobsQueued,
-		},
-		"workers": map[string]interface{}{
-			"total":  pool.GetWorkerCount(),
-			"active": stats.ActiveWorkers,
-			"idle":   stats.IdleWorkers,
-		},
-		"queue": map[string]interface{}{
-			"size":     pool.GetQueueSize(),
-			"capacity": pool.GetQueueCapacity(),
-			"usage":    health["queue_usage"],
-		},
-		"performance": map[string]interface{}{
-			"avg_processing_time":   stats.AvgProcessingTime.String(),
-			"total_processing_time": stats.TotalProcessingTime.String(),
-			"success_rate":          successRate,
-			"throughput_per_sec":    throughput,
-		},
-		"health": map[string]interface{}{
-			"status":             health["status"],
-			"worker_utilization": health["worker_utilization"],
-			"queue_usage":        health["queue_usage"],
-		},
+	// Add timing info
+	if !job.StartedAt.IsZero() {
+		jobData["duration_ms"] = job.Duration().Milliseconds()
+	}
+	if !job.QueuedAt.IsZero() && !job.StartedAt.IsZero() {
+		jobData["wait_time_ms"] = job.WaitTime().Milliseconds()
 	}
 
-	types.WriteSuccess(w, "Metrics retrieved", response)
+	// Add result if completed
+	if job.GetStatus() == worker.JobStatusCompleted {
+		jobData["result"] = job.Result
+	}
+
+	// Add error if failed
+	if job.GetStatus() == worker.JobStatusFailed || job.GetStatus() == worker.JobStatusTimeout {
+		jobData["error"] = job.Error
+	}
+
+	c.JSON(http.StatusOK, types.SuccessResponse{
+		Success: true,
+		Data:    jobData,
+	})
 }
 
-// Helper function
-func calculateQueueUsage(pool *worker.WorkerPool) float64 {
-	if pool.GetQueueCapacity() == 0 {
-		return 0
+// GetPoolMetrics returns worker pool metrics
+// GET /api/v1/worker/metrics
+func (h *WorkerHandlers) GetPoolMetrics(c *gin.Context) {
+	metrics := h.pool.GetMetrics()
+
+	c.JSON(http.StatusOK, types.SuccessResponse{
+		Success: true,
+		Data:    metrics,
+	})
+}
+
+// GetWorkerStats returns statistics for all workers
+// GET /api/v1/worker/stats
+func (h *WorkerHandlers) GetWorkerStats(c *gin.Context) {
+	stats := h.pool.GetWorkerStats()
+
+	c.JSON(http.StatusOK, types.SuccessResponse{
+		Success: true,
+		Data: map[string]interface{}{
+			"worker_count": len(stats),
+			"workers":      stats,
+		},
+	})
+}
+
+// GetPoolHealth returns health status of the worker pool
+// GET /api/v1/worker/health
+func (h *WorkerHandlers) GetPoolHealth(c *gin.Context) {
+	metrics := h.pool.GetMetrics()
+
+	// Determine health status
+	status := "healthy"
+	utilizationPercent := float64(metrics.BusyWorkers) / float64(metrics.TotalWorkers) * 100
+
+	if metrics.UnhealthyWorkers > 0 {
+		status = "degraded"
 	}
-	return float64(pool.GetQueueSize()) / float64(pool.GetQueueCapacity()) * 100
+	if utilizationPercent > 90 {
+		status = "warning"
+	}
+	if metrics.TotalWorkers == 0 {
+		status = "critical"
+	}
+
+	healthData := map[string]interface{}{
+		"status":              status,
+		"total_workers":       metrics.TotalWorkers,
+		"idle_workers":        metrics.IdleWorkers,
+		"busy_workers":        metrics.BusyWorkers,
+		"unhealthy_workers":   metrics.UnhealthyWorkers,
+		"utilization_percent": utilizationPercent,
+		"queued_jobs":         metrics.QueuedJobs,
+		"queue_utilization":   metrics.QueueUtilization,
+		"jobs_in_progress":    metrics.JobsInProgress,
+	}
+
+	httpStatus := http.StatusOK
+	if status == "critical" {
+		httpStatus = http.StatusServiceUnavailable
+	}
+
+	c.JSON(httpStatus, types.SuccessResponse{
+		Success: status != "critical",
+		Data:    healthData,
+	})
+}
+
+// GetPoolConfig returns worker pool configuration
+// GET /api/v1/worker/config
+func (h *WorkerHandlers) GetPoolConfig(c *gin.Context) {
+	// Note: In production, you'd expose this from the pool
+	config := map[string]interface{}{
+		"min_workers":          5,
+		"max_workers":          50,
+		"queue_size":           1000,
+		"scale_up_threshold":   0.8,
+		"scale_down_threshold": 0.2,
+		"job_timeout_seconds":  300,
+	}
+
+	c.JSON(http.StatusOK, types.SuccessResponse{
+		Success: true,
+		Data:    config,
+	})
+}
+
+// GetQueueStats returns statistics about job queues
+// GET /api/v1/worker/queues
+func (h *WorkerHandlers) GetQueueStats(c *gin.Context) {
+	metrics := h.pool.GetMetrics()
+
+	queueStats := map[string]interface{}{
+		"total_queued":     metrics.QueuedJobs,
+		"queue_capacity":   metrics.QueueCapacity,
+		"utilization":      metrics.QueueUtilization,
+		"by_priority":      metrics.JobsByPriority,
+		"jobs_in_progress": metrics.JobsInProgress,
+	}
+
+	c.JSON(http.StatusOK, types.SuccessResponse{
+		Success: true,
+		Data:    queueStats,
+	})
+}
+
+// GetPerformanceStats returns performance statistics
+// GET /api/v1/worker/performance
+func (h *WorkerHandlers) GetPerformanceStats(c *gin.Context) {
+	metrics := h.pool.GetMetrics()
+
+	performanceStats := map[string]interface{}{
+		"total_jobs_processed":    metrics.TotalJobsProcessed,
+		"total_jobs_failed":       metrics.TotalJobsFailed,
+		"avg_job_duration_ms":     metrics.AvgJobDuration,
+		"avg_queue_wait_time_ms":  metrics.AvgQueueWaitTime,
+		"throughput_jobs_per_sec": metrics.Throughput,
+		"success_rate":            calculateSuccessRate(metrics),
+	}
+
+	c.JSON(http.StatusOK, types.SuccessResponse{
+		Success: true,
+		Data:    performanceStats,
+	})
+}
+
+// BatchSubmitJobs submits multiple jobs at once
+// POST /api/v1/worker/jobs/batch
+func (h *WorkerHandlers) BatchSubmitJobs(c *gin.Context) {
+	var req struct {
+		Jobs []struct {
+			Type     string                 `json:"type" binding:"required"`
+			Priority string                 `json:"priority"`
+			Payload  map[string]interface{} `json:"payload" binding:"required"`
+			Timeout  int                    `json:"timeout_seconds"`
+			Metadata map[string]string      `json:"metadata"`
+		} `json:"jobs" binding:"required,min=1"`
+	}
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, types.ErrorResponse{
+			Error:   "Invalid request body",
+			Message: err.Error(),
+		})
+		return
+	}
+
+	results := make([]map[string]interface{}, 0, len(req.Jobs))
+	successCount := 0
+	failureCount := 0
+
+	for _, jobReq := range req.Jobs {
+		job := worker.NewJob(jobReq.Type, jobReq.Payload)
+
+		// Set priority
+		if jobReq.Priority != "" {
+			switch jobReq.Priority {
+			case "low":
+				job.SetPriority(worker.PriorityLow)
+			case "high":
+				job.SetPriority(worker.PriorityHigh)
+			case "critical":
+				job.SetPriority(worker.PriorityCritical)
+			}
+		}
+
+		// Set timeout
+		if jobReq.Timeout > 0 {
+			job.Timeout = time.Duration(jobReq.Timeout) * time.Second
+		}
+
+		// Set metadata
+		if jobReq.Metadata != nil {
+			job.Metadata = jobReq.Metadata
+		}
+
+		// Submit job
+		err := h.pool.Submit(job)
+
+		result := map[string]interface{}{
+			"job_id": job.ID,
+			"type":   job.Type,
+		}
+
+		if err != nil {
+			result["success"] = false
+			result["error"] = err.Error()
+			failureCount++
+		} else {
+			result["success"] = true
+			result["status"] = job.GetStatus()
+			successCount++
+		}
+
+		results = append(results, result)
+	}
+
+	h.logger.Info("Batch job submission",
+		"total_jobs", len(req.Jobs),
+		"successful", successCount,
+		"failed", failureCount,
+	)
+
+	c.JSON(http.StatusOK, types.SuccessResponse{
+		Success: true,
+		Data: map[string]interface{}{
+			"total_jobs": len(req.Jobs),
+			"successful": successCount,
+			"failed":     failureCount,
+			"results":    results,
+		},
+	})
+}
+
+// CancelJob cancels a pending or running job
+// DELETE /api/v1/worker/jobs/:id
+func (h *WorkerHandlers) CancelJob(c *gin.Context) {
+	jobID := c.Param("id")
+
+	if jobID == "" {
+		c.JSON(http.StatusBadRequest, types.ErrorResponse{
+			Error:   "Invalid request",
+			Message: "job_id is required",
+		})
+		return
+	}
+
+	// Get job
+	job, exists := h.pool.GetJob(jobID)
+	if !exists {
+		c.JSON(http.StatusNotFound, types.ErrorResponse{
+			Error:   "Job not found",
+			Message: "No job found with the given ID",
+		})
+		return
+	}
+
+	// Cancel job
+	job.Cancel()
+	job.SetStatus(worker.JobStatusCancelled)
+
+	h.logger.Info("Job cancelled", "job_id", jobID)
+
+	c.JSON(http.StatusOK, types.SuccessResponse{
+		Success: true,
+		Message: "Job cancelled successfully",
+		Data: map[string]interface{}{
+			"job_id":       jobID,
+			"status":       job.GetStatus(),
+			"cancelled_at": time.Now(),
+		},
+	})
+}
+
+// GetWorkerDetails returns detailed information about a specific worker
+// GET /api/v1/worker/workers/:id
+func (h *WorkerHandlers) GetWorkerDetails(c *gin.Context) {
+	workerID := c.Param("id")
+
+	if workerID == "" {
+		c.JSON(http.StatusBadRequest, types.ErrorResponse{
+			Error:   "Invalid request",
+			Message: "worker_id is required",
+		})
+		return
+	}
+
+	// Get all worker stats
+	stats := h.pool.GetWorkerStats()
+
+	// Find specific worker
+	var workerStats map[string]interface{}
+	for _, stat := range stats {
+		if stat["id"] == workerID {
+			workerStats = stat
+			break
+		}
+	}
+
+	if workerStats == nil {
+		c.JSON(http.StatusNotFound, types.ErrorResponse{
+			Error:   "Worker not found",
+			Message: "No worker found with the given ID",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, types.SuccessResponse{
+		Success: true,
+		Data:    workerStats,
+	})
+}
+
+// Helper function to calculate success rate
+func calculateSuccessRate(metrics worker.WorkerPoolMetrics) string {
+	total := metrics.TotalJobsProcessed + metrics.TotalJobsFailed
+	if total == 0 {
+		return "N/A"
+	}
+
+	rate := float64(metrics.TotalJobsProcessed) / float64(total) * 100
+	return fmt.Sprintf("%.2f%%", rate)
 }
