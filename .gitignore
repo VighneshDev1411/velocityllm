@@ -62,6 +62,13 @@ web/out/
 web/node_modules/
 web/build/
 
+# Frontend
+frontend/.next/
+frontend/out/
+frontend/node_modules/
+frontend/build/
+frontend/.turbo/
+
 # Docker
 *.tar
 
