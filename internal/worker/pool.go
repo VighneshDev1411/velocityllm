@@ -588,3 +588,61 @@ func min(a, b int) int {
 	}
 	return b
 }
+
+// Global worker pool instance
+var globalPool *WorkerPool
+var globalPoolMu sync.RWMutex
+
+// InitGlobalPool initializes the global worker pool
+func InitGlobalPool(config PoolConfig) error {
+	globalPoolMu.Lock()
+	defer globalPoolMu.Unlock()
+
+	if globalPool != nil {
+		return fmt.Errorf("global worker pool already initialized")
+	}
+
+	// Convert PoolConfig to WorkerPoolConfig
+	poolConfig := &WorkerPoolConfig{
+		MinWorkers:          config.WorkerCount,
+		MaxWorkers:          config.WorkerCount * 2,
+		IdleTimeout:         5 * time.Minute,
+		QueueSize:           config.QueueSize,
+		JobTimeout:          config.Timeout,
+		ScaleUpThreshold:    0.8,
+		ScaleDownThreshold:  0.2,
+		ScaleInterval:       30 * time.Second,
+		HealthCheckInterval: 10 * time.Second,
+		UnhealthyThreshold:  3,
+	}
+
+	logger := utils.NewLogger()
+	globalPool = NewWorkerPool(poolConfig, logger)
+
+	return nil
+}
+
+// GetGlobalPool returns the global worker pool
+func GetGlobalPool() *WorkerPool {
+	globalPoolMu.RLock()
+	defer globalPoolMu.RUnlock()
+	return globalPool
+}
+
+// ShutdownGlobalPool shuts down the global worker pool
+func ShutdownGlobalPool() error {
+	globalPoolMu.Lock()
+	defer globalPoolMu.Unlock()
+
+	if globalPool == nil {
+		return nil
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	err := globalPool.Shutdown(ctx)
+	globalPool = nil
+
+	return err
+}

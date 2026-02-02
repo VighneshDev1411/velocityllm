@@ -2,151 +2,210 @@ package streaming
 
 import (
 	"context"
+	"errors"
 	"sync"
 	"time"
 )
 
-// StreamType represents the type of streaming connection
+// StreamType represents the type of stream
 type StreamType string
 
 const (
 	StreamTypeSSE       StreamType = "sse"       // Server-Sent Events
-	StreamTypeWebSocket StreamType = "websocket" // WebSocket connection
+	StreamTypeWebSocket StreamType = "websocket" // WebSocket
 )
 
-// StreamStatus represents the current status of a stream
+// StreamStatus represents the status of a stream
 type StreamStatus string
 
 const (
 	StreamStatusActive    StreamStatus = "active"
 	StreamStatusCompleted StreamStatus = "completed"
 	StreamStatusCancelled StreamStatus = "cancelled"
-	StreamStatusError     StreamStatus = "error"
+	StreamStatusErrored   StreamStatus = "errored"
 )
 
-// StreamEvent represents a single event in the stream
-type StreamEvent struct {
-	ID        string                 `json:"id"`        // Event ID
-	Type      string                 `json:"type"`      // Event type (chunk, error, done)
-	Data      map[string]interface{} `json:"data"`      // Event data
-	Timestamp time.Time              `json:"timestamp"` // When event was created
+// Common errors
+var (
+	ErrStreamNotFound = errors.New("stream not found")
+	ErrStreamClosed   = errors.New("stream is closed")
+)
+
+// TokenChunk represents a single token in the stream
+type TokenChunk struct {
+	Token     string    `json:"token"`
+	Index     int       `json:"index"`
+	Timestamp time.Time `json:"timestamp"`
 }
 
-// StreamChunk represents a single chunk of streamed content
-type StreamChunk struct {
-	RequestID string    `json:"request_id"` // Associated request ID
-	ChunkID   int       `json:"chunk_id"`   // Chunk sequence number
-	Content   string    `json:"content"`    // Chunk content (token/word)
-	Model     string    `json:"model"`      // Model that generated this
-	Timestamp time.Time `json:"timestamp"`  // When chunk was generated
-	Done      bool      `json:"done"`       // Is this the final chunk?
-
-	// Metadata
-	TokenCount int               `json:"token_count,omitempty"` // Tokens in this chunk
-	Metadata   map[string]string `json:"metadata,omitempty"`    // Additional metadata
+// StreamMessage represents a message in the stream
+type StreamMessage struct {
+	Type  string      `json:"type"` // "token", "metadata", "error", "done"
+	Data  interface{} `json:"data"`
+	Event string      `json:"event,omitempty"`
+	ID    string      `json:"id,omitempty"`
+	Retry int         `json:"retry,omitempty"`
 }
 
-// StreamConnection represents an active streaming connection
-type StreamConnection struct {
-	ID        string       // Unique connection ID
-	RequestID string       // Associated request ID
-	Type      StreamType   // Connection type (SSE/WebSocket)
-	Status    StreamStatus // Current status
+// StreamMetadata contains metadata about the stream
+type StreamMetadata struct {
+	Model       string    `json:"model"`
+	Prompt      string    `json:"prompt"`
+	StartTime   time.Time `json:"start_time"`
+	TokenCount  int       `json:"token_count"`
+	TotalTokens int       `json:"total_tokens,omitempty"`
+	Cost        float64   `json:"cost,omitempty"`
+}
 
-	// Channels
-	EventChan chan StreamEvent // Channel for sending events
-	DoneChan  chan struct{}    // Signal completion
-	ErrorChan chan error       // Error channel
+// StreamError represents an error in the stream
+type StreamError struct {
+	Code    string `json:"code"`
+	Message string `json:"message"`
+	Type    string `json:"type"`
+}
 
-	// Context
-	Ctx    context.Context    // Connection context
-	Cancel context.CancelFunc // Cancel function
+// StreamConfig holds stream configuration
+type StreamConfig struct {
+	BufferSize    int           // Size of token buffer
+	FlushInterval time.Duration // How often to flush buffer
+	Timeout       time.Duration // Stream timeout
+	MaxTokens     int           // Maximum tokens to stream
+	EnableMetrics bool          // Enable metrics collection
+}
 
-	// Metadata
-	ClientIP      string    // Client IP address
-	UserAgent     string    // Client user agent
-	StartTime     time.Time // When connection started
-	LastEventTime time.Time // Last event sent time
+// DefaultStreamConfig returns default stream configuration
+func DefaultStreamConfig() StreamConfig {
+	return StreamConfig{
+		BufferSize:    10,
+		FlushInterval: 50 * time.Millisecond,
+		Timeout:       30 * time.Second,
+		MaxTokens:     4000,
+		EnableMetrics: true,
+	}
+}
 
-	// Stats
-	EventCount int   // Number of events sent
-	BytesSent  int64 // Total bytes sent
+// Stream represents an active stream
+type Stream struct {
+	ID         string
+	Type       StreamType
+	Config     StreamConfig
+	StartTime  time.Time
+	TokenCount int
+	Metadata   StreamMetadata
+	Context    context.Context
+	Cancel     context.CancelFunc
+	WriteChan  chan StreamMessage
+	ErrorChan  chan error
+	DoneChan   chan struct{}
+	mu         sync.RWMutex
+	closed     bool
+}
 
-	mu sync.RWMutex // Protects connection state
+// StreamManager manages multiple streams
+// (Removed duplicate definition. See manager.go for implementation.)
+
+// StreamStats holds stream statistics
+type StreamStats struct {
+	TotalStreams       int64
+	ActiveStreams      int
+	CompletedStreams   int64
+	FailedStreams      int64
+	AvgStreamDuration  time.Duration
+	TotalTokens        int64
+	AvgTokensPerStream float64
+}
+
+// SSEWriter is an interface for SSE writing
+type SSEWriter interface {
+	WriteSSE(message StreamMessage) error
+	Flush() error
+	Close() error
+}
+
+// TokenBuffer buffers tokens before sending
+type TokenBuffer struct {
+	tokens    []TokenChunk
+	maxSize   int
+	flushTime time.Time
+	mu        sync.Mutex
 }
 
 // StreamRequest represents a request to start streaming
 type StreamRequest struct {
-	Prompt      string            `json:"prompt" binding:"required"`
+	Prompt      string            `json:"prompt"`
 	Model       string            `json:"model"`
-	MaxTokens   int               `json:"max_tokens"`
-	Temperature float32           `json:"temperature"`
+	MaxTokens   int               `json:"max_tokens,omitempty"`
+	Temperature float64           `json:"temperature,omitempty"`
 	Stream      bool              `json:"stream"`
-	Metadata    map[string]string `json:"metadata"`
+	Metadata    map[string]string `json:"metadata,omitempty"`
 }
 
-// StreamMetrics holds metrics for streaming operations
-type StreamMetrics struct {
-	TotalStreams     int64 `json:"total_streams"`
-	ActiveStreams    int64 `json:"active_streams"`
-	CompletedStreams int64 `json:"completed_streams"`
-	CancelledStreams int64 `json:"cancelled_streams"`
-	ErroredStreams   int64 `json:"errored_streams"`
+// StreamResponse represents a streaming response
+type StreamResponse struct {
+	ID           string         `json:"id"`
+	Type         string         `json:"type"`
+	Model        string         `json:"model"`
+	Token        string         `json:"token,omitempty"`
+	Metadata     StreamMetadata `json:"metadata,omitempty"`
+	Error        *StreamError   `json:"error,omitempty"`
+	Finished     bool           `json:"finished"`
+	FinishReason string         `json:"finish_reason,omitempty"`
+}
 
-	// Performance
-	AvgStreamDuration  float64 `json:"avg_stream_duration_ms"`
-	AvgChunksPerStream float64 `json:"avg_chunks_per_stream"`
-	TotalBytesStreamed int64   `json:"total_bytes_streamed"`
+// StreamChunk represents a chunk of streaming data
+type StreamChunk struct {
+	ChunkID    int               `json:"chunk_id"`
+	Content    string            `json:"content"`
+	Model      string            `json:"model"`
+	Timestamp  time.Time         `json:"timestamp"`
+	Done       bool              `json:"done"`
+	TokenCount int               `json:"token_count"`
+	Metadata   map[string]string `json:"metadata,omitempty"`
+}
 
-	// By Type
-	SSEStreams       int64 `json:"sse_streams"`
-	WebSocketStreams int64 `json:"websocket_streams"`
+// StreamEvent represents an event to be sent to a stream
+type StreamEvent struct {
+	Type      string                 `json:"type"`
+	Data      interface{}            `json:"data"`
+	ID        string                 `json:"id,omitempty"`
+	Retry     int                    `json:"retry,omitempty"`
+	Timestamp time.Time              `json:"timestamp"`
+	Metadata  map[string]interface{} `json:"metadata,omitempty"`
+}
 
-	// Timing
-	LastUpdated time.Time `json:"last_updated"`
-
-	mu sync.RWMutex // Protects metrics
+// StreamConnection represents an active streaming connection
+type StreamConnection struct {
+	ID            string
+	RequestID     string
+	Type          StreamType
+	Status        StreamStatus
+	StartTime     time.Time
+	LastEventTime time.Time
+	EventCount    int
+	BytesSent     int64
+	Ctx           context.Context
+	Cancel        context.CancelFunc
+	EventChan     chan StreamEvent
+	Error         error
+	mu            sync.RWMutex
 }
 
 // NewStreamConnection creates a new stream connection
-func NewStreamConnection(id, requestID string, streamType StreamType, ctx context.Context) *StreamConnection {
+func NewStreamConnection(streamID, requestID string, streamType StreamType, ctx context.Context) *StreamConnection {
 	connCtx, cancel := context.WithCancel(ctx)
 
 	return &StreamConnection{
-		ID:            id,
+		ID:            streamID,
 		RequestID:     requestID,
 		Type:          streamType,
 		Status:        StreamStatusActive,
-		EventChan:     make(chan StreamEvent, 100), // Buffered for backpressure
-		DoneChan:      make(chan struct{}),
-		ErrorChan:     make(chan error, 1),
-		Ctx:           connCtx,
-		Cancel:        cancel,
 		StartTime:     time.Now(),
 		LastEventTime: time.Now(),
 		EventCount:    0,
 		BytesSent:     0,
-	}
-}
-
-// SendEvent sends an event through the stream
-func (sc *StreamConnection) SendEvent(event StreamEvent) error {
-	sc.mu.Lock()
-	defer sc.mu.Unlock()
-
-	if sc.Status != StreamStatusActive {
-		return ErrStreamNotActive
-	}
-
-	select {
-	case sc.EventChan <- event:
-		sc.EventCount++
-		sc.LastEventTime = time.Now()
-		return nil
-	case <-sc.Ctx.Done():
-		return ErrStreamCancelled
-	default:
-		return ErrStreamBufferFull
+		Ctx:           connCtx,
+		Cancel:        cancel,
+		EventChan:     make(chan StreamEvent, 100),
 	}
 }
 
@@ -155,34 +214,49 @@ func (sc *StreamConnection) Close() {
 	sc.mu.Lock()
 	defer sc.mu.Unlock()
 
-	if sc.Status == StreamStatusActive {
-		sc.Status = StreamStatusCompleted
-		close(sc.DoneChan)
-		sc.Cancel()
+	if sc.Status == StreamStatusCompleted || sc.Status == StreamStatusCancelled {
+		return
+	}
+
+	sc.Status = StreamStatusCompleted
+	sc.Cancel()
+	close(sc.EventChan)
+}
+
+// SendEvent sends an event to the stream
+func (sc *StreamConnection) SendEvent(event StreamEvent) error {
+	sc.mu.RLock()
+	if sc.Status != StreamStatusActive {
+		sc.mu.RUnlock()
+		return ErrStreamClosed
+	}
+	sc.mu.RUnlock()
+
+	select {
+	case sc.EventChan <- event:
+		sc.mu.Lock()
+		sc.EventCount++
+		sc.LastEventTime = time.Now()
+		sc.mu.Unlock()
+		return nil
+	case <-sc.Ctx.Done():
+		return sc.Ctx.Err()
+	case <-time.After(5 * time.Second):
+		return errors.New("send event timeout")
 	}
 }
 
-// SetError sets the stream to error state
+// SetError sets an error on the connection
 func (sc *StreamConnection) SetError(err error) {
 	sc.mu.Lock()
 	defer sc.mu.Unlock()
 
-	sc.Status = StreamStatusError
-	select {
-	case sc.ErrorChan <- err:
-	default:
-	}
+	sc.Error = err
+	sc.Status = StreamStatusErrored
 	sc.Cancel()
 }
 
-// GetStatus returns the current stream status
-func (sc *StreamConnection) GetStatus() StreamStatus {
-	sc.mu.RLock()
-	defer sc.mu.RUnlock()
-	return sc.Status
-}
-
-// GetMetadata returns stream metadata
+// GetMetadata returns connection metadata
 func (sc *StreamConnection) GetMetadata() map[string]interface{} {
 	sc.mu.RLock()
 	defer sc.mu.RUnlock()
@@ -196,58 +270,43 @@ func (sc *StreamConnection) GetMetadata() map[string]interface{} {
 		"last_event_time": sc.LastEventTime,
 		"event_count":     sc.EventCount,
 		"bytes_sent":      sc.BytesSent,
-		"duration_ms":     time.Since(sc.StartTime).Milliseconds(),
+		"duration":        time.Since(sc.StartTime).Seconds(),
 	}
 }
 
-// Custom errors
-var (
-	ErrStreamNotActive   = NewStreamError("stream is not active")
-	ErrStreamCancelled   = NewStreamError("stream was cancelled")
-	ErrStreamBufferFull  = NewStreamError("stream buffer is full")
-	ErrStreamNotFound    = NewStreamError("stream not found")
-	ErrInvalidStreamType = NewStreamError("invalid stream type")
-)
-
-// StreamError represents a streaming error
-type StreamError struct {
-	Message string
+// StreamMetrics tracks streaming metrics
+type StreamMetrics struct {
+	TotalStreams      int64     `json:"total_streams"`
+	ActiveStreams     int64     `json:"active_streams"`
+	CompletedStreams  int64     `json:"completed_streams"`
+	CancelledStreams  int64     `json:"cancelled_streams"`
+	ErroredStreams    int64     `json:"errored_streams"`
+	TotalEvents       int64     `json:"total_events"`
+	TotalBytesSent    int64     `json:"total_bytes_sent"`
+	AvgEventsPerStream float64  `json:"avg_events_per_stream"`
+	AvgBytesPerStream  float64  `json:"avg_bytes_per_stream"`
+	LastUpdated       time.Time `json:"last_updated"`
+	mu                sync.RWMutex
 }
 
-func NewStreamError(message string) *StreamError {
-	return &StreamError{Message: message}
-}
-
-func (e *StreamError) Error() string {
-	return e.Message
-}
-
-// UpdateMetrics updates stream metrics
+// UpdateMetrics updates metrics based on a connection
 func (sm *StreamMetrics) UpdateMetrics(conn *StreamConnection, completed bool) {
 	sm.mu.Lock()
 	defer sm.mu.Unlock()
 
-	sm.TotalStreams++
-
-	if completed {
-		sm.CompletedStreams++
-		sm.ActiveStreams--
-
-		// Update averages
-		duration := time.Since(conn.StartTime).Seconds() * 1000 // ms
-		sm.AvgStreamDuration = (sm.AvgStreamDuration*float64(sm.CompletedStreams-1) + duration) / float64(sm.CompletedStreams)
-		sm.AvgChunksPerStream = (sm.AvgChunksPerStream*float64(sm.CompletedStreams-1) + float64(conn.EventCount)) / float64(sm.CompletedStreams)
-		sm.TotalBytesStreamed += conn.BytesSent
-	} else {
+	if !completed {
+		sm.TotalStreams++
 		sm.ActiveStreams++
-	}
+	} else {
+		sm.ActiveStreams--
+		sm.CompletedStreams++
+		sm.TotalEvents += int64(conn.EventCount)
+		sm.TotalBytesSent += conn.BytesSent
 
-	// Update by type
-	switch conn.Type {
-	case StreamTypeSSE:
-		sm.SSEStreams++
-	case StreamTypeWebSocket:
-		sm.WebSocketStreams++
+		if sm.CompletedStreams > 0 {
+			sm.AvgEventsPerStream = float64(sm.TotalEvents) / float64(sm.CompletedStreams)
+			sm.AvgBytesPerStream = float64(sm.TotalBytesSent) / float64(sm.CompletedStreams)
+		}
 	}
 
 	sm.LastUpdated = time.Now()
@@ -257,8 +316,8 @@ func (sm *StreamMetrics) UpdateMetrics(conn *StreamConnection, completed bool) {
 func (sm *StreamMetrics) IncrementCancelled() {
 	sm.mu.Lock()
 	defer sm.mu.Unlock()
+
 	sm.CancelledStreams++
-	sm.ActiveStreams--
 	sm.LastUpdated = time.Now()
 }
 
@@ -266,12 +325,12 @@ func (sm *StreamMetrics) IncrementCancelled() {
 func (sm *StreamMetrics) IncrementErrored() {
 	sm.mu.Lock()
 	defer sm.mu.Unlock()
+
 	sm.ErroredStreams++
-	sm.ActiveStreams--
 	sm.LastUpdated = time.Now()
 }
 
-// GetSnapshot returns a snapshot of current metrics
+// GetSnapshot returns a copy of the current metrics
 func (sm *StreamMetrics) GetSnapshot() StreamMetrics {
 	sm.mu.RLock()
 	defer sm.mu.RUnlock()
@@ -282,11 +341,10 @@ func (sm *StreamMetrics) GetSnapshot() StreamMetrics {
 		CompletedStreams:   sm.CompletedStreams,
 		CancelledStreams:   sm.CancelledStreams,
 		ErroredStreams:     sm.ErroredStreams,
-		AvgStreamDuration:  sm.AvgStreamDuration,
-		AvgChunksPerStream: sm.AvgChunksPerStream,
-		TotalBytesStreamed: sm.TotalBytesStreamed,
-		SSEStreams:         sm.SSEStreams,
-		WebSocketStreams:   sm.WebSocketStreams,
+		TotalEvents:        sm.TotalEvents,
+		TotalBytesSent:     sm.TotalBytesSent,
+		AvgEventsPerStream: sm.AvgEventsPerStream,
+		AvgBytesPerStream:  sm.AvgBytesPerStream,
 		LastUpdated:        sm.LastUpdated,
 	}
 }

@@ -317,6 +317,13 @@ func (w *Worker) GetMetrics() map[string]interface{} {
 	return metrics
 }
 
+// PoolConfig is a simpler configuration for worker pool (backward compatibility)
+type PoolConfig struct {
+	WorkerCount int           `json:"worker_count"`
+	QueueSize   int           `json:"queue_size"`
+	Timeout     time.Duration `json:"timeout"`
+}
+
 // WorkerPoolConfig holds configuration for the worker pool
 type WorkerPoolConfig struct {
 	// Pool sizing

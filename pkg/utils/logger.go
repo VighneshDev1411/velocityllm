@@ -389,6 +389,34 @@ func SetDefaultLogger(logger *Logger) {
 	defaultLogger = logger
 }
 
+// InitLogger initializes the default logger with a specific log level
+func InitLogger(levelStr string) {
+	var level LogLevel
+	switch levelStr {
+	case "debug":
+		level = DEBUG
+	case "info":
+		level = INFO
+	case "warn", "warning":
+		level = WARN
+	case "error":
+		level = ERROR
+	case "fatal":
+		level = FATAL
+	default:
+		level = INFO
+	}
+
+	config := &LoggerConfig{
+		Level:      level,
+		UseColor:   true,
+		Timestamps: true,
+		Caller:     false,
+	}
+
+	defaultLogger = NewLoggerWithConfig(config)
+}
+
 // Package-level logging functions using the default logger
 
 // Debug logs a debug message using the default logger

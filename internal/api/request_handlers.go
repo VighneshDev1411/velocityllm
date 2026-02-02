@@ -222,3 +222,9 @@ func DeleteRequestHandler(w http.ResponseWriter, r *http.Request) {
 
 	types.WriteSuccess(w, "Request deleted successfully", nil)
 }
+
+// RequestsHandler is an alias for ListRequestsHandler
+var RequestsHandler = ListRequestsHandler
+
+// RequestStatsHandler is an alias for GetRequestStatsHandler
+var RequestStatsHandler = GetRequestStatsHandler
