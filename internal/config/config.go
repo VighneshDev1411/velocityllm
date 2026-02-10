@@ -87,6 +87,17 @@ func Load() (*Config, error) {
 
 // GetDatabaseDSN returns the PostgreSQL connection string
 func (c *Config) GetDatabaseDSN() string {
+	if c.Database.Password == "" {
+		// Don't include password parameter if it's empty
+		return fmt.Sprintf(
+			"host=%s port=%d user=%s dbname=%s sslmode=%s",
+			c.Database.Host,
+			c.Database.Port,
+			c.Database.User,
+			c.Database.Database,
+			c.Database.SSLMode,
+		)
+	}
 	return fmt.Sprintf(
 		"host=%s port=%d user=%s password=%s dbname=%s sslmode=%s",
 		c.Database.Host,

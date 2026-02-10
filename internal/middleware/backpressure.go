@@ -246,7 +246,7 @@ func BackpressureMiddleware(bh *BackpressureHandler) func(http.Handler) http.Han
 				w.WriteHeader(http.StatusServiceUnavailable)
 				errorResp := types.NewErrorResponse("Service Unavailable", reason)
 				json.NewEncoder(w).Encode(errorResp)
-				utils.Debug("Request rejected by backpressure: %s", reason)
+				utils.Debug("Request rejected by backpressure", "value", reason)
 				return
 			}
 

@@ -29,20 +29,20 @@ func (fc *FallbackChain) Execute(ctx context.Context, fn func(model types.Model)
 	var lastErr error
 
 	for i, model := range fc.models {
-		utils.Info("Trying model %d/%d: %s", i+1, len(fc.models), model.Name)
+		utils.Info("Trying model %d/%d", "value", i+1, len(fc.models), model.Name)
 
 		err := fn(model)
 		if err == nil {
 			// Success!
 			if i > 0 {
-				utils.Info("Fallback successful with model: %s", model.Name)
+				utils.Info("Fallback successful with model", "value", model.Name)
 			}
 			return nil
 		}
 
 		// This model failed
 		lastErr = err
-		utils.Warn("Model %s failed: %v", model.Name, err)
+		utils.Warn("Model %s failed", "value", model.Name, err)
 
 		// Check if context is cancelled
 		select {
@@ -66,20 +66,20 @@ func (fc *FallbackChain) ExecuteWithResult(ctx context.Context, fn func(model ty
 	var lastErr error
 
 	for i, model := range fc.models {
-		utils.Info("Trying model %d/%d: %s", i+1, len(fc.models), model.Name)
+		utils.Info("Trying model %d/%d", "value", i+1, len(fc.models), model.Name)
 
 		result, err := fn(model)
 		if err == nil {
 			// Success!
 			if i > 0 {
-				utils.Info("Fallback successful with model: %s", model.Name)
+				utils.Info("Fallback successful with model", "value", model.Name)
 			}
 			return result, nil
 		}
 
 		// This model failed
 		lastErr = err
-		utils.Warn("Model %s failed: %v", model.Name, err)
+		utils.Warn("Model %s failed", "value", model.Name, err)
 
 		// Check if context is cancelled
 		select {

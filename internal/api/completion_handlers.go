@@ -52,7 +52,7 @@ func CompletionHandler(w http.ResponseWriter, r *http.Request) {
 		// User specified a model - use it directly
 		routingDecision, err = routerInstance.RouteWithModel(ctx, req.Model)
 		if err != nil {
-			utils.Error("Failed to route to specified model %s: %v", req.Model, err)
+			utils.Error("Failed to route to specified model %s", "value", req.Model, err)
 			types.WriteError(w, http.StatusBadRequest, "Invalid or unavailable model: "+req.Model)
 			return
 		}
@@ -60,7 +60,7 @@ func CompletionHandler(w http.ResponseWriter, r *http.Request) {
 		// Use intelligent routing
 		routingDecision, err = routerInstance.Route(ctx, req.Prompt)
 		if err != nil {
-			utils.Error("Failed to route request: %v", err)
+			utils.Error("Failed to route request", "value", err)
 			types.WriteError(w, http.StatusInternalServerError, "Failed to select model")
 			return
 		}
@@ -80,7 +80,7 @@ func CompletionHandler(w http.ResponseWriter, r *http.Request) {
 		var cached types.CachedCompletion
 		found, err := cacheService.Get(ctx, cacheKey, &cached)
 		if err != nil {
-			utils.Error("Cache get error: %v", err)
+			utils.Error("Cache get error", "value", err)
 		}
 
 		if found {
@@ -146,7 +146,7 @@ func CompletionHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if err := cacheService.Set(ctx, cacheKey, cachedData, 24*time.Hour); err != nil {
-			utils.Error("Failed to cache response: %v", err)
+			utils.Error("Failed to cache response", "value", err)
 		} else {
 			utils.Info("Response cached: key=%s", cacheKey)
 		}
@@ -207,7 +207,7 @@ func logRequestToDatabase(req types.CompletionRequest, resp types.CompletionResp
 
 	repo := database.NewRequestRepository()
 	if err := repo.Create(&request); err != nil {
-		utils.Error("Failed to log request to database: %v", err)
+		utils.Error("Failed to log request to database", "value", err)
 	}
 }
 

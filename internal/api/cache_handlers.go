@@ -60,7 +60,7 @@ func (h *CacheHandlers) CompletionAsyncHandler(w http.ResponseWriter, r *http.Re
 	job.SetPriority(worker.PriorityNormal)
 
 	if err := h.pool.Submit(job); err != nil {
-		utils.Error("Failed to submit async request: %v", err)
+		utils.Error("Failed to submit async request", "value", err)
 		types.WriteError(w, http.StatusInternalServerError, "Failed to submit request: "+err.Error())
 		return
 	}
@@ -143,7 +143,7 @@ func (h *CacheHandlers) GetCacheStatsHandler(w http.ResponseWriter, r *http.Requ
 
 	stats, err := cache.GetStats()
 	if err != nil {
-		utils.Error("Failed to get cache stats: %v", err)
+		utils.Error("Failed to get cache stats", "value", err)
 		types.WriteError(w, http.StatusInternalServerError, "Failed to retrieve cache statistics")
 		return
 	}
@@ -159,7 +159,7 @@ func (h *CacheHandlers) ClearCacheHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	if err := cache.FlushAll(); err != nil {
-		utils.Error("Failed to clear cache: %v", err)
+		utils.Error("Failed to clear cache", "value", err)
 		types.WriteError(w, http.StatusInternalServerError, "Failed to clear cache")
 		return
 	}

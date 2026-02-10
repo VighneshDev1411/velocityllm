@@ -253,7 +253,7 @@ func GetRoutingDecisionHandler(w http.ResponseWriter, r *http.Request) {
 
 	decision, err := routerInstance.Route(ctx, req.Prompt)
 	if err != nil {
-		utils.Error("Failed to route: %v", err)
+		utils.Error("Failed to route", "value", err)
 		types.WriteError(w, http.StatusInternalServerError, "Failed to determine routing: "+err.Error())
 		return
 	}

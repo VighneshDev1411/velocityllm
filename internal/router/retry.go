@@ -80,7 +80,7 @@ func (rs *RetryStrategy) Execute(ctx context.Context, fn func() error) error {
 
 		// Function failed
 		lastErr = err
-		utils.Warn("Attempt %d/%d failed: %v", attempt, rs.config.MaxAttempts, err)
+		utils.Warn("Attempt %d/%d failed", "value", attempt, rs.config.MaxAttempts, err)
 
 		// Don't retry if this was the last attempt
 		if attempt == rs.config.MaxAttempts {
@@ -157,7 +157,7 @@ func (rs *RetryStrategy) ExecuteWithResult(ctx context.Context, fn func() (inter
 		}
 
 		// Function failed
-		utils.Warn("Attempt %d/%d failed: %v", attempt, rs.config.MaxAttempts, lastErr)
+		utils.Warn("Attempt %d/%d failed", "value", attempt, rs.config.MaxAttempts, lastErr)
 
 		// Don't retry if this was the last attempt
 		if attempt == rs.config.MaxAttempts {

@@ -5,6 +5,7 @@ import (
 	"sync"
 	"time"
 
+	_ "github.com/lib/pq" // PostgreSQL driver
 	"github.com/VighneshDev1411/velocityllm/pkg/utils"
 )
 

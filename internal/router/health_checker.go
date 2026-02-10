@@ -130,7 +130,7 @@ func (hc *HealthChecker) periodicCheck() {
 func (hc *HealthChecker) checkAllModels() {
 	models, err := hc.modelRepo.GetAll()
 	if err != nil {
-		utils.Error("Failed to get models for health check: %v", err)
+		utils.Error("Failed to get models for health check", "value", err)
 		return
 	}
 
@@ -256,7 +256,7 @@ func (hc *HealthChecker) updateHealth(modelName string, healthy bool, responseTi
 func (hc *HealthChecker) markModelAvailable(modelName string) {
 	err := hc.modelRepo.UpdateAvailability(modelName, true)
 	if err != nil {
-		utils.Error("Failed to mark model %s as available: %v", modelName, err)
+		utils.Error("Failed to mark model %s as available", "value", modelName, err)
 	} else {
 		utils.Info("Database updated: Model %s is now AVAILABLE", modelName)
 	}
@@ -266,7 +266,7 @@ func (hc *HealthChecker) markModelAvailable(modelName string) {
 func (hc *HealthChecker) markModelUnavailable(modelName string) {
 	err := hc.modelRepo.UpdateAvailability(modelName, false)
 	if err != nil {
-		utils.Error("Failed to mark model %s as unavailable: %v", modelName, err)
+		utils.Error("Failed to mark model %s as unavailable", "value", modelName, err)
 	} else {
 		utils.Warn("Database updated: Model %s is now UNAVAILABLE", modelName)
 	}

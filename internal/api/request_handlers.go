@@ -38,7 +38,7 @@ func CreateRequestHandler(w http.ResponseWriter, r *http.Request) {
 	// Create repository and save
 	repo := database.NewRequestRepository()
 	if err := repo.Create(&request); err != nil {
-		utils.Error("Failed to create request: %v", err)
+		utils.Error("Failed to create request", "value", err)
 		types.WriteError(w, http.StatusInternalServerError, "Failed to create request")
 		return
 	}
@@ -103,7 +103,7 @@ func ListRequestsHandler(w http.ResponseWriter, r *http.Request) {
 	repo := database.NewRequestRepository()
 	requests, err := repo.GetAll(limit, offset)
 	if err != nil {
-		utils.Error("Failed to retrieve requests: %v", err)
+		utils.Error("Failed to retrieve requests", "value", err)
 		types.WriteError(w, http.StatusInternalServerError, "Failed to retrieve requests")
 		return
 	}
@@ -111,7 +111,7 @@ func ListRequestsHandler(w http.ResponseWriter, r *http.Request) {
 	// Get total count
 	totalCount, err := repo.Count()
 	if err != nil {
-		utils.Error("Failed to count requests: %v", err)
+		utils.Error("Failed to count requests", "value", err)
 		totalCount = 0
 	}
 
@@ -133,7 +133,7 @@ func GetRequestStatsHandler(w http.ResponseWriter, r *http.Request) {
 	repo := database.NewRequestRepository()
 	stats, err := repo.GetStats()
 	if err != nil {
-		utils.Error("Failed to get stats: %v", err)
+		utils.Error("Failed to get stats", "value", err)
 		types.WriteError(w, http.StatusInternalServerError, "Failed to retrieve statistics")
 		return
 	}
@@ -183,7 +183,7 @@ func UpdateRequestHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Save updated request
 	if err := repo.Update(&updateData); err != nil {
-		utils.Error("Failed to update request: %v", err)
+		utils.Error("Failed to update request", "value", err)
 		types.WriteError(w, http.StatusInternalServerError, "Failed to update request")
 		return
 	}
@@ -215,7 +215,7 @@ func DeleteRequestHandler(w http.ResponseWriter, r *http.Request) {
 	// Delete request
 	repo := database.NewRequestRepository()
 	if err := repo.Delete(id); err != nil {
-		utils.Error("Failed to delete request: %v", err)
+		utils.Error("Failed to delete request", "value", err)
 		types.WriteError(w, http.StatusInternalServerError, "Failed to delete request")
 		return
 	}

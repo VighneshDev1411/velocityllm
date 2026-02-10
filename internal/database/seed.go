@@ -71,12 +71,12 @@ func Seed() error {
 		if result.Error != nil {
 			// Model doesn't exist, create it
 			if err := DB.Create(&model).Error; err != nil {
-				utils.Error("Failed to create model %s: %v", model.Name, err)
+				utils.Error("Failed to create model %s", "value", model.Name, err)
 				return err
 			}
-			utils.Info("Created model: %s", model.Name)
+			utils.Info("Created model", "value", model.Name)
 		} else {
-			utils.Info("Model already exists: %s", model.Name)
+			utils.Info("Model already exists", "value", model.Name)
 		}
 	}
 

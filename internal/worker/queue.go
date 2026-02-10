@@ -213,7 +213,7 @@ func (qm *QueueManager) DeleteQueue(name string) error {
 	}
 
 	delete(qm.queues, name)
-	utils.Info("Deleted queue: %s", name)
+	utils.Info("Deleted queue", "value", name)
 	return nil
 }
 

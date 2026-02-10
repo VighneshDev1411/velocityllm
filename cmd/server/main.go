@@ -37,19 +37,19 @@ func main() {
 
 	// Connect to database
 	if err := database.Connect(cfg); err != nil {
-		utils.Fatal("Failed to connect to database: %v", err)
+		utils.Fatal("Failed to connect to database", "error", err)
 	}
 	utils.Info("Database connected successfully")
 
 	// Run migrations
 	if err := database.Migrate(); err != nil {
-		utils.Fatal("Failed to migrate database: %v", err)
+		utils.Fatal("Failed to migrate database", "error", err)
 	}
 	utils.Info("Database migration completed")
 
 	// Seed database with initial data
 	if err := database.Seed(); err != nil {
-		utils.Fatal("Failed to seed database: %v", err)
+		utils.Fatal("Failed to seed database", "error", err)
 	}
 
 	// ============================================
@@ -67,7 +67,7 @@ func main() {
 	}
 
 	if err := optimization.InitGlobalDBPool(dbPoolConfig, cfg.GetDatabaseDSN()); err != nil {
-		utils.Fatal("Failed to initialize database pool: %v", err)
+		utils.Fatal("Failed to initialize database pool", "error", err)
 	}
 	utils.Info("Database connection pool initialized: %d-%d connections",
 		dbPoolConfig.MinConnections, dbPoolConfig.MaxConnections)
@@ -83,7 +83,7 @@ func main() {
 	}
 
 	if err := optimization.InitGlobalRedisPool(redisPoolConfig, cfg.GetRedisAddr(), "", 0); err != nil {
-		utils.Fatal("Failed to initialize Redis pool: %v", err)
+		utils.Fatal("Failed to initialize Redis pool", "error", err)
 	}
 	utils.Info("Redis connection pool initialized: %d-%d connections",
 		redisPoolConfig.MinConnections, redisPoolConfig.MaxConnections)
@@ -99,7 +99,7 @@ func main() {
 	}
 
 	if err := optimization.InitGlobalHTTPPool(httpPoolConfig, 30*time.Second); err != nil {
-		utils.Fatal("Failed to initialize HTTP pool: %v", err)
+		utils.Fatal("Failed to initialize HTTP pool", "error", err)
 	}
 	utils.Info("HTTP connection pool initialized: %d-%d connections",
 		httpPoolConfig.MinConnections, httpPoolConfig.MaxConnections)
@@ -150,7 +150,7 @@ func main() {
 	}
 
 	if err := worker.InitGlobalPool(workerConfig); err != nil {
-		utils.Fatal("Failed to initialize worker pool: %v", err)
+		utils.Fatal("Failed to initialize worker pool", "error", err)
 	}
 	utils.Info("Worker pool initialized: %d workers, queue size %d",
 		workerConfig.WorkerCount, workerConfig.QueueSize)
@@ -203,7 +203,7 @@ func main() {
 
 	// Connect to Redis (legacy)
 	if err := cache.Connect(cfg); err != nil {
-		utils.Fatal("Failed to connect to Redis: %v", err)
+		utils.Fatal("Failed to connect to Redis", "error", err)
 	}
 	utils.Info("Redis connected successfully")
 
@@ -218,7 +218,7 @@ func main() {
 
 	server := &http.Server{
 		Addr:         ":" + port,
-		Handler:      http.DefaultServeMux,
+		Handler:      api.HTTPCORSMiddleware(http.DefaultServeMux),
 		ReadTimeout:  15 * time.Second,
 		WriteTimeout: 15 * time.Second,
 		IdleTimeout:  60 * time.Second,
@@ -264,7 +264,7 @@ func main() {
 	utils.Info("Press Ctrl+C to stop")
 
 	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		utils.Fatal("Server failed to start: %v", err)
+		utils.Fatal("Server failed to start", "error", err)
 	}
 }
 

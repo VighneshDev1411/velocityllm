@@ -196,7 +196,7 @@ func (r *Router) executeWithCircuitBreaker(ctx context.Context, model types.Mode
 
 	if err != nil && err.Error() == "circuit breaker is OPEN" {
 		r.stats.CircuitBreakerTrips++
-		utils.Warn("Circuit breaker OPEN for model: %s", model.Name)
+		utils.Warn("Circuit breaker OPEN for model", "value", model.Name)
 	}
 
 	return err
@@ -242,7 +242,7 @@ func (r *Router) RouteWithModel(ctx context.Context, modelName string) (*Routing
 func (r *Router) SetStrategy(strategy RoutingStrategy) {
 	r.config.Strategy = strategy
 	r.algorithm = GetAlgorithm(strategy)
-	utils.Info("Routing strategy changed to: %s", strategy)
+	utils.Info("Routing strategy changed to", "value", strategy)
 }
 
 // GetStrategy returns the current routing strategy
@@ -411,7 +411,7 @@ func InitGlobalRouter(config *RoutingConfig) {
 		config = DefaultConfig()
 	}
 	globalRouter = NewRouter(config)
-	utils.Info("Global router initialized with strategy: %s", config.Strategy)
+	utils.Info("Global router initialized with strategy", "value", config.Strategy)
 }
 
 // GetGlobalRouter returns the global router instance

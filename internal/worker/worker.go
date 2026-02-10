@@ -114,7 +114,7 @@ func (w *Worker) processJob(ctx context.Context, job Job) JobResult {
 	// Get routing decision
 	routingDecision, err := routerInstance.Route(jobCtx, req.Prompt)
 	if err != nil {
-		utils.Error("Worker %d: routing failed for job %s: %v", w.ID, job.ID, err)
+		utils.Error("Worker %d: routing failed for job %s", "value", w.ID, job.ID, err)
 
 		// Record failed request metrics
 		collector := metrics.GetGlobalMetricsCollector()
@@ -144,7 +144,7 @@ func (w *Worker) processJob(ctx context.Context, job Job) JobResult {
 		var cached types.CachedCompletion
 		found, err := cacheService.Get(jobCtx, cacheKey, &cached)
 		if err != nil {
-			utils.Error("Cache get error: %v", err)
+			utils.Error("Cache get error", "value", err)
 		}
 
 		if found {
@@ -220,7 +220,7 @@ func (w *Worker) processJob(ctx context.Context, job Job) JobResult {
 		}
 
 		if err := cacheService.Set(jobCtx, cacheKey, cachedData, 24*time.Hour); err != nil {
-			utils.Error("Failed to cache response: %v", err)
+			utils.Error("Failed to cache response", "value", err)
 		}
 	}
 
@@ -291,7 +291,7 @@ func (w *Worker) logRequestToDatabase(req types.CompletionRequest, resp types.Co
 
 	repo := database.NewRequestRepository()
 	if err := repo.Create(&request); err != nil {
-		utils.Error("Worker %d: failed to log request: %v", w.ID, err)
+		utils.Error("Worker %d: failed to log request", "value", w.ID, err)
 	}
 }
 

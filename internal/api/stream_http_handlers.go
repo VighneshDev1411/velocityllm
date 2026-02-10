@@ -56,14 +56,14 @@ func StreamingCompletionHandler(w http.ResponseWriter, r *http.Request) {
 			if !ok {
 				// Stream complete
 				if err := sseHandler.WriteDone(); err != nil {
-					utils.Error("Failed to write done: %v", err)
+					utils.Error("Failed to write done", "value", err)
 				}
 				utils.Debug("Streaming completed successfully")
 				return
 			}
 
 			if err := sseHandler.WriteToken(token, index); err != nil {
-				utils.Error("Failed to write token: %v", err)
+				utils.Error("Failed to write token", "value", err)
 				return
 			}
 			index++
@@ -135,14 +135,14 @@ func SimpleStreamingHandler(w http.ResponseWriter, r *http.Request) {
 	// Stream each word
 	for i, token := range words {
 		if err := sseHandler.WriteToken(token, i); err != nil {
-			utils.Error("Failed to write token: %v", err)
+			utils.Error("Failed to write token", "value", err)
 			return
 		}
 		time.Sleep(50 * time.Millisecond)
 	}
 
 	if err := sseHandler.WriteDone(); err != nil {
-		utils.Error("Failed to write done: %v", err)
+		utils.Error("Failed to write done", "value", err)
 	}
 }
 
@@ -200,14 +200,14 @@ func TestSSEHandler(w http.ResponseWriter, r *http.Request) {
 
 	for i, msg := range messages {
 		if err := sseHandler.WriteToken(msg, i); err != nil {
-			utils.Error("Failed to write token: %v", err)
+			utils.Error("Failed to write token", "value", err)
 			return
 		}
 		time.Sleep(100 * time.Millisecond)
 	}
 
 	if err := sseHandler.WriteDone(); err != nil {
-		utils.Error("Failed to write done: %v", err)
+		utils.Error("Failed to write done", "value", err)
 		return
 	}
 

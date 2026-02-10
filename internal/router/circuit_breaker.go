@@ -220,7 +220,7 @@ func (cbm *CircuitBreakerManager) GetBreaker(modelName string) *CircuitBreaker {
 	// Create new circuit breaker
 	breaker := NewCircuitBreaker(modelName, cbm.config)
 	cbm.breakers[modelName] = breaker
-	utils.Info("Created circuit breaker for model: %s", modelName)
+	utils.Info("Created circuit breaker for model", "value", modelName)
 
 	return breaker
 }

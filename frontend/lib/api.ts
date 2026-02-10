@@ -33,13 +33,13 @@ api.interceptors.response.use(
 // Worker Pool API
 export const workerAPI = {
   // Get pool metrics
-  getMetrics: () => api.get('/api/v1/worker/metrics'),
-  
+  getMetrics: () => api.get('/api/v1/workers/metrics'),
+
   // Get worker statistics
-  getStats: () => api.get('/api/v1/worker/stats'),
-  
+  getStats: () => api.get('/api/v1/workers/stats'),
+
   // Get pool health
-  getHealth: () => api.get('/api/v1/worker/health'),
+  getHealth: () => api.get('/api/v1/workers/health'),
   
   // Get pool configuration
   getConfig: () => api.get('/api/v1/worker/config'),
@@ -69,22 +69,22 @@ export const workerAPI = {
 // Streaming API
 export const streamAPI = {
   // Get stream metrics
-  getMetrics: () => api.get('/api/v1/stream/metrics'),
-  
+  getMetrics: () => api.get('/api/v1/streaming/stats'),
+
   // Get stream statistics
-  getStats: () => api.get('/api/v1/stream/stats'),
-  
+  getStats: () => api.get('/api/v1/streaming/stats'),
+
   // Get stream health
-  getHealth: () => api.get('/api/v1/stream/health'),
-  
+  getHealth: () => api.get('/api/v1/streaming/stats'),
+
   // Get active streams
-  getActiveStreams: () => api.get('/api/v1/stream/active'),
-  
+  getActiveStreams: () => api.get('/api/v1/streaming/stats'),
+
   // Get stream status
-  getStreamStatus: (streamId: string) => api.get(`/api/v1/stream/status/${streamId}`),
-  
+  getStreamStatus: (streamId: string) => api.get(`/api/v1/streaming/stats`),
+
   // Cancel stream
-  cancelStream: (streamId: string) => api.delete(`/api/v1/stream/${streamId}`),
+  cancelStream: (streamId: string) => api.delete(`/api/v1/streaming/stats`),
   
   // Start completion stream (using EventSource for SSE)
   startCompletionStream: (prompt: string, options: any = {}) => {
