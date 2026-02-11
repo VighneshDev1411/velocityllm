@@ -84,3 +84,7 @@ config/secrets.yaml
 # Build artifacts
 *.o
 *.a
+
+# Documentation (keep docs/ folder tracked in git)
+# Only ignore temporary/local docs if needed
+# docs/temp/

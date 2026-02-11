@@ -207,6 +207,34 @@ func main() {
 	}
 	utils.Info("Redis connected successfully")
 
+	// ============================================
+	// ADVANCED CACHING INITIALIZATION (Day 7)
+	// ============================================
+	cacheManagerConfig := cache.CacheManagerConfig{
+		// Multi-level cache
+		EnableMultiLevel: true,
+		L1MaxSize:        10000,         // 10k entries in L1
+		L1MaxMemoryMB:    100,           // 100 MB for L1
+		L1TTL:            5 * time.Minute,  // L1 TTL: 5 minutes
+		L2TTL:            30 * time.Minute, // L2 TTL: 30 minutes
+		WriteThrough:     true,          // Write to both L1 and L2
+
+		// Semantic cache
+		EnableSemantic:       true,
+		SemanticThreshold:    0.85,  // 85% similarity required
+		SemanticMaxEntries:   5000,  // Max semantic cache entries
+		SemanticEmbeddingDim: 384,   // Embedding dimension
+
+		// Analytics
+		EnableAnalytics: true,
+
+		// Legacy compatibility
+		LegacyTTL: 10 * time.Minute,
+	}
+
+	cache.InitGlobalCacheManager(cacheManagerConfig)
+	utils.Info("Advanced cache manager initialized (multi-level + semantic + analytics)")
+
 	// Setup API routes
 	api.SetupRoutes()
 

@@ -43,6 +43,14 @@ func SetupRoutes() {
 	http.HandleFunc("/api/v1/cache/clear", CacheClearHandler)
 	http.HandleFunc("/api/v1/cache/warm", CacheWarmHandler)
 
+	// Advanced caching endpoints (Day 7)
+	http.HandleFunc("/api/v1/cache/analytics", GetCacheAnalyticsHandler)
+	http.HandleFunc("/api/v1/cache/multilevel/stats", GetMultiLevelStatsHandler)
+	http.HandleFunc("/api/v1/cache/semantic/stats", GetSemanticCacheStatsHandler)
+	http.HandleFunc("/api/v1/cache/semantic/test", TestSemanticCacheHandler)
+	http.HandleFunc("/api/v1/cache/hitrate", GetCacheHitRateHandler)
+	http.HandleFunc("/api/v1/cache/latency", GetCacheLatencyHandler)
+
 	// ============================================
 	// ROUTER ENDPOINTS (Day 4)
 	// ============================================
