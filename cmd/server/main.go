@@ -15,6 +15,7 @@ import (
 	"github.com/VighneshDev1411/velocityllm/internal/metrics"
 	"github.com/VighneshDev1411/velocityllm/internal/middleware"
 	"github.com/VighneshDev1411/velocityllm/internal/optimization"
+	"github.com/VighneshDev1411/velocityllm/internal/router"
 	"github.com/VighneshDev1411/velocityllm/internal/streaming"
 	"github.com/VighneshDev1411/velocityllm/internal/worker"
 	"github.com/VighneshDev1411/velocityllm/pkg/utils"
@@ -234,6 +235,48 @@ func main() {
 
 	cache.InitGlobalCacheManager(cacheManagerConfig)
 	utils.Info("Advanced cache manager initialized (multi-level + semantic + analytics)")
+
+	// ============================================
+	// ORCHESTRATION INITIALIZATION (Day 8)
+	// ============================================
+	orchestrator := router.NewOrchestrator(nil)
+
+	// Register example chains
+	// Chain 1: Simple sequential chain
+	simpleChain := router.NewModelChain("simple-chain").
+		AddStep(router.ChainStep{
+			Name:    "analyze",
+			ModelID: "gpt-3.5-turbo",
+			Type:    router.StepTypeSequential,
+		}).
+		AddStep(router.ChainStep{
+			Name:      "refine",
+			ModelID:   "gpt-4",
+			Type:      router.StepTypeSequential,
+			Transform: router.ChainPreviousResultTransform(),
+		})
+	orchestrator.RegisterChain(simpleChain)
+
+	// Chain 2: Conditional chain with fallback
+	conditionalChain := router.NewModelChain("conditional-chain").
+		AddStep(router.ChainStep{
+			Name:    "primary",
+			ModelID: "gpt-4",
+			Type:    router.StepTypeSequential,
+			Timeout: 5 * time.Second,
+			Optional: false,
+		}).
+		AddStep(router.ChainStep{
+			Name:      "fallback",
+			ModelID:   "gpt-3.5-turbo",
+			Type:      router.StepTypeConditional,
+			Condition: router.OnlyIfPreviousSucceededCondition(),
+			Optional:  true,
+		})
+	orchestrator.RegisterChain(conditionalChain)
+
+	api.SetOrchestrator(orchestrator)
+	utils.Info("Orchestrator initialized successfully")
 
 	// Setup API routes
 	api.SetupRoutes()

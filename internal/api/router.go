@@ -52,6 +52,15 @@ func SetupRoutes() {
 	http.HandleFunc("/api/v1/cache/latency", GetCacheLatencyHandler)
 
 	// ============================================
+	// ORCHESTRATION ENDPOINTS (Day 8)
+	// ============================================
+	http.HandleFunc("/api/v1/orchestration/chain", ExecuteChainHandler)
+	http.HandleFunc("/api/v1/orchestration/parallel", ExecuteParallelCompositionHandler)
+	http.HandleFunc("/api/v1/orchestration/conditional", ConditionalRouteHandler)
+	http.HandleFunc("/api/v1/orchestration/stats", GetOrchestrationStatsHandler)
+	http.HandleFunc("/api/v1/orchestration/strategies", GetCompositionStrategiesHandler)
+
+	// ============================================
 	// ROUTER ENDPOINTS (Day 4)
 	// ============================================
 
