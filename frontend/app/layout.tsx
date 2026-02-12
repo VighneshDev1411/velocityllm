@@ -36,6 +36,9 @@ export default function RootLayout({
                   <Link href="/streams" className="flex items-center px-2 py-2 text-gray-700 hover:text-primary-600 ml-4">
                     Streams
                   </Link>
+                  <Link href="/tokens" className="flex items-center px-2 py-2 text-gray-700 hover:text-primary-600 ml-4">
+                    Tokens
+                  </Link>
                 </div>
               </div>
             </div>

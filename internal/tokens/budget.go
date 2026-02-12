@@ -15,15 +15,15 @@ type BudgetAllocator struct {
 
 // Allocation represents a token budget allocation
 type Allocation struct {
-	RequestID       string
-	TotalBudget     int
-	SystemTokens    int
-	PromptTokens    int
-	ResponseTokens  int
-	ContextTokens   int
-	ReserveTokens   int
-	Used            int
-	mu              sync.RWMutex
+	RequestID      string
+	TotalBudget    int
+	SystemTokens   int
+	PromptTokens   int
+	ResponseTokens int
+	ContextTokens  int
+	ReserveTokens  int
+	Used           int
+	mu             sync.RWMutex
 }
 
 // AllocationRatio defines token distribution ratios
@@ -162,13 +162,13 @@ func (ba *BudgetAllocator) GetAllocationBreakdown(requestID string) (map[string]
 	defer alloc.mu.RUnlock()
 
 	return map[string]int{
-		"total":    alloc.TotalBudget,
-		"system":   alloc.SystemTokens,
-		"prompt":   alloc.PromptTokens,
-		"context":  alloc.ContextTokens,
-		"response": alloc.ResponseTokens,
-		"reserve":  alloc.ReserveTokens,
-		"used":     alloc.Used,
+		"total":     alloc.TotalBudget,
+		"system":    alloc.SystemTokens,
+		"prompt":    alloc.PromptTokens,
+		"context":   alloc.ContextTokens,
+		"response":  alloc.ResponseTokens,
+		"reserve":   alloc.ReserveTokens,
+		"used":      alloc.Used,
 		"remaining": alloc.TotalBudget - alloc.Used,
 	}, nil
 }
