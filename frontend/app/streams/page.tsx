@@ -97,23 +97,23 @@ export default function StreamsPage() {
         {/* Performance Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="bg-white rounded-lg shadow p-6">
-            <p className="text-sm text-gray-500 mb-2">Total Events</p>
+            <p className="text-sm text-gray-500 mb-2">Avg Duration</p>
             <p className="text-3xl font-bold text-gray-900">
-              {metrics?.total_events || 0}
+              {(metrics?.avg_duration_ms || 0).toFixed(0)}ms
             </p>
           </div>
 
           <div className="bg-white rounded-lg shadow p-6">
-            <p className="text-sm text-gray-500 mb-2">Avg Events/Stream</p>
+            <p className="text-sm text-gray-500 mb-2">Avg Chunks/Stream</p>
             <p className="text-3xl font-bold text-gray-900">
-              {(metrics?.avg_events_per_stream || 0).toFixed(1)}
+              {(metrics?.avg_chunks_per_stream || 0).toFixed(1)}
             </p>
           </div>
 
           <div className="bg-white rounded-lg shadow p-6">
             <p className="text-sm text-gray-500 mb-2">Data Streamed</p>
             <p className="text-3xl font-bold text-gray-900">
-              {formatBytes(metrics?.total_bytes_sent || 0)}
+              {formatBytes(metrics?.bytes_streamed || 0)}
             </p>
           </div>
         </div>
