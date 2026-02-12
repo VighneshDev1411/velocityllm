@@ -42,6 +42,11 @@ export default function RootLayout({
                     Tokens
                   </Link>
                 </div>
+                <div className="flex items-center">
+                  <Link href="/profile" className="flex items-center px-2 py-2 text-gray-700 hover:text-primary-600">
+                    Profile
+                  </Link>
+                </div>
               </div>
             </div>
           </nav>
