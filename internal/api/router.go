@@ -61,6 +61,20 @@ func SetupRoutes() {
 	http.HandleFunc("/api/v1/orchestration/strategies", GetCompositionStrategiesHandler)
 
 	// ============================================
+	// PROMPT TEMPLATE ENDPOINTS (Day 9)
+	// ============================================
+	http.HandleFunc("/api/v1/prompts/templates", ListTemplatesHandler)
+	http.HandleFunc("/api/v1/prompts/template", GetTemplateHandler)
+	http.HandleFunc("/api/v1/prompts/render", RenderTemplateHandler)
+	http.HandleFunc("/api/v1/prompts/create", CreateTemplateHandler)
+	http.HandleFunc("/api/v1/prompts/versions", ListVersionsHandler)
+	http.HandleFunc("/api/v1/prompts/abtest/create", CreateABTestHandler)
+	http.HandleFunc("/api/v1/prompts/abtest/results", GetABTestResultsHandler)
+	http.HandleFunc("/api/v1/prompts/abtest/stop", StopABTestHandler)
+	http.HandleFunc("/api/v1/prompts/search", SearchTemplatesHandler)
+	http.HandleFunc("/api/v1/prompts/stats", GetTemplateStatsHandler)
+
+	// ============================================
 	// ROUTER ENDPOINTS (Day 4)
 	// ============================================
 

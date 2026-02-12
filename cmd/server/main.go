@@ -15,6 +15,7 @@ import (
 	"github.com/VighneshDev1411/velocityllm/internal/metrics"
 	"github.com/VighneshDev1411/velocityllm/internal/middleware"
 	"github.com/VighneshDev1411/velocityllm/internal/optimization"
+	"github.com/VighneshDev1411/velocityllm/internal/prompts"
 	"github.com/VighneshDev1411/velocityllm/internal/router"
 	"github.com/VighneshDev1411/velocityllm/internal/streaming"
 	"github.com/VighneshDev1411/velocityllm/internal/worker"
@@ -277,6 +278,12 @@ func main() {
 
 	api.SetOrchestrator(orchestrator)
 	utils.Info("Orchestrator initialized successfully")
+
+	// ============================================
+	// PROMPT TEMPLATE INITIALIZATION (Day 9)
+	// ============================================
+	prompts.InitGlobalManager()
+	utils.Info("Prompt template manager initialized with default templates")
 
 	// Setup API routes
 	api.SetupRoutes()
