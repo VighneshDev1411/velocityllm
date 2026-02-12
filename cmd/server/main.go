@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/VighneshDev1411/velocityllm/internal/api"
+	"github.com/VighneshDev1411/velocityllm/internal/auth"
 	"github.com/VighneshDev1411/velocityllm/internal/cache"
 	"github.com/VighneshDev1411/velocityllm/internal/config"
 	"github.com/VighneshDev1411/velocityllm/internal/database"
@@ -296,6 +297,26 @@ func main() {
 		EnableAutoCleanup: true,
 	})
 	utils.Info("Context manager initialized (max age: 30m, auto-cleanup enabled)")
+
+	// ============================================
+	// AUTHENTICATION & USER MANAGEMENT (Day 12)
+	// ============================================
+
+	// Get database instance
+	db := database.GetDB()
+	if db == nil {
+		utils.Fatal("Database not initialized")
+	}
+
+	// Auto-migrate user table
+	if err := db.AutoMigrate(&auth.User{}); err != nil {
+		utils.Fatal("Failed to migrate user table", "error", err)
+	}
+	utils.Info("User table migrated successfully")
+
+	// Initialize auth service
+	auth.InitGlobalService(db)
+	utils.Info("Authentication service initialized")
 
 	// Setup API routes
 	api.SetupRoutes()

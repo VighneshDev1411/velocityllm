@@ -11,15 +11,26 @@ export default function StreamsPage() {
 
   const fetchData = async () => {
     try {
-      const [metricsRes, activeRes] = await Promise.all([
-        streamAPI.getMetrics(),
-        streamAPI.getActiveStreams(),
-      ]);
+      const metricsRes = await streamAPI.getMetrics();
 
-      setMetrics(metricsRes.data.data);
-      setActiveStreams(activeRes.data.data || []);
+      // The API returns metrics nested in data.data.metrics
+      const data = metricsRes.data.data;
+      setMetrics(data?.metrics || null);
+
+      // Convert active_by_type object to array
+      const activeByType = data?.active_by_type || {};
+      const activeStreamsArray = Object.entries(activeByType).flatMap(([type, streams]: [string, any]) => {
+        if (Array.isArray(streams)) {
+          return streams.map(stream => ({ ...stream, type }));
+        }
+        return [];
+      });
+
+      setActiveStreams(activeStreamsArray);
     } catch (err) {
       console.error('Error fetching stream data:', err);
+      setMetrics(null);
+      setActiveStreams([]);
     } finally {
       setLoading(false);
     }
@@ -86,23 +97,23 @@ export default function StreamsPage() {
         {/* Performance Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="bg-white rounded-lg shadow p-6">
-            <p className="text-sm text-gray-500 mb-2">Avg Duration</p>
+            <p className="text-sm text-gray-500 mb-2">Total Events</p>
             <p className="text-3xl font-bold text-gray-900">
-              {(metrics?.avg_duration_ms || 0).toFixed(0)}ms
+              {metrics?.total_events || 0}
             </p>
           </div>
-          
+
           <div className="bg-white rounded-lg shadow p-6">
-            <p className="text-sm text-gray-500 mb-2">Avg Chunks</p>
+            <p className="text-sm text-gray-500 mb-2">Avg Events/Stream</p>
             <p className="text-3xl font-bold text-gray-900">
-              {(metrics?.avg_chunks_per_stream || 0).toFixed(1)}
+              {(metrics?.avg_events_per_stream || 0).toFixed(1)}
             </p>
           </div>
-          
+
           <div className="bg-white rounded-lg shadow p-6">
             <p className="text-sm text-gray-500 mb-2">Data Streamed</p>
             <p className="text-3xl font-bold text-gray-900">
-              {formatBytes(metrics?.bytes_streamed || 0)}
+              {formatBytes(metrics?.total_bytes_sent || 0)}
             </p>
           </div>
         </div>

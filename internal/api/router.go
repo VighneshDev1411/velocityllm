@@ -3,6 +3,7 @@ package api
 import (
 	"net/http"
 
+	"github.com/VighneshDev1411/velocityllm/internal/auth"
 	"github.com/VighneshDev1411/velocityllm/pkg/utils"
 )
 
@@ -192,6 +193,24 @@ func SetupRoutes() {
 	http.HandleFunc("/api/v1/budget/allocate", AllocateBudgetHandler)
 	http.HandleFunc("/api/v1/budget/get", GetBudgetHandler)
 	http.HandleFunc("/api/v1/budget/use", UseTokensHandler)
+
+	// ============================================
+	// AUTHENTICATION ENDPOINTS (Day 12)
+	// ============================================
+
+	// Public auth endpoints
+	http.HandleFunc("/api/v1/auth/register", RegisterHandler)
+	http.HandleFunc("/api/v1/auth/login", LoginHandler)
+	http.HandleFunc("/api/v1/auth/refresh", RefreshTokenHandler)
+
+	// Protected auth endpoints (require authentication)
+	http.Handle("/api/v1/auth/profile", auth.AuthMiddleware(http.HandlerFunc(GetProfileHandler)))
+	http.Handle("/api/v1/auth/profile/update", auth.AuthMiddleware(http.HandlerFunc(UpdateProfileHandler)))
+	http.Handle("/api/v1/auth/password/change", auth.AuthMiddleware(http.HandlerFunc(ChangePasswordHandler)))
+	http.Handle("/api/v1/auth/logout", auth.AuthMiddleware(http.HandlerFunc(LogoutHandler)))
+
+	// Admin endpoints
+	http.Handle("/api/v1/auth/users", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(ListUsersHandler))))
 
 	utils.Info("All routes configured successfully")
 }

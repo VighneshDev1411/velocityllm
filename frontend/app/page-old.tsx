@@ -1,28 +1,55 @@
 'use client';
 
-import { useWorkerMetrics, useStreamMetrics } from '@/hooks/useSystem';
+import { useEffect, useState } from 'react';
+import { workerAPI, streamAPI, WorkerMetrics, StreamMetrics } from '@/lib/api';
 import { Activity, Zap, Server, TrendingUp, AlertCircle } from 'lucide-react';
-import { Skeleton } from '@/components/ui/skeleton';
 
 export default function Dashboard() {
-  const { data: workerData, isLoading: workerLoading, error: workerError } = useWorkerMetrics();
-  const { data: streamData, isLoading: streamLoading, error: streamError } = useStreamMetrics();
+  const [workerMetrics, setWorkerMetrics] = useState<WorkerMetrics | null>(null);
+  const [streamMetrics, setStreamMetrics] = useState<StreamMetrics | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const workerMetrics = workerData?.data;
-  const streamMetrics = streamData?.data?.metrics;
+  // Fetch all metrics
+  const fetchMetrics = async () => {
+    try {
+      const [workerRes, streamRes] = await Promise.all([
+        workerAPI.getMetrics(),
+        streamAPI.getMetrics(),
+      ]);
 
-  if (workerLoading || streamLoading) {
+      setWorkerMetrics(workerRes.data.data);
+      setStreamMetrics(streamRes.data.data);
+      setError(null);
+    } catch (err: any) {
+      setError(err.message || 'Failed to fetch metrics');
+      console.error('Error fetching metrics:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchMetrics();
+    
+    // Refresh every 5 seconds
+    const interval = setInterval(fetchMetrics, 5000);
+    
+    return () => clearInterval(interval);
+  }, []);
+
+  if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading dashboard...</p>
         </div>
       </div>
     );
   }
 
-  if (workerError || streamError) {
+  if (error) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md">
@@ -30,11 +57,9 @@ export default function Dashboard() {
             <AlertCircle className="w-6 h-6 text-red-600" />
             <h3 className="text-lg font-semibold text-red-900">Connection Error</h3>
           </div>
-          <p className="text-red-700">
-            {workerError?.message || streamError?.message || 'Failed to fetch metrics'}
-          </p>
+          <p className="text-red-700">{error}</p>
           <button
-            onClick={() => window.location.reload()}
+            onClick={fetchMetrics}
             className="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
           >
             Retry
@@ -45,14 +70,12 @@ export default function Dashboard() {
   }
 
   const formatNumber = (num: number) => {
-    if (!num) return '0';
     if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
     if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
     return num.toString();
   };
 
   const formatBytes = (bytes: number) => {
-    if (!bytes) return '0 B';
     if (bytes >= 1073741824) return `${(bytes / 1073741824).toFixed(2)} GB`;
     if (bytes >= 1048576) return `${(bytes / 1048576).toFixed(2)} MB`;
     if (bytes >= 1024) return `${(bytes / 1024).toFixed(2)} KB`;
@@ -201,7 +224,7 @@ export default function Dashboard() {
             <div>
               <p className="text-sm text-gray-500 mb-1">Data Streamed</p>
               <p className="text-2xl font-bold text-gray-900">
-                {formatBytes(streamMetrics?.total_bytes_sent || 0)}
+                {formatBytes(streamMetrics?.bytes_streamed || 0)}
               </p>
             </div>
           </div>
@@ -221,7 +244,7 @@ function StatCard({ icon, label, value, change, color }: any) {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
+    <div className="bg-white rounded-lg shadow p-6 card-hover">
       <div className="flex items-center justify-between mb-4">
         <div className={`p-2 rounded-lg ${colorClasses[color as keyof typeof colorClasses]}`}>
           {icon}
@@ -236,8 +259,8 @@ function StatCard({ icon, label, value, change, color }: any) {
 
 // Metric Row Component
 function MetricRow({ label, value, max, color = 'blue' }: any) {
-  const percentage = max ? (value / max) * 100 : 0;
-
+  const percentage = (value / max) * 100;
+  
   const colorClasses = {
     blue: 'bg-blue-500',
     green: 'bg-green-500',

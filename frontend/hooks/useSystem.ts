@@ -1,6 +1,16 @@
 import { useQuery } from '@tanstack/react-query';
-import { systemAPI, streamAPI } from '@/lib/api';
+import { systemAPI, streamAPI, workerAPI } from '@/lib/api';
 import type { SystemHealth, StreamMetrics } from '@/types';
+
+export function useWorkerMetrics() {
+  return useQuery({
+    queryKey: ['worker-metrics'],
+    queryFn: async () => {
+      const response = await workerAPI.getMetrics();
+      return response.data;
+    },
+  });
+}
 
 export function useSystemHealth() {
   return useQuery({
