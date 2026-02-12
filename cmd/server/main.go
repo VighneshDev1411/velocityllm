@@ -18,6 +18,7 @@ import (
 	"github.com/VighneshDev1411/velocityllm/internal/prompts"
 	"github.com/VighneshDev1411/velocityllm/internal/router"
 	"github.com/VighneshDev1411/velocityllm/internal/streaming"
+	"github.com/VighneshDev1411/velocityllm/internal/tokens"
 	"github.com/VighneshDev1411/velocityllm/internal/worker"
 	"github.com/VighneshDev1411/velocityllm/pkg/utils"
 )
@@ -284,6 +285,17 @@ func main() {
 	// ============================================
 	prompts.InitGlobalManager()
 	utils.Info("Prompt template manager initialized with default templates")
+
+	// ============================================
+	// TOKEN & CONTEXT MANAGEMENT (Day 10)
+	// ============================================
+	tokens.InitGlobalContextManager(tokens.ContextConfig{
+		MaxContextAge:     30 * time.Minute,
+		CleanupInterval:   5 * time.Minute,
+		DefaultMaxTokens:  4096,
+		EnableAutoCleanup: true,
+	})
+	utils.Info("Context manager initialized (max age: 30m, auto-cleanup enabled)")
 
 	// Setup API routes
 	api.SetupRoutes()

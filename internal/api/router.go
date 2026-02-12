@@ -169,5 +169,29 @@ func SetupRoutes() {
 	// Test SSE endpoint
 	http.HandleFunc("/api/v1/streaming/test", TestSSEHandler)
 
+	// ============================================
+	// TOKEN MANAGEMENT ENDPOINTS (Day 10)
+	// ============================================
+
+	// Token counting
+	http.HandleFunc("/api/v1/tokens/count", CountTokensHandler)
+	http.HandleFunc("/api/v1/tokens/truncate", TruncateTextHandler)
+	http.HandleFunc("/api/v1/tokens/estimate", EstimateResponseTokensHandler)
+	http.HandleFunc("/api/v1/tokens/cache", GetTokenCounterCacheHandler)
+
+	// Context management
+	http.HandleFunc("/api/v1/context/create", CreateContextHandler)
+	http.HandleFunc("/api/v1/context/get", GetContextHandler)
+	http.HandleFunc("/api/v1/context/message", AddMessageHandler)
+	http.HandleFunc("/api/v1/context/clear", ClearContextHandler)
+	http.HandleFunc("/api/v1/context/delete", DeleteContextHandler)
+	http.HandleFunc("/api/v1/context/list", ListContextsHandler)
+	http.HandleFunc("/api/v1/context/stats", GetContextStatsHandler)
+
+	// Budget allocation
+	http.HandleFunc("/api/v1/budget/allocate", AllocateBudgetHandler)
+	http.HandleFunc("/api/v1/budget/get", GetBudgetHandler)
+	http.HandleFunc("/api/v1/budget/use", UseTokensHandler)
+
 	utils.Info("All routes configured successfully")
 }
