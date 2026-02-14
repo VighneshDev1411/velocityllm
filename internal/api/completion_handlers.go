@@ -116,7 +116,7 @@ func CompletionHandler(w http.ResponseWriter, r *http.Request) {
 	utils.Info("Cache MISS: model=%s, generating new completion", selectedModel.Name)
 
 	// Try real LLM API first, fall back to simulation
-	openaiClient := llm.GetClient()
+	provider := llm.GetProvider()
 
 	var responseText string
 	var totalTokens int
@@ -135,23 +135,22 @@ func CompletionHandler(w http.ResponseWriter, r *http.Request) {
 		topP = 1.0
 	}
 
-	if openaiClient.IsAvailable() {
-		// Real OpenAI API call
-		utils.Info("Calling OpenAI API for model=%s", selectedModel.Name)
-		result, err := openaiClient.Complete(req.Prompt, selectedModel.Name, temperature, maxTokens, topP)
+	if provider.IsAvailable() {
+		// Real LLM API call (routes to OpenAI or Anthropic based on model)
+		utils.Info("Calling LLM provider for model=%s", selectedModel.Name)
+		result, err := provider.Complete(req.Prompt, selectedModel.Name, temperature, maxTokens, topP)
 		if err != nil {
-			utils.Error("OpenAI API error, falling back to simulation", "value", err)
-			// Fallback to simulation
+			utils.Error("LLM API error, falling back to simulation", "value", err)
 			simResult := simulateCompletion(req, selectedModel.Name)
 			responseText = simResult.Response
 			totalTokens = simResult.Tokens
 		} else {
 			responseText = result.Response
 			totalTokens = result.TotalTokens
-			utils.Info("OpenAI response received: %d tokens in %dms", result.TotalTokens, result.LatencyMs)
+			utils.Info("LLM response received: model=%s, %d tokens in %dms", result.Model, result.TotalTokens, result.LatencyMs)
 		}
 	} else {
-		// No API key - use simulation
+		// No API keys - use simulation
 		simResult := simulateCompletion(req, selectedModel.Name)
 		responseText = simResult.Response
 		totalTokens = simResult.Tokens

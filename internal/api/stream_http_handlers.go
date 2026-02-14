@@ -46,9 +46,9 @@ func StreamingCompletionHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer sseHandler.Close()
 
-	// Try real OpenAI streaming first
-	openaiClient := llm.GetClient()
-	if openaiClient.IsAvailable() {
+	// Try real LLM streaming first (routes to OpenAI or Anthropic)
+	provider := llm.GetProvider()
+	if provider.IsAvailable() {
 		temperature := req.Temperature
 		if temperature == 0 {
 			temperature = 0.7
@@ -63,7 +63,7 @@ func StreamingCompletionHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		index := 0
-		_, err := openaiClient.StreamComplete(req.Prompt, req.Model, temperature, maxTokens, topP, func(token string) error {
+		_, err := provider.StreamComplete(req.Prompt, req.Model, temperature, maxTokens, topP, func(token string) error {
 			if writeErr := sseHandler.WriteToken(token, index); writeErr != nil {
 				return writeErr
 			}
@@ -72,8 +72,7 @@ func StreamingCompletionHandler(w http.ResponseWriter, r *http.Request) {
 		})
 
 		if err != nil {
-			utils.Error("OpenAI streaming error", "value", err)
-			// Don't return - fall through to done
+			utils.Error("LLM streaming error", "value", err)
 		}
 
 		if writeErr := sseHandler.WriteDone(); writeErr != nil {
