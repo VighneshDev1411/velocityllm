@@ -195,6 +195,22 @@ func SetupRoutes() {
 	http.HandleFunc("/api/v1/budget/use", UseTokensHandler)
 
 	// ============================================
+	// ANALYTICS / DASHBOARD ENDPOINTS (Day 13)
+	// ============================================
+
+	// Dashboard overview (aggregated data)
+	http.HandleFunc("/api/v1/analytics/dashboard", GetDashboardOverviewHandler)
+
+	// Time-series data for charts
+	http.HandleFunc("/api/v1/analytics/timeseries", GetRequestTimeSeriesHandler)
+
+	// Model comparison data
+	http.HandleFunc("/api/v1/analytics/models", GetModelComparisonHandler)
+
+	// Cost breakdown for pie/bar charts
+	http.HandleFunc("/api/v1/analytics/cost-breakdown", GetCostBreakdownHandler)
+
+	// ============================================
 	// AUTHENTICATION ENDPOINTS (Day 12)
 	// ============================================
 

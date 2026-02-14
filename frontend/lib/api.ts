@@ -102,15 +102,40 @@ export const streamAPI = {
 export const systemAPI = {
   // Get system health
   getHealth: () => api.get('/api/v1/health'),
-  
+
   // Get system statistics
   getStats: () => api.get('/api/v1/stats'),
-  
+
   // Ping
   ping: () => api.get('/api/v1/ping'),
-  
+
   // List models
   listModels: () => api.get('/api/v1/models'),
+};
+
+// Analytics / Dashboard API
+export const analyticsAPI = {
+  // Get dashboard overview (aggregated metrics)
+  getDashboardOverview: () => api.get('/api/v1/analytics/dashboard'),
+
+  // Get time-series data for charts
+  getTimeSeries: (period: string = '24h') =>
+    api.get(`/api/v1/analytics/timeseries?period=${period}`),
+
+  // Get model comparison data
+  getModelComparison: () => api.get('/api/v1/analytics/models'),
+
+  // Get cost breakdown for charts
+  getCostBreakdown: () => api.get('/api/v1/analytics/cost-breakdown'),
+
+  // Get latency metrics
+  getLatencyMetrics: () => api.get('/api/v1/metrics/latency'),
+
+  // Get throughput metrics
+  getThroughputMetrics: () => api.get('/api/v1/metrics/throughput'),
+
+  // Get metrics snapshot
+  getMetricsSnapshot: () => api.get('/api/v1/metrics/snapshot'),
 };
 
 // Types
