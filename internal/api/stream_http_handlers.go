@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/VighneshDev1411/velocityllm/internal/llm"
 	"github.com/VighneshDev1411/velocityllm/internal/streaming"
 	"github.com/VighneshDev1411/velocityllm/pkg/types"
 	"github.com/VighneshDev1411/velocityllm/pkg/utils"
@@ -45,16 +46,50 @@ func StreamingCompletionHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer sseHandler.Close()
 
-	// Simulate token stream
+	// Try real OpenAI streaming first
+	openaiClient := llm.GetClient()
+	if openaiClient.IsAvailable() {
+		temperature := req.Temperature
+		if temperature == 0 {
+			temperature = 0.7
+		}
+		maxTokens := req.MaxTokens
+		if maxTokens == 0 {
+			maxTokens = 1024
+		}
+		topP := req.TopP
+		if topP == 0 {
+			topP = 1.0
+		}
+
+		index := 0
+		_, err := openaiClient.StreamComplete(req.Prompt, req.Model, temperature, maxTokens, topP, func(token string) error {
+			if writeErr := sseHandler.WriteToken(token, index); writeErr != nil {
+				return writeErr
+			}
+			index++
+			return nil
+		})
+
+		if err != nil {
+			utils.Error("OpenAI streaming error", "value", err)
+			// Don't return - fall through to done
+		}
+
+		if writeErr := sseHandler.WriteDone(); writeErr != nil {
+			utils.Error("Failed to write done", "value", writeErr)
+		}
+		return
+	}
+
+	// Fallback: simulate token stream
 	tokenChan := streaming.SimulateTokenStream(req.Prompt, req.Model)
 
-	// Stream tokens
 	index := 0
 	for {
 		select {
 		case token, ok := <-tokenChan:
 			if !ok {
-				// Stream complete
 				if err := sseHandler.WriteDone(); err != nil {
 					utils.Error("Failed to write done", "value", err)
 				}

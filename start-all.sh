@@ -66,12 +66,16 @@ if ! check_port 6379; then
 fi
 echo -e "${GREEN}✓${NC} Redis running"
 
-# Check if backend is built
-if [ ! -f "./bin/server" ]; then
-    echo -e "${YELLOW}! Backend not built, building now...${NC}"
-    go build -o bin/server cmd/server/main.go
-    echo -e "${GREEN}✓${NC} Backend built successfully"
+# Load environment variables from .env file
+if [ -f ".env" ]; then
+    export $(grep -v '^#' .env | xargs)
+    echo -e "${GREEN}✓${NC} Environment loaded from .env"
 fi
+
+# Always rebuild backend to pick up latest changes
+echo -e "${YELLOW}! Building backend...${NC}"
+go build -o bin/server cmd/server/main.go
+echo -e "${GREEN}✓${NC} Backend built successfully"
 
 # Kill existing services
 echo ""

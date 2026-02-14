@@ -9,6 +9,8 @@ import (
 
 	"github.com/VighneshDev1411/velocityllm/internal/cache"
 	"github.com/VighneshDev1411/velocityllm/internal/database"
+	"github.com/VighneshDev1411/velocityllm/internal/llm"
+	"github.com/VighneshDev1411/velocityllm/internal/metrics"
 	"github.com/VighneshDev1411/velocityllm/internal/router"
 	"github.com/VighneshDev1411/velocityllm/pkg/types"
 	"github.com/VighneshDev1411/velocityllm/pkg/utils"
@@ -113,20 +115,63 @@ func CompletionHandler(w http.ResponseWriter, r *http.Request) {
 	// Cache MISS - Generate new completion
 	utils.Info("Cache MISS: model=%s, generating new completion", selectedModel.Name)
 
-	// Generate response (simulated for now)
-	generatedResponse := simulateCompletion(req, selectedModel.Name)
+	// Try real LLM API first, fall back to simulation
+	openaiClient := llm.GetClient()
+
+	var responseText string
+	var totalTokens int
+	var cost float64
+
+	temperature := req.Temperature
+	if temperature == 0 {
+		temperature = 0.7
+	}
+	maxTokens := req.MaxTokens
+	if maxTokens == 0 {
+		maxTokens = 1024
+	}
+	topP := req.TopP
+	if topP == 0 {
+		topP = 1.0
+	}
+
+	if openaiClient.IsAvailable() {
+		// Real OpenAI API call
+		utils.Info("Calling OpenAI API for model=%s", selectedModel.Name)
+		result, err := openaiClient.Complete(req.Prompt, selectedModel.Name, temperature, maxTokens, topP)
+		if err != nil {
+			utils.Error("OpenAI API error, falling back to simulation", "value", err)
+			// Fallback to simulation
+			simResult := simulateCompletion(req, selectedModel.Name)
+			responseText = simResult.Response
+			totalTokens = simResult.Tokens
+		} else {
+			responseText = result.Response
+			totalTokens = result.TotalTokens
+			utils.Info("OpenAI response received: %d tokens in %dms", result.TotalTokens, result.LatencyMs)
+		}
+	} else {
+		// No API key - use simulation
+		simResult := simulateCompletion(req, selectedModel.Name)
+		responseText = simResult.Response
+		totalTokens = simResult.Tokens
+	}
 
 	latency := int(time.Since(startTime).Milliseconds())
 
-	// Calculate cost
-	cost := float64(generatedResponse.Tokens) * selectedModel.CostPerToken
+	// Calculate cost based on actual tokens
+	cost = float64(totalTokens) * selectedModel.CostPerToken
+
+	// Record metrics
+	collector := metrics.GetGlobalMetricsCollector()
+	collector.RecordRequest(selectedModel.Name, time.Duration(latency)*time.Millisecond, cost, true, false)
 
 	response = types.CompletionResponse{
 		ID:        uuid.New().String(),
 		Model:     selectedModel.Name,
 		Prompt:    req.Prompt,
-		Response:  generatedResponse.Response,
-		Tokens:    generatedResponse.Tokens,
+		Response:  responseText,
+		Tokens:    totalTokens,
 		Latency:   latency,
 		Cost:      cost,
 		CacheHit:  false,
@@ -137,8 +182,8 @@ func CompletionHandler(w http.ResponseWriter, r *http.Request) {
 	// Cache the response for future requests
 	if req.UseCache {
 		cachedData := types.CachedCompletion{
-			Response: generatedResponse.Response,
-			Tokens:   generatedResponse.Tokens,
+			Response: responseText,
+			Tokens:   totalTokens,
 			Cost:     cost,
 			Provider: selectedModel.Provider,
 			Model:    selectedModel.Name,
