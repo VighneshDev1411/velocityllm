@@ -210,6 +210,12 @@ func SetupRoutes() {
 	// Cost breakdown for pie/bar charts
 	http.HandleFunc("/api/v1/analytics/cost-breakdown", GetCostBreakdownHandler)
 
+	// Request log with filtering (Day 16)
+	http.HandleFunc("/api/v1/analytics/requests", GetRequestLogHandler)
+
+	// Comprehensive analytics summary (Day 16)
+	http.HandleFunc("/api/v1/analytics/summary", GetAnalyticsSummaryHandler)
+
 	// ============================================
 	// AUTHENTICATION ENDPOINTS (Day 12)
 	// ============================================

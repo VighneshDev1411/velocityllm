@@ -20,6 +20,7 @@ type MetricsCollector struct {
 	totalErrors       int64
 	totalCost         float64
 	startTime         time.Time
+	requestLog        []RequestLogEntry
 	mu                sync.RWMutex
 }
 
@@ -32,6 +33,7 @@ func NewMetricsCollector(config MetricsConfig) *MetricsCollector {
 		requestTimestamps: make([]time.Time, 0, 1000),
 		modelMetrics:      make(map[string]*ModelMetrics),
 		errorCounts:       make(map[string]int64),
+		requestLog:        make([]RequestLogEntry, 0, 500),
 		startTime:         time.Now(),
 	}
 
@@ -86,6 +88,51 @@ func (mc *MetricsCollector) RecordRequest(
 
 	// Cleanup old data if needed
 	mc.cleanup()
+}
+
+// RecordDetailedRequest records a request with full details for the request log
+func (mc *MetricsCollector) RecordDetailedRequest(entry RequestLogEntry) {
+	mc.mu.Lock()
+	defer mc.mu.Unlock()
+
+	mc.requestLog = append(mc.requestLog, entry)
+
+	// Keep only last 500 entries
+	if len(mc.requestLog) > 500 {
+		mc.requestLog = mc.requestLog[len(mc.requestLog)-500:]
+	}
+}
+
+// GetRequestLog returns the request log, optionally filtered
+func (mc *MetricsCollector) GetRequestLog(model string, status string, limit int, offset int) ([]RequestLogEntry, int) {
+	mc.mu.RLock()
+	defer mc.mu.RUnlock()
+
+	// Filter
+	var filtered []RequestLogEntry
+	for i := len(mc.requestLog) - 1; i >= 0; i-- {
+		entry := mc.requestLog[i]
+		if model != "" && entry.Model != model {
+			continue
+		}
+		if status != "" && entry.Status != status {
+			continue
+		}
+		filtered = append(filtered, entry)
+	}
+
+	total := len(filtered)
+
+	// Paginate
+	if offset >= len(filtered) {
+		return []RequestLogEntry{}, total
+	}
+	filtered = filtered[offset:]
+	if limit > 0 && limit < len(filtered) {
+		filtered = filtered[:limit]
+	}
+
+	return filtered, total
 }
 
 // RecordError records an error
@@ -253,6 +300,7 @@ func (mc *MetricsCollector) Reset() {
 	mc.requestTimestamps = make([]time.Time, 0, 1000)
 	mc.modelMetrics = make(map[string]*ModelMetrics)
 	mc.errorCounts = make(map[string]int64)
+	mc.requestLog = make([]RequestLogEntry, 0, 500)
 	mc.totalRequests = 0
 	mc.totalErrors = 0
 	mc.totalCost = 0

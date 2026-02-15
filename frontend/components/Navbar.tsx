@@ -118,6 +118,12 @@ export function Navbar() {
               Playground
             </Link>
             <Link
+              href="/analytics"
+              className="flex items-center px-2 py-2 text-gray-700 hover:text-blue-600 ml-4"
+            >
+              Analytics
+            </Link>
+            <Link
               href="/monitoring"
               className="flex items-center px-2 py-2 text-gray-700 hover:text-blue-600 ml-4"
             >

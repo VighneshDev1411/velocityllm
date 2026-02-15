@@ -152,6 +152,20 @@ func DefaultMetricsConfig() MetricsConfig {
 	}
 }
 
+// RequestLogEntry represents a single logged request
+type RequestLogEntry struct {
+	ID        string        `json:"id"`
+	Timestamp time.Time     `json:"timestamp"`
+	Model     string        `json:"model"`
+	Provider  string        `json:"provider"`
+	Prompt    string        `json:"prompt"`
+	Latency   time.Duration `json:"latency_ms"`
+	Cost      float64       `json:"cost"`
+	Tokens    int           `json:"tokens"`
+	Status    string        `json:"status"`
+	CacheHit  bool          `json:"cache_hit"`
+}
+
 // PercentileConfig holds percentile calculation configuration
 type PercentileConfig struct {
 	P50 float64 // 0.50

@@ -104,6 +104,26 @@ func CompletionHandler(w http.ResponseWriter, r *http.Request) {
 
 			utils.Info("Cache HIT: model=%s, latency=%dms", selectedModel.Name, latency)
 
+			// Record cache hit in detailed request log
+			cachePromptPreview := req.Prompt
+			if len(cachePromptPreview) > 100 {
+				cachePromptPreview = cachePromptPreview[:100] + "..."
+			}
+			cacheCollector := metrics.GetGlobalMetricsCollector()
+			cacheCollector.RecordRequest(selectedModel.Name, time.Duration(latency)*time.Millisecond, 0, true, true)
+			cacheCollector.RecordDetailedRequest(metrics.RequestLogEntry{
+				ID:        uuid.New().String(),
+				Timestamp: time.Now(),
+				Model:     selectedModel.Name,
+				Provider:  cached.Provider,
+				Prompt:    cachePromptPreview,
+				Latency:   time.Duration(latency) * time.Millisecond,
+				Cost:      0,
+				Tokens:    cached.Tokens,
+				Status:    "cache_hit",
+				CacheHit:  true,
+			})
+
 			// Log request to database
 			logRequestToDatabase(req, response, true, routingDecision)
 
@@ -164,6 +184,24 @@ func CompletionHandler(w http.ResponseWriter, r *http.Request) {
 	// Record metrics
 	collector := metrics.GetGlobalMetricsCollector()
 	collector.RecordRequest(selectedModel.Name, time.Duration(latency)*time.Millisecond, cost, true, false)
+
+	// Record detailed request log entry
+	promptPreview := req.Prompt
+	if len(promptPreview) > 100 {
+		promptPreview = promptPreview[:100] + "..."
+	}
+	collector.RecordDetailedRequest(metrics.RequestLogEntry{
+		ID:        uuid.New().String(),
+		Timestamp: time.Now(),
+		Model:     selectedModel.Name,
+		Provider:  selectedModel.Provider,
+		Prompt:    promptPreview,
+		Latency:   time.Duration(latency) * time.Millisecond,
+		Cost:      cost,
+		Tokens:    totalTokens,
+		Status:    "completed",
+		CacheHit:  false,
+	})
 
 	response = types.CompletionResponse{
 		ID:        uuid.New().String(),

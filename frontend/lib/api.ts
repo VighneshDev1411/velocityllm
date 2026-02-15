@@ -136,6 +136,13 @@ export const analyticsAPI = {
 
   // Get metrics snapshot
   getMetricsSnapshot: () => api.get('/api/v1/metrics/snapshot'),
+
+  // Get request log with filtering (Day 16)
+  getRequestLog: (params?: { model?: string; status?: string; limit?: number; offset?: number }) =>
+    api.get('/api/v1/analytics/requests', { params }),
+
+  // Get comprehensive analytics summary (Day 16)
+  getAnalyticsSummary: () => api.get('/api/v1/analytics/summary'),
 };
 
 // Types
