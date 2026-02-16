@@ -359,15 +359,15 @@ export default function SettingsPage() {
                 </tr>
               </thead>
               <tbody>
-                {(rateLimiting.tiers || [
-                  { name: 'Free', rpm: 10, burst: 5 },
-                  { name: 'Basic', rpm: 60, burst: 20 },
-                  { name: 'Premium', rpm: 300, burst: 50 },
-                  { name: 'Enterprise', rpm: 1000, burst: 200 },
-                  { name: 'VIP', rpm: 5000, burst: 500 },
-                ]).map((tier: any, i: number) => (
-                  <tr key={tier.name || i} className={`border-b border-gray-100 ${i % 2 === 1 ? 'bg-gray-50' : ''}`}>
-                    <td className="py-2 px-4 font-medium text-gray-900">{tier.name}</td>
+                {Object.entries(rateLimiting.tiers || {
+                  free: { rpm: 10, burst: 5 },
+                  basic: { rpm: 100, burst: 20 },
+                  premium: { rpm: 500, burst: 100 },
+                  enterprise: { rpm: 2000, burst: 500 },
+                  vip: { rpm: 10000, burst: 2000 },
+                }).map(([name, tier]: [string, any], i: number) => (
+                  <tr key={name} className={`border-b border-gray-100 ${i % 2 === 1 ? 'bg-gray-50' : ''}`}>
+                    <td className="py-2 px-4 font-medium text-gray-900 capitalize">{name}</td>
                     <td className="py-2 px-4 text-right text-gray-700">{tier.rpm?.toLocaleString()}</td>
                     <td className="py-2 px-4 text-right text-gray-700">{tier.burst?.toLocaleString()}</td>
                   </tr>
