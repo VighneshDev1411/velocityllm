@@ -148,6 +148,64 @@ func (s *Service) GetUserByID(userID string) (*User, error) {
 	return &user, nil
 }
 
+// FindOrCreateOAuthUser finds existing user by OAuth ID or email, or creates a new one
+func (s *Service) FindOrCreateOAuthUser(provider, oauthID, email, username, firstName, lastName, avatarURL string) (*User, bool, error) {
+	var user User
+
+	// First try to find by OAuth provider + ID
+	if err := s.db.Where("oauth_provider = ? AND oauth_id = ?", provider, oauthID).First(&user).Error; err == nil {
+		return &user, false, nil
+	}
+
+	// Try to find by email
+	if err := s.db.Where("email = ?", strings.ToLower(email)).First(&user).Error; err == nil {
+		// Link OAuth to existing account
+		s.db.Model(&user).Updates(map[string]interface{}{
+			"oauth_provider": provider,
+			"oauth_id":       oauthID,
+			"avatar_url":     avatarURL,
+		})
+		return &user, false, nil
+	}
+
+	// Ensure unique username
+	baseUsername := username
+	if baseUsername == "" {
+		baseUsername = strings.Split(email, "@")[0]
+	}
+	finalUsername := baseUsername
+	counter := 1
+	for {
+		var count int64
+		s.db.Model(&User{}).Where("username = ?", finalUsername).Count(&count)
+		if count == 0 {
+			break
+		}
+		finalUsername = fmt.Sprintf("%s_%d", baseUsername, counter)
+		counter++
+	}
+
+	// Create new user
+	user = User{
+		Email:         strings.ToLower(email),
+		Username:      finalUsername,
+		Password:      "$oauth$", // OAuth users don't have a password
+		FirstName:     firstName,
+		LastName:      lastName,
+		Role:          RoleUser,
+		Active:        true,
+		OAuthProvider: provider,
+		OAuthID:       oauthID,
+		AvatarURL:     avatarURL,
+	}
+
+	if err := s.db.Create(&user).Error; err != nil {
+		return nil, false, fmt.Errorf("failed to create OAuth user: %w", err)
+	}
+
+	return &user, true, nil
+}
+
 // GetUserByEmail retrieves a user by email
 func (s *Service) GetUserByEmail(email string) (*User, error) {
 	var user User

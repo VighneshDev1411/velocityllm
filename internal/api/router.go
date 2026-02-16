@@ -238,6 +238,11 @@ func SetupRoutes() {
 	http.HandleFunc("/api/v1/auth/login", LoginHandler)
 	http.HandleFunc("/api/v1/auth/refresh", RefreshTokenHandler)
 
+	// OAuth2 endpoints (Day 18)
+	http.HandleFunc("/api/v1/auth/oauth/providers", OAuthProvidersHandler)
+	http.HandleFunc("/api/v1/auth/oauth/redirect", OAuthRedirectHandler)
+	http.HandleFunc("/api/v1/auth/oauth/callback", OAuthCallbackHandler)
+
 	// Protected auth endpoints (require authentication)
 	http.Handle("/api/v1/auth/profile", auth.AuthMiddleware(http.HandlerFunc(GetProfileHandler)))
 	http.Handle("/api/v1/auth/profile/update", auth.AuthMiddleware(http.HandlerFunc(UpdateProfileHandler)))

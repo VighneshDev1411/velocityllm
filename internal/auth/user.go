@@ -9,16 +9,19 @@ import (
 
 // User represents a user in the system
 type User struct {
-	ID        string    `gorm:"primaryKey;type:uuid;default:gen_random_uuid()" json:"id"`
-	Email     string    `gorm:"unique;not null" json:"email"`
-	Username  string    `gorm:"unique;not null" json:"username"`
-	Password  string    `gorm:"not null" json:"-"` // Never expose password in JSON
-	FirstName string    `json:"first_name,omitempty"`
-	LastName  string    `json:"last_name,omitempty"`
-	Role      string    `gorm:"default:'user'" json:"role"` // user, admin, developer
-	Active    bool      `gorm:"default:true" json:"active"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ID            string    `gorm:"primaryKey;type:uuid;default:gen_random_uuid()" json:"id"`
+	Email         string    `gorm:"unique;not null" json:"email"`
+	Username      string    `gorm:"unique;not null" json:"username"`
+	Password      string    `gorm:"not null" json:"-"` // Never expose password in JSON
+	FirstName     string    `json:"first_name,omitempty"`
+	LastName      string    `json:"last_name,omitempty"`
+	Role          string    `gorm:"default:'user'" json:"role"` // user, admin, developer
+	Active        bool      `gorm:"default:true" json:"active"`
+	OAuthProvider string    `json:"oauth_provider,omitempty"` // google, github, or empty for email/password
+	OAuthID       string    `json:"oauth_id,omitempty"`
+	AvatarURL     string    `json:"avatar_url,omitempty"`
+	CreatedAt     time.Time `json:"created_at"`
+	UpdatedAt     time.Time `json:"updated_at"`
 }
 
 // UserRole constants
