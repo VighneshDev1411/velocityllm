@@ -73,8 +73,26 @@ export default function Dashboard() {
     return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
+  const hasData = Number(ov.total_requests || 0) > 0;
+
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* No data banner */}
+      {!hasData && (
+        <div className="bg-blue-50 border-b border-blue-200">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Zap className="w-5 h-5 text-blue-600" />
+              <p className="text-sm text-blue-800">
+                <span className="font-medium">No requests yet.</span> Send prompts via the Playground or run{' '}
+                <code className="bg-blue-100 px-1.5 py-0.5 rounded text-xs font-mono">./scripts/demo-load.sh --quick</code>{' '}
+                to populate dashboards with real data.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <header className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">

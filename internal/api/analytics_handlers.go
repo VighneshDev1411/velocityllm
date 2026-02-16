@@ -129,17 +129,8 @@ func GetRequestTimeSeriesHandler(w http.ResponseWriter, r *http.Request) {
 	errorSeries := make([]map[string]interface{}, 0, numPoints)
 
 	baseRequests := float64(snapshot.Throughput.TotalRequests) / float64(numPoints)
-	if baseRequests < 1 {
-		baseRequests = 10
-	}
 	baseCost := snapshot.Cost.TotalCost / float64(numPoints)
-	if baseCost < 0.001 {
-		baseCost = 0.05
-	}
 	baseLatency := float64(snapshot.Latency.Mean.Milliseconds())
-	if baseLatency < 1 {
-		baseLatency = 150
-	}
 	baseErrors := float64(snapshot.Errors.TotalErrors) / float64(numPoints)
 
 	for i := 0; i < numPoints; i++ {
@@ -207,45 +198,18 @@ func GetModelComparisonHandler(w http.ResponseWriter, r *http.Request) {
 
 	models := make([]map[string]interface{}, 0)
 
-	// If no real data, provide sample model data
-	if len(modelMetrics) == 0 {
-		sampleModels := []struct {
-			name     string
-			requests int64
-			cost     float64
-			latency  int64
-			success  float64
-		}{
-			{"gpt-4", 245, 1.2340, 850, 99.2},
-			{"gpt-3.5-turbo", 1230, 0.3250, 320, 99.8},
-			{"claude-3-opus", 180, 1.5600, 920, 98.5},
-			{"claude-3-sonnet", 890, 0.4500, 450, 99.5},
-			{"llama-3-70b", 320, 0.0800, 280, 97.8},
+	for _, mm := range modelMetrics {
+		successRate := float64(0)
+		if mm.RequestCount > 0 {
+			successRate = float64(mm.SuccessCount) / float64(mm.RequestCount) * 100
 		}
-
-		for _, m := range sampleModels {
-			models = append(models, map[string]interface{}{
-				"model":        m.name,
-				"requests":     m.requests,
-				"total_cost":   m.cost,
-				"avg_latency":  m.latency,
-				"success_rate": m.success,
-			})
-		}
-	} else {
-		for _, mm := range modelMetrics {
-			successRate := float64(0)
-			if mm.RequestCount > 0 {
-				successRate = float64(mm.SuccessCount) / float64(mm.RequestCount) * 100
-			}
-			models = append(models, map[string]interface{}{
-				"model":        mm.ModelName,
-				"requests":     mm.RequestCount,
-				"total_cost":   mm.TotalCost,
-				"avg_latency":  mm.AvgLatency.Milliseconds(),
-				"success_rate": successRate,
-			})
-		}
+		models = append(models, map[string]interface{}{
+			"model":        mm.ModelName,
+			"requests":     mm.RequestCount,
+			"total_cost":   mm.TotalCost,
+			"avg_latency":  mm.AvgLatency.Milliseconds(),
+			"success_rate": successRate,
+		})
 	}
 
 	types.WriteSuccess(w, "Model comparison data retrieved", map[string]interface{}{
@@ -265,39 +229,20 @@ func GetCostBreakdownHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Cost by model
 	byModel := make([]map[string]interface{}, 0)
-	if len(costMetrics.CostByModel) == 0 {
-		// Sample data
-		byModel = append(byModel,
-			map[string]interface{}{"name": "gpt-4", "value": 1.234},
-			map[string]interface{}{"name": "gpt-3.5-turbo", "value": 0.325},
-			map[string]interface{}{"name": "claude-3-opus", "value": 1.560},
-			map[string]interface{}{"name": "claude-3-sonnet", "value": 0.450},
-			map[string]interface{}{"name": "llama-3-70b", "value": 0.080},
-		)
-	} else {
-		for model, cost := range costMetrics.CostByModel {
-			byModel = append(byModel, map[string]interface{}{
-				"name":  model,
-				"value": math.Round(cost*10000) / 10000,
-			})
-		}
+	for model, cost := range costMetrics.CostByModel {
+		byModel = append(byModel, map[string]interface{}{
+			"name":  model,
+			"value": math.Round(cost*10000) / 10000,
+		})
 	}
 
 	// Cost by provider
 	byProvider := make([]map[string]interface{}, 0)
-	if len(costMetrics.CostByProvider) == 0 {
-		byProvider = append(byProvider,
-			map[string]interface{}{"name": "OpenAI", "value": 1.559},
-			map[string]interface{}{"name": "Anthropic", "value": 2.010},
-			map[string]interface{}{"name": "Meta (Self-hosted)", "value": 0.080},
-		)
-	} else {
-		for provider, cost := range costMetrics.CostByProvider {
-			byProvider = append(byProvider, map[string]interface{}{
-				"name":  provider,
-				"value": math.Round(cost*10000) / 10000,
-			})
-		}
+	for provider, cost := range costMetrics.CostByProvider {
+		byProvider = append(byProvider, map[string]interface{}{
+			"name":  provider,
+			"value": math.Round(cost*10000) / 10000,
+		})
 	}
 
 	response := map[string]interface{}{
@@ -400,15 +345,6 @@ func GetAnalyticsSummaryHandler(w http.ResponseWriter, r *http.Request) {
 			"avg_cost":     math.Round(mm.AvgCost*10000) / 10000,
 			"last_used":    mm.LastUsed.Format(time.RFC3339),
 		})
-	}
-
-	// If no real model data, provide samples
-	if len(modelTable) == 0 {
-		modelTable = append(modelTable,
-			map[string]interface{}{"model": "gpt-4o-mini", "requests": int64(245), "success_rate": 99.2, "avg_latency": int64(850), "total_cost": 1.234, "avg_cost": 0.005, "last_used": time.Now().Add(-10 * time.Minute).Format(time.RFC3339)},
-			map[string]interface{}{"model": "claude-sonnet-4-20250514", "requests": int64(180), "success_rate": 98.5, "avg_latency": int64(920), "total_cost": 1.560, "avg_cost": 0.0087, "last_used": time.Now().Add(-5 * time.Minute).Format(time.RFC3339)},
-			map[string]interface{}{"model": "claude-haiku-4-20250514", "requests": int64(320), "success_rate": 99.8, "avg_latency": int64(280), "total_cost": 0.080, "avg_cost": 0.00025, "last_used": time.Now().Add(-2 * time.Minute).Format(time.RFC3339)},
-		)
 	}
 
 	response := map[string]interface{}{
