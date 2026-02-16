@@ -129,6 +129,12 @@ export function Navbar() {
             >
               Monitoring
             </Link>
+            <Link
+              href="/settings"
+              className="flex items-center px-2 py-2 text-gray-700 hover:text-blue-600 ml-4"
+            >
+              Settings
+            </Link>
           </div>
 
           <div className="flex items-center gap-4">

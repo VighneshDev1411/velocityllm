@@ -145,6 +145,15 @@ export const analyticsAPI = {
   getAnalyticsSummary: () => api.get('/api/v1/analytics/summary'),
 };
 
+// Settings API (Day 17)
+export const settingsAPI = {
+  getSettings: () => api.get('/api/v1/settings'),
+  updateRoutingStrategy: (strategy: string) =>
+    api.post('/api/v1/settings/routing/strategy', { strategy }),
+  testProvider: (provider: string) =>
+    api.post('/api/v1/settings/providers/test', { provider }),
+};
+
 // Types
 export interface WorkerMetrics {
   total_workers: number;

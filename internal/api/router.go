@@ -217,6 +217,19 @@ func SetupRoutes() {
 	http.HandleFunc("/api/v1/analytics/summary", GetAnalyticsSummaryHandler)
 
 	// ============================================
+	// SETTINGS ENDPOINTS (Day 17)
+	// ============================================
+
+	// Get all system settings
+	http.HandleFunc("/api/v1/settings", GetSettingsHandler)
+
+	// Update routing strategy
+	http.HandleFunc("/api/v1/settings/routing/strategy", UpdateRoutingStrategySettingHandler)
+
+	// Test provider connectivity
+	http.HandleFunc("/api/v1/settings/providers/test", TestProviderHandler)
+
+	// ============================================
 	// AUTHENTICATION ENDPOINTS (Day 12)
 	// ============================================
 
