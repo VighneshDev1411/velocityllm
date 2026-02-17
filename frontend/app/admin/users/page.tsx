@@ -3,10 +3,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { userManagementAPI } from '@/lib/api';
-import { Navbar } from '@/components/Navbar';
+import api from '@/lib/api';
 import {
-  Users, Shield, Search, Trash2, Edit2, UserPlus,
-  Activity, ChevronDown, ChevronUp, X, Check,
+  Users, Shield, Search, Trash2, UserPlus,
+  Activity, X, Check,
   AlertTriangle, Crown, Code, Eye, User as UserIcon
 } from 'lucide-react';
 
@@ -56,11 +56,18 @@ export default function AdminUsersPage() {
   const [activityLogs, setActivityLogs] = useState<ActivityLogEntry[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'users' | 'activity' | 'teams'>('users');
+  const [activeTab, setActiveTab] = useState<'users' | 'activity'>('users');
   const [editingRole, setEditingRole] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+
+  // Create user modal state
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [createForm, setCreateForm] = useState({
+    email: '', username: '', password: '', first_name: '', last_name: '', role: 'user',
+  });
+  const [creating, setCreating] = useState(false);
 
   const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
 
@@ -68,13 +75,11 @@ export default function AdminUsersPage() {
     if (!token) return;
     setLoading(true);
     try {
-      const headers = { Authorization: `Bearer ${token}` };
-
       const [usersRes, statsRes, logsRes] = await Promise.all([
         userManagementAPI.listUsers().catch(() => null),
         userManagementAPI.getUserStats().catch(() => null),
         userManagementAPI.getActivityLogs({ limit: 50 }).catch(() => null),
-      ].map(p => p instanceof Promise ? p : Promise.resolve(p)));
+      ]);
 
       if (usersRes?.data?.data?.users) {
         setUsers(usersRes.data.data.users);
@@ -148,7 +153,38 @@ export default function AdminUsersPage() {
     }
   };
 
-  const filteredUsers = users;
+  const handleCreateUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setCreating(true);
+    setError('');
+    try {
+      // Use the register endpoint to create user, then update role if needed
+      const res = await api.post('/api/v1/auth/register', {
+        email: createForm.email,
+        username: createForm.username,
+        password: createForm.password,
+        first_name: createForm.first_name,
+        last_name: createForm.last_name,
+      });
+
+      const newUserId = res.data?.data?.user?.id;
+
+      // If a non-default role was selected, update it
+      if (createForm.role !== 'user' && newUserId) {
+        await userManagementAPI.updateRole(newUserId, createForm.role);
+      }
+
+      setSuccess('User created successfully');
+      setShowCreateModal(false);
+      setCreateForm({ email: '', username: '', password: '', first_name: '', last_name: '', role: 'user' });
+      fetchData();
+      setTimeout(() => setSuccess(''), 3000);
+    } catch (err: any) {
+      setError(err.response?.data?.error || 'Failed to create user');
+    } finally {
+      setCreating(false);
+    }
+  };
 
   const formatDate = (dateStr: string) => {
     return new Date(dateStr).toLocaleDateString('en-US', {
@@ -168,7 +204,6 @@ export default function AdminUsersPage() {
   if (!currentUser) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Navbar />
         <div className="max-w-7xl mx-auto px-6 py-20 text-center">
           <Shield className="w-16 h-16 text-gray-300 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-gray-700">Access Denied</h2>
@@ -180,7 +215,6 @@ export default function AdminUsersPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar />
       <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
@@ -191,6 +225,13 @@ export default function AdminUsersPage() {
             </h1>
             <p className="text-gray-500 mt-1">Manage users, roles, and permissions</p>
           </div>
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition shadow-sm"
+          >
+            <UserPlus className="w-4 h-4" />
+            Create User
+          </button>
         </div>
 
         {/* Alerts */}
@@ -294,14 +335,14 @@ export default function AdminUsersPage() {
                         Loading users...
                       </td>
                     </tr>
-                  ) : filteredUsers.length === 0 ? (
+                  ) : users.length === 0 ? (
                     <tr>
                       <td colSpan={5} className="px-6 py-12 text-center text-gray-400">
                         No users found
                       </td>
                     </tr>
                   ) : (
-                    filteredUsers.map((u) => {
+                    users.map((u) => {
                       const roleConfig = ROLE_CONFIG[u.role] || ROLE_CONFIG.user;
                       const RoleIcon = roleConfig.icon;
                       const isCurrentUser = currentUser?.email === u.email;
@@ -463,6 +504,116 @@ export default function AdminUsersPage() {
           </div>
         )}
       </div>
+
+      {/* Create User Modal */}
+      {showCreateModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
+            <div className="flex items-center justify-between px-6 py-4 border-b">
+              <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                <UserPlus className="w-5 h-5 text-blue-600" />
+                Create New User
+              </h3>
+              <button onClick={() => setShowCreateModal(false)} className="p-1 hover:bg-gray-100 rounded-lg">
+                <X className="w-5 h-5 text-gray-500" />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateUser} className="p-6 space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+                  <input
+                    type="text"
+                    value={createForm.first_name}
+                    onChange={(e) => setCreateForm({ ...createForm, first_name: e.target.value })}
+                    className="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="John"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                  <input
+                    type="text"
+                    value={createForm.last_name}
+                    onChange={(e) => setCreateForm({ ...createForm, last_name: e.target.value })}
+                    className="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Doe"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                <input
+                  type="email"
+                  required
+                  value={createForm.email}
+                  onChange={(e) => setCreateForm({ ...createForm, email: e.target.value })}
+                  className="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="john@example.com"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Username *</label>
+                <input
+                  type="text"
+                  required
+                  value={createForm.username}
+                  onChange={(e) => setCreateForm({ ...createForm, username: e.target.value })}
+                  className="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="johndoe"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Password *</label>
+                <input
+                  type="password"
+                  required
+                  minLength={8}
+                  value={createForm.password}
+                  onChange={(e) => setCreateForm({ ...createForm, password: e.target.value })}
+                  className="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Min 8 characters"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                <select
+                  value={createForm.role}
+                  onChange={(e) => setCreateForm({ ...createForm, role: e.target.value })}
+                  className="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="user">User</option>
+                  <option value="developer">Developer</option>
+                  <option value="viewer">Viewer</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowCreateModal(false)}
+                  className="flex-1 px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={creating}
+                  className="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition disabled:opacity-50"
+                >
+                  {creating ? 'Creating...' : 'Create User'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
