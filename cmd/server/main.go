@@ -325,6 +325,12 @@ func main() {
 	}
 	utils.Info("User management tables migrated (activity_logs, teams, team_members)")
 
+	// Auto-migrate API key tables (Day 20)
+	if err := authService.AutoMigrateAPIKeys(); err != nil {
+		utils.Fatal("Failed to migrate API key tables", "error", err)
+	}
+	utils.Info("API key tables migrated (api_keys, api_key_usage_logs)")
+
 	// Setup API routes
 	api.SetupRoutes()
 

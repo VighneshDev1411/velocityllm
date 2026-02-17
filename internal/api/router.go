@@ -276,5 +276,16 @@ func SetupRoutes() {
 	http.Handle("/api/v1/admin/teams/members/manage", auth.AuthMiddleware(auth.RequireRole(auth.RoleAdmin, auth.RoleDeveloper)(http.HandlerFunc(ManageTeamMemberHandler))))
 	http.Handle("/api/v1/admin/teams/delete", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(DeleteTeamHandler))))
 
+	// ============================================
+	// API KEY MANAGEMENT ENDPOINTS (Day 20)
+	// ============================================
+
+	http.Handle("/api/v1/keys", auth.AuthMiddleware(http.HandlerFunc(ListAPIKeysHandler)))
+	http.Handle("/api/v1/keys/create", auth.AuthMiddleware(http.HandlerFunc(CreateAPIKeyHandler)))
+	http.Handle("/api/v1/keys/revoke", auth.AuthMiddleware(http.HandlerFunc(RevokeAPIKeyHandler)))
+	http.Handle("/api/v1/keys/rotate", auth.AuthMiddleware(http.HandlerFunc(RotateAPIKeyHandler)))
+	http.Handle("/api/v1/keys/delete", auth.AuthMiddleware(http.HandlerFunc(DeleteAPIKeyHandler)))
+	http.Handle("/api/v1/keys/usage", auth.AuthMiddleware(http.HandlerFunc(GetAPIKeyUsageHandler)))
+
 	utils.Info("All routes configured successfully")
 }

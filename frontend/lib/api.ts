@@ -159,6 +159,21 @@ export const settingsAPI = {
     api.post('/api/v1/settings/providers/test', { provider }),
 };
 
+// API Key Management API (Day 20)
+export const apiKeyAPI = {
+  list: () => api.get('/api/v1/keys'),
+  create: (data: { name: string; scopes?: string; rate_limit?: number; expires_in_days?: number }) =>
+    api.post('/api/v1/keys/create', data),
+  revoke: (keyId: string) =>
+    api.post('/api/v1/keys/revoke', { key_id: keyId }),
+  rotate: (keyId: string) =>
+    api.post('/api/v1/keys/rotate', { key_id: keyId }),
+  delete: (keyId: string) =>
+    api.delete('/api/v1/keys/delete', { params: { key_id: keyId } }),
+  getUsage: (keyId: string) =>
+    api.get('/api/v1/keys/usage', { params: { key_id: keyId } }),
+};
+
 // User Management API (Day 19)
 export const userManagementAPI = {
   // List all users (admin)
