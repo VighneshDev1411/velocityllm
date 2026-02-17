@@ -6,7 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { usePathname } from 'next/navigation';
 import {
   LogOut, User, LayoutDashboard, FlaskConical, BarChart3,
-  Activity, Settings, ChevronDown, Cpu, Briefcase, Radio, Coins,
+  Activity, Settings, ChevronDown, Cpu, Briefcase, Radio, Coins, Users,
 } from 'lucide-react';
 
 const primaryLinks = [
@@ -189,6 +189,18 @@ export function Navbar() {
 
           {/* Right: Settings + Profile + Logout */}
           <div className="flex items-center gap-1">
+            <Link
+              href="/admin/users"
+              className={`p-2 rounded-lg transition-all ${
+                pathname?.startsWith('/admin')
+                  ? 'bg-blue-50 text-blue-700'
+                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+              }`}
+              title="User Management"
+            >
+              <Users className="w-4.5 h-4.5" />
+            </Link>
+
             <Link
               href="/settings"
               className={`p-2 rounded-lg transition-all ${

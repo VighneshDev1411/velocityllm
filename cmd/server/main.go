@@ -318,6 +318,13 @@ func main() {
 	auth.InitGlobalService(db)
 	utils.Info("Authentication service initialized")
 
+	// Auto-migrate user management tables (Day 19)
+	authService := auth.GetGlobalService()
+	if err := authService.AutoMigrateUserManagement(); err != nil {
+		utils.Fatal("Failed to migrate user management tables", "error", err)
+	}
+	utils.Info("User management tables migrated (activity_logs, teams, team_members)")
+
 	// Setup API routes
 	api.SetupRoutes()
 

@@ -10,10 +10,15 @@ const api = axios.create({
   },
 });
 
-// Request interceptor
+// Request interceptor - attach auth token
 api.interceptors.request.use(
   (config) => {
-    // Add any auth tokens here if needed
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('access_token');
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+    }
     return config;
   },
   (error) => {
@@ -152,6 +157,54 @@ export const settingsAPI = {
     api.post('/api/v1/settings/routing/strategy', { strategy }),
   testProvider: (provider: string) =>
     api.post('/api/v1/settings/providers/test', { provider }),
+};
+
+// User Management API (Day 19)
+export const userManagementAPI = {
+  // List all users (admin)
+  listUsers: (params?: { limit?: number; offset?: number }) =>
+    api.get('/api/v1/auth/users', { params }),
+
+  // Get user details
+  getUser: (userId: string) =>
+    api.get('/api/v1/admin/users/get', { params: { user_id: userId } }),
+
+  // Update user
+  updateUser: (data: { user_id: string; first_name?: string; last_name?: string; username?: string; active?: boolean }) =>
+    api.put('/api/v1/admin/users/update', data),
+
+  // Delete user
+  deleteUser: (userId: string) =>
+    api.delete('/api/v1/admin/users/delete', { params: { user_id: userId } }),
+
+  // Search users
+  searchUsers: (query: string) =>
+    api.get('/api/v1/admin/users/search', { params: { q: query } }),
+
+  // Update user role
+  updateRole: (userId: string, role: string) =>
+    api.post('/api/v1/admin/users/role', { user_id: userId, role }),
+
+  // Get user stats
+  getUserStats: () =>
+    api.get('/api/v1/admin/users/stats'),
+
+  // Get activity logs
+  getActivityLogs: (params?: { user_id?: string; limit?: number; offset?: number }) =>
+    api.get('/api/v1/admin/activity', { params }),
+
+  // Teams
+  listTeams: () => api.get('/api/v1/admin/teams'),
+  createTeam: (name: string, description: string) =>
+    api.post('/api/v1/admin/teams/create', { name, description }),
+  getTeamMembers: (teamId: string) =>
+    api.get('/api/v1/admin/teams/members', { params: { team_id: teamId } }),
+  addTeamMember: (teamId: string, userId: string, role: string) =>
+    api.post('/api/v1/admin/teams/members/manage', { team_id: teamId, user_id: userId, role }),
+  removeTeamMember: (teamId: string, userId: string) =>
+    api.delete('/api/v1/admin/teams/members/manage', { data: { team_id: teamId, user_id: userId } }),
+  deleteTeam: (teamId: string) =>
+    api.delete('/api/v1/admin/teams/delete', { params: { team_id: teamId } }),
 };
 
 // Types

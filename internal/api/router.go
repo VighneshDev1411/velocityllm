@@ -252,5 +252,29 @@ func SetupRoutes() {
 	// Admin endpoints
 	http.Handle("/api/v1/auth/users", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(ListUsersHandler))))
 
+	// ============================================
+	// USER MANAGEMENT ENDPOINTS (Day 19)
+	// ============================================
+
+	// User CRUD (admin only)
+	http.Handle("/api/v1/admin/users/get", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(AdminGetUserHandler))))
+	http.Handle("/api/v1/admin/users/update", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(AdminUpdateUserHandler))))
+	http.Handle("/api/v1/admin/users/delete", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(AdminDeleteUserHandler))))
+	http.Handle("/api/v1/admin/users/search", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(SearchUsersHandler))))
+
+	// Role management (admin only)
+	http.Handle("/api/v1/admin/users/role", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(UpdateUserRoleHandler))))
+	http.Handle("/api/v1/admin/users/stats", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(GetUserStatsHandler))))
+
+	// Activity logs (admin only)
+	http.Handle("/api/v1/admin/activity", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(GetActivityLogsHandler))))
+
+	// Team management (admin/developer)
+	http.Handle("/api/v1/admin/teams", auth.AuthMiddleware(auth.RequireRole(auth.RoleAdmin, auth.RoleDeveloper)(http.HandlerFunc(ListTeamsHandler))))
+	http.Handle("/api/v1/admin/teams/create", auth.AuthMiddleware(auth.RequireRole(auth.RoleAdmin, auth.RoleDeveloper)(http.HandlerFunc(CreateTeamHandler))))
+	http.Handle("/api/v1/admin/teams/members", auth.AuthMiddleware(auth.RequireRole(auth.RoleAdmin, auth.RoleDeveloper)(http.HandlerFunc(GetTeamMembersHandler))))
+	http.Handle("/api/v1/admin/teams/members/manage", auth.AuthMiddleware(auth.RequireRole(auth.RoleAdmin, auth.RoleDeveloper)(http.HandlerFunc(ManageTeamMemberHandler))))
+	http.Handle("/api/v1/admin/teams/delete", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(DeleteTeamHandler))))
+
 	utils.Info("All routes configured successfully")
 }
