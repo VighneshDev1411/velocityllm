@@ -287,5 +287,17 @@ func SetupRoutes() {
 	http.Handle("/api/v1/keys/delete", auth.AuthMiddleware(http.HandlerFunc(DeleteAPIKeyHandler)))
 	http.Handle("/api/v1/keys/usage", auth.AuthMiddleware(http.HandlerFunc(GetAPIKeyUsageHandler)))
 
+	// ============================================
+	// BILLING & USAGE TRACKING ENDPOINTS (Day 21)
+	// ============================================
+
+	http.Handle("/api/v1/billing/subscription", auth.AuthMiddleware(http.HandlerFunc(GetSubscriptionHandler)))
+	http.Handle("/api/v1/billing/subscription/update", auth.AuthMiddleware(http.HandlerFunc(UpdateSubscriptionHandler)))
+	http.Handle("/api/v1/billing/usage", auth.AuthMiddleware(http.HandlerFunc(GetUsageStatsHandler)))
+	http.Handle("/api/v1/billing/usage/history", auth.AuthMiddleware(http.HandlerFunc(GetUsageHistoryHandler)))
+	http.Handle("/api/v1/billing/usage/export", auth.AuthMiddleware(http.HandlerFunc(ExportUsageHandler)))
+	http.Handle("/api/v1/billing/invoices", auth.AuthMiddleware(http.HandlerFunc(ListInvoicesHandler)))
+	http.Handle("/api/v1/billing/invoices/generate", auth.AuthMiddleware(http.HandlerFunc(GenerateInvoiceHandler)))
+
 	utils.Info("All routes configured successfully")
 }

@@ -10,6 +10,7 @@ import (
 
 	"github.com/VighneshDev1411/velocityllm/internal/api"
 	"github.com/VighneshDev1411/velocityllm/internal/auth"
+	"github.com/VighneshDev1411/velocityllm/internal/billing"
 	"github.com/VighneshDev1411/velocityllm/internal/cache"
 	"github.com/VighneshDev1411/velocityllm/internal/config"
 	"github.com/VighneshDev1411/velocityllm/internal/database"
@@ -330,6 +331,14 @@ func main() {
 		utils.Fatal("Failed to migrate API key tables", "error", err)
 	}
 	utils.Info("API key tables migrated (api_keys, api_key_usage_logs)")
+
+	// Initialize billing service (Day 21)
+	billingService := billing.NewService(db)
+	if err := billingService.AutoMigrate(); err != nil {
+		utils.Fatal("Failed to migrate billing tables", "error", err)
+	}
+	api.InitBillingService(billingService)
+	utils.Info("Billing service initialized (subscriptions, invoices, usage_records)")
 
 	// Setup API routes
 	api.SetupRoutes()

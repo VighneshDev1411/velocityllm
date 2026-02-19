@@ -159,6 +159,19 @@ export const settingsAPI = {
     api.post('/api/v1/settings/providers/test', { provider }),
 };
 
+// Billing & Usage Tracking API (Day 21)
+export const billingAPI = {
+  getSubscription: () => api.get('/api/v1/billing/subscription'),
+  updateSubscription: (tier: string) =>
+    api.post('/api/v1/billing/subscription/update', { tier }),
+  getUsage: () => api.get('/api/v1/billing/usage'),
+  getUsageHistory: () => api.get('/api/v1/billing/usage/history'),
+  exportUsage: (format: 'json' | 'csv') =>
+    api.get('/api/v1/billing/usage/export', { params: { format } }),
+  listInvoices: () => api.get('/api/v1/billing/invoices'),
+  generateInvoice: () => api.post('/api/v1/billing/invoices/generate'),
+};
+
 // API Key Management API (Day 20)
 export const apiKeyAPI = {
   list: () => api.get('/api/v1/keys'),
