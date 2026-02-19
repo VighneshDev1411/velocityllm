@@ -18,6 +18,7 @@ import (
 	"github.com/VighneshDev1411/velocityllm/internal/middleware"
 	"github.com/VighneshDev1411/velocityllm/internal/optimization"
 	"github.com/VighneshDev1411/velocityllm/internal/prompts"
+	"github.com/VighneshDev1411/velocityllm/internal/quota"
 	"github.com/VighneshDev1411/velocityllm/internal/router"
 	"github.com/VighneshDev1411/velocityllm/internal/streaming"
 	"github.com/VighneshDev1411/velocityllm/internal/tokens"
@@ -339,6 +340,13 @@ func main() {
 	}
 	api.InitBillingService(billingService)
 	utils.Info("Billing service initialized (subscriptions, invoices, usage_records)")
+
+	// Initialize quota service (Day 22)
+	quota.InitGlobalService(db, billingService)
+	if err := quota.AutoMigrate(db); err != nil {
+		utils.Fatal("Failed to migrate quota tables", "error", err)
+	}
+	utils.Info("Quota service initialized (user_quotas, quota_usage, usage_alerts, alert_configurations, rate_limit_events)")
 
 	// Setup API routes
 	api.SetupRoutes()

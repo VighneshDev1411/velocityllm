@@ -1,0 +1,163 @@
+(base) vigneshmac@Vigneshs-MacBook-Pro velocityllm %   docker-compose up -d
+WARN[0000] /Users/vigneshmac/Desktop/velocityllm/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion 
+[+] Building 31.5s (27/36)                                                                                                                                           
+ => [internal] load local bake definitions                                                                                                                      0.0s
+ => => reading from stdin 702B                                                                                                                                  0.0s
+ => [backend internal] load build definition from Dockerfile                                                                                                    0.0s
+ => => transferring dockerfile: 590B                                                                                                                            0.0s
+ => [frontend internal] load build definition from Dockerfile                                                                                                   0.0s
+ => => transferring dockerfile: 859B                                                                                                                            0.0s
+ => [frontend internal] load metadata for docker.io/library/node:18-alpine                                                                                     20.7s
+ => [backend internal] load metadata for docker.io/library/alpine:latest                                                                                       21.0s
+ => [backend internal] load metadata for docker.io/library/golang:1.21-alpine                                                                                  21.1s
+ => [auth] library/alpine:pull token for registry-1.docker.io                                                                                                   0.0s
+ => [auth] library/node:pull token for registry-1.docker.io                                                                                                     0.0s
+ => [auth] library/golang:pull token for registry-1.docker.io                                                                                                   0.0s
+ => [frontend internal] load .dockerignore                                                                                                                      0.0s
+ => => transferring context: 172B                                                                                                                               0.0s
+ => [frontend deps 1/4] FROM docker.io/library/node:18-alpine@sha256:8d6421d663b4c28fd3ebc498332f249011d118945588d0a35cb9bc4b8ca09d9e                           0.0s
+ => => resolve docker.io/library/node:18-alpine@sha256:8d6421d663b4c28fd3ebc498332f249011d118945588d0a35cb9bc4b8ca09d9e                                         0.0s
+ => [frontend internal] load build context                                                                                                                      0.0s
+ => => transferring context: 642.05kB                                                                                                                           0.0s
+ => CACHED [frontend deps 2/4] WORKDIR /app                                                                                                                     0.0s
+ => [frontend runner 3/7] RUN addgroup --system --gid 1001 nodejs                                                                                               0.2s
+ => [frontend deps 3/4] COPY package.json package-lock.json ./                                                                                                  0.0s
+ => CANCELED [frontend deps 4/4] RUN npm ci                                                                                                                    10.5s
+ => [frontend runner 4/7] RUN adduser --system --uid 1001 nextjs                                                                                                0.1s
+ => [backend internal] load .dockerignore                                                                                                                       0.0s
+ => => transferring context: 300B                                                                                                                               0.0s
+ => [backend builder 1/7] FROM docker.io/library/golang:1.21-alpine@sha256:2414035b086e3c42b99654c8b26e6f5b1b1598080d65fd03c7f499552ff4dc94                     8.6s
+ => => resolve docker.io/library/golang:1.21-alpine@sha256:2414035b086e3c42b99654c8b26e6f5b1b1598080d65fd03c7f499552ff4dc94                                     0.0s
+ => => sha256:e495e1face5cc12777f452389e1da15202c37ec00ba024f12f841b5c90a47057 127B / 127B                                                                      0.1s
+ => => sha256:2a6022646f09ee78a83ef4abd0f5af04071b6563cf16a18e00fb2dcfe63ca0a3 64.11MB / 64.11MB                                                                6.8s
+ => => sha256:171883aaf475f5dea5723bb43248d9cf3f3c3a7cf5927947a8bed4836bbccb62 293.51kB / 293.51kB                                                              0.3s
+ => => sha256:690e87867337b8441990047e169b892933e9006bdbcbed52ab7a356945477a4d 4.09MB / 4.09MB                                                                  0.5s
+ => => extracting sha256:690e87867337b8441990047e169b892933e9006bdbcbed52ab7a356945477a4d                                                                       0.1s
+ => => extracting sha256:171883aaf475f5dea5723bb43248d9cf3f3c3a7cf5927947a8bed4836bbccb62                                                                       0.1s
+ => => extracting sha256:2a6022646f09ee78a83ef4abd0f5af04071b6563cf16a18e00fb2dcfe63ca0a3                                                                       1.7s
+ => => extracting sha256:e495e1face5cc12777f452389e1da15202c37ec00ba024f12f841b5c90a47057                                                                       0.0s
+ => => extracting sha256:4f4fb700ef54461cfa02571ae0db9a0dc1e0cdb5577484a6d75e68dc38e8acc1                                                                       0.0s
+ => [backend stage-1 1/4] FROM docker.io/library/alpine:latest@sha256:25109184c71bdad752c8312a8623239686a9a2071e8825f20acb8f2198c3f659                          0.6s
+ => => resolve docker.io/library/alpine:latest@sha256:25109184c71bdad752c8312a8623239686a9a2071e8825f20acb8f2198c3f659                                          0.0s
+ => => sha256:d8ad8cd72600f46cc068e16c39046ebc76526e41051f43a8c249884b200936c0 4.20MB / 4.20MB                                                                  0.4s
+ => => extracting sha256:d8ad8cd72600f46cc068e16c39046ebc76526e41051f43a8c249884b200936c0                                                                       0.1s
+ => [backend internal] load build context                                                                                                                       1.0s
+ => => transferring context: 117.60MB                                                                                                                           1.0s
+ => [backend stage-1 2/4] RUN apk --no-cache add ca-certificates                                                                                                1.2s
+ => [backend stage-1 3/4] WORKDIR /root/                                                                                                                        0.0s
+ => [backend builder 2/7] WORKDIR /app                                                                                                                          0.4s
+ => [backend builder 3/7] RUN apk add --no-cache git                                                                                                            0.8s
+ => [backend builder 4/7] COPY go.mod go.sum ./                                                                                                                 0.0s
+ => ERROR [backend builder 5/7] RUN go mod download                                                                                                             0.1s
+------
+ > [backend builder 5/7] RUN go mod download:
+0.089 go: go.mod requires go >= 1.24.0 (running go 1.21.13; GOTOOLCHAIN=local)
+------
+Dockerfile:11
+
+--------------------
+
+   9 |     # Copy go mod files
+
+  10 |     COPY go.mod go.sum ./
+
+  11 | >>> RUN go mod download
+
+  12 |     
+
+  13 |     # Copy source code
+
+--------------------
+
+target backend: failed to solve: process "/bin/sh -c go mod download" did not complete successfully: exit code: 1
+
+
+
+View build details: docker-desktop://dashboard/build/default/default/ya49rz8exen3q28r186n34cr5
+
+(base) vigneshmac@Vigneshs-MacBook-Pro velocityllm %   docker-compose up -d --build
+WARN[0000] /Users/vigneshmac/Desktop/velocityllm/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion 
+[+] Building 56.8s (33/35)                                                                                                                                           
+ => [internal] load local bake definitions                                                                                                                      0.0s
+ => => reading from stdin 702B                                                                                                                                  0.0s
+ => [frontend internal] load build definition from Dockerfile                                                                                                   0.0s
+ => => transferring dockerfile: 859B                                                                                                                            0.0s
+ => [backend internal] load build definition from Dockerfile                                                                                                    0.0s
+ => => transferring dockerfile: 590B                                                                                                                            0.0s
+ => [backend internal] load metadata for docker.io/library/alpine:latest                                                                                        0.3s
+ => [backend internal] load metadata for docker.io/library/golang:1.24-alpine                                                                                   0.7s
+ => [frontend internal] load metadata for docker.io/library/node:18-alpine                                                                                      0.3s
+ => [frontend internal] load .dockerignore                                                                                                                      0.0s
+ => => transferring context: 172B                                                                                                                               0.0s
+ => [frontend internal] load build context                                                                                                                      0.0s
+ => => transferring context: 3.22kB                                                                                                                             0.0s
+ => [frontend deps 1/4] FROM docker.io/library/node:18-alpine@sha256:8d6421d663b4c28fd3ebc498332f249011d118945588d0a35cb9bc4b8ca09d9e                           0.0s
+ => => resolve docker.io/library/node:18-alpine@sha256:8d6421d663b4c28fd3ebc498332f249011d118945588d0a35cb9bc4b8ca09d9e                                         0.0s
+ => CACHED [frontend deps 2/4] WORKDIR /app                                                                                                                     0.0s
+ => CACHED [frontend runner 3/7] RUN addgroup --system --gid 1001 nodejs                                                                                        0.0s
+ => CACHED [frontend runner 4/7] RUN adduser --system --uid 1001 nextjs                                                                                         0.0s
+ => CACHED [frontend deps 3/4] COPY package.json package-lock.json ./                                                                                           0.0s
+ => [frontend deps 4/4] RUN npm ci                                                                                                                             30.8s
+ => [backend internal] load .dockerignore                                                                                                                       0.0s
+ => => transferring context: 300B                                                                                                                               0.0s
+ => [backend builder 1/7] FROM docker.io/library/golang:1.24-alpine@sha256:8bee1901f1e530bfb4a7850aa7a479d17ae3a18beb6e09064ed54cfd245b7191                     6.0s
+ => => resolve docker.io/library/golang:1.24-alpine@sha256:8bee1901f1e530bfb4a7850aa7a479d17ae3a18beb6e09064ed54cfd245b7191                                     0.0s
+ => => sha256:0967cf60864b908575d28f945a5205b71a8c9f31c257aa7ef3eb74438d790a98 124B / 124B                                                                      0.1s
+ => => sha256:f5657497bb4612f95697098fd984bb9e638887aa2070ae81081ed7887c453027 75.37MB / 75.37MB                                                                3.8s
+ => => sha256:2b15849378b44c08f252c20f78b44186fe48e31a46e2085dc3020ba5f7d6b7c0 298.84kB / 298.84kB                                                              0.2s
+ => => extracting sha256:2b15849378b44c08f252c20f78b44186fe48e31a46e2085dc3020ba5f7d6b7c0                                                                       0.1s
+ => => extracting sha256:f5657497bb4612f95697098fd984bb9e638887aa2070ae81081ed7887c453027                                                                       2.1s
+ => => extracting sha256:0967cf60864b908575d28f945a5205b71a8c9f31c257aa7ef3eb74438d790a98                                                                       0.0s
+ => => extracting sha256:4f4fb700ef54461cfa02571ae0db9a0dc1e0cdb5577484a6d75e68dc38e8acc1                                                                       0.0s
+ => [backend stage-1 1/4] FROM docker.io/library/alpine:latest@sha256:25109184c71bdad752c8312a8623239686a9a2071e8825f20acb8f2198c3f659                          0.0s
+ => => resolve docker.io/library/alpine:latest@sha256:25109184c71bdad752c8312a8623239686a9a2071e8825f20acb8f2198c3f659                                          0.0s
+ => [backend internal] load build context                                                                                                                       0.1s
+ => => transferring context: 321.26kB                                                                                                                           0.1s
+ => CACHED [backend stage-1 2/4] RUN apk --no-cache add ca-certificates                                                                                         0.0s
+ => CACHED [backend stage-1 3/4] WORKDIR /root/                                                                                                                 0.0s
+ => [backend builder 2/7] WORKDIR /app                                                                                                                          0.4s
+ => [backend builder 3/7] RUN apk add --no-cache git                                                                                                            1.3s
+ => [backend builder 4/7] COPY go.mod go.sum ./                                                                                                                 0.0s
+ => [backend builder 5/7] RUN go mod download                                                                                                                   3.9s
+ => [backend builder 6/7] COPY . .                                                                                                                              0.8s
+ => [backend builder 7/7] RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o server cmd/server/main.go                                             10.3s
+ => [backend stage-1 4/4] COPY --from=builder /app/server .                                                                                                     0.1s
+ => [backend] exporting to image                                                                                                                                0.8s
+ => => exporting layers                                                                                                                                         0.6s
+ => => exporting manifest sha256:51ed2f6fc4b83e27b74eaddf4c45d2134832b5000b8d9ec3782a6062c9029da0                                                               0.0s
+ => => exporting config sha256:f39727e29240285ce883f21377418d17141171367cdc6bd7c4e0545c32e52d27                                                                 0.0s
+ => => exporting attestation manifest sha256:a70c42e75a9c8b997023310eee7e491e94958d0c85cf467ec38827698446bae1                                                   0.0s
+ => => exporting manifest list sha256:82b2f99b6da172970e59549271652be833ee19c43497309b46bd9cfa4bb076aa                                                          0.0s
+ => => naming to docker.io/library/velocityllm-backend:latest                                                                                                   0.0s
+ => => unpacking to docker.io/library/velocityllm-backend:latest                                                                                                0.1s
+ => [backend] resolving provenance for metadata file                                                                                                            0.0s
+ => [frontend builder 3/5] COPY --from=deps /app/node_modules ./node_modules                                                                                    2.9s
+ => [frontend builder 4/5] COPY . .                                                                                                                             0.1s
+ => [frontend builder 5/5] RUN npm run build                                                                                                                   19.2s
+ => ERROR [frontend runner 5/7] COPY --from=builder /app/public ./public                                                                                        0.0s
+------
+ > [frontend runner 5/7] COPY --from=builder /app/public ./public:
+------
+Dockerfile:37
+
+--------------------
+
+  35 |     
+
+  36 |     # Copy necessary files
+
+  37 | >>> COPY --from=builder /app/public ./public
+
+  38 |     COPY --from=builder /app/.next/standalone ./
+
+  39 |     COPY --from=builder /app/.next/static ./.next/static
+
+--------------------
+
+target frontend: failed to solve: failed to compute cache key: failed to calculate checksum of ref xuaxrwi15g1v6jsak3eguca8x::k02nuwmrjo4nbnqqyu7cl72sj: "/app/public": not found
+
+
+
+View build details: docker-desktop://dashboard/build/default/default/16kt3nmgk2baoluqgqzq0t4rn
+
+(base) vigneshmac@Vigneshs-MacBook-Pro velocityllm % 

@@ -299,5 +299,23 @@ func SetupRoutes() {
 	http.Handle("/api/v1/billing/invoices", auth.AuthMiddleware(http.HandlerFunc(ListInvoicesHandler)))
 	http.Handle("/api/v1/billing/invoices/generate", auth.AuthMiddleware(http.HandlerFunc(GenerateInvoiceHandler)))
 
+	// ============================================
+	// QUOTA MANAGEMENT ENDPOINTS (Day 22)
+	// ============================================
+
+	// User quota endpoints
+	http.Handle("/api/v1/quota/usage", auth.AuthMiddleware(http.HandlerFunc(GetMyQuotaUsageHandler)))
+	http.Handle("/api/v1/quota/quotas", auth.AuthMiddleware(http.HandlerFunc(GetMyQuotasHandler)))
+	http.Handle("/api/v1/quota/alerts/config", auth.AuthMiddleware(http.HandlerFunc(GetMyAlertConfigHandler)))
+	http.Handle("/api/v1/quota/alerts/config/update", auth.AuthMiddleware(http.HandlerFunc(UpdateMyAlertConfigHandler)))
+	http.Handle("/api/v1/quota/rate-limits", auth.AuthMiddleware(http.HandlerFunc(GetMyRateLimitEventsHandler)))
+
+	// Admin quota endpoints
+	http.Handle("/api/v1/admin/quota/set", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(AdminSetUserQuotaHandler))))
+	http.Handle("/api/v1/admin/quota/user", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(AdminGetUserQuotasHandler))))
+	http.Handle("/api/v1/admin/quota/all", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(AdminGetAllQuotasHandler))))
+	http.Handle("/api/v1/admin/quota/delete", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(AdminDeleteUserQuotaHandler))))
+	http.Handle("/api/v1/admin/quota/stats", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(AdminGetRateLimitStatsHandler))))
+
 	utils.Info("All routes configured successfully")
 }

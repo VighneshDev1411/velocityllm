@@ -311,4 +311,44 @@ export interface SystemHealth {
   };
 }
 
+// Quota Management API (Day 22)
+export const quotaAPI = {
+  // Get current user's quota usage
+  getMyUsage: () => api.get('/api/v1/quota/usage'),
+
+  // Get current user's custom quotas
+  getMyQuotas: () => api.get('/api/v1/quota/quotas'),
+
+  // Get alert configuration
+  getAlertConfig: () => api.get('/api/v1/quota/alerts/config'),
+
+  // Update alert configuration
+  updateAlertConfig: (config: any) => api.put('/api/v1/quota/alerts/config/update', config),
+
+  // Get rate limit events
+  getRateLimitEvents: (limit: number = 20) => api.get(`/api/v1/quota/rate-limits?limit=${limit}`),
+
+  // Admin: Set custom quota for a user
+  adminSetQuota: (data: {
+    user_id: number;
+    type: string;
+    period: string;
+    limit: number;
+    reason: string;
+  }) => api.post('/api/v1/admin/quota/set', data),
+
+  // Admin: Get all quotas for a user
+  adminGetUserQuotas: (userId: number) => api.get(`/api/v1/admin/quota/user?user_id=${userId}`),
+
+  // Admin: Get all custom quotas
+  adminGetAllQuotas: (page: number = 1, limit: number = 20) =>
+    api.get(`/api/v1/admin/quota/all?page=${page}&limit=${limit}`),
+
+  // Admin: Delete a custom quota
+  adminDeleteQuota: (quotaId: number) => api.delete(`/api/v1/admin/quota/delete?quota_id=${quotaId}`),
+
+  // Admin: Get rate limit statistics
+  adminGetRateLimitStats: () => api.get('/api/v1/admin/quota/stats'),
+};
+
 export default api;
