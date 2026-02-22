@@ -14,6 +14,7 @@ import (
 	"github.com/VighneshDev1411/velocityllm/internal/cache"
 	"github.com/VighneshDev1411/velocityllm/internal/config"
 	"github.com/VighneshDev1411/velocityllm/internal/database"
+	"github.com/VighneshDev1411/velocityllm/internal/loadtest"
 	"github.com/VighneshDev1411/velocityllm/internal/metrics"
 	"github.com/VighneshDev1411/velocityllm/internal/middleware"
 	"github.com/VighneshDev1411/velocityllm/internal/optimization"
@@ -347,6 +348,13 @@ func main() {
 		utils.Fatal("Failed to migrate quota tables", "error", err)
 	}
 	utils.Info("Quota service initialized (user_quotas, quota_usage, usage_alerts, alert_configurations, rate_limit_events)")
+
+	// Initialize load test service (Day 23)
+	loadtest.InitGlobalService(db)
+	if err := loadtest.AutoMigrate(db); err != nil {
+		utils.Fatal("Failed to migrate load test tables", "error", err)
+	}
+	utils.Info("Load test service initialized (load_test_configs, load_test_runs, load_test_metrics, request_results, benchmark_comparisons)")
 
 	// Setup API routes
 	api.SetupRoutes()

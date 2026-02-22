@@ -352,3 +352,23 @@ export const quotaAPI = {
 };
 
 export default api;
+// Load Testing API (Day 23)
+export const loadTestAPI = {
+  // Configuration management
+  listConfigs: (limit: number = 50) => api.get(`/api/v1/loadtest/configs?limit=${limit}`),
+  getConfig: (id: number) => api.get(`/api/v1/loadtest/config?id=${id}`),
+  createConfig: (config: any) => api.post('/api/v1/loadtest/create', config),
+
+  // Test execution
+  startTest: (configId: number) => api.post('/api/v1/loadtest/start', { config_id: configId }),
+  stopTest: (runId: number) => api.post('/api/v1/loadtest/stop', { run_id: runId }),
+
+  // Results and metrics
+  listRuns: (limit: number = 20) => api.get(`/api/v1/loadtest/runs?limit=${limit}`),
+  getRun: (id: number) => api.get(`/api/v1/loadtest/run?id=${id}`),
+  getMetrics: (runId: number) => api.get(`/api/v1/loadtest/metrics?run_id=${runId}`),
+
+  // Quick benchmark
+  quickBenchmark: (targetRPS: number, model: string) =>
+    api.post('/api/v1/loadtest/quick', { target_rps: targetRPS, model }),
+};

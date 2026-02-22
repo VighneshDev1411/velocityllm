@@ -6,7 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { usePathname } from 'next/navigation';
 import {
   LogOut, User, LayoutDashboard, FlaskConical, BarChart3,
-  Activity, Settings, ChevronDown, Cpu, Briefcase, Radio, Coins, Users, Key, CreditCard, Gauge,
+  Activity, Settings, ChevronDown, Cpu, Briefcase, Radio, Coins, Users, Key, CreditCard, Gauge, Zap,
 } from 'lucide-react';
 
 const primaryLinks = [
@@ -24,6 +24,7 @@ const infraLinks = [
   { href: '/keys', label: 'API Keys', icon: Key },
   { href: '/billing', label: 'Billing', icon: CreditCard },
   { href: '/quota', label: 'Quota', icon: Gauge },
+  { href: '/loadtest', label: 'Load Test', icon: Zap },
 ];
 
 export function Navbar() {

@@ -317,5 +317,24 @@ func SetupRoutes() {
 	http.Handle("/api/v1/admin/quota/delete", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(AdminDeleteUserQuotaHandler))))
 	http.Handle("/api/v1/admin/quota/stats", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(AdminGetRateLimitStatsHandler))))
 
+	// ============================================
+	// LOAD TESTING ENDPOINTS (Day 23)
+	// ============================================
+
+	// Load test configuration
+	http.Handle("/api/v1/loadtest/configs", auth.AuthMiddleware(http.HandlerFunc(ListLoadTestsHandler)))
+	http.Handle("/api/v1/loadtest/config", auth.AuthMiddleware(http.HandlerFunc(GetLoadTestHandler)))
+	http.Handle("/api/v1/loadtest/create", auth.AuthMiddleware(http.HandlerFunc(CreateLoadTestHandler)))
+
+	// Load test execution
+	http.Handle("/api/v1/loadtest/start", auth.AuthMiddleware(http.HandlerFunc(StartLoadTestHandler)))
+	http.Handle("/api/v1/loadtest/stop", auth.AuthMiddleware(http.HandlerFunc(StopLoadTestHandler)))
+	http.Handle("/api/v1/loadtest/runs", auth.AuthMiddleware(http.HandlerFunc(ListTestRunsHandler)))
+	http.Handle("/api/v1/loadtest/run", auth.AuthMiddleware(http.HandlerFunc(GetTestRunHandler)))
+	http.Handle("/api/v1/loadtest/metrics", auth.AuthMiddleware(http.HandlerFunc(GetTestMetricsHandler)))
+
+	// Quick benchmark
+	http.Handle("/api/v1/loadtest/quick", auth.AuthMiddleware(http.HandlerFunc(QuickBenchmarkHandler)))
+
 	utils.Info("All routes configured successfully")
 }
