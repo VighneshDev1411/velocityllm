@@ -1,6 +1,22 @@
 'use client';
 
 import { useState, useRef, useCallback } from 'react';
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import Slider from '@mui/material/Slider';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import Chip from '@mui/material/Chip';
+import CircularProgress from '@mui/material/CircularProgress';
+import Alert from '@mui/material/Alert';
+import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
+import Collapse from '@mui/material/Collapse';
 import {
   Send,
   Trash2,
@@ -16,13 +32,13 @@ import {
   Code2,
   Settings2,
   History,
-  Loader2,
   Terminal,
   AlertCircle,
   Sparkles,
   TrendingUp,
 } from 'lucide-react';
 import api from '@/lib/api';
+import { PageHeader } from '@/components/PageHeader';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -176,6 +192,27 @@ func main() {
 }
 
 // ---------------------------------------------------------------------------
+// Shared styles
+// ---------------------------------------------------------------------------
+
+const paperSx = {
+  elevation: 0,
+  border: '1px solid #e5e7eb',
+  borderRadius: '12px',
+  overflow: 'hidden',
+};
+
+const sectionHeaderSx = {
+  px: 2.5,
+  py: 1.5,
+  borderBottom: '1px solid #f3f4f6',
+  bgcolor: 'rgba(249,250,251,0.5)',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+};
+
+// ---------------------------------------------------------------------------
 // Sub-components
 // ---------------------------------------------------------------------------
 
@@ -189,13 +226,14 @@ function CopyButton({ text }: { text: string }) {
   }, [text]);
 
   return (
-    <button
+    <IconButton
       onClick={handleCopy}
-      className="p-1.5 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+      size="small"
       title="Copy to clipboard"
+      sx={{ color: copied ? '#22c55e' : '#9ca3af', '&:hover': { color: '#4b5563', bgcolor: '#f3f4f6' } }}
     >
-      {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
-    </button>
+      {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+    </IconButton>
   );
 }
 
@@ -217,39 +255,44 @@ function ParameterSlider({
   icon: React.ReactNode;
 }) {
   return (
-    <div className="space-y-2">
-      <div className="flex items-center justify-between">
-        <label className="text-sm font-medium text-gray-700 flex items-center gap-1.5">
+    <Box>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+        <Typography
+          variant="body2"
+          sx={{ fontWeight: 500, color: '#374151', display: 'flex', alignItems: 'center', gap: 0.75 }}
+        >
           {icon}
           {label}
-        </label>
-        <input
+        </Typography>
+        <TextField
           type="number"
           value={value}
-          min={min}
-          max={max}
-          step={step}
+          size="small"
+          inputProps={{ min, max, step, style: { textAlign: 'right', fontSize: '0.875rem', padding: '4px 8px' } }}
           onChange={(e) => {
             const v = parseFloat(e.target.value);
             if (!isNaN(v) && v >= min && v <= max) onChange(v);
           }}
-          className="w-20 text-right text-sm border border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          sx={{ width: 80, '& .MuiOutlinedInput-root': { borderRadius: '6px' } }}
         />
-      </div>
-      <input
-        type="range"
+      </Box>
+      <Slider
+        value={value}
         min={min}
         max={max}
         step={step}
-        value={value}
-        onChange={(e) => onChange(parseFloat(e.target.value))}
-        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+        onChange={(_, v) => onChange(v as number)}
+        sx={{
+          color: '#2563eb',
+          height: 6,
+          '& .MuiSlider-thumb': { width: 16, height: 16 },
+        }}
       />
-      <div className="flex justify-between text-xs text-gray-400">
-        <span>{min}</span>
-        <span>{max}</span>
-      </div>
-    </div>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+        <Typography variant="caption" sx={{ color: '#9ca3af' }}>{min}</Typography>
+        <Typography variant="caption" sx={{ color: '#9ca3af' }}>{max}</Typography>
+      </Box>
+    </Box>
   );
 }
 
@@ -263,74 +306,90 @@ function HistoryItem({
   onToggle: () => void;
 }) {
   return (
-    <div className="border border-gray-200 rounded-lg overflow-hidden">
-      <button
+    <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '8px', overflow: 'hidden' }}>
+      <Box
         onClick={onToggle}
-        className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-50 transition-colors"
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1.5,
+          px: 2,
+          py: 1.5,
+          cursor: 'pointer',
+          '&:hover': { bgcolor: '#f9fafb' },
+          transition: 'background-color 0.15s',
+        }}
       >
         {isExpanded ? (
           <ChevronDown className="w-4 h-4 text-gray-400 shrink-0" />
         ) : (
           <ChevronRight className="w-4 h-4 text-gray-400 shrink-0" />
         )}
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-gray-900 truncate">{entry.prompt}</p>
-          <div className="flex items-center gap-3 mt-1">
-            <span className="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 font-medium">
-              {entry.model}
-            </span>
-            <span className="text-xs text-gray-500 flex items-center gap-1">
+        <Box sx={{ flex: 1, minWidth: 0 }}>
+          <Typography variant="body2" sx={{ fontWeight: 500, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {entry.prompt}
+          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mt: 0.5 }}>
+            <Chip label={entry.model} size="small" sx={{ height: 22, fontSize: '0.75rem', fontWeight: 500, bgcolor: '#dbeafe', color: '#1d4ed8' }} />
+            <Typography variant="caption" sx={{ color: '#6b7280', display: 'flex', alignItems: 'center', gap: 0.5 }}>
               <Clock className="w-3 h-3" />
               {entry.latencyMs}ms
-            </span>
-            <span className="text-xs text-gray-500 flex items-center gap-1">
+            </Typography>
+            <Typography variant="caption" sx={{ color: '#6b7280', display: 'flex', alignItems: 'center', gap: 0.5 }}>
               <Hash className="w-3 h-3" />
               {entry.tokensUsed} tokens
-            </span>
-          </div>
-        </div>
-        <span className="text-xs text-gray-400 shrink-0">
+            </Typography>
+          </Box>
+        </Box>
+        <Typography variant="caption" sx={{ color: '#9ca3af', flexShrink: 0 }}>
           {entry.timestamp.toLocaleTimeString()}
-        </span>
-      </button>
+        </Typography>
+      </Box>
 
-      {isExpanded && (
-        <div className="border-t border-gray-200 px-4 py-3 bg-gray-50 space-y-3">
-          <div>
-            <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
+      <Collapse in={isExpanded}>
+        <Box sx={{ borderTop: '1px solid #e5e7eb', px: 2, py: 1.5, bgcolor: '#f9fafb' }}>
+          <Box sx={{ mb: 1.5 }}>
+            <Typography variant="caption" sx={{ fontWeight: 600, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               Prompt
-            </h4>
-            <p className="text-sm text-gray-800 whitespace-pre-wrap bg-white rounded-md p-3 border border-gray-200">
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{ whiteSpace: 'pre-wrap', bgcolor: '#fff', borderRadius: '6px', p: 1.5, border: '1px solid #e5e7eb', mt: 0.5, color: '#1f2937' }}
+            >
               {entry.prompt}
-            </p>
-          </div>
-          <div>
-            <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
+            </Typography>
+          </Box>
+          <Box sx={{ mb: 1.5 }}>
+            <Typography variant="caption" sx={{ fontWeight: 600, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               Response
-            </h4>
-            <p className="text-sm text-gray-800 whitespace-pre-wrap bg-white rounded-md p-3 border border-gray-200">
+            </Typography>
+            <Typography
+              variant="body2"
+              component="div"
+              sx={{ whiteSpace: 'pre-wrap', bgcolor: '#fff', borderRadius: '6px', p: 1.5, border: '1px solid #e5e7eb', mt: 0.5, color: '#1f2937' }}
+            >
               {entry.error ? (
-                <span className="text-red-600">{entry.error}</span>
+                <Typography variant="body2" sx={{ color: '#dc2626' }}>{entry.error}</Typography>
               ) : (
                 entry.response
               )}
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-4 text-xs text-gray-600">
-            <span className="flex items-center gap-1">
+            </Typography>
+          </Box>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+            <Typography variant="caption" sx={{ color: '#4b5563', display: 'flex', alignItems: 'center', gap: 0.5 }}>
               <Settings2 className="w-3 h-3" />
               temp={entry.temperature}, top_p={entry.topP}, max_tokens={entry.maxTokens}
-            </span>
-            <span className="flex items-center gap-1">
+            </Typography>
+            <Typography variant="caption" sx={{ color: '#4b5563', display: 'flex', alignItems: 'center', gap: 0.5 }}>
               <DollarSign className="w-3 h-3" />${entry.cost.toFixed(4)}
-            </span>
-            <span className="flex items-center gap-1">
+            </Typography>
+            <Typography variant="caption" sx={{ color: '#4b5563', display: 'flex', alignItems: 'center', gap: 0.5 }}>
               <Zap className="w-3 h-3" />{entry.latencyMs}ms
-            </span>
-          </div>
-        </div>
-      )}
-    </div>
+            </Typography>
+          </Box>
+        </Box>
+      </Collapse>
+    </Paper>
   );
 }
 
@@ -482,223 +541,265 @@ export default function PlaygroundPage() {
   // ------- Render -------
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg">
-                <Terminal className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">API Playground</h1>
-                <p className="text-sm text-gray-500">
-                  Test and explore the VelocityLLM completions API
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 text-sm text-gray-500">
-              <div className="flex items-center gap-1.5 px-3 py-1.5 bg-green-50 text-green-700 rounded-full border border-green-200">
-                <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                API Connected
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
+    <Box sx={{ p: { xs: 2, sm: 3 } }}>
+      {/* Page Header */}
+      <PageHeader
+        title="API Playground"
+        subtitle="Test and explore the VelocityLLM completions API"
+        action={
+          <Chip
+            label="API Connected"
+            size="small"
+            sx={{
+              bgcolor: '#f0fdf4',
+              color: '#15803d',
+              border: '1px solid #bbf7d0',
+              fontWeight: 500,
+              '& .MuiChip-icon': { color: '#22c55e' },
+            }}
+            icon={<Box component="span" sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#22c55e', animation: 'pulse 2s infinite', '@keyframes pulse': { '0%, 100%': { opacity: 1 }, '50%': { opacity: 0.5 } } }} />}
+          />
+        }
+      />
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* ============ LEFT COLUMN ============ */}
-          <div className="lg:col-span-2 space-y-6">
+      <Grid container spacing={3}>
+        {/* ============ LEFT COLUMN ============ */}
+        <Grid size={{ xs: 12, lg: 8 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
             {/* Prompt Input */}
-            <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-              <div className="flex items-center justify-between px-5 py-3 border-b border-gray-100 bg-gray-50/50">
-                <h2 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+            <Paper sx={paperSx}>
+              <Box sx={sectionHeaderSx}>
+                <Typography variant="body2" sx={{ fontWeight: 600, color: '#374151', display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Sparkles className="w-4 h-4 text-blue-500" />
                   Prompt
-                </h2>
-                <span className="text-xs text-gray-400">
+                </Typography>
+                <Typography variant="caption" sx={{ color: '#9ca3af' }}>
                   {prompt.length > 0 ? `${prompt.length} characters` : 'Enter your prompt below'}
-                </span>
-              </div>
+                </Typography>
+              </Box>
 
-              <textarea
-                ref={textareaRef}
+              <TextField
+                inputRef={textareaRef}
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="Enter your prompt here... (Ctrl/Cmd + Enter to send)"
-                rows={6}
-                className="w-full px-5 py-4 text-sm text-gray-900 placeholder-gray-400 resize-y focus:outline-none min-h-[140px] max-h-[400px] font-mono"
+                multiline
+                minRows={6}
+                maxRows={16}
+                fullWidth
+                variant="standard"
+                InputProps={{ disableUnderline: true }}
+                sx={{
+                  '& .MuiInputBase-root': { px: 2.5, py: 2, fontFamily: 'monospace', fontSize: '0.875rem', color: '#111827' },
+                  '& .MuiInputBase-input::placeholder': { color: '#9ca3af', opacity: 1 },
+                }}
               />
 
-              <div className="flex items-center justify-between px-5 py-3 border-t border-gray-100 bg-gray-50/50">
-                <div className="flex items-center gap-2 text-xs text-gray-400">
-                  <span className="px-2 py-0.5 bg-gray-200 rounded text-gray-600 font-mono">
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', px: 2.5, py: 1.5, borderTop: '1px solid #f3f4f6', bgcolor: 'rgba(249,250,251,0.5)' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Typography
+                    variant="caption"
+                    sx={{ px: 1, py: 0.25, bgcolor: '#e5e7eb', borderRadius: '4px', color: '#4b5563', fontFamily: 'monospace', fontSize: '0.7rem' }}
+                  >
                     Ctrl+Enter
-                  </span>
-                  to send
-                </div>
-                <div className="flex items-center gap-2">
-                  <button
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: '#9ca3af' }}>
+                    to send
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                  <Button
+                    variant="outlined"
+                    size="small"
                     onClick={handleClear}
                     disabled={isLoading}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    startIcon={<Trash2 className="w-3.5 h-3.5" />}
+                    sx={{
+                      textTransform: 'none',
+                      borderColor: '#d1d5db',
+                      color: '#4b5563',
+                      borderRadius: '8px',
+                      '&:hover': { borderColor: '#9ca3af', bgcolor: '#f9fafb' },
+                    }}
                   >
-                    <Trash2 className="w-3.5 h-3.5" />
                     Clear
-                  </button>
-                  <button
+                  </Button>
+                  <Button
+                    variant="contained"
+                    size="small"
                     onClick={handleSend}
                     disabled={!prompt.trim() || isLoading}
-                    className="inline-flex items-center gap-1.5 px-4 py-1.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+                    startIcon={
+                      isLoading ? (
+                        <CircularProgress size={16} color="inherit" />
+                      ) : (
+                        <Send className="w-3.5 h-3.5" />
+                      )
+                    }
+                    sx={{
+                      textTransform: 'none',
+                      bgcolor: '#2563eb',
+                      borderRadius: '8px',
+                      boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                      '&:hover': { bgcolor: '#1d4ed8' },
+                      '&.Mui-disabled': { bgcolor: '#93c5fd', color: '#fff' },
+                    }}
                   >
-                    {isLoading ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : (
-                      <Send className="w-3.5 h-3.5" />
-                    )}
                     {isLoading ? 'Sending...' : 'Send'}
-                  </button>
-                </div>
-              </div>
-            </div>
+                  </Button>
+                </Box>
+              </Box>
+            </Paper>
 
             {/* Response Display */}
-            <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-              <div className="flex items-center justify-between px-5 py-3 border-b border-gray-100 bg-gray-50/50">
-                <h2 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+            <Paper sx={paperSx}>
+              <Box sx={sectionHeaderSx}>
+                <Typography variant="body2" sx={{ fontWeight: 600, color: '#374151', display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Play className="w-4 h-4 text-green-500" />
                   Response
-                </h2>
+                </Typography>
                 {responseMeta && (
-                  <div className="flex items-center gap-3">
-                    <span className="text-xs text-gray-500 flex items-center gap-1">
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                    <Typography variant="caption" sx={{ color: '#6b7280', display: 'flex', alignItems: 'center', gap: 0.5 }}>
                       <Clock className="w-3 h-3" />
                       {responseMeta.latencyMs}ms
-                    </span>
-                    <span className="text-xs text-gray-500 flex items-center gap-1">
+                    </Typography>
+                    <Typography variant="caption" sx={{ color: '#6b7280', display: 'flex', alignItems: 'center', gap: 0.5 }}>
                       <Hash className="w-3 h-3" />
                       {responseMeta.tokensUsed} tokens
-                    </span>
-                    <span className="text-xs text-gray-500 flex items-center gap-1">
+                    </Typography>
+                    <Typography variant="caption" sx={{ color: '#6b7280', display: 'flex', alignItems: 'center', gap: 0.5 }}>
                       <DollarSign className="w-3 h-3" />${responseMeta.cost.toFixed(4)}
-                    </span>
-                  </div>
+                    </Typography>
+                  </Box>
                 )}
-              </div>
+              </Box>
 
-              <div className="px-5 py-4 min-h-[180px]">
+              <Box sx={{ px: 2.5, py: 2, minHeight: 180 }}>
                 {isLoading && (
-                  <div className="flex items-center justify-center py-12">
-                    <div className="text-center">
-                      <Loader2 className="w-8 h-8 text-blue-500 animate-spin mx-auto" />
-                      <p className="mt-3 text-sm text-gray-500">Generating response...</p>
-                      <p className="mt-1 text-xs text-gray-400">
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', py: 6 }}>
+                    <Box sx={{ textAlign: 'center' }}>
+                      <CircularProgress size={32} sx={{ color: '#3b82f6' }} />
+                      <Typography variant="body2" sx={{ mt: 1.5, color: '#6b7280' }}>
+                        Generating response...
+                      </Typography>
+                      <Typography variant="caption" sx={{ mt: 0.5, color: '#9ca3af', display: 'block' }}>
                         Using {selectedModel?.name || model}
-                      </p>
-                    </div>
-                  </div>
+                      </Typography>
+                    </Box>
+                  </Box>
                 )}
 
                 {!isLoading && responseError && (
-                  <div className="flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-lg">
-                    <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
-                    <div>
-                      <p className="text-sm font-medium text-red-800">Request Failed</p>
-                      <p className="text-sm text-red-700 mt-1">{responseError}</p>
-                    </div>
-                  </div>
+                  <Alert
+                    severity="error"
+                    icon={<AlertCircle className="w-5 h-5" />}
+                    sx={{ borderRadius: '8px' }}
+                  >
+                    <Typography variant="body2" sx={{ fontWeight: 500 }}>Request Failed</Typography>
+                    <Typography variant="body2" sx={{ mt: 0.5 }}>{responseError}</Typography>
+                  </Alert>
                 )}
 
                 {!isLoading && response && (
-                  <div className="relative group">
-                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Box sx={{ position: 'relative', '&:hover .copy-btn': { opacity: 1 } }}>
+                    <Box className="copy-btn" sx={{ position: 'absolute', top: 8, right: 8, opacity: 0, transition: 'opacity 0.2s' }}>
                       <CopyButton text={response} />
-                    </div>
-                    <div className="text-sm text-gray-800 whitespace-pre-wrap leading-relaxed font-mono bg-gray-50 rounded-lg p-4 border border-gray-200">
+                    </Box>
+                    <Box
+                      sx={{
+                        fontSize: '0.875rem',
+                        color: '#1f2937',
+                        whiteSpace: 'pre-wrap',
+                        lineHeight: 1.7,
+                        fontFamily: 'monospace',
+                        bgcolor: '#f9fafb',
+                        borderRadius: '8px',
+                        p: 2,
+                        border: '1px solid #e5e7eb',
+                      }}
+                    >
                       {response}
-                    </div>
-                  </div>
+                    </Box>
+                  </Box>
                 )}
 
                 {!isLoading && !response && !responseError && (
-                  <div className="flex flex-col items-center justify-center py-12 text-gray-400">
-                    <Terminal className="w-12 h-12 mb-3 text-gray-300" />
-                    <p className="text-sm font-medium">No response yet</p>
-                    <p className="text-xs mt-1">
+                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', py: 6, color: '#9ca3af' }}>
+                    <Terminal className="w-12 h-12 mb-1.5" style={{ color: '#d1d5db' }} />
+                    <Typography variant="body2" sx={{ fontWeight: 500 }}>No response yet</Typography>
+                    <Typography variant="caption" sx={{ mt: 0.5 }}>
                       Enter a prompt above and click Send to get started
-                    </p>
-                  </div>
+                    </Typography>
+                  </Box>
                 )}
-              </div>
+              </Box>
 
               {responseMeta && (
-                <div className="px-5 py-3 border-t border-gray-100 bg-gray-50/50">
-                  <div className="flex items-center gap-4 text-xs text-gray-500">
-                    <span className="flex items-center gap-1">
-                      Model:{' '}
-                      <span className="font-medium text-gray-700">{responseMeta.model}</span>
-                    </span>
-                    <span className="text-gray-300">|</span>
-                    <span className="flex items-center gap-1">
-                      Latency:{' '}
-                      <span className="font-medium text-gray-700">{responseMeta.latencyMs}ms</span>
-                    </span>
-                    <span className="text-gray-300">|</span>
-                    <span className="flex items-center gap-1">
-                      Tokens:{' '}
-                      <span className="font-medium text-gray-700">{responseMeta.tokensUsed}</span>
-                    </span>
-                    <span className="text-gray-300">|</span>
-                    <span className="flex items-center gap-1">
-                      Cost:{' '}
-                      <span className="font-medium text-gray-700">
-                        ${responseMeta.cost.toFixed(4)}
-                      </span>
-                    </span>
-                  </div>
-                </div>
+                <Box sx={{ px: 2.5, py: 1.5, borderTop: '1px solid #f3f4f6', bgcolor: 'rgba(249,250,251,0.5)' }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+                    <Typography variant="caption" sx={{ color: '#6b7280' }}>
+                      Model: <Box component="span" sx={{ fontWeight: 500, color: '#374151' }}>{responseMeta.model}</Box>
+                    </Typography>
+                    <Typography variant="caption" sx={{ color: '#d1d5db' }}>|</Typography>
+                    <Typography variant="caption" sx={{ color: '#6b7280' }}>
+                      Latency: <Box component="span" sx={{ fontWeight: 500, color: '#374151' }}>{responseMeta.latencyMs}ms</Box>
+                    </Typography>
+                    <Typography variant="caption" sx={{ color: '#d1d5db' }}>|</Typography>
+                    <Typography variant="caption" sx={{ color: '#6b7280' }}>
+                      Tokens: <Box component="span" sx={{ fontWeight: 500, color: '#374151' }}>{responseMeta.tokensUsed}</Box>
+                    </Typography>
+                    <Typography variant="caption" sx={{ color: '#d1d5db' }}>|</Typography>
+                    <Typography variant="caption" sx={{ color: '#6b7280' }}>
+                      Cost: <Box component="span" sx={{ fontWeight: 500, color: '#374151' }}>${responseMeta.cost.toFixed(4)}</Box>
+                    </Typography>
+                  </Box>
+                </Box>
               )}
-            </div>
+            </Paper>
 
             {/* Request / Response History */}
-            <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-              <button
+            <Paper sx={paperSx}>
+              <Box
                 onClick={() => setIsHistoryOpen(!isHistoryOpen)}
-                className="w-full flex items-center justify-between px-5 py-3 border-b border-gray-100 bg-gray-50/50 hover:bg-gray-100/50 transition-colors"
+                sx={{
+                  ...sectionHeaderSx,
+                  cursor: 'pointer',
+                  '&:hover': { bgcolor: 'rgba(243,244,246,0.5)' },
+                  transition: 'background-color 0.15s',
+                }}
               >
-                <h2 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                <Typography variant="body2" sx={{ fontWeight: 600, color: '#374151', display: 'flex', alignItems: 'center', gap: 1 }}>
                   <History className="w-4 h-4 text-purple-500" />
                   Request History
                   {history.length > 0 && (
-                    <span className="ml-1 px-2 py-0.5 text-xs bg-purple-100 text-purple-700 rounded-full font-medium">
-                      {history.length}
-                    </span>
+                    <Chip
+                      label={history.length}
+                      size="small"
+                      sx={{ ml: 0.5, height: 20, fontSize: '0.7rem', fontWeight: 500, bgcolor: '#ede9fe', color: '#6d28d9' }}
+                    />
                   )}
-                </h2>
+                </Typography>
                 {isHistoryOpen ? (
                   <ChevronDown className="w-4 h-4 text-gray-400" />
                 ) : (
                   <ChevronRight className="w-4 h-4 text-gray-400" />
                 )}
-              </button>
+              </Box>
 
-              {isHistoryOpen && (
-                <div className="px-5 py-4">
+              <Collapse in={isHistoryOpen}>
+                <Box sx={{ px: 2.5, py: 2 }}>
                   {history.length === 0 ? (
-                    <div className="text-center py-8 text-gray-400">
-                      <History className="w-10 h-10 mx-auto mb-2 text-gray-300" />
-                      <p className="text-sm">No requests yet</p>
-                      <p className="text-xs mt-1">
+                    <Box sx={{ textAlign: 'center', py: 4, color: '#9ca3af' }}>
+                      <History className="w-10 h-10 mx-auto mb-1" style={{ color: '#d1d5db' }} />
+                      <Typography variant="body2">No requests yet</Typography>
+                      <Typography variant="caption" sx={{ mt: 0.5, display: 'block' }}>
                         Your request history will appear here (max {MAX_HISTORY} entries)
-                      </p>
-                    </div>
+                      </Typography>
+                    </Box>
                   ) : (
-                    <div className="space-y-2 max-h-[500px] overflow-y-auto">
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, maxHeight: 500, overflowY: 'auto' }}>
                       {history.map((entry) => (
                         <HistoryItem
                           key={entry.id}
@@ -711,70 +812,82 @@ export default function PlaygroundPage() {
                           }
                         />
                       ))}
-                    </div>
+                    </Box>
                   )}
 
                   {history.length > 0 && (
-                    <div className="mt-3 pt-3 border-t border-gray-100 flex justify-end">
-                      <button
+                    <Box sx={{ mt: 1.5, pt: 1.5, borderTop: '1px solid #f3f4f6', display: 'flex', justifyContent: 'flex-end' }}>
+                      <Button
+                        size="small"
                         onClick={() => {
                           setHistory([]);
                           setExpandedHistoryId(null);
                         }}
-                        className="text-xs text-red-500 hover:text-red-700 transition-colors flex items-center gap-1"
+                        startIcon={<Trash2 className="w-3 h-3" />}
+                        sx={{ textTransform: 'none', color: '#ef4444', fontSize: '0.75rem', '&:hover': { color: '#dc2626', bgcolor: '#fef2f2' } }}
                       >
-                        <Trash2 className="w-3 h-3" />
                         Clear History
-                      </button>
-                    </div>
+                      </Button>
+                    </Box>
                   )}
-                </div>
-              )}
-            </div>
-          </div>
+                </Box>
+              </Collapse>
+            </Paper>
+          </Box>
+        </Grid>
 
-          {/* ============ RIGHT COLUMN ============ */}
-          <div className="space-y-6">
+        {/* ============ RIGHT COLUMN ============ */}
+        <Grid size={{ xs: 12, lg: 4 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
             {/* Model Selection */}
-            <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-              <div className="px-5 py-3 border-b border-gray-100 bg-gray-50/50">
-                <h2 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+            <Paper sx={paperSx}>
+              <Box sx={sectionHeaderSx}>
+                <Typography variant="body2" sx={{ fontWeight: 600, color: '#374151', display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Zap className="w-4 h-4 text-yellow-500" />
                   Model
-                </h2>
-              </div>
-              <div className="px-5 py-4">
-                <select
+                </Typography>
+              </Box>
+              <Box sx={{ px: 2.5, py: 2 }}>
+                <Select
                   value={model}
                   onChange={(e) => setModel(e.target.value)}
-                  className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer"
+                  fullWidth
+                  size="small"
+                  sx={{
+                    borderRadius: '8px',
+                    fontSize: '0.875rem',
+                    '& .MuiOutlinedInput-notchedOutline': { borderColor: '#d1d5db' },
+                    '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#9ca3af' },
+                  }}
                 >
                   {AVAILABLE_MODELS.map((m) => (
-                    <option key={m.id} value={m.id}>
+                    <MenuItem key={m.id} value={m.id} sx={{ fontSize: '0.875rem' }}>
                       {m.name} ({m.provider})
-                    </option>
+                    </MenuItem>
                   ))}
-                </select>
+                </Select>
                 {selectedModel && (
-                  <div className="mt-3 flex items-center gap-2">
-                    <span className="text-xs px-2 py-1 rounded-full bg-blue-50 text-blue-600 font-medium border border-blue-200">
-                      {selectedModel.provider}
-                    </span>
-                    <span className="text-xs text-gray-500">{selectedModel.id}</span>
-                  </div>
+                  <Box sx={{ mt: 1.5, display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Chip
+                      label={selectedModel.provider}
+                      size="small"
+                      sx={{ height: 24, fontSize: '0.75rem', fontWeight: 500, bgcolor: '#eff6ff', color: '#2563eb', border: '1px solid #bfdbfe' }}
+                    />
+                    <Typography variant="caption" sx={{ color: '#6b7280' }}>{selectedModel.id}</Typography>
+                  </Box>
                 )}
-              </div>
-            </div>
+              </Box>
+            </Paper>
 
             {/* Parameter Controls */}
-            <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-              <div className="px-5 py-3 border-b border-gray-100 bg-gray-50/50">
-                <h2 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+            <Paper sx={paperSx}>
+              <Box sx={sectionHeaderSx}>
+                <Typography variant="body2" sx={{ fontWeight: 600, color: '#374151', display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Settings2 className="w-4 h-4 text-gray-500" />
                   Parameters
-                </h2>
-              </div>
-              <div className="px-5 py-4 space-y-6">
+                </Typography>
+              </Box>
+              <Box sx={{ px: 2.5, py: 2, display: 'flex', flexDirection: 'column', gap: 3 }}>
                 <ParameterSlider
                   label="Temperature"
                   value={temperature}
@@ -804,102 +917,146 @@ export default function PlaygroundPage() {
                 />
 
                 {/* Reset defaults */}
-                <button
+                <Button
+                  variant="outlined"
+                  fullWidth
+                  size="small"
                   onClick={() => {
                     setTemperature(0.7);
                     setMaxTokens(1024);
                     setTopP(1.0);
                   }}
-                  className="w-full text-xs text-gray-500 hover:text-gray-700 py-2 border border-dashed border-gray-300 rounded-lg hover:border-gray-400 transition-colors"
+                  sx={{
+                    textTransform: 'none',
+                    fontSize: '0.75rem',
+                    color: '#6b7280',
+                    borderColor: '#d1d5db',
+                    borderStyle: 'dashed',
+                    borderRadius: '8px',
+                    '&:hover': { borderColor: '#9ca3af', bgcolor: '#f9fafb', borderStyle: 'dashed' },
+                  }}
                 >
                   Reset to defaults
-                </button>
-              </div>
-            </div>
+                </Button>
+              </Box>
+            </Paper>
 
             {/* Code Examples */}
-            <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-              <div className="px-5 py-3 border-b border-gray-100 bg-gray-50/50">
-                <h2 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+            <Paper sx={paperSx}>
+              <Box sx={sectionHeaderSx}>
+                <Typography variant="body2" sx={{ fontWeight: 600, color: '#374151', display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Code2 className="w-4 h-4 text-indigo-500" />
                   Code Examples
-                </h2>
-              </div>
+                </Typography>
+              </Box>
 
               {/* Tabs */}
-              <div className="flex border-b border-gray-200">
+              <Tabs
+                value={CODE_TABS.indexOf(activeCodeTab)}
+                onChange={(_, idx) => setActiveCodeTab(CODE_TABS[idx])}
+                variant="fullWidth"
+                sx={{
+                  borderBottom: '1px solid #e5e7eb',
+                  minHeight: 40,
+                  '& .MuiTab-root': {
+                    textTransform: 'none',
+                    fontSize: '0.75rem',
+                    fontWeight: 500,
+                    minHeight: 40,
+                    color: '#6b7280',
+                    '&.Mui-selected': { color: '#2563eb' },
+                  },
+                  '& .MuiTabs-indicator': { bgcolor: '#2563eb' },
+                }}
+              >
                 {CODE_TABS.map((tab) => (
-                  <button
-                    key={tab}
-                    onClick={() => setActiveCodeTab(tab)}
-                    className={`flex-1 px-3 py-2.5 text-xs font-medium transition-colors ${
-                      activeCodeTab === tab
-                        ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50/50'
-                        : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
-                    }`}
-                  >
-                    {tab}
-                  </button>
+                  <Tab key={tab} label={tab} />
                 ))}
-              </div>
+              </Tabs>
 
               {/* Code Block */}
-              <div className="relative">
-                <div className="absolute top-3 right-3 z-10">
+              <Box sx={{ position: 'relative' }}>
+                <Box sx={{ position: 'absolute', top: 12, right: 12, zIndex: 1 }}>
                   <CopyButton text={currentSnippet} />
-                </div>
-                <pre className="px-5 py-4 text-xs text-gray-800 font-mono overflow-x-auto bg-gray-900 text-gray-100 leading-relaxed max-h-[400px]">
+                </Box>
+                <Box
+                  component="pre"
+                  sx={{
+                    px: 2.5,
+                    py: 2,
+                    fontSize: '0.75rem',
+                    fontFamily: 'monospace',
+                    overflowX: 'auto',
+                    bgcolor: '#111827',
+                    color: '#e5e7eb',
+                    lineHeight: 1.7,
+                    maxHeight: 400,
+                    m: 0,
+                  }}
+                >
                   <code>{currentSnippet}</code>
-                </pre>
-              </div>
+                </Box>
+              </Box>
 
-              <div className="px-5 py-3 border-t border-gray-100 bg-gray-50/50">
-                <p className="text-xs text-gray-400">
+              <Box sx={{ px: 2.5, py: 1.5, borderTop: '1px solid #f3f4f6', bgcolor: 'rgba(249,250,251,0.5)' }}>
+                <Typography variant="caption" sx={{ color: '#9ca3af' }}>
                   Code updates dynamically based on your current settings
-                </p>
-              </div>
-            </div>
+                </Typography>
+              </Box>
+            </Paper>
 
             {/* Quick Reference */}
-            <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-              <div className="px-5 py-3 border-b border-gray-100 bg-gray-50/50">
-                <h2 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+            <Paper sx={paperSx}>
+              <Box sx={sectionHeaderSx}>
+                <Typography variant="body2" sx={{ fontWeight: 600, color: '#374151', display: 'flex', alignItems: 'center', gap: 1 }}>
                   <AlertCircle className="w-4 h-4 text-gray-400" />
                   API Reference
-                </h2>
-              </div>
-              <div className="px-5 py-4 space-y-3">
-                <div>
-                  <p className="text-xs font-medium text-gray-600">Completions</p>
-                  <code className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded block mt-1">
+                </Typography>
+              </Box>
+              <Box sx={{ px: 2.5, py: 2, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                <Box>
+                  <Typography variant="caption" sx={{ fontWeight: 500, color: '#4b5563' }}>Completions</Typography>
+                  <Box
+                    component="code"
+                    sx={{ display: 'block', mt: 0.5, fontSize: '0.75rem', color: '#2563eb', bgcolor: '#eff6ff', px: 1, py: 0.5, borderRadius: '4px' }}
+                  >
                     POST /api/v1/completions
-                  </code>
-                </div>
-                <div>
-                  <p className="text-xs font-medium text-gray-600">Streaming</p>
-                  <code className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded block mt-1">
+                  </Box>
+                </Box>
+                <Box>
+                  <Typography variant="caption" sx={{ fontWeight: 500, color: '#4b5563' }}>Streaming</Typography>
+                  <Box
+                    component="code"
+                    sx={{ display: 'block', mt: 0.5, fontSize: '0.75rem', color: '#2563eb', bgcolor: '#eff6ff', px: 1, py: 0.5, borderRadius: '4px' }}
+                  >
                     POST /api/v1/completions/stream
-                  </code>
-                </div>
-                <div>
-                  <p className="text-xs font-medium text-gray-600">List Models</p>
-                  <code className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded block mt-1">
+                  </Box>
+                </Box>
+                <Box>
+                  <Typography variant="caption" sx={{ fontWeight: 500, color: '#4b5563' }}>List Models</Typography>
+                  <Box
+                    component="code"
+                    sx={{ display: 'block', mt: 0.5, fontSize: '0.75rem', color: '#2563eb', bgcolor: '#eff6ff', px: 1, py: 0.5, borderRadius: '4px' }}
+                  >
                     GET /api/v1/models
-                  </code>
-                </div>
-                <div className="pt-2 border-t border-gray-100">
-                  <p className="text-xs text-gray-500">
+                  </Box>
+                </Box>
+                <Box sx={{ pt: 1, borderTop: '1px solid #f3f4f6' }}>
+                  <Typography variant="caption" sx={{ color: '#6b7280' }}>
                     Base URL:{' '}
-                    <code className="text-gray-700 bg-gray-100 px-1.5 py-0.5 rounded">
+                    <Box
+                      component="code"
+                      sx={{ color: '#374151', bgcolor: '#f3f4f6', px: 0.75, py: 0.25, borderRadius: '4px' }}
+                    >
                       {process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'}
-                    </code>
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </main>
-    </div>
+                    </Box>
+                  </Typography>
+                </Box>
+              </Box>
+            </Paper>
+          </Box>
+        </Grid>
+      </Grid>
+    </Box>
   );
 }

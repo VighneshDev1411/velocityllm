@@ -3,11 +3,23 @@
 import { useState, useEffect } from 'react';
 import { workerAPI, JobSubmission, JobStatus } from '@/lib/api';
 import { Send, Loader2, CheckCircle, XCircle, Clock, Trash2 } from 'lucide-react';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Paper from '@mui/material/Paper';
+import Button from '@mui/material/Button';
+import Grid from '@mui/material/Grid';
+import Chip from '@mui/material/Chip';
+import TextField from '@mui/material/TextField';
+import MenuItem from '@mui/material/MenuItem';
+import CircularProgress from '@mui/material/CircularProgress';
+import Alert from '@mui/material/Alert';
+import IconButton from '@mui/material/IconButton';
+import { PageHeader } from '@/components/PageHeader';
 
 export default function JobsPage() {
   const [jobs, setJobs] = useState<JobStatus[]>([]);
   const [submitting, setSubmitting] = useState(false);
-  
+
   // Form state
   const [formData, setFormData] = useState({
     prompt: '',
@@ -63,12 +75,12 @@ export default function JobsPage() {
 
       const response = await workerAPI.submitJob(jobData);
       const jobId = response.data.data.job_id;
-      
+
       setSubmittedJobIds(prev => [jobId, ...prev]);
-      
+
       // Reset form
       setFormData(prev => ({ ...prev, prompt: '' }));
-      
+
       alert(`Job submitted successfully! ID: ${jobId}`);
     } catch (err: any) {
       alert('Failed to submit job: ' + (err.response?.data?.message || err.message));
@@ -79,7 +91,7 @@ export default function JobsPage() {
 
   const handleCancel = async (jobId: string) => {
     if (!confirm('Are you sure you want to cancel this job?')) return;
-    
+
     try {
       await workerAPI.cancelJob(jobId);
       fetchJobStatuses();
@@ -89,146 +101,136 @@ export default function JobsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Job Management</h1>
-          <p className="text-gray-500 mt-2">Submit and monitor inference jobs</p>
-        </div>
+    <Box sx={{ p: { xs: 2, sm: 3 } }}>
+      <PageHeader
+        title="Job Management"
+        subtitle="Submit and monitor inference jobs"
+      />
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Submit Job Form */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">Submit New Job</h2>
-            
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Prompt */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Prompt
-                </label>
-                <textarea
+      <Grid container spacing={3}>
+        {/* Submit Job Form */}
+        <Grid size={{ xs: 12, lg: 6 }}>
+          <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3 }}>
+            <Typography variant="h6" sx={{ fontSize: '1.1rem', fontWeight: 600, color: '#111827', mb: 3 }}>
+              Submit New Job
+            </Typography>
+
+            <form onSubmit={handleSubmit}>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+                {/* Prompt */}
+                <TextField
+                  label="Prompt"
                   value={formData.prompt}
                   onChange={(e) => setFormData({ ...formData, prompt: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  multiline
                   rows={4}
                   placeholder="Enter your prompt here..."
                   required
+                  fullWidth
+                  size="small"
                 />
-              </div>
 
-              {/* Model Selection */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Model
-                </label>
-                <select
+                {/* Model Selection */}
+                <TextField
+                  label="Model"
+                  select
                   value={formData.model}
                   onChange={(e) => setFormData({ ...formData, model: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  fullWidth
+                  size="small"
                 >
-                  <option value="gpt2">GPT-2 (Testing)</option>
-                  <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
-                  <option value="gpt-4">GPT-4</option>
-                  <option value="llama-2-7b">Llama-2-7B</option>
-                  <option value="mistral-7b">Mistral-7B</option>
-                </select>
-              </div>
+                  <MenuItem value="gpt2">GPT-2 (Testing)</MenuItem>
+                  <MenuItem value="gpt-3.5-turbo">GPT-3.5 Turbo</MenuItem>
+                  <MenuItem value="gpt-4">GPT-4</MenuItem>
+                  <MenuItem value="llama-2-7b">Llama-2-7B</MenuItem>
+                  <MenuItem value="mistral-7b">Mistral-7B</MenuItem>
+                </TextField>
 
-              {/* Priority */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Priority
-                </label>
-                <select
+                {/* Priority */}
+                <TextField
+                  label="Priority"
+                  select
                   value={formData.priority}
                   onChange={(e) => setFormData({ ...formData, priority: e.target.value as any })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  fullWidth
+                  size="small"
                 >
-                  <option value="low">Low</option>
-                  <option value="normal">Normal</option>
-                  <option value="high">High</option>
-                  <option value="critical">Critical</option>
-                </select>
-              </div>
+                  <MenuItem value="low">Low</MenuItem>
+                  <MenuItem value="normal">Normal</MenuItem>
+                  <MenuItem value="high">High</MenuItem>
+                  <MenuItem value="critical">Critical</MenuItem>
+                </TextField>
 
-              {/* Parameters */}
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Max Tokens
-                  </label>
-                  <input
-                    type="number"
-                    value={formData.maxTokens}
-                    onChange={(e) => setFormData({ ...formData, maxTokens: parseInt(e.target.value) })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    min="1"
-                    max="4096"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Temperature
-                  </label>
-                  <input
-                    type="number"
-                    value={formData.temperature}
-                    onChange={(e) => setFormData({ ...formData, temperature: parseFloat(e.target.value) })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    min="0"
-                    max="2"
-                    step="0.1"
-                  />
-                </div>
-              </div>
+                {/* Parameters */}
+                <Grid container spacing={2}>
+                  <Grid size={{ xs: 6 }}>
+                    <TextField
+                      label="Max Tokens"
+                      type="number"
+                      value={formData.maxTokens}
+                      onChange={(e) => setFormData({ ...formData, maxTokens: parseInt(e.target.value) })}
+                      fullWidth
+                      size="small"
+                      slotProps={{ htmlInput: { min: 1, max: 4096 } }}
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 6 }}>
+                    <TextField
+                      label="Temperature"
+                      type="number"
+                      value={formData.temperature}
+                      onChange={(e) => setFormData({ ...formData, temperature: parseFloat(e.target.value) })}
+                      fullWidth
+                      size="small"
+                      slotProps={{ htmlInput: { min: 0, max: 2, step: 0.1 } }}
+                    />
+                  </Grid>
+                </Grid>
 
-              {/* Submit Button */}
-              <button
-                type="submit"
-                disabled={submitting || !formData.prompt}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition"
-              >
-                {submitting ? (
-                  <>
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                    Submitting...
-                  </>
-                ) : (
-                  <>
-                    <Send className="w-5 h-5" />
-                    Submit Job
-                  </>
-                )}
-              </button>
+                {/* Submit Button */}
+                <Button
+                  type="submit"
+                  variant="contained"
+                  disabled={submitting || !formData.prompt}
+                  fullWidth
+                  startIcon={submitting ? <CircularProgress size={18} color="inherit" /> : <Send size={18} />}
+                  sx={{ py: 1.25 }}
+                >
+                  {submitting ? 'Submitting...' : 'Submit Job'}
+                </Button>
+              </Box>
             </form>
-          </div>
+          </Paper>
+        </Grid>
 
-          {/* Job Queue */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold text-gray-900">Job Queue</h2>
-              <span className="text-sm text-gray-500">{jobs.length} jobs</span>
-            </div>
+        {/* Job Queue */}
+        <Grid size={{ xs: 12, lg: 6 }}>
+          <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
+              <Typography variant="h6" sx={{ fontSize: '1.1rem', fontWeight: 600, color: '#111827' }}>
+                Job Queue
+              </Typography>
+              <Typography sx={{ fontSize: '0.875rem', color: '#6b7280' }}>
+                {jobs.length} jobs
+              </Typography>
+            </Box>
 
-            <div className="space-y-4 max-h-[600px] overflow-y-auto">
+            <Box sx={{ maxHeight: 600, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 2 }}>
               {jobs.length === 0 ? (
-                <div className="text-center py-12 text-gray-500">
-                  <p>No jobs submitted yet</p>
-                  <p className="text-sm mt-2">Submit a job to get started</p>
-                </div>
+                <Box sx={{ textAlign: 'center', py: 6, color: '#6b7280' }}>
+                  <Typography>No jobs submitted yet</Typography>
+                  <Typography sx={{ fontSize: '0.875rem', mt: 1 }}>Submit a job to get started</Typography>
+                </Box>
               ) : (
                 jobs.map((job) => (
                   <JobCard key={job.job_id} job={job} onCancel={handleCancel} />
                 ))
               )}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+            </Box>
+          </Paper>
+        </Grid>
+      </Grid>
+    </Box>
   );
 }
 
@@ -237,110 +239,119 @@ function JobCard({ job, onCancel }: { job: JobStatus; onCancel: (id: string) => 
   const getStatusIcon = () => {
     switch (job.status) {
       case 'completed':
-        return <CheckCircle className="w-5 h-5 text-green-600" />;
+        return <CheckCircle size={18} style={{ color: '#16a34a' }} />;
       case 'failed':
       case 'timeout':
       case 'cancelled':
-        return <XCircle className="w-5 h-5 text-red-600" />;
+        return <XCircle size={18} style={{ color: '#dc2626' }} />;
       case 'running':
-        return <Loader2 className="w-5 h-5 text-blue-600 animate-spin" />;
+        return <CircularProgress size={18} sx={{ color: '#2563eb' }} />;
       default:
-        return <Clock className="w-5 h-5 text-yellow-600" />;
+        return <Clock size={18} style={{ color: '#ca8a04' }} />;
     }
   };
 
-  const getStatusColor = () => {
+  const getStatusChipSx = () => {
     switch (job.status) {
       case 'completed':
-        return 'status-healthy';
+        return { backgroundColor: '#ecfdf5', color: '#059669' };
       case 'failed':
       case 'timeout':
       case 'cancelled':
-        return 'status-critical';
+        return { backgroundColor: '#fef2f2', color: '#dc2626' };
       case 'running':
-        return 'status-busy';
+        return { backgroundColor: '#eff6ff', color: '#2563eb' };
       default:
-        return 'status-degraded';
+        return { backgroundColor: '#fefce8', color: '#ca8a04' };
     }
   };
 
-  const getPriorityColor = () => {
+  const getPriorityChipSx = () => {
     switch (job.priority) {
       case 'critical':
-        return 'priority-critical';
+        return { backgroundColor: '#fef2f2', color: '#dc2626' };
       case 'high':
-        return 'priority-high';
+        return { backgroundColor: '#fff7ed', color: '#ea580c' };
       case 'normal':
-        return 'priority-normal';
+        return { backgroundColor: '#eff6ff', color: '#2563eb' };
       default:
-        return 'priority-low';
+        return { backgroundColor: '#f3f4f6', color: '#6b7280' };
     }
   };
 
   return (
-    <div className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition">
-      <div className="flex items-start justify-between mb-3">
-        <div className="flex items-center gap-3">
+    <Paper
+      elevation={0}
+      sx={{
+        border: '1px solid #e5e7eb',
+        borderRadius: '12px',
+        p: 2,
+        transition: 'box-shadow 0.2s',
+        '&:hover': { boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' },
+      }}
+    >
+      <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb: 1.5 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
           {getStatusIcon()}
-          <div>
-            <p className="font-mono text-sm text-gray-900">{job.job_id}</p>
-            <p className="text-xs text-gray-500">{job.type}</p>
-          </div>
-        </div>
-        
-        <div className="flex items-center gap-2">
-          <span className={`status-badge ${getStatusColor()}`}>
-            {job.status}
-          </span>
-          <span className={`status-badge ${getPriorityColor()}`}>
-            {job.priority}
-          </span>
-        </div>
-      </div>
+          <Box>
+            <Typography sx={{ fontFamily: 'monospace', fontSize: '0.875rem', color: '#111827' }}>
+              {job.job_id}
+            </Typography>
+            <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>{job.type}</Typography>
+          </Box>
+        </Box>
+
+        <Box sx={{ display: 'flex', gap: 0.75 }}>
+          <Chip size="small" label={job.status} sx={{ fontWeight: 600, fontSize: '0.7rem', ...getStatusChipSx() }} />
+          <Chip size="small" label={job.priority} sx={{ fontWeight: 600, fontSize: '0.7rem', ...getPriorityChipSx() }} />
+        </Box>
+      </Box>
 
       {/* Timing Info */}
       {job.duration_ms && (
-        <div className="text-xs text-gray-600 mb-2">
+        <Typography sx={{ fontSize: '0.75rem', color: '#6b7280', mb: 0.5 }}>
           Duration: {job.duration_ms}ms
           {job.wait_time_ms && ` | Wait: ${job.wait_time_ms}ms`}
-        </div>
+        </Typography>
       )}
 
       {/* Worker ID */}
       {job.worker_id && (
-        <div className="text-xs text-gray-600 mb-2">
+        <Typography sx={{ fontSize: '0.75rem', color: '#6b7280', mb: 0.5 }}>
           Worker: {job.worker_id}
-        </div>
+        </Typography>
       )}
 
       {/* Result */}
       {job.result && (
-        <div className="mt-3 p-3 bg-green-50 rounded border border-green-200">
-          <p className="text-xs font-semibold text-green-900 mb-1">Result:</p>
-          <p className="text-sm text-green-800">
+        <Alert severity="success" sx={{ mt: 1.5, '& .MuiAlert-message': { fontSize: '0.8rem' } }}>
+          <Typography sx={{ fontSize: '0.75rem', fontWeight: 600, mb: 0.5 }}>Result:</Typography>
+          <Typography sx={{ fontSize: '0.8rem' }}>
             {JSON.stringify(job.result).substring(0, 100)}...
-          </p>
-        </div>
+          </Typography>
+        </Alert>
       )}
 
       {/* Error */}
       {job.error && (
-        <div className="mt-3 p-3 bg-red-50 rounded border border-red-200">
-          <p className="text-xs font-semibold text-red-900 mb-1">Error:</p>
-          <p className="text-sm text-red-800">{job.error}</p>
-        </div>
+        <Alert severity="error" sx={{ mt: 1.5, '& .MuiAlert-message': { fontSize: '0.8rem' } }}>
+          <Typography sx={{ fontSize: '0.75rem', fontWeight: 600, mb: 0.5 }}>Error:</Typography>
+          <Typography sx={{ fontSize: '0.8rem' }}>{job.error}</Typography>
+        </Alert>
       )}
 
       {/* Actions */}
       {(job.status === 'pending' || job.status === 'queued' || job.status === 'running') && (
-        <button
+        <Button
           onClick={() => onCancel(job.job_id)}
-          className="mt-3 flex items-center gap-2 px-3 py-1.5 text-sm text-red-600 hover:bg-red-50 rounded transition"
+          size="small"
+          color="error"
+          startIcon={<Trash2 size={14} />}
+          sx={{ mt: 1.5, textTransform: 'none' }}
         >
-          <Trash2 className="w-4 h-4" />
           Cancel Job
-        </button>
+        </Button>
       )}
-    </div>
+    </Paper>
   );
 }

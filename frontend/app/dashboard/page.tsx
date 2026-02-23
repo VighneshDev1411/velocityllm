@@ -1,6 +1,16 @@
 'use client';
 
 import { useState } from 'react';
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import Alert from '@mui/material/Alert';
+import LinearProgress from '@mui/material/LinearProgress';
+import CircularProgress from '@mui/material/CircularProgress';
+import Grid from '@mui/material/Grid';
 import {
   Activity, Zap, Server, TrendingUp, AlertCircle, DollarSign,
   Clock, BarChart3, RefreshCw
@@ -10,6 +20,8 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
 import { useDashboardOverview, useTimeSeries, useModelComparison, useCostBreakdown } from '@/hooks/useAnalytics';
+import { StatCard } from '@/components/StatCard';
+import { PageHeader } from '@/components/PageHeader';
 
 const COLORS = ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#ec4899'];
 
@@ -23,32 +35,28 @@ export default function Dashboard() {
 
   if (overviewLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading dashboard...</p>
-        </div>
-      </div>
+      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
+        <CircularProgress size={40} />
+        <Typography sx={{ mt: 2, color: '#6b7280' }}>Loading dashboard...</Typography>
+      </Box>
     );
   }
 
   if (overviewError) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md">
-          <div className="flex items-center gap-3 mb-2">
-            <AlertCircle className="w-6 h-6 text-red-600" />
-            <h3 className="text-lg font-semibold text-red-900">Connection Error</h3>
-          </div>
-          <p className="text-red-700">Failed to fetch dashboard data. Make sure the backend is running.</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition flex items-center gap-2"
-          >
-            <RefreshCw className="w-4 h-4" /> Retry
-          </button>
-        </div>
-      </div>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', p: 3 }}>
+        <Alert
+          severity="error"
+          action={
+            <Button color="inherit" size="small" onClick={() => window.location.reload()} startIcon={<RefreshCw className="w-4 h-4" />}>
+              Retry
+            </Button>
+          }
+          sx={{ maxWidth: 500 }}
+        >
+          Failed to fetch dashboard data. Make sure the backend is running.
+        </Alert>
+      </Box>
     );
   }
 
@@ -76,60 +84,67 @@ export default function Dashboard() {
   const hasData = Number(ov.total_requests || 0) > 0;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <Box sx={{ p: { xs: 2, sm: 3 } }}>
       {/* No data banner */}
       {!hasData && (
-        <div className="bg-blue-50 border-b border-blue-200">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Zap className="w-5 h-5 text-blue-600" />
-              <p className="text-sm text-blue-800">
-                <span className="font-medium">No requests yet.</span> Send prompts via the Playground or run{' '}
-                <code className="bg-blue-100 px-1.5 py-0.5 rounded text-xs font-mono">./scripts/demo-load.sh --quick</code>{' '}
-                to populate dashboards with real data.
-              </p>
-            </div>
-          </div>
-        </div>
+        <Alert
+          icon={<Zap className="w-5 h-5" />}
+          severity="info"
+          sx={{ mb: 3, borderRadius: '10px' }}
+        >
+          <strong>No requests yet.</strong> Send prompts via the Playground or run{' '}
+          <code style={{ backgroundColor: '#dbeafe', padding: '2px 6px', borderRadius: '4px', fontSize: '0.8rem' }}>
+            ./scripts/demo-load.sh --quick
+          </code>{' '}
+          to populate dashboards with real data.
+        </Alert>
       )}
 
       {/* Header */}
-      <header className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-              <p className="text-sm text-gray-500 mt-1">Real-time system monitoring & analytics</p>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <div className={`h-2.5 w-2.5 rounded-full ${overview?.status === 'healthy' ? 'bg-green-500' : 'bg-yellow-500'} animate-pulse`}></div>
-                <span className="text-sm font-medium text-gray-600 capitalize">{overview?.status || 'unknown'}</span>
-              </div>
-              {/* Time range selector */}
-              <div className="flex bg-gray-100 rounded-lg p-0.5">
-                {['1h', '6h', '24h', '7d'].map((range) => (
-                  <button
-                    key={range}
-                    onClick={() => setTimeRange(range)}
-                    className={`px-3 py-1.5 text-xs font-medium rounded-md transition ${
-                      timeRange === range
-                        ? 'bg-white text-blue-600 shadow-sm'
-                        : 'text-gray-500 hover:text-gray-700'
-                    }`}
-                  >
-                    {range}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
+      <PageHeader
+        title="Dashboard"
+        subtitle="Real-time system monitoring & analytics"
+        action={
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Box
+                sx={{
+                  width: 10,
+                  height: 10,
+                  borderRadius: '50%',
+                  backgroundColor: overview?.status === 'healthy' ? '#10b981' : '#f59e0b',
+                  animation: 'pulse 2s infinite',
+                  '@keyframes pulse': { '0%, 100%': { opacity: 1 }, '50%': { opacity: 0.5 } },
+                }}
+              />
+              <Typography sx={{ fontSize: '0.85rem', fontWeight: 500, color: '#6b7280', textTransform: 'capitalize' }}>
+                {overview?.status || 'unknown'}
+              </Typography>
+            </Box>
+            <ToggleButtonGroup
+              value={timeRange}
+              exclusive
+              onChange={(_, val) => val && setTimeRange(val)}
+              size="small"
+              sx={{
+                '& .MuiToggleButton-root': {
+                  px: 1.5, py: 0.5, fontSize: '0.75rem', fontWeight: 600,
+                  border: '1px solid #e5e7eb', textTransform: 'none',
+                  '&.Mui-selected': { backgroundColor: '#fff', color: '#3b82f6', boxShadow: '0 1px 2px rgb(0 0 0 / 0.05)' },
+                },
+              }}
+            >
+              {['1h', '6h', '24h', '7d'].map((range) => (
+                <ToggleButton key={range} value={range}>{range}</ToggleButton>
+              ))}
+            </ToggleButtonGroup>
+          </Box>
+        }
+      />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {/* KPI Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      {/* KPI Cards */}
+      <Grid container spacing={2} sx={{ mb: 3 }}>
+        <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
           <StatCard
             icon={<Activity className="w-5 h-5" />}
             label="Total Requests"
@@ -137,6 +152,8 @@ export default function Dashboard() {
             subtext={`${ov.requests_per_second || '0.00'} req/s`}
             color="blue"
           />
+        </Grid>
+        <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
           <StatCard
             icon={<DollarSign className="w-5 h-5" />}
             label="Total Cost"
@@ -144,6 +161,8 @@ export default function Dashboard() {
             subtext={`Avg ${formatCost(ov.avg_cost_per_request || 0)}/req`}
             color="green"
           />
+        </Grid>
+        <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
           <StatCard
             icon={<Clock className="w-5 h-5" />}
             label="Avg Latency"
@@ -151,6 +170,8 @@ export default function Dashboard() {
             subtext={`P99: ${latency.p99_ms || 0}ms`}
             color="purple"
           />
+        </Grid>
+        <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
           <StatCard
             icon={<AlertCircle className="w-5 h-5" />}
             label="Error Rate"
@@ -158,19 +179,20 @@ export default function Dashboard() {
             subtext={`${ov.total_errors || 0} total errors`}
             color={ov.error_rate > 5 ? 'red' : 'green'}
           />
-        </div>
+        </Grid>
+      </Grid>
 
-        {/* Charts Row 1: Request Volume + Latency */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-          {/* Request Volume Chart */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h3 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <BarChart3 className="w-4 h-4 text-blue-600" />
+      {/* Charts Row 1 */}
+      <Grid container spacing={3} sx={{ mb: 3 }}>
+        <Grid size={{ xs: 12, lg: 6 }}>
+          <Paper elevation={0} sx={{ p: 3, border: '1px solid #e5e7eb', borderRadius: '12px' }}>
+            <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: '#111827', mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+              <BarChart3 className="w-4 h-4" style={{ color: '#3b82f6' }} />
               Request Volume
-            </h3>
-            <div className="h-64">
+            </Typography>
+            <Box sx={{ height: 260 }}>
               {tsLoading ? (
-                <div className="h-full flex items-center justify-center text-gray-400">Loading chart...</div>
+                <Box sx={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><CircularProgress size={24} /></Box>
               ) : (
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={timeSeries?.requests || []}>
@@ -181,65 +203,33 @@ export default function Dashboard() {
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                    <XAxis
-                      dataKey="time"
-                      tickFormatter={formatTime}
-                      tick={{ fontSize: 11, fill: '#9ca3af' }}
-                      axisLine={false}
-                      tickLine={false}
-                    />
-                    <YAxis
-                      tick={{ fontSize: 11, fill: '#9ca3af' }}
-                      axisLine={false}
-                      tickLine={false}
-                    />
-                    <Tooltip
-                      labelFormatter={(label) => new Date(label).toLocaleString()}
-                      contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '12px' }}
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="requests"
-                      stroke="#3b82f6"
-                      strokeWidth={2}
-                      fill="url(#requestGradient)"
-                    />
+                    <XAxis dataKey="time" tickFormatter={formatTime} tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
+                    <Tooltip labelFormatter={(label) => new Date(label).toLocaleString()} contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '12px' }} />
+                    <Area type="monotone" dataKey="requests" stroke="#3b82f6" strokeWidth={2} fill="url(#requestGradient)" />
                   </AreaChart>
                 </ResponsiveContainer>
               )}
-            </div>
-          </div>
+            </Box>
+          </Paper>
+        </Grid>
 
-          {/* Latency Chart */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h3 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <Clock className="w-4 h-4 text-purple-600" />
+        <Grid size={{ xs: 12, lg: 6 }}>
+          <Paper elevation={0} sx={{ p: 3, border: '1px solid #e5e7eb', borderRadius: '12px' }}>
+            <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: '#111827', mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Clock className="w-4 h-4" style={{ color: '#8b5cf6' }} />
               Latency Distribution
-            </h3>
-            <div className="h-64">
+            </Typography>
+            <Box sx={{ height: 260 }}>
               {tsLoading ? (
-                <div className="h-full flex items-center justify-center text-gray-400">Loading chart...</div>
+                <Box sx={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><CircularProgress size={24} /></Box>
               ) : (
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={timeSeries?.latency || []}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                    <XAxis
-                      dataKey="time"
-                      tickFormatter={formatTime}
-                      tick={{ fontSize: 11, fill: '#9ca3af' }}
-                      axisLine={false}
-                      tickLine={false}
-                    />
-                    <YAxis
-                      tick={{ fontSize: 11, fill: '#9ca3af' }}
-                      axisLine={false}
-                      tickLine={false}
-                      unit="ms"
-                    />
-                    <Tooltip
-                      labelFormatter={(label) => new Date(label).toLocaleString()}
-                      contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '12px' }}
-                    />
+                    <XAxis dataKey="time" tickFormatter={formatTime} tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} unit="ms" />
+                    <Tooltip labelFormatter={(label) => new Date(label).toLocaleString()} contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '12px' }} />
                     <Legend iconType="line" wrapperStyle={{ fontSize: '11px' }} />
                     <Line type="monotone" dataKey="p50_ms" name="P50" stroke="#10b981" strokeWidth={2} dot={false} />
                     <Line type="monotone" dataKey="p90_ms" name="P90" stroke="#f59e0b" strokeWidth={2} dot={false} />
@@ -247,19 +237,20 @@ export default function Dashboard() {
                   </LineChart>
                 </ResponsiveContainer>
               )}
-            </div>
-          </div>
-        </div>
+            </Box>
+          </Paper>
+        </Grid>
+      </Grid>
 
-        {/* Charts Row 2: Cost Breakdown + Model Comparison */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-          {/* Cost Breakdown Pie Chart */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h3 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <DollarSign className="w-4 h-4 text-green-600" />
+      {/* Charts Row 2 */}
+      <Grid container spacing={3} sx={{ mb: 3 }}>
+        <Grid size={{ xs: 12, lg: 6 }}>
+          <Paper elevation={0} sx={{ p: 3, border: '1px solid #e5e7eb', borderRadius: '12px' }}>
+            <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: '#111827', mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+              <DollarSign className="w-4 h-4" style={{ color: '#10b981' }} />
               Cost by Provider
-            </h3>
-            <div className="h-64 flex items-center">
+            </Typography>
+            <Box sx={{ height: 260 }}>
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
@@ -277,56 +268,46 @@ export default function Dashboard() {
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
-                  <Tooltip
-                    formatter={(value: number) => [`$${value.toFixed(4)}`, 'Cost']}
-                    contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '12px' }}
-                  />
+                  <Tooltip formatter={(value: number) => [`$${value.toFixed(4)}`, 'Cost']} contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '12px' }} />
                 </PieChart>
               </ResponsiveContainer>
-            </div>
-          </div>
+            </Box>
+          </Paper>
+        </Grid>
 
-          {/* Model Comparison Bar Chart */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h3 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <Server className="w-4 h-4 text-blue-600" />
+        <Grid size={{ xs: 12, lg: 6 }}>
+          <Paper elevation={0} sx={{ p: 3, border: '1px solid #e5e7eb', borderRadius: '12px' }}>
+            <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: '#111827', mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Server className="w-4 h-4" style={{ color: '#3b82f6' }} />
               Model Performance
-            </h3>
-            <div className="h-64">
+            </Typography>
+            <Box sx={{ height: 260 }}>
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={modelData?.models || []} layout="vertical">
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                   <XAxis type="number" tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
-                  <YAxis
-                    type="category"
-                    dataKey="model"
-                    tick={{ fontSize: 11, fill: '#6b7280' }}
-                    axisLine={false}
-                    tickLine={false}
-                    width={120}
-                  />
-                  <Tooltip
-                    contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '12px' }}
-                  />
+                  <YAxis type="category" dataKey="model" tick={{ fontSize: 11, fill: '#6b7280' }} axisLine={false} tickLine={false} width={120} />
+                  <Tooltip contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '12px' }} />
                   <Legend wrapperStyle={{ fontSize: '11px' }} />
                   <Bar dataKey="requests" name="Requests" fill="#3b82f6" radius={[0, 4, 4, 0]} />
                 </BarChart>
               </ResponsiveContainer>
-            </div>
-          </div>
-        </div>
+            </Box>
+          </Paper>
+        </Grid>
+      </Grid>
 
-        {/* Charts Row 3: Cost Trend + Error Trend */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-          {/* Cost Trend */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h3 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <TrendingUp className="w-4 h-4 text-green-600" />
+      {/* Charts Row 3 */}
+      <Grid container spacing={3} sx={{ mb: 3 }}>
+        <Grid size={{ xs: 12, lg: 6 }}>
+          <Paper elevation={0} sx={{ p: 3, border: '1px solid #e5e7eb', borderRadius: '12px' }}>
+            <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: '#111827', mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+              <TrendingUp className="w-4 h-4" style={{ color: '#10b981' }} />
               Cost Trend
-            </h3>
-            <div className="h-56">
+            </Typography>
+            <Box sx={{ height: 220 }}>
               {tsLoading ? (
-                <div className="h-full flex items-center justify-center text-gray-400">Loading chart...</div>
+                <Box sx={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><CircularProgress size={24} /></Box>
               ) : (
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={timeSeries?.cost || []}>
@@ -337,217 +318,140 @@ export default function Dashboard() {
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                    <XAxis
-                      dataKey="time"
-                      tickFormatter={formatTime}
-                      tick={{ fontSize: 11, fill: '#9ca3af' }}
-                      axisLine={false}
-                      tickLine={false}
-                    />
-                    <YAxis
-                      tick={{ fontSize: 11, fill: '#9ca3af' }}
-                      axisLine={false}
-                      tickLine={false}
-                      tickFormatter={(v) => `$${v}`}
-                    />
-                    <Tooltip
-                      labelFormatter={(label) => new Date(label).toLocaleString()}
-                      formatter={(value: number) => [`$${value.toFixed(4)}`, 'Cost']}
-                      contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '12px' }}
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="cost"
-                      stroke="#10b981"
-                      strokeWidth={2}
-                      fill="url(#costGradient)"
-                    />
+                    <XAxis dataKey="time" tickFormatter={formatTime} tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} tickFormatter={(v) => `$${v}`} />
+                    <Tooltip labelFormatter={(label) => new Date(label).toLocaleString()} formatter={(value: number) => [`$${value.toFixed(4)}`, 'Cost']} contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '12px' }} />
+                    <Area type="monotone" dataKey="cost" stroke="#10b981" strokeWidth={2} fill="url(#costGradient)" />
                   </AreaChart>
                 </ResponsiveContainer>
               )}
-            </div>
-          </div>
+            </Box>
+          </Paper>
+        </Grid>
 
-          {/* Error Trend */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h3 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 text-red-600" />
+        <Grid size={{ xs: 12, lg: 6 }}>
+          <Paper elevation={0} sx={{ p: 3, border: '1px solid #e5e7eb', borderRadius: '12px' }}>
+            <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: '#111827', mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+              <AlertCircle className="w-4 h-4" style={{ color: '#ef4444' }} />
               Error Trend
-            </h3>
-            <div className="h-56">
+            </Typography>
+            <Box sx={{ height: 220 }}>
               {tsLoading ? (
-                <div className="h-full flex items-center justify-center text-gray-400">Loading chart...</div>
+                <Box sx={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><CircularProgress size={24} /></Box>
               ) : (
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={timeSeries?.errors || []}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                    <XAxis
-                      dataKey="time"
-                      tickFormatter={formatTime}
-                      tick={{ fontSize: 11, fill: '#9ca3af' }}
-                      axisLine={false}
-                      tickLine={false}
-                    />
-                    <YAxis
-                      tick={{ fontSize: 11, fill: '#9ca3af' }}
-                      axisLine={false}
-                      tickLine={false}
-                      allowDecimals={false}
-                    />
-                    <Tooltip
-                      labelFormatter={(label) => new Date(label).toLocaleString()}
-                      contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '12px' }}
-                    />
+                    <XAxis dataKey="time" tickFormatter={formatTime} tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} allowDecimals={false} />
+                    <Tooltip labelFormatter={(label) => new Date(label).toLocaleString()} contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '12px' }} />
                     <Bar dataKey="errors" name="Errors" fill="#ef4444" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               )}
-            </div>
-          </div>
-        </div>
+            </Box>
+          </Paper>
+        </Grid>
+      </Grid>
 
-        {/* Bottom Row: Workers + Latency Percentiles + Streams */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-          {/* Worker Pool Status */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h3 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <Server className="w-4 h-4 text-blue-600" />
+      {/* Bottom Row: Workers + Latency Percentiles + Cost by Model */}
+      <Grid container spacing={3}>
+        <Grid size={{ xs: 12, lg: 4 }}>
+          <Paper elevation={0} sx={{ p: 3, border: '1px solid #e5e7eb', borderRadius: '12px' }}>
+            <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: '#111827', mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Server className="w-4 h-4" style={{ color: '#3b82f6' }} />
               Worker Pool
-            </h3>
-            <div className="space-y-3">
-              <MetricBar label="Idle" value={workers.idle || 0} max={workers.total || 10} color="green" />
-              <MetricBar label="Busy" value={workers.busy || 0} max={workers.total || 10} color="blue" />
-              <MetricBar label="Unhealthy" value={workers.unhealthy || 0} max={workers.total || 10} color="red" />
-              <div className="pt-2 border-t">
-                <div className="flex justify-between text-xs">
-                  <span className="text-gray-500">Queue Utilization</span>
-                  <span className="font-semibold text-gray-900">{(workers.utilization || 0).toFixed(1)}%</span>
-                </div>
-                <div className="flex justify-between text-xs mt-1">
-                  <span className="text-gray-500">Queued Jobs</span>
-                  <span className="font-semibold text-gray-900">{workers.queued_jobs || 0}</span>
-                </div>
-              </div>
-            </div>
-          </div>
+            </Typography>
+            <Box sx={{ '& > * + *': { mt: 2 } }}>
+              <MetricBar label="Idle" value={workers.idle || 0} max={workers.total || 10} color="#10b981" />
+              <MetricBar label="Busy" value={workers.busy || 0} max={workers.total || 10} color="#3b82f6" />
+              <MetricBar label="Unhealthy" value={workers.unhealthy || 0} max={workers.total || 10} color="#ef4444" />
+              <Box sx={{ pt: 1.5, borderTop: '1px solid #f3f4f6' }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                  <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>Queue Utilization</Typography>
+                  <Typography sx={{ fontSize: '0.75rem', fontWeight: 700 }}>{(workers.utilization || 0).toFixed(1)}%</Typography>
+                </Box>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>Queued Jobs</Typography>
+                  <Typography sx={{ fontSize: '0.75rem', fontWeight: 700 }}>{workers.queued_jobs || 0}</Typography>
+                </Box>
+              </Box>
+            </Box>
+          </Paper>
+        </Grid>
 
-          {/* Latency Percentiles */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h3 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <Clock className="w-4 h-4 text-purple-600" />
+        <Grid size={{ xs: 12, lg: 4 }}>
+          <Paper elevation={0} sx={{ p: 3, border: '1px solid #e5e7eb', borderRadius: '12px' }}>
+            <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: '#111827', mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Clock className="w-4 h-4" style={{ color: '#8b5cf6' }} />
               Latency Percentiles
-            </h3>
-            <div className="space-y-3">
-              <LatencyRow label="P50 (Median)" value={latency.p50_ms || 0} maxVal={latency.p99_ms || 100} color="green" />
-              <LatencyRow label="P90" value={latency.p90_ms || 0} maxVal={latency.p99_ms || 100} color="yellow" />
-              <LatencyRow label="P95" value={latency.p95_ms || 0} maxVal={latency.p99_ms || 100} color="orange" />
-              <LatencyRow label="P99" value={latency.p99_ms || 0} maxVal={latency.p99_ms || 100} color="red" />
-              <div className="pt-2 border-t">
-                <div className="flex justify-between text-xs">
-                  <span className="text-gray-500">Min / Max</span>
-                  <span className="font-semibold text-gray-900">{latency.min_ms || 0}ms / {latency.max_ms || 0}ms</span>
-                </div>
-              </div>
-            </div>
-          </div>
+            </Typography>
+            <Box sx={{ '& > * + *': { mt: 2 } }}>
+              <MetricBar label="P50 (Median)" value={latency.p50_ms || 0} max={latency.p99_ms || 100} color="#10b981" unit="ms" />
+              <MetricBar label="P90" value={latency.p90_ms || 0} max={latency.p99_ms || 100} color="#f59e0b" unit="ms" />
+              <MetricBar label="P95" value={latency.p95_ms || 0} max={latency.p99_ms || 100} color="#f97316" unit="ms" />
+              <MetricBar label="P99" value={latency.p99_ms || 0} max={latency.p99_ms || 100} color="#ef4444" unit="ms" />
+              <Box sx={{ pt: 1.5, borderTop: '1px solid #f3f4f6' }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>Min / Max</Typography>
+                  <Typography sx={{ fontSize: '0.75rem', fontWeight: 700 }}>{latency.min_ms || 0}ms / {latency.max_ms || 0}ms</Typography>
+                </Box>
+              </Box>
+            </Box>
+          </Paper>
+        </Grid>
 
-          {/* Model Cost Table */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h3 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <Zap className="w-4 h-4 text-yellow-600" />
+        <Grid size={{ xs: 12, lg: 4 }}>
+          <Paper elevation={0} sx={{ p: 3, border: '1px solid #e5e7eb', borderRadius: '12px' }}>
+            <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: '#111827', mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Zap className="w-4 h-4" style={{ color: '#f59e0b' }} />
               Cost by Model
-            </h3>
-            <div className="space-y-2">
+            </Typography>
+            <Box>
               {(costData?.by_model || []).map((item: any, idx: number) => (
-                <div key={idx} className="flex items-center justify-between py-1.5">
-                  <div className="flex items-center gap-2">
-                    <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: COLORS[idx % COLORS.length] }} />
-                    <span className="text-xs font-medium text-gray-700 truncate max-w-[120px]">{item.name}</span>
-                  </div>
-                  <span className="text-xs font-bold text-gray-900">${item.value?.toFixed(4)}</span>
-                </div>
+                <Box key={idx} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', py: 1 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Box sx={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: COLORS[idx % COLORS.length] }} />
+                    <Typography sx={{ fontSize: '0.8rem', fontWeight: 500, color: '#374151', maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {item.name}
+                    </Typography>
+                  </Box>
+                  <Typography sx={{ fontSize: '0.8rem', fontWeight: 700, color: '#111827' }}>
+                    ${item.value?.toFixed(4)}
+                  </Typography>
+                </Box>
               ))}
               {(costData?.by_model || []).length === 0 && (
-                <p className="text-xs text-gray-400 text-center py-4">No cost data yet</p>
+                <Typography sx={{ fontSize: '0.8rem', color: '#9ca3af', textAlign: 'center', py: 4 }}>No cost data yet</Typography>
               )}
-            </div>
-          </div>
-        </div>
-      </main>
-    </div>
+            </Box>
+          </Paper>
+        </Grid>
+      </Grid>
+    </Box>
   );
 }
 
-// --- Sub-components ---
-
-function StatCard({ icon, label, value, subtext, color }: {
-  icon: React.ReactNode; label: string; value: string | number;
-  subtext: string; color: string;
-}) {
-  const colorMap: Record<string, string> = {
-    blue: 'bg-blue-50 text-blue-600',
-    green: 'bg-green-50 text-green-600',
-    purple: 'bg-purple-50 text-purple-600',
-    red: 'bg-red-50 text-red-600',
-    orange: 'bg-orange-50 text-orange-600',
-  };
-
-  return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-5 hover:shadow-md transition-shadow">
-      <div className="flex items-center justify-between mb-3">
-        <div className={`p-2 rounded-lg ${colorMap[color] || colorMap.blue}`}>{icon}</div>
-      </div>
-      <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">{label}</p>
-      <p className="text-2xl font-bold text-gray-900 mt-1">{value}</p>
-      <p className="text-xs text-gray-500 mt-1">{subtext}</p>
-    </div>
-  );
-}
-
-function MetricBar({ label, value, max, color }: {
-  label: string; value: number; max: number; color: string;
+function MetricBar({ label, value, max, color, unit }: {
+  label: string; value: number; max: number; color: string; unit?: string;
 }) {
   const pct = max > 0 ? Math.min((value / max) * 100, 100) : 0;
-  const colorMap: Record<string, string> = {
-    green: 'bg-green-500', blue: 'bg-blue-500', red: 'bg-red-500', yellow: 'bg-yellow-500',
-  };
-
   return (
-    <div>
-      <div className="flex justify-between items-center mb-1">
-        <span className="text-xs font-medium text-gray-600">{label}</span>
-        <span className="text-xs font-bold text-gray-900">{value}/{max}</span>
-      </div>
-      <div className="w-full bg-gray-100 rounded-full h-2">
-        <div
-          className={`h-2 rounded-full transition-all duration-500 ${colorMap[color] || 'bg-blue-500'}`}
-          style={{ width: `${pct}%` }}
-        />
-      </div>
-    </div>
-  );
-}
-
-function LatencyRow({ label, value, maxVal, color }: {
-  label: string; value: number; maxVal: number; color: string;
-}) {
-  const pct = maxVal > 0 ? Math.min((value / maxVal) * 100, 100) : 0;
-  const colorMap: Record<string, string> = {
-    green: 'bg-green-500', yellow: 'bg-yellow-500', orange: 'bg-orange-500', red: 'bg-red-500',
-  };
-
-  return (
-    <div>
-      <div className="flex justify-between items-center mb-1">
-        <span className="text-xs font-medium text-gray-600">{label}</span>
-        <span className="text-xs font-bold text-gray-900">{value}ms</span>
-      </div>
-      <div className="w-full bg-gray-100 rounded-full h-1.5">
-        <div
-          className={`h-1.5 rounded-full transition-all duration-500 ${colorMap[color] || 'bg-blue-500'}`}
-          style={{ width: `${pct}%` }}
-        />
-      </div>
-    </div>
+    <Box>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+        <Typography sx={{ fontSize: '0.75rem', fontWeight: 500, color: '#6b7280' }}>{label}</Typography>
+        <Typography sx={{ fontSize: '0.75rem', fontWeight: 700 }}>{value}{unit ? unit : `/${max}`}</Typography>
+      </Box>
+      <LinearProgress
+        variant="determinate"
+        value={pct}
+        sx={{
+          height: 6,
+          borderRadius: 3,
+          backgroundColor: '#f3f4f6',
+          '& .MuiLinearProgress-bar': { backgroundColor: color, borderRadius: 3 },
+        }}
+      />
+    </Box>
   );
 }

@@ -2,166 +2,306 @@
 
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
+import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import Paper from '@mui/material/Paper';
+import Grid from '@mui/material/Grid';
 import { Zap, Shield, BarChart3, Rocket, CheckCircle } from 'lucide-react';
 
 export default function LandingPage() {
   const { isAuthenticated } = useAuth();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      {/* Hero Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
-        <div className="text-center">
-          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              VelocityLLM
-            </span>
-          </h1>
-          <p className="text-xl md:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto">
-            Production-Grade LLM Inference Engine
-          </p>
-          <p className="text-lg text-gray-500 mb-12 max-w-2xl mx-auto">
-            High-performance, scalable infrastructure for deploying and managing Large Language Models in production environments.
-          </p>
+    <Box sx={{ minHeight: '100vh', background: 'linear-gradient(135deg, #eff6ff 0%, #ffffff 50%, #f5f3ff 100%)' }}>
+      {/* Navbar */}
+      <Box
+        component="nav"
+        sx={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 50,
+          backgroundColor: 'rgba(255,255,255,0.8)',
+          backdropFilter: 'blur(12px)',
+          borderBottom: '1px solid rgba(229,231,235,0.6)',
+        }}
+      >
+        <Container maxWidth="lg">
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: 64 }}>
+            <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 8 }}>
+              <Box
+                sx={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: '8px',
+                  background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <Typography sx={{ color: '#fff', fontWeight: 700, fontSize: '0.875rem' }}>V</Typography>
+              </Box>
+              <Typography
+                sx={{
+                  fontSize: '1.25rem',
+                  fontWeight: 700,
+                  color: '#111827',
+                }}
+              >
+                VelocityLLM
+              </Typography>
+            </Link>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              {isAuthenticated ? (
+                <>
+                  <Button component={Link} href="/dashboard" sx={{ color: '#374151', fontWeight: 500 }}>
+                    Dashboard
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button component={Link} href="/login" sx={{ color: '#374151', fontWeight: 500 }}>
+                    Login
+                  </Button>
+                  <Button component={Link} href="/register" variant="contained" size="small">
+                    Sign Up
+                  </Button>
+                </>
+              )}
+            </Box>
+          </Box>
+        </Container>
+      </Box>
+
+      {/* Hero Section */}
+      <Container maxWidth="lg" sx={{ pt: { xs: 10, md: 16 }, pb: { xs: 8, md: 12 } }}>
+        <Box sx={{ textAlign: 'center' }}>
+          <Typography
+            variant="h1"
+            sx={{
+              fontSize: { xs: '2.5rem', md: '3.75rem' },
+              fontWeight: 800,
+              mb: 3,
+              color: '#111827',
+            }}
+          >
+            VelocityLLM
+          </Typography>
+          <Typography
+            sx={{
+              fontSize: { xs: '1.25rem', md: '1.5rem' },
+              color: '#4b5563',
+              mb: 2,
+              fontWeight: 500,
+            }}
+          >
+            Production-Grade LLM Inference Engine
+          </Typography>
+          <Typography
+            sx={{
+              fontSize: '1.1rem',
+              color: '#6b7280',
+              mb: 5,
+              maxWidth: 640,
+              mx: 'auto',
+              lineHeight: 1.7,
+            }}
+          >
+            High-performance, scalable infrastructure for deploying and managing
+            Large Language Models in production environments.
+          </Typography>
+
+          <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
             {isAuthenticated ? (
-              <Link
+              <Button
+                component={Link}
                 href="/dashboard"
-                className="px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold text-lg shadow-lg hover:shadow-xl"
+                variant="contained"
+                size="large"
+                sx={{ px: 5, py: 1.75, fontSize: '1rem', boxShadow: '0 4px 14px 0 rgb(59 130 246 / 0.4)' }}
               >
                 Go to Dashboard
-              </Link>
+              </Button>
             ) : (
               <>
-                <Link
+                <Button
+                  component={Link}
                   href="/register"
-                  className="px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold text-lg shadow-lg hover:shadow-xl"
+                  variant="contained"
+                  size="large"
+                  sx={{ px: 5, py: 1.75, fontSize: '1rem', boxShadow: '0 4px 14px 0 rgb(59 130 246 / 0.4)' }}
                 >
                   Get Started Free
-                </Link>
-                <Link
+                </Button>
+                <Button
+                  component={Link}
                   href="/login"
-                  className="px-8 py-4 bg-white text-gray-800 rounded-lg hover:bg-gray-50 transition font-semibold text-lg border-2 border-gray-200"
+                  variant="outlined"
+                  size="large"
+                  sx={{
+                    px: 5,
+                    py: 1.75,
+                    fontSize: '1rem',
+                    borderColor: '#d1d5db',
+                    color: '#374151',
+                    '&:hover': { borderColor: '#9ca3af', backgroundColor: '#f9fafb' },
+                  }}
                 >
                   Sign In
-                </Link>
+                </Button>
               </>
             )}
-          </div>
-        </div>
-      </div>
+          </Box>
+        </Box>
+      </Container>
 
       {/* Features Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-16">
+      <Container maxWidth="lg" sx={{ py: { xs: 8, md: 12 } }}>
+        <Typography
+          variant="h3"
+          sx={{
+            textAlign: 'center',
+            fontWeight: 700,
+            color: '#111827',
+            mb: 8,
+            fontSize: { xs: '1.75rem', md: '2.25rem' },
+          }}
+        >
           Why VelocityLLM?
-        </h2>
+        </Typography>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-          <FeatureCard
-            icon={<Zap className="w-8 h-8 text-blue-600" />}
-            title="Lightning Fast"
-            description="Optimized inference engine with advanced caching and multi-level optimization strategies."
-          />
-          <FeatureCard
-            icon={<Shield className="w-8 h-8 text-purple-600" />}
-            title="Enterprise Security"
-            description="JWT authentication, role-based access control, and comprehensive audit logging."
-          />
-          <FeatureCard
-            icon={<BarChart3 className="w-8 h-8 text-green-600" />}
-            title="Real-time Monitoring"
-            description="Live dashboards with worker metrics, streaming stats, and performance analytics."
-          />
-          <FeatureCard
-            icon={<Rocket className="w-8 h-8 text-orange-600" />}
-            title="Production Ready"
-            description="Built for scale with worker pools, request batching, and intelligent load balancing."
-          />
-        </div>
-      </div>
+        <Grid container spacing={3}>
+          {[
+            { icon: <Zap className="w-7 h-7" style={{ color: '#3b82f6' }} />, title: 'Lightning Fast', description: 'Optimized inference engine with advanced caching and multi-level optimization strategies.' },
+            { icon: <Shield className="w-7 h-7" style={{ color: '#8b5cf6' }} />, title: 'Enterprise Security', description: 'JWT authentication, role-based access control, and comprehensive audit logging.' },
+            { icon: <BarChart3 className="w-7 h-7" style={{ color: '#10b981' }} />, title: 'Real-time Monitoring', description: 'Live dashboards with worker metrics, streaming stats, and performance analytics.' },
+            { icon: <Rocket className="w-7 h-7" style={{ color: '#f97316' }} />, title: 'Production Ready', description: 'Built for scale with worker pools, request batching, and intelligent load balancing.' },
+          ].map((feature, idx) => (
+            <Grid size={{ xs: 12, sm: 6, lg: 3 }} key={idx}>
+              <Paper
+                elevation={0}
+                sx={{
+                  p: 4,
+                  height: '100%',
+                  border: '1px solid #e5e7eb',
+                  borderRadius: '16px',
+                  transition: 'all 0.2s',
+                  '&:hover': { boxShadow: '0 10px 25px -5px rgb(0 0 0 / 0.1)', transform: 'translateY(-2px)' },
+                }}
+              >
+                <Box sx={{ mb: 2 }}>{feature.icon}</Box>
+                <Typography sx={{ fontSize: '1.15rem', fontWeight: 600, color: '#111827', mb: 1 }}>
+                  {feature.title}
+                </Typography>
+                <Typography sx={{ fontSize: '0.9rem', color: '#6b7280', lineHeight: 1.6 }}>
+                  {feature.description}
+                </Typography>
+              </Paper>
+            </Grid>
+          ))}
+        </Grid>
+      </Container>
 
       {/* Features List */}
-      <div className="bg-white py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-2 gap-12">
-            <div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-6">
+      <Box sx={{ backgroundColor: '#ffffff', py: { xs: 8, md: 12 } }}>
+        <Container maxWidth="lg">
+          <Grid container spacing={8}>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Typography sx={{ fontSize: '1.5rem', fontWeight: 700, color: '#111827', mb: 3 }}>
                 Advanced Features
-              </h3>
-              <ul className="space-y-4">
-                <Feature text="Multi-level caching (L1 memory + L2 Redis)" />
-                <Feature text="Semantic caching with embedding similarity" />
-                <Feature text="Multi-model orchestration & chaining" />
-                <Feature text="Prompt template management & A/B testing" />
-                <Feature text="Context window & token management" />
-                <Feature text="Real-time streaming with SSE" />
-              </ul>
-            </div>
-
-            <div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-6">
+              </Typography>
+              <Box component="ul" sx={{ listStyle: 'none', p: 0, m: 0, '& > li + li': { mt: 2 } }}>
+                {[
+                  'Multi-level caching (L1 memory + L2 Redis)',
+                  'Semantic caching with embedding similarity',
+                  'Multi-model orchestration & chaining',
+                  'Prompt template management & A/B testing',
+                  'Context window & token management',
+                  'Real-time streaming with SSE',
+                ].map((text, idx) => (
+                  <Box component="li" key={idx} sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5 }}>
+                    <CheckCircle className="w-5 h-5" style={{ color: '#10b981', flexShrink: 0, marginTop: 2 }} />
+                    <Typography sx={{ color: '#374151', fontSize: '0.95rem' }}>{text}</Typography>
+                  </Box>
+                ))}
+              </Box>
+            </Grid>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Typography sx={{ fontSize: '1.5rem', fontWeight: 700, color: '#111827', mb: 3 }}>
                 Developer Experience
-              </h3>
-              <ul className="space-y-4">
-                <Feature text="RESTful API with comprehensive documentation" />
-                <Feature text="Worker pool with auto-scaling" />
-                <Feature text="Request batching & optimization" />
-                <Feature text="Comprehensive metrics & analytics" />
-                <Feature text="Role-based access control" />
-                <Feature text="Modern React dashboard" />
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
+              </Typography>
+              <Box component="ul" sx={{ listStyle: 'none', p: 0, m: 0, '& > li + li': { mt: 2 } }}>
+                {[
+                  'RESTful API with comprehensive documentation',
+                  'Worker pool with auto-scaling',
+                  'Request batching & optimization',
+                  'Comprehensive metrics & analytics',
+                  'Role-based access control',
+                  'Modern React dashboard',
+                ].map((text, idx) => (
+                  <Box component="li" key={idx} sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5 }}>
+                    <CheckCircle className="w-5 h-5" style={{ color: '#10b981', flexShrink: 0, marginTop: 2 }} />
+                    <Typography sx={{ color: '#374151', fontSize: '0.95rem' }}>{text}</Typography>
+                  </Box>
+                ))}
+              </Box>
+            </Grid>
+          </Grid>
+        </Container>
+      </Box>
 
       {/* CTA Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 py-16">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
+      <Box
+        sx={{
+          background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)',
+          py: { xs: 8, md: 10 },
+        }}
+      >
+        <Container maxWidth="sm" sx={{ textAlign: 'center' }}>
+          <Typography sx={{ fontSize: { xs: '1.75rem', md: '2.25rem' }, fontWeight: 700, color: '#ffffff', mb: 2 }}>
             Ready to Get Started?
-          </h2>
-          <p className="text-xl text-blue-100 mb-8">
+          </Typography>
+          <Typography sx={{ fontSize: '1.15rem', color: 'rgba(219,234,254,0.9)', mb: 4 }}>
             Deploy production-grade LLM infrastructure in minutes.
-          </p>
+          </Typography>
           {!isAuthenticated && (
-            <Link
+            <Button
+              component={Link}
               href="/register"
-              className="inline-block px-8 py-4 bg-white text-blue-600 rounded-lg hover:bg-gray-100 transition font-semibold text-lg shadow-lg"
+              variant="contained"
+              size="large"
+              sx={{
+                px: 5,
+                py: 1.75,
+                fontSize: '1rem',
+                backgroundColor: '#ffffff',
+                color: '#3b82f6',
+                '&:hover': { backgroundColor: '#f3f4f6' },
+                boxShadow: '0 4px 14px 0 rgb(0 0 0 / 0.15)',
+              }}
             >
               Create Free Account
-            </Link>
+            </Button>
           )}
-        </div>
-      </div>
+        </Container>
+      </Box>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-gray-400 py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p>&copy; 2026 VelocityLLM. Production-Grade LLM Inference Engine.</p>
-        </div>
-      </footer>
-    </div>
-  );
-}
-
-function FeatureCard({ icon, title, description }: any) {
-  return (
-    <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition">
-      <div className="mb-4">{icon}</div>
-      <h3 className="text-xl font-semibold text-gray-900 mb-2">{title}</h3>
-      <p className="text-gray-600">{description}</p>
-    </div>
-  );
-}
-
-function Feature({ text }: { text: string }) {
-  return (
-    <li className="flex items-start gap-3">
-      <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-      <span className="text-gray-700">{text}</span>
-    </li>
+      <Box
+        component="footer"
+        sx={{
+          backgroundColor: '#111827',
+          py: 4,
+          textAlign: 'center',
+        }}
+      >
+        <Typography sx={{ color: '#9ca3af', fontSize: '0.875rem' }}>
+          &copy; 2026 VelocityLLM. Production-Grade LLM Inference Engine.
+        </Typography>
+      </Box>
+    </Box>
   );
 }

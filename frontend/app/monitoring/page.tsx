@@ -11,6 +11,20 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell
 } from 'recharts';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Paper from '@mui/material/Paper';
+import Chip from '@mui/material/Chip';
+import LinearProgress from '@mui/material/LinearProgress';
+import CircularProgress from '@mui/material/CircularProgress';
+import Alert from '@mui/material/Alert';
+import Grid from '@mui/material/Grid';
+import Table from '@mui/material/Table';
+import TableHead from '@mui/material/TableHead';
+import TableBody from '@mui/material/TableBody';
+import TableRow from '@mui/material/TableRow';
+import TableCell from '@mui/material/TableCell';
+import { PageHeader } from '@/components/PageHeader';
 
 const COLORS = ['#10b981', '#3b82f6', '#ef4444', '#f59e0b', '#8b5cf6'];
 
@@ -109,366 +123,442 @@ export default function MonitoringPage() {
 
   if (healthLoading) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500 mx-auto"></div>
-          <p className="mt-4 text-gray-400">Connecting to monitoring...</p>
-        </div>
-      </div>
+      <Box sx={{ p: { xs: 2, sm: 3 }, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
+        <CircularProgress size={48} sx={{ color: '#10b981' }} />
+        <Typography sx={{ mt: 2, color: '#6b7280', fontSize: '0.875rem' }}>Connecting to monitoring...</Typography>
+      </Box>
     );
   }
 
   const systemStatus = health?.status || 'unknown';
-  const statusColor = systemStatus === 'healthy' ? 'text-green-400' : systemStatus === 'degraded' ? 'text-yellow-400' : 'text-red-400';
-  const statusBg = systemStatus === 'healthy' ? 'bg-green-500/10 border-green-500/30' : systemStatus === 'degraded' ? 'bg-yellow-500/10 border-yellow-500/30' : 'bg-red-500/10 border-red-500/30';
-  const statusDot = systemStatus === 'healthy' ? 'bg-green-500' : systemStatus === 'degraded' ? 'bg-yellow-500' : 'bg-red-500';
+  const statusChipColor = systemStatus === 'healthy' ? 'success' : systemStatus === 'degraded' ? 'warning' : 'error';
 
   return (
-    <div className="min-h-screen bg-gray-900 text-gray-100">
-      {/* Header */}
-      <header className="bg-gray-800 border-b border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Activity className="w-6 h-6 text-green-400" />
-              <div>
-                <h1 className="text-xl font-bold text-white">System Monitoring</h1>
-                <p className="text-xs text-gray-400">Real-time infrastructure health</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 text-xs text-gray-400">
-                <RefreshCw className="w-3 h-3 animate-spin" />
-                Auto-refresh 5s
-              </div>
-              <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border ${statusBg}`}>
-                <div className={`w-2 h-2 rounded-full ${statusDot} animate-pulse`}></div>
-                <span className={`text-sm font-medium capitalize ${statusColor}`}>{systemStatus}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
+    <Box sx={{ p: { xs: 2, sm: 3 } }}>
+      <PageHeader
+        title="System Monitoring"
+        subtitle="Real-time infrastructure health"
+        action={
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: '#6b7280', fontSize: '0.75rem' }}>
+              <RefreshCw className="w-3 h-3 animate-spin" />
+              <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>Auto-refresh 5s</Typography>
+            </Box>
+            <Chip
+              label={systemStatus}
+              color={statusChipColor as any}
+              size="small"
+              variant="outlined"
+              sx={{ textTransform: 'capitalize', fontWeight: 600 }}
+              icon={
+                <Box
+                  sx={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: '50%',
+                    backgroundColor: systemStatus === 'healthy' ? '#10b981' : systemStatus === 'degraded' ? '#f59e0b' : '#ef4444',
+                    animation: 'pulse 2s infinite',
+                    ml: 0.5,
+                  }}
+                />
+              }
+            />
+          </Box>
+        }
+      />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
         {/* Backpressure Alert */}
         {backpressure?.active && (
-          <div className="bg-red-900/30 border border-red-500/50 rounded-lg p-4 flex items-center gap-3">
-            <AlertTriangle className="w-6 h-6 text-red-400 flex-shrink-0" />
-            <div>
-              <p className="font-semibold text-red-300">Backpressure Active</p>
-              <p className="text-sm text-red-400">{backpressure.reason || 'System is under heavy load. Some requests may be rejected.'}</p>
-            </div>
-          </div>
+          <Alert
+            severity="error"
+            icon={<AlertTriangle className="w-5 h-5" />}
+            sx={{ borderRadius: '12px' }}
+          >
+            <Typography sx={{ fontWeight: 600, fontSize: '0.875rem' }}>Backpressure Active</Typography>
+            <Typography sx={{ fontSize: '0.8125rem', color: '#6b7280' }}>
+              {backpressure.reason || 'System is under heavy load. Some requests may be rejected.'}
+            </Typography>
+          </Alert>
         )}
 
         {/* Alert Notifications */}
         {alerts.length > 0 && (
-          <div className="space-y-2">
-            <div className="flex items-center gap-2 mb-1">
-              <Bell className="w-4 h-4 text-yellow-400" />
-              <span className="text-sm font-medium text-gray-300">Alerts ({alerts.length})</span>
-            </div>
-            {alerts.map((alert, i) => (
-              <div key={i} className={`rounded-lg p-3 flex items-center gap-3 text-sm ${
-                alert.severity === 'critical' ? 'bg-red-900/20 border border-red-500/30 text-red-300' :
-                alert.severity === 'warning' ? 'bg-yellow-900/20 border border-yellow-500/30 text-yellow-300' :
-                'bg-blue-900/20 border border-blue-500/30 text-blue-300'
-              }`}>
-                {alert.severity === 'critical' ? <XCircle className="w-4 h-4 flex-shrink-0" /> :
-                 alert.severity === 'warning' ? <AlertTriangle className="w-4 h-4 flex-shrink-0" /> :
-                 <Bell className="w-4 h-4 flex-shrink-0" />}
-                <span>{alert.message}</span>
-              </div>
-            ))}
-          </div>
+          <Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+              <Bell className="w-4 h-4" style={{ color: '#f59e0b' }} />
+              <Typography sx={{ fontSize: '0.8125rem', fontWeight: 500, color: '#374151' }}>Alerts ({alerts.length})</Typography>
+            </Box>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+              {alerts.map((alert, i) => (
+                <Alert
+                  key={i}
+                  severity={alert.severity === 'critical' ? 'error' : alert.severity === 'warning' ? 'warning' : 'info'}
+                  icon={
+                    alert.severity === 'critical' ? <XCircle className="w-4 h-4" /> :
+                    alert.severity === 'warning' ? <AlertTriangle className="w-4 h-4" /> :
+                    <Bell className="w-4 h-4" />
+                  }
+                  sx={{ borderRadius: '8px', py: 0.5, '& .MuiAlert-message': { fontSize: '0.8125rem' } }}
+                >
+                  {alert.message}
+                </Alert>
+              ))}
+            </Box>
+          </Box>
         )}
 
         {/* System Health Checks */}
-        <div className="bg-gray-800 rounded-xl border border-gray-700 p-6">
-          <h2 className="text-sm font-semibold text-gray-300 mb-4 flex items-center gap-2">
-            <Shield className="w-4 h-4 text-green-400" />
-            Health Checks
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+            <Shield className="w-4 h-4" style={{ color: '#10b981' }} />
+            <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#374151' }}>Health Checks</Typography>
+          </Box>
+          <Grid container spacing={2}>
             {health?.checks && Object.entries(health.checks).map(([name, check]: [string, any]) => (
-              <div key={name} className={`rounded-lg p-3 border ${
-                check.status ? 'bg-green-900/10 border-green-500/20' : 'bg-red-900/10 border-red-500/20'
-              }`}>
-                <div className="flex items-center gap-2 mb-1">
-                  {check.status ? <CheckCircle className="w-4 h-4 text-green-400" /> : <XCircle className="w-4 h-4 text-red-400" />}
-                  <span className="text-xs font-medium text-gray-300 capitalize">{name.replace('_', ' ')}</span>
-                </div>
-                <p className="text-xs text-gray-500">
-                  {typeof check === 'object' ? Object.entries(check).filter(([k]) => k !== 'status').map(([k, v]) => `${k}: ${v}`).join(', ') : String(check)}
-                </p>
-              </div>
+              <Grid size={{ xs: 6, md: 3 }} key={name}>
+                <Paper
+                  elevation={0}
+                  sx={{
+                    p: 1.5,
+                    borderRadius: '8px',
+                    border: '1px solid',
+                    borderColor: check.status ? '#d1fae5' : '#fecaca',
+                    backgroundColor: check.status ? '#f0fdf4' : '#fef2f2',
+                  }}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
+                    {check.status ? <CheckCircle className="w-4 h-4" style={{ color: '#10b981' }} /> : <XCircle className="w-4 h-4" style={{ color: '#ef4444' }} />}
+                    <Typography sx={{ fontSize: '0.75rem', fontWeight: 500, color: '#374151', textTransform: 'capitalize' }}>{name.replace('_', ' ')}</Typography>
+                  </Box>
+                  <Typography sx={{ fontSize: '0.6875rem', color: '#6b7280' }}>
+                    {typeof check === 'object' ? Object.entries(check).filter(([k]) => k !== 'status').map(([k, v]) => `${k}: ${v}`).join(', ') : String(check)}
+                  </Typography>
+                </Paper>
+              </Grid>
             ))}
-          </div>
-        </div>
+          </Grid>
+        </Paper>
 
         {/* Worker Pool Visualization */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <Grid container spacing={3}>
           {/* Worker Grid */}
-          <div className="lg:col-span-2 bg-gray-800 rounded-xl border border-gray-700 p-6">
-            <h2 className="text-sm font-semibold text-gray-300 mb-4 flex items-center gap-2">
-              <Server className="w-4 h-4 text-blue-400" />
-              Worker Pool ({workerMetrics?.total_workers || 0} workers)
-            </h2>
-            <div className="grid grid-cols-5 md:grid-cols-10 gap-2 mb-4">
-              {(workers || []).map((w: any, i: number) => (
-                <WorkerDot key={i} worker={w} />
-              ))}
-              {(!workers || workers.length === 0) && Array.from({ length: 10 }).map((_, i) => (
-                <div key={i} className="aspect-square rounded-lg bg-gray-700/50 border border-gray-600/30 flex items-center justify-center">
-                  <span className="text-[10px] text-gray-500">{i + 1}</span>
-                </div>
-              ))}
-            </div>
-            <div className="flex items-center gap-4 text-xs text-gray-500">
-              <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-green-500"></span> Idle</span>
-              <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-blue-500"></span> Busy</span>
-              <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-red-500"></span> Unhealthy</span>
-            </div>
-          </div>
+          <Grid size={{ xs: 12, lg: 8 }}>
+            <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3, height: '100%' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                <Server className="w-4 h-4" style={{ color: '#3b82f6' }} />
+                <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#374151' }}>
+                  Worker Pool ({workerMetrics?.total_workers || 0} workers)
+                </Typography>
+              </Box>
+              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: 'repeat(5, 1fr)', md: 'repeat(10, 1fr)' }, gap: 1, mb: 2 }}>
+                {(workers || []).map((w: any, i: number) => (
+                  <WorkerDot key={i} worker={w} />
+                ))}
+                {(!workers || workers.length === 0) && Array.from({ length: 10 }).map((_, i) => (
+                  <Box
+                    key={i}
+                    sx={{
+                      aspectRatio: '1',
+                      borderRadius: '8px',
+                      backgroundColor: '#f3f4f6',
+                      border: '1px solid #e5e7eb',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Typography sx={{ fontSize: '10px', color: '#9ca3af' }}>{i + 1}</Typography>
+                  </Box>
+                ))}
+              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                  <Box sx={{ width: 10, height: 10, borderRadius: '2px', backgroundColor: '#10b981' }} />
+                  <Typography sx={{ fontSize: '0.6875rem', color: '#6b7280' }}>Idle</Typography>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                  <Box sx={{ width: 10, height: 10, borderRadius: '2px', backgroundColor: '#3b82f6' }} />
+                  <Typography sx={{ fontSize: '0.6875rem', color: '#6b7280' }}>Busy</Typography>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                  <Box sx={{ width: 10, height: 10, borderRadius: '2px', backgroundColor: '#ef4444' }} />
+                  <Typography sx={{ fontSize: '0.6875rem', color: '#6b7280' }}>Unhealthy</Typography>
+                </Box>
+              </Box>
+            </Paper>
+          </Grid>
 
           {/* Queue Status */}
-          <div className="bg-gray-800 rounded-xl border border-gray-700 p-6">
-            <h2 className="text-sm font-semibold text-gray-300 mb-4 flex items-center gap-2">
-              <TrendingUp className="w-4 h-4 text-purple-400" />
-              Queue Status
-            </h2>
-            <div className="space-y-4">
-              <GaugeCircle
-                value={workerMetrics?.queue_utilization || 0}
-                label="Queue Utilization"
-                color={
-                  (workerMetrics?.queue_utilization || 0) > 80 ? '#ef4444' :
-                  (workerMetrics?.queue_utilization || 0) > 50 ? '#f59e0b' : '#10b981'
-                }
-              />
-              <div className="grid grid-cols-2 gap-3 mt-4">
-                <MetricBox label="Queued" value={workerMetrics?.queued_jobs || 0} color="yellow" />
-                <MetricBox label="In Progress" value={workerMetrics?.jobs_in_progress || 0} color="blue" />
-                <MetricBox label="Processed" value={workerMetrics?.total_jobs_processed || 0} color="green" />
-                <MetricBox label="Failed" value={workerMetrics?.total_jobs_failed || 0} color="red" />
-              </div>
-              <div className="pt-3 border-t border-gray-700">
-                <div className="flex justify-between text-xs">
-                  <span className="text-gray-500">Throughput</span>
-                  <span className="text-gray-300 font-mono">{(workerMetrics?.throughput_jobs_per_sec || 0).toFixed(2)} jobs/s</span>
-                </div>
-                <div className="flex justify-between text-xs mt-1">
-                  <span className="text-gray-500">Avg Duration</span>
-                  <span className="text-gray-300 font-mono">{(workerMetrics?.avg_job_duration_ms || 0).toFixed(0)}ms</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+          <Grid size={{ xs: 12, lg: 4 }}>
+            <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3, height: '100%' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                <TrendingUp className="w-4 h-4" style={{ color: '#8b5cf6' }} />
+                <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#374151' }}>Queue Status</Typography>
+              </Box>
+              <Box>
+                <GaugeCircle
+                  value={workerMetrics?.queue_utilization || 0}
+                  label="Queue Utilization"
+                  color={
+                    (workerMetrics?.queue_utilization || 0) > 80 ? '#ef4444' :
+                    (workerMetrics?.queue_utilization || 0) > 50 ? '#f59e0b' : '#10b981'
+                  }
+                />
+                <Grid container spacing={1.5} sx={{ mt: 2 }}>
+                  <Grid size={{ xs: 6 }}><MetricBox label="Queued" value={workerMetrics?.queued_jobs || 0} color="yellow" /></Grid>
+                  <Grid size={{ xs: 6 }}><MetricBox label="In Progress" value={workerMetrics?.jobs_in_progress || 0} color="blue" /></Grid>
+                  <Grid size={{ xs: 6 }}><MetricBox label="Processed" value={workerMetrics?.total_jobs_processed || 0} color="green" /></Grid>
+                  <Grid size={{ xs: 6 }}><MetricBox label="Failed" value={workerMetrics?.total_jobs_failed || 0} color="red" /></Grid>
+                </Grid>
+                <Box sx={{ pt: 2, mt: 2, borderTop: '1px solid #e5e7eb' }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                    <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>Throughput</Typography>
+                    <Typography sx={{ fontSize: '0.75rem', color: '#374151', fontFamily: 'monospace' }}>{(workerMetrics?.throughput_jobs_per_sec || 0).toFixed(2)} jobs/s</Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>Avg Duration</Typography>
+                    <Typography sx={{ fontSize: '0.75rem', color: '#374151', fontFamily: 'monospace' }}>{(workerMetrics?.avg_job_duration_ms || 0).toFixed(0)}ms</Typography>
+                  </Box>
+                </Box>
+              </Box>
+            </Paper>
+          </Grid>
+        </Grid>
 
         {/* Connection Pools */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <PoolCard
-            icon={<Database className="w-4 h-4" />}
-            title="Database Pool"
-            data={pools?.database}
-            color="blue"
-          />
-          <PoolCard
-            icon={<HardDrive className="w-4 h-4" />}
-            title="Redis Pool"
-            data={pools?.redis}
-            color="purple"
-          />
-          <PoolCard
-            icon={<Globe className="w-4 h-4" />}
-            title="HTTP Pool"
-            data={pools?.http}
-            color="green"
-          />
-        </div>
+        <Grid container spacing={3}>
+          <Grid size={{ xs: 12, md: 4 }}>
+            <PoolCard
+              icon={<Database className="w-4 h-4" />}
+              title="Database Pool"
+              data={pools?.database}
+              color="blue"
+            />
+          </Grid>
+          <Grid size={{ xs: 12, md: 4 }}>
+            <PoolCard
+              icon={<HardDrive className="w-4 h-4" />}
+              title="Redis Pool"
+              data={pools?.redis}
+              color="purple"
+            />
+          </Grid>
+          <Grid size={{ xs: 12, md: 4 }}>
+            <PoolCard
+              icon={<Globe className="w-4 h-4" />}
+              title="HTTP Pool"
+              data={pools?.http}
+              color="green"
+            />
+          </Grid>
+        </Grid>
 
         {/* Rate Limiting & Metrics */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Grid container spacing={3}>
           {/* Rate Limiter */}
-          <div className="bg-gray-800 rounded-xl border border-gray-700 p-6">
-            <h2 className="text-sm font-semibold text-gray-300 mb-4 flex items-center gap-2">
-              <Shield className="w-4 h-4 text-yellow-400" />
-              Rate Limiting
-            </h2>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-xs text-gray-400">Total Requests</span>
-                <span className="text-sm font-mono text-gray-200">{rateLimiter?.total_requests || 0}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-xs text-gray-400">Allowed</span>
-                <span className="text-sm font-mono text-green-400">{rateLimiter?.allowed || 0}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-xs text-gray-400">Rejected</span>
-                <span className="text-sm font-mono text-red-400">{rateLimiter?.rejected || 0}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-xs text-gray-400">Active Users</span>
-                <span className="text-sm font-mono text-gray-200">{rateLimiter?.active_users || 0}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-xs text-gray-400">Limit</span>
-                <span className="text-sm font-mono text-gray-200">{rateLimiter?.requests_per_minute || 100} req/min</span>
-              </div>
-              {/* Rejection rate bar */}
-              <div className="pt-2">
-                <div className="flex justify-between text-xs mb-1">
-                  <span className="text-gray-500">Rejection Rate</span>
-                  <span className="text-gray-400">
-                    {rateLimiter?.total_requests > 0
-                      ? ((rateLimiter.rejected / rateLimiter.total_requests) * 100).toFixed(1)
-                      : '0.0'}%
-                  </span>
-                </div>
-                <div className="w-full bg-gray-700 rounded-full h-1.5">
-                  <div
-                    className="h-1.5 rounded-full bg-red-500 transition-all"
-                    style={{
-                      width: `${rateLimiter?.total_requests > 0
-                        ? Math.min((rateLimiter.rejected / rateLimiter.total_requests) * 100, 100)
-                        : 0}%`
+          <Grid size={{ xs: 12, lg: 6 }}>
+            <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3, height: '100%' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                <Shield className="w-4 h-4" style={{ color: '#f59e0b' }} />
+                <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#374151' }}>Rate Limiting</Typography>
+              </Box>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>Total Requests</Typography>
+                  <Typography sx={{ fontSize: '0.8125rem', fontFamily: 'monospace', color: '#111827' }}>{rateLimiter?.total_requests || 0}</Typography>
+                </Box>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>Allowed</Typography>
+                  <Typography sx={{ fontSize: '0.8125rem', fontFamily: 'monospace', color: '#10b981' }}>{rateLimiter?.allowed || 0}</Typography>
+                </Box>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>Rejected</Typography>
+                  <Typography sx={{ fontSize: '0.8125rem', fontFamily: 'monospace', color: '#ef4444' }}>{rateLimiter?.rejected || 0}</Typography>
+                </Box>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>Active Users</Typography>
+                  <Typography sx={{ fontSize: '0.8125rem', fontFamily: 'monospace', color: '#111827' }}>{rateLimiter?.active_users || 0}</Typography>
+                </Box>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>Limit</Typography>
+                  <Typography sx={{ fontSize: '0.8125rem', fontFamily: 'monospace', color: '#111827' }}>{rateLimiter?.requests_per_minute || 100} req/min</Typography>
+                </Box>
+                {/* Rejection rate bar */}
+                <Box sx={{ pt: 1 }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                    <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>Rejection Rate</Typography>
+                    <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>
+                      {rateLimiter?.total_requests > 0
+                        ? ((rateLimiter.rejected / rateLimiter.total_requests) * 100).toFixed(1)
+                        : '0.0'}%
+                    </Typography>
+                  </Box>
+                  <LinearProgress
+                    variant="determinate"
+                    value={rateLimiter?.total_requests > 0
+                      ? Math.min((rateLimiter.rejected / rateLimiter.total_requests) * 100, 100)
+                      : 0}
+                    sx={{
+                      height: 6,
+                      borderRadius: 3,
+                      backgroundColor: '#e5e7eb',
+                      '& .MuiLinearProgress-bar': {
+                        borderRadius: 3,
+                        backgroundColor: '#ef4444',
+                      },
                     }}
                   />
-                </div>
-              </div>
-            </div>
-          </div>
+                </Box>
+              </Box>
+            </Paper>
+          </Grid>
 
           {/* Performance Summary */}
-          <div className="bg-gray-800 rounded-xl border border-gray-700 p-6">
-            <h2 className="text-sm font-semibold text-gray-300 mb-4 flex items-center gap-2">
-              <Zap className="w-4 h-4 text-orange-400" />
-              Performance Metrics
-            </h2>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-xs text-gray-400">Total Requests</span>
-                <span className="text-sm font-mono text-gray-200">{metricsSnapshot?.throughput?.total_requests || 0}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-xs text-gray-400">Req/Second</span>
-                <span className="text-sm font-mono text-blue-400">{metricsSnapshot?.throughput?.requests_per_second || '0.00'}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-xs text-gray-400">P50 Latency</span>
-                <span className="text-sm font-mono text-green-400">{metricsSnapshot?.latency?.p50_ms || 0}ms</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-xs text-gray-400">P99 Latency</span>
-                <span className="text-sm font-mono text-yellow-400">{metricsSnapshot?.latency?.p99_ms || 0}ms</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-xs text-gray-400">Error Rate</span>
-                <span className={`text-sm font-mono ${
-                  parseFloat(metricsSnapshot?.errors?.error_rate || '0') > 5 ? 'text-red-400' : 'text-green-400'
-                }`}>{metricsSnapshot?.errors?.error_rate || '0.00%'}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-xs text-gray-400">Total Cost</span>
-                <span className="text-sm font-mono text-gray-200">{metricsSnapshot?.cost?.total_cost || '$0.0000'}</span>
-              </div>
-              {/* Latency bar chart */}
-              <div className="pt-3 border-t border-gray-700">
-                <p className="text-xs text-gray-500 mb-2">Latency Percentiles</p>
-                <div className="h-32">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={[
-                      { name: 'P50', value: metricsSnapshot?.latency?.p50_ms || 0 },
-                      { name: 'P90', value: metricsSnapshot?.latency?.p90_ms || 0 },
-                      { name: 'P95', value: metricsSnapshot?.latency?.p95_ms || 0 },
-                      { name: 'P99', value: metricsSnapshot?.latency?.p99_ms || 0 },
-                    ]}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                      <XAxis dataKey="name" tick={{ fontSize: 10, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
-                      <YAxis tick={{ fontSize: 10, fill: '#9ca3af' }} axisLine={false} tickLine={false} unit="ms" />
-                      <Tooltip contentStyle={{ backgroundColor: '#1f2937', border: '1px solid #374151', borderRadius: '8px', fontSize: '11px', color: '#e5e7eb' }} />
-                      <Bar dataKey="value" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+          <Grid size={{ xs: 12, lg: 6 }}>
+            <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3, height: '100%' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                <Zap className="w-4 h-4" style={{ color: '#f97316' }} />
+                <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#374151' }}>Performance Metrics</Typography>
+              </Box>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>Total Requests</Typography>
+                  <Typography sx={{ fontSize: '0.8125rem', fontFamily: 'monospace', color: '#111827' }}>{metricsSnapshot?.throughput?.total_requests || 0}</Typography>
+                </Box>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>Req/Second</Typography>
+                  <Typography sx={{ fontSize: '0.8125rem', fontFamily: 'monospace', color: '#3b82f6' }}>{metricsSnapshot?.throughput?.requests_per_second || '0.00'}</Typography>
+                </Box>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>P50 Latency</Typography>
+                  <Typography sx={{ fontSize: '0.8125rem', fontFamily: 'monospace', color: '#10b981' }}>{metricsSnapshot?.latency?.p50_ms || 0}ms</Typography>
+                </Box>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>P99 Latency</Typography>
+                  <Typography sx={{ fontSize: '0.8125rem', fontFamily: 'monospace', color: '#f59e0b' }}>{metricsSnapshot?.latency?.p99_ms || 0}ms</Typography>
+                </Box>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>Error Rate</Typography>
+                  <Typography sx={{
+                    fontSize: '0.8125rem',
+                    fontFamily: 'monospace',
+                    color: parseFloat(metricsSnapshot?.errors?.error_rate || '0') > 5 ? '#ef4444' : '#10b981',
+                  }}>{metricsSnapshot?.errors?.error_rate || '0.00%'}</Typography>
+                </Box>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>Total Cost</Typography>
+                  <Typography sx={{ fontSize: '0.8125rem', fontFamily: 'monospace', color: '#111827' }}>{metricsSnapshot?.cost?.total_cost || '$0.0000'}</Typography>
+                </Box>
+                {/* Latency bar chart */}
+                <Box sx={{ pt: 2, mt: 1, borderTop: '1px solid #e5e7eb' }}>
+                  <Typography sx={{ fontSize: '0.75rem', color: '#6b7280', mb: 1 }}>Latency Percentiles</Typography>
+                  <Box sx={{ height: 128 }}>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={[
+                        { name: 'P50', value: metricsSnapshot?.latency?.p50_ms || 0 },
+                        { name: 'P90', value: metricsSnapshot?.latency?.p90_ms || 0 },
+                        { name: 'P95', value: metricsSnapshot?.latency?.p95_ms || 0 },
+                        { name: 'P99', value: metricsSnapshot?.latency?.p99_ms || 0 },
+                      ]}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                        <XAxis dataKey="name" tick={{ fontSize: 10, fill: '#6b7280' }} axisLine={false} tickLine={false} />
+                        <YAxis tick={{ fontSize: 10, fill: '#6b7280' }} axisLine={false} tickLine={false} unit="ms" />
+                        <Tooltip contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '8px', fontSize: '11px', color: '#374151' }} />
+                        <Bar dataKey="value" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </Box>
+                </Box>
+              </Box>
+            </Paper>
+          </Grid>
+        </Grid>
 
         {/* Backpressure Status */}
-        <div className="bg-gray-800 rounded-xl border border-gray-700 p-6">
-          <h2 className="text-sm font-semibold text-gray-300 mb-4 flex items-center gap-2">
-            <Activity className="w-4 h-4 text-cyan-400" />
-            Backpressure Status
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="text-center">
-              <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium ${
-                backpressure?.active ? 'bg-red-900/30 text-red-400' : 'bg-green-900/30 text-green-400'
-              }`}>
-                {backpressure?.active ? <AlertTriangle className="w-3 h-3" /> : <CheckCircle className="w-3 h-3" />}
-                {backpressure?.active ? 'Active' : 'Inactive'}
-              </div>
-              <p className="text-[10px] text-gray-500 mt-1">Status</p>
-            </div>
-            <div className="text-center">
-              <p className="text-lg font-mono font-bold text-gray-200">{backpressure?.queue_usage || '0.00%'}</p>
-              <p className="text-[10px] text-gray-500">Queue Usage</p>
-            </div>
-            <div className="text-center">
-              <p className="text-lg font-mono font-bold text-gray-200">{backpressure?.worker_utilization || '0.00%'}</p>
-              <p className="text-[10px] text-gray-500">Worker Utilization</p>
-            </div>
-            <div className="text-center">
-              <p className="text-lg font-mono font-bold text-red-400">{backpressure?.requests_rejected || 0}</p>
-              <p className="text-[10px] text-gray-500">Rejected</p>
-            </div>
-          </div>
-        </div>
+        <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+            <Activity className="w-4 h-4" style={{ color: '#06b6d4' }} />
+            <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#374151' }}>Backpressure Status</Typography>
+          </Box>
+          <Grid container spacing={2}>
+            <Grid size={{ xs: 6, md: 3 }}>
+              <Box sx={{ textAlign: 'center' }}>
+                <Chip
+                  size="small"
+                  label={backpressure?.active ? 'Active' : 'Inactive'}
+                  color={backpressure?.active ? 'error' : 'success'}
+                  variant="outlined"
+                  icon={backpressure?.active ? <AlertTriangle className="w-3 h-3" /> : <CheckCircle className="w-3 h-3" />}
+                  sx={{ fontSize: '0.75rem' }}
+                />
+                <Typography sx={{ fontSize: '10px', color: '#6b7280', mt: 0.5 }}>Status</Typography>
+              </Box>
+            </Grid>
+            <Grid size={{ xs: 6, md: 3 }}>
+              <Box sx={{ textAlign: 'center' }}>
+                <Typography sx={{ fontSize: '1.125rem', fontFamily: 'monospace', fontWeight: 700, color: '#111827' }}>{backpressure?.queue_usage || '0.00%'}</Typography>
+                <Typography sx={{ fontSize: '10px', color: '#6b7280' }}>Queue Usage</Typography>
+              </Box>
+            </Grid>
+            <Grid size={{ xs: 6, md: 3 }}>
+              <Box sx={{ textAlign: 'center' }}>
+                <Typography sx={{ fontSize: '1.125rem', fontFamily: 'monospace', fontWeight: 700, color: '#111827' }}>{backpressure?.worker_utilization || '0.00%'}</Typography>
+                <Typography sx={{ fontSize: '10px', color: '#6b7280' }}>Worker Utilization</Typography>
+              </Box>
+            </Grid>
+            <Grid size={{ xs: 6, md: 3 }}>
+              <Box sx={{ textAlign: 'center' }}>
+                <Typography sx={{ fontSize: '1.125rem', fontFamily: 'monospace', fontWeight: 700, color: '#ef4444' }}>{backpressure?.requests_rejected || 0}</Typography>
+                <Typography sx={{ fontSize: '10px', color: '#6b7280' }}>Rejected</Typography>
+              </Box>
+            </Grid>
+          </Grid>
+        </Paper>
 
         {/* Model Performance */}
         {metricsSnapshot?.models && metricsSnapshot.models.length > 0 && (
-          <div className="bg-gray-800 rounded-xl border border-gray-700 p-6">
-            <h2 className="text-sm font-semibold text-gray-300 mb-4 flex items-center gap-2">
-              <Zap className="w-4 h-4 text-yellow-400" />
-              Model Performance
-            </h2>
-            <div className="overflow-x-auto">
-              <table className="w-full text-xs">
-                <thead>
-                  <tr className="border-b border-gray-700">
-                    <th className="text-left py-2 px-3 text-gray-400 font-medium">Model</th>
-                    <th className="text-right py-2 px-3 text-gray-400 font-medium">Requests</th>
-                    <th className="text-right py-2 px-3 text-gray-400 font-medium">Success Rate</th>
-                    <th className="text-right py-2 px-3 text-gray-400 font-medium">Avg Latency</th>
-                    <th className="text-right py-2 px-3 text-gray-400 font-medium">Total Cost</th>
-                  </tr>
-                </thead>
-                <tbody>
+          <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+              <Zap className="w-4 h-4" style={{ color: '#f59e0b' }} />
+              <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#374151' }}>Model Performance</Typography>
+            </Box>
+            <Box sx={{ overflowX: 'auto' }}>
+              <Table size="small">
+                <TableHead>
+                  <TableRow sx={{ '& th': { borderBottom: '1px solid #e5e7eb', color: '#6b7280', fontSize: '0.75rem', fontWeight: 500, py: 1 } }}>
+                    <TableCell>Model</TableCell>
+                    <TableCell align="right">Requests</TableCell>
+                    <TableCell align="right">Success Rate</TableCell>
+                    <TableCell align="right">Avg Latency</TableCell>
+                    <TableCell align="right">Total Cost</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
                   {metricsSnapshot.models.map((m: any, i: number) => (
-                    <tr key={i} className="border-b border-gray-700/50 hover:bg-gray-700/20">
-                      <td className="py-2 px-3 text-gray-200 font-mono">{m.model_name}</td>
-                      <td className="py-2 px-3 text-right text-gray-300">{m.request_count}</td>
-                      <td className="py-2 px-3 text-right">
-                        <span className={parseFloat(m.success_rate) > 95 ? 'text-green-400' : 'text-yellow-400'}>
-                          {m.success_rate}
-                        </span>
-                      </td>
-                      <td className="py-2 px-3 text-right text-gray-300">{m.avg_latency_ms}ms</td>
-                      <td className="py-2 px-3 text-right text-gray-300">{m.total_cost}</td>
-                    </tr>
+                    <TableRow
+                      key={i}
+                      sx={{
+                        '& td': { borderBottom: '1px solid #f3f4f6', fontSize: '0.75rem', py: 1 },
+                        '&:hover': { backgroundColor: '#f9fafb' },
+                      }}
+                    >
+                      <TableCell sx={{ fontFamily: 'monospace', color: '#111827' }}>{m.model_name}</TableCell>
+                      <TableCell align="right" sx={{ color: '#374151' }}>{m.request_count}</TableCell>
+                      <TableCell align="right" sx={{ color: parseFloat(m.success_rate) > 95 ? '#10b981' : '#f59e0b' }}>
+                        {m.success_rate}
+                      </TableCell>
+                      <TableCell align="right" sx={{ color: '#374151' }}>{m.avg_latency_ms}ms</TableCell>
+                      <TableCell align="right" sx={{ color: '#374151' }}>{m.total_cost}</TableCell>
+                    </TableRow>
                   ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
+                </TableBody>
+              </Table>
+            </Box>
+          </Paper>
         )}
-      </main>
-    </div>
+      </Box>
+    </Box>
   );
 }
 
@@ -476,21 +566,37 @@ export default function MonitoringPage() {
 
 function WorkerDot({ worker }: { worker: any }) {
   const status = worker.status || 'idle';
-  const colorMap: Record<string, string> = {
-    idle: 'bg-green-500/80 border-green-400/30',
-    busy: 'bg-blue-500/80 border-blue-400/30',
-    unhealthy: 'bg-red-500/80 border-red-400/30 animate-pulse',
+  const colorMap: Record<string, { bg: string; border: string }> = {
+    idle: { bg: '#10b981', border: '#d1fae5' },
+    busy: { bg: '#3b82f6', border: '#dbeafe' },
+    unhealthy: { bg: '#ef4444', border: '#fecaca' },
   };
 
-  const bgColor = colorMap[status] || colorMap.idle;
+  const colors = colorMap[status] || colorMap.idle;
 
   return (
-    <div
-      className={`aspect-square rounded-lg border flex items-center justify-center cursor-default ${bgColor}`}
+    <Box
+      sx={{
+        aspectRatio: '1',
+        borderRadius: '8px',
+        border: '1px solid',
+        borderColor: colors.border,
+        backgroundColor: colors.bg,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        cursor: 'default',
+        opacity: 0.85,
+        ...(status === 'unhealthy' && {
+          animation: 'pulse 2s infinite',
+        }),
+      }}
       title={`Worker ${worker.id || '?'} - ${status} (Jobs: ${worker.jobs_processed || 0})`}
     >
-      <span className="text-[9px] font-mono text-white/70">{(worker.id || '').replace('worker-', '')}</span>
-    </div>
+      <Typography sx={{ fontSize: '9px', fontFamily: 'monospace', color: '#ffffff', opacity: 0.8 }}>
+        {(worker.id || '').replace('worker-', '')}
+      </Typography>
+    </Box>
   );
 }
 
@@ -499,51 +605,55 @@ function GaugeCircle({ value, label, color }: { value: number; label: string; co
   const offset = circumference - (Math.min(value, 100) / 100) * circumference;
 
   return (
-    <div className="flex flex-col items-center">
-      <svg width="100" height="100" className="transform -rotate-90">
-        <circle cx="50" cy="50" r="40" fill="none" stroke="#374151" strokeWidth="8" />
+    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
+      <svg width="100" height="100" style={{ transform: 'rotate(-90deg)' }}>
+        <circle cx="50" cy="50" r="40" fill="none" stroke="#e5e7eb" strokeWidth="8" />
         <circle
           cx="50" cy="50" r="40" fill="none"
           stroke={color} strokeWidth="8" strokeLinecap="round"
           strokeDasharray={circumference}
           strokeDashoffset={offset}
-          className="transition-all duration-1000"
+          style={{ transition: 'all 1s ease' }}
         />
       </svg>
-      <div className="absolute mt-8 text-center">
-        <p className="text-lg font-bold font-mono text-gray-200">{value.toFixed(1)}%</p>
-      </div>
-      <p className="text-[10px] text-gray-500 mt-1">{label}</p>
-    </div>
+      <Box sx={{ position: 'absolute', top: '32px', textAlign: 'center' }}>
+        <Typography sx={{ fontSize: '1.125rem', fontWeight: 700, fontFamily: 'monospace', color: '#111827' }}>{value.toFixed(1)}%</Typography>
+      </Box>
+      <Typography sx={{ fontSize: '10px', color: '#6b7280', mt: 0.5 }}>{label}</Typography>
+    </Box>
   );
 }
 
 function MetricBox({ label, value, color }: { label: string; value: number; color: string }) {
   const colorMap: Record<string, string> = {
-    green: 'text-green-400',
-    blue: 'text-blue-400',
-    yellow: 'text-yellow-400',
-    red: 'text-red-400',
+    green: '#10b981',
+    blue: '#3b82f6',
+    yellow: '#f59e0b',
+    red: '#ef4444',
   };
 
   return (
-    <div className="bg-gray-700/30 rounded-lg p-2 text-center">
-      <p className={`text-lg font-bold font-mono ${colorMap[color]}`}>{value}</p>
-      <p className="text-[10px] text-gray-500">{label}</p>
-    </div>
+    <Paper
+      elevation={0}
+      sx={{
+        backgroundColor: '#f9fafb',
+        border: '1px solid #e5e7eb',
+        borderRadius: '8px',
+        p: 1,
+        textAlign: 'center',
+      }}
+    >
+      <Typography sx={{ fontSize: '1.125rem', fontWeight: 700, fontFamily: 'monospace', color: colorMap[color] }}>{value}</Typography>
+      <Typography sx={{ fontSize: '10px', color: '#6b7280' }}>{label}</Typography>
+    </Paper>
   );
 }
 
 function PoolCard({ icon, title, data, color }: { icon: React.ReactNode; title: string; data: any; color: string }) {
   const colorMap: Record<string, string> = {
-    blue: 'text-blue-400',
-    purple: 'text-purple-400',
-    green: 'text-green-400',
-  };
-  const barColor: Record<string, string> = {
-    blue: 'bg-blue-500',
-    purple: 'bg-purple-500',
-    green: 'bg-green-500',
+    blue: '#3b82f6',
+    purple: '#8b5cf6',
+    green: '#10b981',
   };
 
   const active = data?.active_connections || data?.active || 0;
@@ -553,35 +663,46 @@ function PoolCard({ icon, title, data, color }: { icon: React.ReactNode; title: 
   const pct = total > 0 ? (used / total) * 100 : 0;
 
   return (
-    <div className="bg-gray-800 rounded-xl border border-gray-700 p-5">
-      <div className="flex items-center gap-2 mb-4">
-        <span className={colorMap[color]}>{icon}</span>
-        <h3 className="text-sm font-semibold text-gray-300">{title}</h3>
-      </div>
-      <div className="space-y-2">
-        <div className="flex justify-between text-xs">
-          <span className="text-gray-500">Active</span>
-          <span className="text-gray-300 font-mono">{active}</span>
-        </div>
-        <div className="flex justify-between text-xs">
-          <span className="text-gray-500">Idle</span>
-          <span className="text-gray-300 font-mono">{idle}</span>
-        </div>
-        <div className="flex justify-between text-xs">
-          <span className="text-gray-500">Max</span>
-          <span className="text-gray-300 font-mono">{total}</span>
-        </div>
-        <div className="pt-2">
-          <div className="flex justify-between text-xs mb-1">
-            <span className="text-gray-500">Usage</span>
-            <span className="text-gray-400">{pct.toFixed(0)}%</span>
-          </div>
-          <div className="w-full bg-gray-700 rounded-full h-1.5">
-            <div className={`h-1.5 rounded-full transition-all duration-500 ${barColor[color]}`} style={{ width: `${Math.min(pct, 100)}%` }} />
-          </div>
-        </div>
-      </div>
-    </div>
+    <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 2.5 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+        <Box sx={{ color: colorMap[color] }}>{icon}</Box>
+        <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#374151' }}>{title}</Typography>
+      </Box>
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>Active</Typography>
+          <Typography sx={{ fontSize: '0.75rem', color: '#374151', fontFamily: 'monospace' }}>{active}</Typography>
+        </Box>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>Idle</Typography>
+          <Typography sx={{ fontSize: '0.75rem', color: '#374151', fontFamily: 'monospace' }}>{idle}</Typography>
+        </Box>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>Max</Typography>
+          <Typography sx={{ fontSize: '0.75rem', color: '#374151', fontFamily: 'monospace' }}>{total}</Typography>
+        </Box>
+        <Box sx={{ pt: 1 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+            <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>Usage</Typography>
+            <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>{pct.toFixed(0)}%</Typography>
+          </Box>
+          <LinearProgress
+            variant="determinate"
+            value={Math.min(pct, 100)}
+            sx={{
+              height: 6,
+              borderRadius: 3,
+              backgroundColor: '#e5e7eb',
+              '& .MuiLinearProgress-bar': {
+                borderRadius: 3,
+                backgroundColor: colorMap[color],
+                transition: 'all 0.5s ease',
+              },
+            }}
+          />
+        </Box>
+      </Box>
+    </Paper>
   );
 }
 

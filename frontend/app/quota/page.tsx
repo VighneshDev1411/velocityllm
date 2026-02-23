@@ -2,6 +2,30 @@
 
 import React, { useState, useEffect } from 'react';
 import { quotaAPI } from '@/lib/api';
+import { PageHeader } from '@/components/PageHeader';
+import { StatCard } from '@/components/StatCard';
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import Switch from '@mui/material/Switch';
+import Slider from '@mui/material/Slider';
+import TextField from '@mui/material/TextField';
+import LinearProgress from '@mui/material/LinearProgress';
+import Alert from '@mui/material/Alert';
+import Grid from '@mui/material/Grid';
+import Chip from '@mui/material/Chip';
+import CircularProgress from '@mui/material/CircularProgress';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import BarChartIcon from '@mui/icons-material/BarChart';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import TrafficIcon from '@mui/icons-material/Traffic';
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 
 interface QuotaUsage {
   id: number;
@@ -101,11 +125,11 @@ export default function QuotaManagementPage() {
     return Math.min(100, (usage.current_usage / usage.quota_limit) * 100);
   };
 
-  const getProgressBarColor = (percentage: number) => {
-    if (percentage >= 100) return 'bg-red-600';
-    if (percentage >= 90) return 'bg-orange-600';
-    if (percentage >= 80) return 'bg-yellow-600';
-    return 'bg-green-600';
+  const getProgressBarColor = (percentage: number): 'error' | 'warning' | 'info' | 'success' => {
+    if (percentage >= 100) return 'error';
+    if (percentage >= 90) return 'warning';
+    if (percentage >= 80) return 'info';
+    return 'success';
   };
 
   const formatDate = (dateString: string) => {
@@ -114,282 +138,357 @@ export default function QuotaManagementPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="flex items-center justify-center h-96">
-          <div className="text-gray-600">Loading quota data...</div>
-        </div>
-      </div>
+      <Box sx={{ p: { xs: 2, sm: 3 } }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 400 }}>
+          <CircularProgress />
+        </Box>
+      </Box>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">Quota Management</h1>
+    <Box sx={{ p: { xs: 2, sm: 3 } }}>
+      <PageHeader title="Quota Management" subtitle="Monitor usage, configure alerts, and review rate limit events" />
 
-        {/* Current Quota Usage */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">📊 Current Usage</h2>
+      {/* Current Quota Usage */}
+      <Paper
+        elevation={0}
+        sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3, mb: 3 }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
+          <BarChartIcon sx={{ color: '#6b7280' }} />
+          <Typography variant="h6" sx={{ fontWeight: 600, color: '#111827' }}>
+            Current Usage
+          </Typography>
+        </Box>
 
-          {quotaUsage.length === 0 ? (
-            <p className="text-gray-500">No quota usage data available.</p>
-          ) : (
-            <div className="space-y-6">
-              {quotaUsage.map((usage) => {
-                const percentage = getUsagePercentage(usage);
-                const progressColor = getProgressBarColor(percentage);
+        {quotaUsage.length === 0 ? (
+          <Typography sx={{ color: '#6b7280' }}>No quota usage data available.</Typography>
+        ) : (
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+            {quotaUsage.map((usage) => {
+              const percentage = getUsagePercentage(usage);
+              const progressColor = getProgressBarColor(percentage);
 
-                return (
-                  <div key={usage.id} className="border-b border-gray-200 pb-6 last:border-0">
-                    <div className="flex justify-between items-center mb-2">
-                      <div>
-                        <h3 className="text-lg font-medium text-gray-900 capitalize">
-                          {usage.type} Quota ({usage.period})
-                        </h3>
-                        <p className="text-sm text-gray-500">
-                          Period: {new Date(usage.period_start).toLocaleDateString()} -{' '}
-                          {new Date(usage.period_end).toLocaleDateString()}
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-2xl font-bold text-gray-900">
-                          {usage.current_usage.toLocaleString()}
-                        </p>
-                        <p className="text-sm text-gray-500">
-                          of {usage.quota_limit.toLocaleString()}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="w-full bg-gray-200 rounded-full h-6 overflow-hidden">
-                      <div
-                        className={`h-full ${progressColor} transition-all duration-500 flex items-center justify-center text-white text-xs font-semibold`}
-                        style={{ width: `${percentage}%` }}
+              return (
+                <Box
+                  key={usage.id}
+                  sx={{
+                    borderBottom: '1px solid #e5e7eb',
+                    pb: 3,
+                    '&:last-child': { borderBottom: 'none', pb: 0 },
+                  }}
+                >
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
+                    <Box>
+                      <Typography
+                        variant="subtitle1"
+                        sx={{ fontWeight: 500, color: '#111827', textTransform: 'capitalize' }}
                       >
-                        {percentage.toFixed(1)}%
-                      </div>
-                    </div>
+                        {usage.type} Quota ({usage.period})
+                      </Typography>
+                      <Typography variant="body2" sx={{ color: '#6b7280' }}>
+                        Period: {new Date(usage.period_start).toLocaleDateString()} -{' '}
+                        {new Date(usage.period_end).toLocaleDateString()}
+                      </Typography>
+                    </Box>
+                    <Box sx={{ textAlign: 'right' }}>
+                      <Typography variant="h5" sx={{ fontWeight: 700, color: '#111827' }}>
+                        {usage.current_usage.toLocaleString()}
+                      </Typography>
+                      <Typography variant="body2" sx={{ color: '#6b7280' }}>
+                        of {usage.quota_limit.toLocaleString()}
+                      </Typography>
+                    </Box>
+                  </Box>
 
-                    {usage.is_over_limit && (
-                      <div className="mt-2 bg-red-50 border border-red-200 rounded-md p-3">
-                        <p className="text-red-700 text-sm">
-                          ⚠️ <strong>Quota Exceeded!</strong> You have exceeded your limit by{' '}
-                          {usage.overage_amount.toLocaleString()}.
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
+                  <Box sx={{ position: 'relative', height: 24 }}>
+                    <LinearProgress
+                      variant="determinate"
+                      value={percentage}
+                      color={progressColor}
+                      sx={{
+                        height: 24,
+                        borderRadius: '12px',
+                        backgroundColor: '#e5e7eb',
+                        '& .MuiLinearProgress-bar': {
+                          borderRadius: '12px',
+                          transition: 'transform 0.5s ease',
+                        },
+                      }}
+                    />
+                    <Typography
+                      sx={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        color: percentage > 40 ? '#fff' : '#374151',
+                      }}
+                    >
+                      {percentage.toFixed(1)}%
+                    </Typography>
+                  </Box>
 
-        {/* Alert Configuration */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">🔔 Alert Configuration</h2>
+                  {usage.is_over_limit && (
+                    <Alert severity="error" sx={{ mt: 1.5 }}>
+                      <strong>Quota Exceeded!</strong> You have exceeded your limit by{' '}
+                      {usage.overage_amount.toLocaleString()}.
+                    </Alert>
+                  )}
+                </Box>
+              );
+            })}
+          </Box>
+        )}
+      </Paper>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Email Alerts */}
-            <div className="border border-gray-200 rounded-lg p-4">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="font-medium text-gray-900">📧 Email Alerts</h3>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={alertConfig.email_enabled}
-                    onChange={(e) =>
-                      setAlertConfig({ ...alertConfig, email_enabled: e.target.checked })
-                    }
-                    className="sr-only peer"
-                  />
-                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                </label>
-              </div>
-              <p className="text-sm text-gray-500">
+      {/* Alert Configuration */}
+      <Paper
+        elevation={0}
+        sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3, mb: 3 }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
+          <NotificationsIcon sx={{ color: '#6b7280' }} />
+          <Typography variant="h6" sx={{ fontWeight: 600, color: '#111827' }}>
+            Alert Configuration
+          </Typography>
+        </Box>
+
+        <Grid container spacing={3}>
+          {/* Email Alerts */}
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Paper
+              elevation={0}
+              sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 2.5 }}
+            >
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+                <Typography sx={{ fontWeight: 500, color: '#111827' }}>Email Alerts</Typography>
+                <Switch
+                  checked={alertConfig.email_enabled}
+                  onChange={(e) =>
+                    setAlertConfig({ ...alertConfig, email_enabled: e.target.checked })
+                  }
+                  size="small"
+                />
+              </Box>
+              <Typography variant="body2" sx={{ color: '#6b7280' }}>
                 Receive email notifications when quota thresholds are reached.
-              </p>
-            </div>
+              </Typography>
+            </Paper>
+          </Grid>
 
-            {/* Webhook Alerts */}
-            <div className="border border-gray-200 rounded-lg p-4">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="font-medium text-gray-900">🔗 Webhook Alerts</h3>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={alertConfig.webhook_enabled}
-                    onChange={(e) =>
-                      setAlertConfig({ ...alertConfig, webhook_enabled: e.target.checked })
-                    }
-                    className="sr-only peer"
-                  />
-                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                </label>
-              </div>
+          {/* Webhook Alerts */}
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Paper
+              elevation={0}
+              sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 2.5 }}
+            >
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+                <Typography sx={{ fontWeight: 500, color: '#111827' }}>Webhook Alerts</Typography>
+                <Switch
+                  checked={alertConfig.webhook_enabled}
+                  onChange={(e) =>
+                    setAlertConfig({ ...alertConfig, webhook_enabled: e.target.checked })
+                  }
+                  size="small"
+                />
+              </Box>
               {alertConfig.webhook_enabled && (
-                <input
+                <TextField
+                  fullWidth
+                  size="small"
                   type="url"
                   placeholder="https://example.com/webhook"
                   value={alertConfig.webhook_url}
                   onChange={(e) => setAlertConfig({ ...alertConfig, webhook_url: e.target.value })}
-                  className="mt-2 w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                  sx={{ mt: 1.5 }}
                 />
               )}
-            </div>
+            </Paper>
+          </Grid>
 
-            {/* Slack Alerts */}
-            <div className="border border-gray-200 rounded-lg p-4">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="font-medium text-gray-900">💬 Slack Alerts</h3>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={alertConfig.slack_enabled}
-                    onChange={(e) =>
-                      setAlertConfig({ ...alertConfig, slack_enabled: e.target.checked })
-                    }
-                    className="sr-only peer"
-                  />
-                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                </label>
-              </div>
+          {/* Slack Alerts */}
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Paper
+              elevation={0}
+              sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 2.5 }}
+            >
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+                <Typography sx={{ fontWeight: 500, color: '#111827' }}>Slack Alerts</Typography>
+                <Switch
+                  checked={alertConfig.slack_enabled}
+                  onChange={(e) =>
+                    setAlertConfig({ ...alertConfig, slack_enabled: e.target.checked })
+                  }
+                  size="small"
+                />
+              </Box>
               {alertConfig.slack_enabled && (
-                <input
+                <TextField
+                  fullWidth
+                  size="small"
                   type="url"
                   placeholder="https://hooks.slack.com/services/..."
                   value={alertConfig.slack_webhook_url}
                   onChange={(e) =>
                     setAlertConfig({ ...alertConfig, slack_webhook_url: e.target.value })
                   }
-                  className="mt-2 w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                  sx={{ mt: 1.5 }}
                 />
               )}
-            </div>
+            </Paper>
+          </Grid>
 
-            {/* Threshold Settings */}
-            <div className="border border-gray-200 rounded-lg p-4">
-              <h3 className="font-medium text-gray-900 mb-3">⚙️ Alert Thresholds</h3>
-              <div className="space-y-3">
-                <div>
-                  <label className="block text-sm text-gray-600 mb-1">Warning ({alertConfig.threshold_warning}%)</label>
-                  <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    value={alertConfig.threshold_warning}
-                    onChange={(e) =>
-                      setAlertConfig({ ...alertConfig, threshold_warning: parseInt(e.target.value) })
-                    }
-                    className="w-full h-2 bg-yellow-200 rounded-lg appearance-none cursor-pointer"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm text-gray-600 mb-1">Critical ({alertConfig.threshold_critical}%)</label>
-                  <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    value={alertConfig.threshold_critical}
-                    onChange={(e) =>
-                      setAlertConfig({ ...alertConfig, threshold_critical: parseInt(e.target.value) })
-                    }
-                    className="w-full h-2 bg-orange-200 rounded-lg appearance-none cursor-pointer"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm text-gray-600 mb-1">Exceeded ({alertConfig.threshold_exceeded}%)</label>
-                  <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    value={alertConfig.threshold_exceeded}
-                    onChange={(e) =>
-                      setAlertConfig({ ...alertConfig, threshold_exceeded: parseInt(e.target.value) })
-                    }
-                    className="w-full h-2 bg-red-200 rounded-lg appearance-none cursor-pointer"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-6">
-            <button
-              onClick={handleSaveAlertConfig}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium"
+          {/* Threshold Settings */}
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Paper
+              elevation={0}
+              sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 2.5 }}
             >
-              Save Alert Configuration
-            </button>
-          </div>
-        </div>
+              <Typography sx={{ fontWeight: 500, color: '#111827', mb: 2 }}>
+                Alert Thresholds
+              </Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, px: 1 }}>
+                <Box>
+                  <Typography variant="body2" sx={{ color: '#6b7280', mb: 0.5 }}>
+                    Warning ({alertConfig.threshold_warning}%)
+                  </Typography>
+                  <Slider
+                    value={alertConfig.threshold_warning}
+                    onChange={(_, v) =>
+                      setAlertConfig({ ...alertConfig, threshold_warning: v as number })
+                    }
+                    min={0}
+                    max={100}
+                    size="small"
+                    sx={{ color: '#eab308' }}
+                  />
+                </Box>
+                <Box>
+                  <Typography variant="body2" sx={{ color: '#6b7280', mb: 0.5 }}>
+                    Critical ({alertConfig.threshold_critical}%)
+                  </Typography>
+                  <Slider
+                    value={alertConfig.threshold_critical}
+                    onChange={(_, v) =>
+                      setAlertConfig({ ...alertConfig, threshold_critical: v as number })
+                    }
+                    min={0}
+                    max={100}
+                    size="small"
+                    sx={{ color: '#f97316' }}
+                  />
+                </Box>
+                <Box>
+                  <Typography variant="body2" sx={{ color: '#6b7280', mb: 0.5 }}>
+                    Exceeded ({alertConfig.threshold_exceeded}%)
+                  </Typography>
+                  <Slider
+                    value={alertConfig.threshold_exceeded}
+                    onChange={(_, v) =>
+                      setAlertConfig({ ...alertConfig, threshold_exceeded: v as number })
+                    }
+                    min={0}
+                    max={100}
+                    size="small"
+                    sx={{ color: '#ef4444' }}
+                  />
+                </Box>
+              </Box>
+            </Paper>
+          </Grid>
+        </Grid>
 
-        {/* Rate Limit Events */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">🚦 Recent Rate Limit Events</h2>
+        <Box sx={{ mt: 3 }}>
+          <Button
+            variant="contained"
+            onClick={handleSaveAlertConfig}
+            sx={{ textTransform: 'none', borderRadius: '8px', px: 3 }}
+          >
+            Save Alert Configuration
+          </Button>
+        </Box>
+      </Paper>
 
-          {rateLimitEvents.length === 0 ? (
-            <p className="text-gray-500">No rate limit events recorded.</p>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Time
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Type
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Path
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Usage
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Message
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {rateLimitEvents.map((event) => (
-                    <tr key={event.id}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {formatDate(event.created_at)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 capitalize">
-                        {event.quota_type}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {event.request_path || 'N/A'}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {event.current_usage} / {event.quota_limit}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span
-                          className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                            event.blocked
-                              ? 'bg-red-100 text-red-800'
-                              : 'bg-green-100 text-green-800'
-                          }`}
-                        >
-                          {event.blocked ? '🚫 Blocked' : '✅ Allowed'}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-500">{event.message}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
+      {/* Rate Limit Events */}
+      <Paper
+        elevation={0}
+        sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3 }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
+          <TrafficIcon sx={{ color: '#6b7280' }} />
+          <Typography variant="h6" sx={{ fontWeight: 600, color: '#111827' }}>
+            Recent Rate Limit Events
+          </Typography>
+        </Box>
+
+        {rateLimitEvents.length === 0 ? (
+          <Typography sx={{ color: '#6b7280' }}>No rate limit events recorded.</Typography>
+        ) : (
+          <TableContainer>
+            <Table size="small">
+              <TableHead>
+                <TableRow>
+                  <TableCell sx={{ fontWeight: 600, color: '#6b7280', fontSize: '0.75rem', textTransform: 'uppercase' }}>
+                    Time
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: 600, color: '#6b7280', fontSize: '0.75rem', textTransform: 'uppercase' }}>
+                    Type
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: 600, color: '#6b7280', fontSize: '0.75rem', textTransform: 'uppercase' }}>
+                    Path
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: 600, color: '#6b7280', fontSize: '0.75rem', textTransform: 'uppercase' }}>
+                    Usage
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: 600, color: '#6b7280', fontSize: '0.75rem', textTransform: 'uppercase' }}>
+                    Status
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: 600, color: '#6b7280', fontSize: '0.75rem', textTransform: 'uppercase' }}>
+                    Message
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {rateLimitEvents.map((event) => (
+                  <TableRow key={event.id} hover>
+                    <TableCell sx={{ whiteSpace: 'nowrap', fontSize: '0.875rem' }}>
+                      {formatDate(event.created_at)}
+                    </TableCell>
+                    <TableCell sx={{ textTransform: 'capitalize', fontSize: '0.875rem' }}>
+                      {event.quota_type}
+                    </TableCell>
+                    <TableCell sx={{ color: '#6b7280', fontSize: '0.875rem' }}>
+                      {event.request_path || 'N/A'}
+                    </TableCell>
+                    <TableCell sx={{ fontSize: '0.875rem' }}>
+                      {event.current_usage} / {event.quota_limit}
+                    </TableCell>
+                    <TableCell>
+                      <Chip
+                        label={event.blocked ? 'Blocked' : 'Allowed'}
+                        size="small"
+                        sx={{
+                          fontWeight: 600,
+                          fontSize: '0.75rem',
+                          backgroundColor: event.blocked ? '#fef2f2' : '#ecfdf5',
+                          color: event.blocked ? '#991b1b' : '#065f46',
+                        }}
+                      />
+                    </TableCell>
+                    <TableCell sx={{ color: '#6b7280', fontSize: '0.875rem' }}>
+                      {event.message}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
+      </Paper>
+    </Box>
   );
 }

@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"net/url"
 	"os"
 	"strconv"
 	"time"
@@ -55,7 +56,7 @@ func Load() (*Config, error) {
 	config := &Config{
 		Server: ServerConfig{
 			Host:         getEnv("SERVER_HOST", "0.0.0.0"),
-			Port:         getEnvAsInt("SERVER_PORT", 8080),
+			Port:         getEnvAsInt("SERVER_PORT", getEnvAsInt("PORT", 8080)),
 			ReadTimeout:  time.Duration(getEnvAsInt("SERVER_READ_TIMEOUT", 15)) * time.Second,
 			WriteTimeout: time.Duration(getEnvAsInt("SERVER_WRITE_TIMEOUT", 15)) * time.Second,
 			IdleTimeout:  time.Duration(getEnvAsInt("SERVER_IDLE_TIMEOUT", 60)) * time.Second,
@@ -82,11 +83,28 @@ func Load() (*Config, error) {
 		},
 	}
 
+	// Railway provides REDIS_URL - parse it to override individual Redis fields
+	if redisURL := os.Getenv("REDIS_URL"); redisURL != "" {
+		if parsed, err := url.Parse(redisURL); err == nil {
+			config.Redis.Host = parsed.Hostname()
+			if p, err := strconv.Atoi(parsed.Port()); err == nil {
+				config.Redis.Port = p
+			}
+			if parsed.User != nil {
+				config.Redis.Password, _ = parsed.User.Password()
+			}
+		}
+	}
+
 	return config, nil
 }
 
 // GetDatabaseDSN returns the PostgreSQL connection string
 func (c *Config) GetDatabaseDSN() string {
+	// Railway provides DATABASE_URL - use it directly if available
+	if dbURL := os.Getenv("DATABASE_URL"); dbURL != "" {
+		return dbURL
+	}
 	if c.Database.Password == "" {
 		// Don't include password parameter if it's empty
 		return fmt.Sprintf(

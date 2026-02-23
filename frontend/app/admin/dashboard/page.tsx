@@ -2,6 +2,25 @@
 
 import React, { useState, useEffect } from 'react';
 import { adminDashboardAPI } from '@/lib/api';
+import { PageHeader } from '@/components/PageHeader';
+import { StatCard } from '@/components/StatCard';
+import {
+  Users, Key, Webhook, AlertTriangle, Timer, Activity,
+  Server, Cpu, Database,
+} from 'lucide-react';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Paper from '@mui/material/Paper';
+import Grid from '@mui/material/Grid';
+import Chip from '@mui/material/Chip';
+import Table from '@mui/material/Table';
+import TableHead from '@mui/material/TableHead';
+import TableBody from '@mui/material/TableBody';
+import TableRow from '@mui/material/TableRow';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import LinearProgress from '@mui/material/LinearProgress';
+import CircularProgress from '@mui/material/CircularProgress';
 
 interface SystemHealth {
   status: string;
@@ -47,7 +66,7 @@ export default function AdminDashboardPage() {
 
   useEffect(() => {
     fetchAll();
-    const interval = setInterval(fetchAll, 10000); // Refresh every 10s
+    const interval = setInterval(fetchAll, 10000);
     return () => clearInterval(interval);
   }, []);
 
@@ -70,188 +89,270 @@ export default function AdminDashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <p className="text-gray-500">Loading admin dashboard...</p>
-      </div>
+      <Box sx={{ p: { xs: 2, sm: 3 }, display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+        <Box sx={{ textAlign: 'center' }}>
+          <CircularProgress size={40} />
+          <Typography sx={{ mt: 2, color: '#6b7280' }}>Loading admin dashboard...</Typography>
+        </Box>
+      </Box>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">Admin Dashboard</h1>
+    <Box sx={{ p: { xs: 2, sm: 3 } }}>
+      <PageHeader title="Admin Dashboard" subtitle="System overview and health monitoring" />
 
-        {/* System Health */}
-        {health && (
-          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold text-gray-900">System Health</h2>
-              <span
-                className={`px-3 py-1 rounded-full text-sm font-medium ${
-                  health.status === 'healthy'
-                    ? 'bg-green-100 text-green-800'
-                    : 'bg-red-100 text-red-800'
-                }`}
-              >
-                {health.status.toUpperCase()}
-              </span>
-            </div>
+      {/* System Health */}
+      {health && (
+        <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3, mb: 3 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2.5 }}>
+            <Typography sx={{ fontSize: '1.1rem', fontWeight: 600, color: '#111827' }}>
+              System Health
+            </Typography>
+            <Chip
+              label={health.status.toUpperCase()}
+              size="small"
+              sx={{
+                backgroundColor: health.status === 'healthy' ? '#ecfdf5' : '#fef2f2',
+                color: health.status === 'healthy' ? '#15803d' : '#b91c1c',
+                fontWeight: 600,
+                fontSize: '0.75rem',
+              }}
+            />
+          </Box>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="bg-blue-50 rounded-lg p-4">
-                <p className="text-sm text-blue-600 font-medium">Uptime</p>
-                <p className="text-lg font-bold text-blue-900">{health.uptime_human}</p>
-              </div>
-              <div className="bg-green-50 rounded-lg p-4">
-                <p className="text-sm text-green-600 font-medium">Goroutines</p>
-                <p className="text-lg font-bold text-green-900">{health.goroutines}</p>
-              </div>
-              <div className="bg-purple-50 rounded-lg p-4">
-                <p className="text-sm text-purple-600 font-medium">Memory (Alloc)</p>
-                <p className="text-lg font-bold text-purple-900">{health.memory.alloc_mb.toFixed(1)} MB</p>
-              </div>
-              <div className="bg-orange-50 rounded-lg p-4">
-                <p className="text-sm text-orange-600 font-medium">GC Cycles</p>
-                <p className="text-lg font-bold text-orange-900">{health.memory.gc_cycles}</p>
-              </div>
-            </div>
+          <Grid container spacing={2} sx={{ mb: 2 }}>
+            <Grid size={{ xs: 6, md: 3 }}>
+              <Box sx={{ backgroundColor: '#eff6ff', borderRadius: '10px', p: 2 }}>
+                <Typography sx={{ fontSize: '0.8rem', fontWeight: 500, color: '#2563eb' }}>Uptime</Typography>
+                <Typography sx={{ fontSize: '1.1rem', fontWeight: 700, color: '#1e3a5f' }}>{health.uptime_human}</Typography>
+              </Box>
+            </Grid>
+            <Grid size={{ xs: 6, md: 3 }}>
+              <Box sx={{ backgroundColor: '#ecfdf5', borderRadius: '10px', p: 2 }}>
+                <Typography sx={{ fontSize: '0.8rem', fontWeight: 500, color: '#16a34a' }}>Goroutines</Typography>
+                <Typography sx={{ fontSize: '1.1rem', fontWeight: 700, color: '#14532d' }}>{health.goroutines}</Typography>
+              </Box>
+            </Grid>
+            <Grid size={{ xs: 6, md: 3 }}>
+              <Box sx={{ backgroundColor: '#f5f3ff', borderRadius: '10px', p: 2 }}>
+                <Typography sx={{ fontSize: '0.8rem', fontWeight: 500, color: '#7c3aed' }}>Memory (Alloc)</Typography>
+                <Typography sx={{ fontSize: '1.1rem', fontWeight: 700, color: '#3b0764' }}>{health.memory.alloc_mb.toFixed(1)} MB</Typography>
+              </Box>
+            </Grid>
+            <Grid size={{ xs: 6, md: 3 }}>
+              <Box sx={{ backgroundColor: '#fff7ed', borderRadius: '10px', p: 2 }}>
+                <Typography sx={{ fontSize: '0.8rem', fontWeight: 500, color: '#ea580c' }}>GC Cycles</Typography>
+                <Typography sx={{ fontSize: '1.1rem', fontWeight: 700, color: '#7c2d12' }}>{health.memory.gc_cycles}</Typography>
+              </Box>
+            </Grid>
+          </Grid>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-              <div className="bg-gray-50 rounded-lg p-4">
-                <p className="text-sm text-gray-600">Go Version</p>
-                <p className="font-semibold">{health.go_version}</p>
-              </div>
-              <div className="bg-gray-50 rounded-lg p-4">
-                <p className="text-sm text-gray-600">CPU Cores</p>
-                <p className="font-semibold">{health.cpu_cores}</p>
-              </div>
-              <div className="bg-gray-50 rounded-lg p-4">
-                <p className="text-sm text-gray-600">System Memory</p>
-                <p className="font-semibold">{health.memory.sys_mb.toFixed(1)} MB</p>
-              </div>
-              <div className="bg-gray-50 rounded-lg p-4">
-                <p className="text-sm text-gray-600">DB Connections</p>
-                <p className="font-semibold">
+          <Grid container spacing={2}>
+            <Grid size={{ xs: 6, md: 3 }}>
+              <Box sx={{ backgroundColor: '#f9fafb', borderRadius: '10px', p: 2 }}>
+                <Typography sx={{ fontSize: '0.8rem', color: '#6b7280' }}>Go Version</Typography>
+                <Typography sx={{ fontWeight: 600, fontSize: '0.9rem' }}>{health.go_version}</Typography>
+              </Box>
+            </Grid>
+            <Grid size={{ xs: 6, md: 3 }}>
+              <Box sx={{ backgroundColor: '#f9fafb', borderRadius: '10px', p: 2 }}>
+                <Typography sx={{ fontSize: '0.8rem', color: '#6b7280' }}>CPU Cores</Typography>
+                <Typography sx={{ fontWeight: 600, fontSize: '0.9rem' }}>{health.cpu_cores}</Typography>
+              </Box>
+            </Grid>
+            <Grid size={{ xs: 6, md: 3 }}>
+              <Box sx={{ backgroundColor: '#f9fafb', borderRadius: '10px', p: 2 }}>
+                <Typography sx={{ fontSize: '0.8rem', color: '#6b7280' }}>System Memory</Typography>
+                <Typography sx={{ fontWeight: 600, fontSize: '0.9rem' }}>{health.memory.sys_mb.toFixed(1)} MB</Typography>
+              </Box>
+            </Grid>
+            <Grid size={{ xs: 6, md: 3 }}>
+              <Box sx={{ backgroundColor: '#f9fafb', borderRadius: '10px', p: 2 }}>
+                <Typography sx={{ fontSize: '0.8rem', color: '#6b7280' }}>DB Connections</Typography>
+                <Typography sx={{ fontWeight: 600, fontSize: '0.9rem' }}>
                   {health.database?.in_use || 0}/{health.database?.max_open || 0}
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
+                </Typography>
+              </Box>
+            </Grid>
+          </Grid>
+        </Paper>
+      )}
 
-        {/* Overview Stats */}
+      {/* Overview Stats */}
+      {overview && (
+        <Grid container spacing={2} sx={{ mb: 3 }}>
+          <Grid size={{ xs: 6, md: 2 }}>
+            <StatCard
+              icon={<Users style={{ width: 20, height: 20 }} />}
+              label="Total Users"
+              value={overview.users.total}
+              color="blue"
+            />
+          </Grid>
+          <Grid size={{ xs: 6, md: 2 }}>
+            <StatCard
+              icon={<Activity style={{ width: 20, height: 20 }} />}
+              label="Active Users"
+              value={overview.users.active}
+              color="green"
+            />
+          </Grid>
+          <Grid size={{ xs: 6, md: 2 }}>
+            <StatCard
+              icon={<Key style={{ width: 20, height: 20 }} />}
+              label="Active API Keys"
+              value={overview.api_keys.active}
+              color="purple"
+            />
+          </Grid>
+          <Grid size={{ xs: 6, md: 2 }}>
+            <StatCard
+              icon={<Webhook style={{ width: 20, height: 20 }} />}
+              label="Active Webhooks"
+              value={overview.webhooks.active}
+              color="orange"
+            />
+          </Grid>
+          <Grid size={{ xs: 6, md: 2 }}>
+            <StatCard
+              icon={<AlertTriangle style={{ width: 20, height: 20 }} />}
+              label="Over Limit"
+              value={overview.quotas.over_limit_users}
+              color="red"
+            />
+          </Grid>
+          <Grid size={{ xs: 6, md: 2 }}>
+            <StatCard
+              icon={<Timer style={{ width: 20, height: 20 }} />}
+              label="Rate Limits (24h)"
+              value={overview.quotas.rate_limit_events_24h}
+              color="yellow"
+            />
+          </Grid>
+        </Grid>
+      )}
+
+      <Grid container spacing={3}>
+        {/* Subscription Tiers */}
         {overview && (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
-            <div className="bg-white rounded-lg shadow p-4 text-center">
-              <p className="text-3xl font-bold text-blue-600">{overview.users.total}</p>
-              <p className="text-sm text-gray-500">Total Users</p>
-            </div>
-            <div className="bg-white rounded-lg shadow p-4 text-center">
-              <p className="text-3xl font-bold text-green-600">{overview.users.active}</p>
-              <p className="text-sm text-gray-500">Active Users</p>
-            </div>
-            <div className="bg-white rounded-lg shadow p-4 text-center">
-              <p className="text-3xl font-bold text-purple-600">{overview.api_keys.active}</p>
-              <p className="text-sm text-gray-500">Active API Keys</p>
-            </div>
-            <div className="bg-white rounded-lg shadow p-4 text-center">
-              <p className="text-3xl font-bold text-orange-600">{overview.webhooks.active}</p>
-              <p className="text-sm text-gray-500">Active Webhooks</p>
-            </div>
-            <div className="bg-white rounded-lg shadow p-4 text-center">
-              <p className="text-3xl font-bold text-red-600">{overview.quotas.over_limit_users}</p>
-              <p className="text-sm text-gray-500">Over Limit</p>
-            </div>
-            <div className="bg-white rounded-lg shadow p-4 text-center">
-              <p className="text-3xl font-bold text-yellow-600">{overview.quotas.rate_limit_events_24h}</p>
-              <p className="text-sm text-gray-500">Rate Limits (24h)</p>
-            </div>
-          </div>
-        )}
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Subscription Tiers */}
-          {overview && (
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Subscription Distribution</h2>
+          <Grid size={{ xs: 12, lg: 6 }}>
+            <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3 }}>
+              <Typography sx={{ fontSize: '1rem', fontWeight: 600, color: '#111827', mb: 2.5 }}>
+                Subscription Distribution
+              </Typography>
               {(overview.users.tiers || []).length === 0 ? (
-                <p className="text-gray-500">No subscriptions yet.</p>
+                <Typography sx={{ color: '#6b7280' }}>No subscriptions yet.</Typography>
               ) : (
-                <div className="space-y-3">
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                   {overview.users.tiers.map((tier) => {
                     const total = overview.users.total || 1;
-                    const pct = ((tier.count / total) * 100).toFixed(1);
-                    const colors: Record<string, string> = {
-                      free: 'bg-gray-400',
-                      pro: 'bg-blue-500',
-                      enterprise: 'bg-purple-500',
+                    const pct = ((tier.count / total) * 100);
+                    const colorMap: Record<string, string> = {
+                      free: '#9ca3af',
+                      pro: '#3b82f6',
+                      enterprise: '#8b5cf6',
                     };
                     return (
-                      <div key={tier.tier}>
-                        <div className="flex justify-between text-sm mb-1">
-                          <span className="capitalize font-medium">{tier.tier}</span>
-                          <span className="text-gray-500">{tier.count} ({pct}%)</span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-3">
-                          <div
-                            className={`h-full rounded-full ${colors[tier.tier] || 'bg-gray-400'}`}
-                            style={{ width: `${pct}%` }}
-                          />
-                        </div>
-                      </div>
+                      <Box key={tier.tier}>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                          <Typography sx={{ fontSize: '0.875rem', fontWeight: 500, textTransform: 'capitalize' }}>
+                            {tier.tier}
+                          </Typography>
+                          <Typography sx={{ fontSize: '0.875rem', color: '#6b7280' }}>
+                            {tier.count} ({pct.toFixed(1)}%)
+                          </Typography>
+                        </Box>
+                        <LinearProgress
+                          variant="determinate"
+                          value={pct}
+                          sx={{
+                            height: 10,
+                            borderRadius: '5px',
+                            backgroundColor: '#e5e7eb',
+                            '& .MuiLinearProgress-bar': {
+                              borderRadius: '5px',
+                              backgroundColor: colorMap[tier.tier] || '#9ca3af',
+                            },
+                          }}
+                        />
+                      </Box>
                     );
                   })}
-                </div>
+                </Box>
               )}
-            </div>
-          )}
-
-          {/* Database Table Stats */}
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Database Tables</h2>
-            <div className="overflow-x-auto">
-              <table className="min-w-full">
-                <thead>
-                  <tr className="border-b border-gray-200">
-                    <th className="text-left py-2 text-sm font-medium text-gray-500">Table</th>
-                    <th className="text-right py-2 text-sm font-medium text-gray-500">Rows</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {dbStats.map((stat) => (
-                    <tr key={stat.table} className="border-b border-gray-100">
-                      <td className="py-2 text-sm font-mono text-gray-900">{stat.table}</td>
-                      <td className="py-2 text-sm text-right font-semibold text-gray-900">
-                        {stat.count.toLocaleString()}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        {/* Recent Activity */}
-        {overview && overview.recent_activity && overview.recent_activity.length > 0 && (
-          <div className="bg-white rounded-lg shadow-md p-6 mt-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h2>
-            <div className="space-y-3">
-              {overview.recent_activity.map((activity: any, index: number) => (
-                <div key={index} className="flex items-center gap-4 py-2 border-b border-gray-100 last:border-0">
-                  <div className="w-2 h-2 rounded-full bg-blue-500 flex-shrink-0" />
-                  <div className="flex-1">
-                    <p className="text-sm text-gray-900">{activity.action || activity.event_type}</p>
-                    <p className="text-xs text-gray-500">
-                      User #{activity.user_id} - {new Date(activity.created_at).toLocaleString()}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+            </Paper>
+          </Grid>
         )}
-      </div>
-    </div>
+
+        {/* Database Table Stats */}
+        <Grid size={{ xs: 12, lg: 6 }}>
+          <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3 }}>
+            <Typography sx={{ fontSize: '1rem', fontWeight: 600, color: '#111827', mb: 2.5 }}>
+              Database Tables
+            </Typography>
+            <TableContainer>
+              <Table size="small">
+                <TableHead>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: 500, fontSize: '0.8rem', color: '#6b7280', borderBottom: '1px solid #e5e7eb' }}>
+                      Table
+                    </TableCell>
+                    <TableCell align="right" sx={{ fontWeight: 500, fontSize: '0.8rem', color: '#6b7280', borderBottom: '1px solid #e5e7eb' }}>
+                      Rows
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {dbStats.map((stat) => (
+                    <TableRow key={stat.table}>
+                      <TableCell sx={{ fontSize: '0.85rem', fontFamily: 'monospace', color: '#111827', borderBottom: '1px solid #f3f4f6' }}>
+                        {stat.table}
+                      </TableCell>
+                      <TableCell align="right" sx={{ fontSize: '0.85rem', fontWeight: 600, color: '#111827', borderBottom: '1px solid #f3f4f6' }}>
+                        {stat.count.toLocaleString()}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Paper>
+        </Grid>
+      </Grid>
+
+      {/* Recent Activity */}
+      {overview && overview.recent_activity && overview.recent_activity.length > 0 && (
+        <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3, mt: 3 }}>
+          <Typography sx={{ fontSize: '1rem', fontWeight: 600, color: '#111827', mb: 2.5 }}>
+            Recent Activity
+          </Typography>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+            {overview.recent_activity.map((activity: any, index: number) => (
+              <Box
+                key={index}
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 2,
+                  py: 1,
+                  borderBottom: index < overview.recent_activity.length - 1 ? '1px solid #f3f4f6' : 'none',
+                }}
+              >
+                <Box sx={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#3b82f6', flexShrink: 0 }} />
+                <Box sx={{ flex: 1 }}>
+                  <Typography sx={{ fontSize: '0.85rem', color: '#111827' }}>
+                    {activity.action || activity.event_type}
+                  </Typography>
+                  <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>
+                    User #{activity.user_id} - {new Date(activity.created_at).toLocaleString()}
+                  </Typography>
+                </Box>
+              </Box>
+            ))}
+          </Box>
+        </Paper>
+      )}
+    </Box>
   );
 }

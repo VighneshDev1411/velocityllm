@@ -90,7 +90,7 @@ func main() {
 		AcquireTimeout:    5 * time.Second,
 	}
 
-	if err := optimization.InitGlobalRedisPool(redisPoolConfig, cfg.GetRedisAddr(), "", 0); err != nil {
+	if err := optimization.InitGlobalRedisPool(redisPoolConfig, cfg.GetRedisAddr(), cfg.Redis.Password, cfg.Redis.DB); err != nil {
 		utils.Fatal("Failed to initialize Redis pool", "error", err)
 	}
 	utils.Info("Redis connection pool initialized: %d-%d connections",

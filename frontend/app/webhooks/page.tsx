@@ -2,6 +2,36 @@
 
 import React, { useState, useEffect } from 'react';
 import { webhookAPI } from '@/lib/api';
+import { PageHeader } from '@/components/PageHeader';
+import { StatCard } from '@/components/StatCard';
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import Switch from '@mui/material/Switch';
+import Chip from '@mui/material/Chip';
+import Grid from '@mui/material/Grid';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Checkbox from '@mui/material/Checkbox';
+import IconButton from '@mui/material/IconButton';
+import CircularProgress from '@mui/material/CircularProgress';
+import Divider from '@mui/material/Divider';
+import LinkIcon from '@mui/icons-material/Link';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import SendIcon from '@mui/icons-material/Send';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import CloseIcon from '@mui/icons-material/Close';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 interface WebhookEndpoint {
   id: number;
@@ -121,268 +151,368 @@ export default function WebhooksPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <p className="text-gray-500">Loading webhooks...</p>
-      </div>
+      <Box sx={{ p: { xs: 2, sm: 3 } }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 400 }}>
+          <CircularProgress />
+        </Box>
+      </Box>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">🔗 Webhooks & Events</h1>
-          <button
+    <Box sx={{ p: { xs: 2, sm: 3 } }}>
+      <PageHeader
+        title="Webhooks & Events"
+        subtitle="Configure webhook endpoints and monitor event deliveries"
+        action={
+          <Button
+            variant="contained"
             onClick={() => setShowCreate(true)}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium"
+            sx={{ textTransform: 'none', borderRadius: '8px' }}
           >
             + Create Webhook
-          </button>
-        </div>
+          </Button>
+        }
+      />
 
-        {/* Stats Cards */}
-        {stats && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            <div className="bg-white rounded-lg shadow p-4">
-              <p className="text-sm text-gray-500">Endpoints</p>
-              <p className="text-2xl font-bold">{stats.total_endpoints || 0}</p>
-            </div>
-            <div className="bg-white rounded-lg shadow p-4">
-              <p className="text-sm text-gray-500">Active</p>
-              <p className="text-2xl font-bold text-green-600">{stats.active_endpoints || 0}</p>
-            </div>
-            <div className="bg-white rounded-lg shadow p-4">
-              <p className="text-sm text-gray-500">Deliveries</p>
-              <p className="text-2xl font-bold">{stats.total_deliveries || 0}</p>
-            </div>
-            <div className="bg-white rounded-lg shadow p-4">
-              <p className="text-sm text-gray-500">Failed</p>
-              <p className="text-2xl font-bold text-red-600">{stats.failed_deliveries || 0}</p>
-            </div>
-          </div>
-        )}
+      {/* Stats Cards */}
+      {stats && (
+        <Grid container spacing={2} sx={{ mb: 3 }}>
+          <Grid size={{ xs: 6, md: 3 }}>
+            <StatCard
+              icon={<LinkIcon fontSize="small" />}
+              label="Endpoints"
+              value={stats.total_endpoints || 0}
+              color="blue"
+            />
+          </Grid>
+          <Grid size={{ xs: 6, md: 3 }}>
+            <StatCard
+              icon={<CheckCircleOutlineIcon fontSize="small" />}
+              label="Active"
+              value={stats.active_endpoints || 0}
+              color="green"
+            />
+          </Grid>
+          <Grid size={{ xs: 6, md: 3 }}>
+            <StatCard
+              icon={<SendIcon fontSize="small" />}
+              label="Deliveries"
+              value={stats.total_deliveries || 0}
+              color="purple"
+            />
+          </Grid>
+          <Grid size={{ xs: 6, md: 3 }}>
+            <StatCard
+              icon={<ErrorOutlineIcon fontSize="small" />}
+              label="Failed"
+              value={stats.failed_deliveries || 0}
+              color="red"
+            />
+          </Grid>
+        </Grid>
+      )}
 
-        {/* Endpoints List */}
-        <div className="bg-white rounded-lg shadow-md mb-6">
-          <div className="p-6 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900">Webhook Endpoints</h2>
-          </div>
+      {/* Endpoints List */}
+      <Paper
+        elevation={0}
+        sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', mb: 3 }}
+      >
+        <Box sx={{ p: 3, borderBottom: '1px solid #e5e7eb' }}>
+          <Typography variant="h6" sx={{ fontWeight: 600, color: '#111827' }}>
+            Webhook Endpoints
+          </Typography>
+        </Box>
 
-          {endpoints.length === 0 ? (
-            <div className="p-12 text-center text-gray-500">
+        {endpoints.length === 0 ? (
+          <Box sx={{ p: 6, textAlign: 'center' }}>
+            <Typography sx={{ color: '#6b7280' }}>
               No webhook endpoints configured. Create one to start receiving events!
-            </div>
-          ) : (
-            <div className="divide-y divide-gray-200">
-              {endpoints.map((ep) => (
-                <div key={ep.id} className="p-6 flex items-center justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3">
-                      <h3 className="font-semibold text-gray-900">{ep.name}</h3>
-                      <span
-                        className={`px-2 py-0.5 text-xs rounded-full font-medium ${
-                          ep.active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'
-                        }`}
-                      >
-                        {ep.active ? 'Active' : 'Inactive'}
-                      </span>
-                    </div>
-                    <p className="text-sm text-gray-500 mt-1 font-mono">{ep.url}</p>
-                    <div className="flex gap-2 mt-2">
+            </Typography>
+          </Box>
+        ) : (
+          <Box>
+            {endpoints.map((ep, idx) => (
+              <Box key={ep.id}>
+                <Box
+                  sx={{
+                    p: 3,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                  }}
+                >
+                  <Box sx={{ flex: 1 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                      <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#111827' }}>
+                        {ep.name}
+                      </Typography>
+                      <Chip
+                        label={ep.active ? 'Active' : 'Inactive'}
+                        size="small"
+                        sx={{
+                          fontWeight: 600,
+                          fontSize: '0.7rem',
+                          backgroundColor: ep.active ? '#dcfce7' : '#f3f4f6',
+                          color: ep.active ? '#166534' : '#6b7280',
+                        }}
+                      />
+                    </Box>
+                    <Typography
+                      variant="body2"
+                      sx={{ color: '#6b7280', mt: 0.5, fontFamily: 'monospace', fontSize: '0.8rem' }}
+                    >
+                      {ep.url}
+                    </Typography>
+                    <Box sx={{ display: 'flex', gap: 0.75, mt: 1, flexWrap: 'wrap' }}>
                       {ep.events.split(',').map((evt) => (
-                        <span
+                        <Chip
                           key={evt}
-                          className="px-2 py-0.5 bg-blue-50 text-blue-700 text-xs rounded-md"
-                        >
-                          {evt.trim()}
-                        </span>
+                          label={evt.trim()}
+                          size="small"
+                          sx={{
+                            fontSize: '0.7rem',
+                            height: 22,
+                            backgroundColor: '#eff6ff',
+                            color: '#1d4ed8',
+                          }}
+                        />
                       ))}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <button
+                    </Box>
+                  </Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Button
+                      size="small"
                       onClick={() => viewDeliveries(ep.id)}
-                      className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                      sx={{ textTransform: 'none', fontWeight: 500 }}
                     >
                       Deliveries
-                    </button>
-                    <button
+                    </Button>
+                    <Button
+                      size="small"
+                      color="inherit"
                       onClick={() => handleToggle(ep.id, ep.active)}
-                      className="text-gray-600 hover:text-gray-800 text-sm font-medium"
+                      sx={{ textTransform: 'none', fontWeight: 500, color: '#6b7280' }}
                     >
                       {ep.active ? 'Disable' : 'Enable'}
-                    </button>
-                    <button
+                    </Button>
+                    <Button
+                      size="small"
+                      color="error"
                       onClick={() => handleDelete(ep.id)}
-                      className="text-red-600 hover:text-red-800 text-sm font-medium"
+                      sx={{ textTransform: 'none', fontWeight: 500 }}
                     >
                       Delete
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Deliveries Panel */}
-        {selectedEndpoint && (
-          <div className="bg-white rounded-lg shadow-md mb-6">
-            <div className="p-6 border-b border-gray-200 flex justify-between items-center">
-              <h2 className="text-lg font-semibold text-gray-900">
-                Recent Deliveries (Endpoint #{selectedEndpoint})
-              </h2>
-              <button
-                onClick={() => setSelectedEndpoint(null)}
-                className="text-gray-500 hover:text-gray-700"
-              >
-                Close
-              </button>
-            </div>
-
-            {deliveries.length === 0 ? (
-              <div className="p-8 text-center text-gray-500">No deliveries yet.</div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Time</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Event</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Latency</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Attempt</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Error</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-200">
-                    {deliveries.map((d) => (
-                      <tr key={d.id}>
-                        <td className="px-6 py-4 text-sm text-gray-900">
-                          {new Date(d.delivered_at).toLocaleString()}
-                        </td>
-                        <td className="px-6 py-4 text-sm text-gray-900">{d.event_type}</td>
-                        <td className="px-6 py-4">
-                          <span
-                            className={`px-2 py-1 text-xs rounded-full font-medium ${
-                              d.success ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                            }`}
-                          >
-                            {d.success ? `${d.status_code} OK` : `${d.status_code || 'ERR'} Failed`}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 text-sm text-gray-600">{d.latency_ms}ms</td>
-                        <td className="px-6 py-4 text-sm text-gray-600">{d.attempt}/3</td>
-                        <td className="px-6 py-4 text-sm text-red-600 truncate max-w-[200px]">
-                          {d.error || '-'}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
+                    </Button>
+                  </Box>
+                </Box>
+                {idx < endpoints.length - 1 && <Divider />}
+              </Box>
+            ))}
+          </Box>
         )}
+      </Paper>
 
-        {/* Create Modal */}
-        {showCreate && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Create Webhook Endpoint</h2>
+      {/* Deliveries Panel */}
+      {selectedEndpoint && (
+        <Paper
+          elevation={0}
+          sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', mb: 3 }}
+        >
+          <Box
+            sx={{
+              p: 3,
+              borderBottom: '1px solid #e5e7eb',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
+            <Typography variant="h6" sx={{ fontWeight: 600, color: '#111827' }}>
+              Recent Deliveries (Endpoint #{selectedEndpoint})
+            </Typography>
+            <IconButton onClick={() => setSelectedEndpoint(null)} size="small">
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          </Box>
 
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
-                  <input
-                    type="text"
-                    value={form.name}
-                    onChange={(e) => setForm({ ...form, name: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                    placeholder="My Webhook"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">URL</label>
-                  <input
-                    type="url"
-                    value={form.url}
-                    onChange={(e) => setForm({ ...form, url: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md font-mono text-sm"
-                    placeholder="https://example.com/webhook"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Secret (optional, for HMAC-SHA256 signing)
-                  </label>
-                  <input
-                    type="text"
-                    value={form.secret}
-                    onChange={(e) => setForm({ ...form, secret: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md font-mono text-sm"
-                    placeholder="whsec_..."
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Events ({form.events.length} selected)
-                  </label>
-                  <div className="grid grid-cols-2 gap-2 max-h-60 overflow-y-auto border rounded-md p-3">
-                    {availableEvents.map((evt) => (
-                      <label
-                        key={evt.type}
-                        className="flex items-start gap-2 p-2 rounded hover:bg-gray-50 cursor-pointer"
+          {deliveries.length === 0 ? (
+            <Box sx={{ p: 4, textAlign: 'center' }}>
+              <Typography sx={{ color: '#6b7280' }}>No deliveries yet.</Typography>
+            </Box>
+          ) : (
+            <TableContainer>
+              <Table size="small">
+                <TableHead>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: 600, color: '#6b7280', fontSize: '0.75rem', textTransform: 'uppercase' }}>Time</TableCell>
+                    <TableCell sx={{ fontWeight: 600, color: '#6b7280', fontSize: '0.75rem', textTransform: 'uppercase' }}>Event</TableCell>
+                    <TableCell sx={{ fontWeight: 600, color: '#6b7280', fontSize: '0.75rem', textTransform: 'uppercase' }}>Status</TableCell>
+                    <TableCell sx={{ fontWeight: 600, color: '#6b7280', fontSize: '0.75rem', textTransform: 'uppercase' }}>Latency</TableCell>
+                    <TableCell sx={{ fontWeight: 600, color: '#6b7280', fontSize: '0.75rem', textTransform: 'uppercase' }}>Attempt</TableCell>
+                    <TableCell sx={{ fontWeight: 600, color: '#6b7280', fontSize: '0.75rem', textTransform: 'uppercase' }}>Error</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {deliveries.map((d) => (
+                    <TableRow key={d.id} hover>
+                      <TableCell sx={{ fontSize: '0.875rem' }}>
+                        {new Date(d.delivered_at).toLocaleString()}
+                      </TableCell>
+                      <TableCell sx={{ fontSize: '0.875rem' }}>{d.event_type}</TableCell>
+                      <TableCell>
+                        <Chip
+                          label={d.success ? `${d.status_code} OK` : `${d.status_code || 'ERR'} Failed`}
+                          size="small"
+                          sx={{
+                            fontWeight: 600,
+                            fontSize: '0.7rem',
+                            backgroundColor: d.success ? '#dcfce7' : '#fef2f2',
+                            color: d.success ? '#166534' : '#991b1b',
+                          }}
+                        />
+                      </TableCell>
+                      <TableCell sx={{ color: '#6b7280', fontSize: '0.875rem' }}>{d.latency_ms}ms</TableCell>
+                      <TableCell sx={{ color: '#6b7280', fontSize: '0.875rem' }}>{d.attempt}/3</TableCell>
+                      <TableCell
+                        sx={{
+                          color: '#dc2626',
+                          fontSize: '0.875rem',
+                          maxWidth: 200,
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                        }}
                       >
-                        <input
-                          type="checkbox"
+                        {d.error || '-'}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
+        </Paper>
+      )}
+
+      {/* Create Modal */}
+      <Dialog
+        open={showCreate}
+        onClose={() => setShowCreate(false)}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle sx={{ fontWeight: 600 }}>Create Webhook Endpoint</DialogTitle>
+        <DialogContent dividers>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, pt: 1 }}>
+            <TextField
+              fullWidth
+              label="Name"
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              placeholder="My Webhook"
+              size="small"
+            />
+
+            <TextField
+              fullWidth
+              label="URL"
+              type="url"
+              value={form.url}
+              onChange={(e) => setForm({ ...form, url: e.target.value })}
+              placeholder="https://example.com/webhook"
+              size="small"
+              InputProps={{ sx: { fontFamily: 'monospace', fontSize: '0.875rem' } }}
+            />
+
+            <TextField
+              fullWidth
+              label="Secret (optional, for HMAC-SHA256 signing)"
+              value={form.secret}
+              onChange={(e) => setForm({ ...form, secret: e.target.value })}
+              placeholder="whsec_..."
+              size="small"
+              InputProps={{ sx: { fontFamily: 'monospace', fontSize: '0.875rem' } }}
+            />
+
+            <Box>
+              <Typography variant="body2" sx={{ fontWeight: 500, color: '#374151', mb: 1 }}>
+                Events ({form.events.length} selected)
+              </Typography>
+              <Paper
+                variant="outlined"
+                sx={{
+                  maxHeight: 240,
+                  overflow: 'auto',
+                  borderRadius: '8px',
+                }}
+              >
+                <Grid container>
+                  {availableEvents.map((evt) => (
+                    <Grid size={{ xs: 6 }} key={evt.type}>
+                      <Box
+                        onClick={() => toggleEvent(evt.type)}
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'flex-start',
+                          gap: 1,
+                          p: 1.5,
+                          cursor: 'pointer',
+                          borderRadius: '4px',
+                          '&:hover': { backgroundColor: '#f9fafb' },
+                        }}
+                      >
+                        <Checkbox
                           checked={form.events.includes(evt.type)}
                           onChange={() => toggleEvent(evt.type)}
-                          className="mt-0.5"
+                          size="small"
+                          sx={{ mt: -0.5 }}
                         />
-                        <div>
-                          <p className="text-sm font-medium text-gray-900">{evt.type}</p>
-                          <p className="text-xs text-gray-500">{evt.description}</p>
-                        </div>
-                      </label>
-                    ))}
-                  </div>
-                </div>
+                        <Box>
+                          <Typography variant="body2" sx={{ fontWeight: 500, color: '#111827' }}>
+                            {evt.type}
+                          </Typography>
+                          <Typography variant="caption" sx={{ color: '#6b7280' }}>
+                            {evt.description}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </Grid>
+                  ))}
+                </Grid>
+              </Paper>
+            </Box>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                  <textarea
-                    value={form.description}
-                    onChange={(e) => setForm({ ...form, description: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                    rows={2}
-                    placeholder="What this webhook is for..."
-                  />
-                </div>
-              </div>
-
-              <div className="flex justify-end gap-3 mt-6">
-                <button
-                  onClick={() => setShowCreate(false)}
-                  className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleCreate}
-                  disabled={!form.name || !form.url || form.events.length === 0}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
-                >
-                  Create Webhook
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
+            <TextField
+              fullWidth
+              label="Description"
+              multiline
+              rows={2}
+              value={form.description}
+              onChange={(e) => setForm({ ...form, description: e.target.value })}
+              placeholder="What this webhook is for..."
+              size="small"
+            />
+          </Box>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, py: 2 }}>
+          <Button
+            variant="outlined"
+            onClick={() => setShowCreate(false)}
+            sx={{ textTransform: 'none', borderRadius: '8px' }}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleCreate}
+            disabled={!form.name || !form.url || form.events.length === 0}
+            sx={{ textTransform: 'none', borderRadius: '8px' }}
+          >
+            Create Webhook
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Box>
   );
 }

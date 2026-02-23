@@ -3,10 +3,20 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
-import { User, Mail, Calendar, Shield, Edit2, Save, X, Lock, LogOut } from 'lucide-react';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { User, Mail, Calendar, Shield, Lock, LogOut } from 'lucide-react';
+import { PageHeader } from '@/components/PageHeader';
 import axios from 'axios';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Paper from '@mui/material/Paper';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import Avatar from '@mui/material/Avatar';
+import Chip from '@mui/material/Chip';
+import Alert from '@mui/material/Alert';
+import Grid from '@mui/material/Grid';
+import CircularProgress from '@mui/material/CircularProgress';
+import Divider from '@mui/material/Divider';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
 
@@ -50,12 +60,12 @@ export default function ProfilePage() {
 
   if (authLoading || !user) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading profile...</p>
-        </div>
-      </div>
+      <Box sx={{ p: { xs: 2, sm: 3 }, display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+        <Box sx={{ textAlign: 'center' }}>
+          <CircularProgress size={40} />
+          <Typography sx={{ mt: 2, color: '#6b7280' }}>Loading profile...</Typography>
+        </Box>
+      </Box>
     );
   }
 
@@ -69,7 +79,6 @@ export default function ProfilePage() {
       setSuccess('Profile updated successfully!');
       setIsEditing(false);
 
-      // Update local user data
       const updatedUser = response.data.data;
       localStorage.setItem('user', JSON.stringify(updatedUser));
 
@@ -120,14 +129,14 @@ export default function ProfilePage() {
     }
   };
 
-  const getRoleBadgeColor = (role: string) => {
+  const getRoleChipProps = (role: string) => {
     switch (role) {
       case 'admin':
-        return 'bg-red-100 text-red-800';
+        return { bg: '#fef2f2', color: '#991b1b' };
       case 'developer':
-        return 'bg-purple-100 text-purple-800';
+        return { bg: '#f5f3ff', color: '#5b21b6' };
       default:
-        return 'bg-blue-100 text-blue-800';
+        return { bg: '#eff6ff', color: '#1e40af' };
     }
   };
 
@@ -139,293 +148,310 @@ export default function ProfilePage() {
     });
   };
 
+  const roleChip = getRoleChipProps(user.role);
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Profile</h1>
-              <p className="text-sm text-gray-500 mt-1">Manage your account settings</p>
-            </div>
-            <button
-              onClick={handleLogout}
-              className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition"
+    <Box sx={{ p: { xs: 2, sm: 3 }, maxWidth: 800, mx: 'auto' }}>
+      <PageHeader
+        title="Profile"
+        subtitle="Manage your account settings"
+        action={
+          <Button
+            variant="outlined"
+            color="error"
+            startIcon={<LogOut style={{ width: 16, height: 16 }} />}
+            onClick={handleLogout}
+            sx={{ textTransform: 'none', borderRadius: '8px' }}
+          >
+            Logout
+          </Button>
+        }
+      />
+
+      {/* Alerts */}
+      {success && (
+        <Alert severity="success" sx={{ mb: 2, borderRadius: '8px' }}>
+          {success}
+        </Alert>
+      )}
+      {error && (
+        <Alert severity="error" onClose={() => setError('')} sx={{ mb: 2, borderRadius: '8px' }}>
+          {error}
+        </Alert>
+      )}
+
+      {/* Profile Information Card */}
+      <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3, mb: 3 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
+          <Typography sx={{ fontSize: '1.1rem', fontWeight: 600, color: '#111827' }}>
+            Profile Information
+          </Typography>
+          {!isEditing ? (
+            <Button
+              variant="outlined"
+              size="small"
+              onClick={() => setIsEditing(true)}
+              sx={{ textTransform: 'none', borderRadius: '8px' }}
             >
-              <LogOut className="w-4 h-4" />
-              Logout
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-        {/* Success Message */}
-        {success && (
-          <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-            <p className="text-green-800">{success}</p>
-          </div>
-        )}
-
-        {/* Error Message */}
-        {error && (
-          <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-red-800">{error}</p>
-          </div>
-        )}
-
-        {/* Profile Information Card */}
-        <Card className="p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold text-gray-900">Profile Information</h2>
-            {!isEditing ? (
-              <button
-                onClick={() => setIsEditing(true)}
-                className="flex items-center gap-2 px-4 py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition"
+              Edit
+            </Button>
+          ) : (
+            <Box sx={{ display: 'flex', gap: 1 }}>
+              <Button
+                variant="outlined"
+                size="small"
+                onClick={() => {
+                  setIsEditing(false);
+                  setFormData({
+                    first_name: user.first_name || '',
+                    last_name: user.last_name || '',
+                    username: user.username || '',
+                  });
+                }}
+                sx={{ textTransform: 'none', borderRadius: '8px' }}
               >
-                <Edit2 className="w-4 h-4" />
-                Edit
-              </button>
+                Cancel
+              </Button>
+              <Button
+                variant="contained"
+                size="small"
+                onClick={handleUpdateProfile}
+                disabled={isSaving}
+                sx={{ textTransform: 'none', borderRadius: '8px' }}
+              >
+                {isSaving ? 'Saving...' : 'Save'}
+              </Button>
+            </Box>
+          )}
+        </Box>
+
+        {/* Avatar Section */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2.5, pb: 3, mb: 3, borderBottom: '1px solid #e5e7eb' }}>
+          <Avatar
+            sx={{
+              width: 72,
+              height: 72,
+              background: 'linear-gradient(135deg, #3b82f6, #9333ea)',
+              fontSize: '1.75rem',
+              fontWeight: 700,
+            }}
+          >
+            {user.first_name?.[0]?.toUpperCase() || user.username?.[0]?.toUpperCase() || 'U'}
+          </Avatar>
+          <Box>
+            <Typography sx={{ fontSize: '1.1rem', fontWeight: 600, color: '#111827' }}>
+              {user.first_name || user.last_name
+                ? `${user.first_name} ${user.last_name}`.trim()
+                : user.username}
+            </Typography>
+            <Typography sx={{ fontSize: '0.875rem', color: '#6b7280' }}>{user.email}</Typography>
+            <Chip
+              label={user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+              size="small"
+              sx={{
+                mt: 0.5,
+                backgroundColor: roleChip.bg,
+                color: roleChip.color,
+                fontWeight: 500,
+                fontSize: '0.75rem',
+              }}
+            />
+          </Box>
+        </Box>
+
+        {/* Editable Fields */}
+        <Grid container spacing={2.5}>
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Typography sx={{ fontSize: '0.8rem', fontWeight: 500, color: '#374151', mb: 0.75, display: 'flex', alignItems: 'center', gap: 0.5 }}>
+              <User style={{ width: 14, height: 14 }} />
+              First Name
+            </Typography>
+            {isEditing ? (
+              <TextField
+                size="small"
+                fullWidth
+                value={formData.first_name}
+                onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
+                placeholder="John"
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: '8px' } }}
+              />
             ) : (
-              <div className="flex gap-2">
-                <button
-                  onClick={() => {
-                    setIsEditing(false);
-                    setFormData({
-                      first_name: user.first_name || '',
-                      last_name: user.last_name || '',
-                      username: user.username || '',
-                    });
-                  }}
-                  className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition"
-                >
-                  <X className="w-4 h-4" />
-                  Cancel
-                </button>
-                <button
-                  onClick={handleUpdateProfile}
-                  disabled={isSaving}
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition disabled:opacity-50"
-                >
-                  <Save className="w-4 h-4" />
-                  {isSaving ? 'Saving...' : 'Save'}
-                </button>
-              </div>
+              <Typography sx={{ color: '#111827' }}>{user.first_name || 'Not set'}</Typography>
             )}
-          </div>
+          </Grid>
 
-          <div className="space-y-4">
-            {/* Avatar */}
-            <div className="flex items-center gap-4 pb-4 border-b">
-              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-2xl font-bold">
-                {user.first_name?.[0]?.toUpperCase() || user.username?.[0]?.toUpperCase() || 'U'}
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900">
-                  {user.first_name || user.last_name
-                    ? `${user.first_name} ${user.last_name}`.trim()
-                    : user.username}
-                </h3>
-                <p className="text-sm text-gray-500">{user.email}</p>
-                <Badge className={`mt-1 ${getRoleBadgeColor(user.role)}`}>
-                  {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
-                </Badge>
-              </div>
-            </div>
-
-            {/* Editable Fields */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  <User className="w-4 h-4 inline mr-1" />
-                  First Name
-                </label>
-                {isEditing ? (
-                  <input
-                    type="text"
-                    value={formData.first_name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, first_name: e.target.value })
-                    }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                    placeholder="John"
-                  />
-                ) : (
-                  <p className="text-gray-900">{user.first_name || 'Not set'}</p>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  <User className="w-4 h-4 inline mr-1" />
-                  Last Name
-                </label>
-                {isEditing ? (
-                  <input
-                    type="text"
-                    value={formData.last_name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, last_name: e.target.value })
-                    }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                    placeholder="Doe"
-                  />
-                ) : (
-                  <p className="text-gray-900">{user.last_name || 'Not set'}</p>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  <Mail className="w-4 h-4 inline mr-1" />
-                  Email
-                </label>
-                <p className="text-gray-900">{user.email}</p>
-                <p className="text-xs text-gray-500 mt-1">Email cannot be changed</p>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  <Shield className="w-4 h-4 inline mr-1" />
-                  Username
-                </label>
-                <p className="text-gray-900">{user.username}</p>
-                <p className="text-xs text-gray-500 mt-1">Username cannot be changed</p>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  <Calendar className="w-4 h-4 inline mr-1" />
-                  Member Since
-                </label>
-                <p className="text-gray-900">{formatDate(user.created_at)}</p>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  <Shield className="w-4 h-4 inline mr-1" />
-                  Account Status
-                </label>
-                <Badge className={user.active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
-                  {user.active ? 'Active' : 'Inactive'}
-                </Badge>
-              </div>
-            </div>
-          </div>
-        </Card>
-
-        {/* Change Password Card */}
-        <Card className="p-6">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900">Change Password</h2>
-              <p className="text-sm text-gray-500 mt-1">Update your password to keep your account secure</p>
-            </div>
-            {!isChangingPassword && (
-              <button
-                onClick={() => setIsChangingPassword(true)}
-                className="flex items-center gap-2 px-4 py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition"
-              >
-                <Lock className="w-4 h-4" />
-                Change Password
-              </button>
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Typography sx={{ fontSize: '0.8rem', fontWeight: 500, color: '#374151', mb: 0.75, display: 'flex', alignItems: 'center', gap: 0.5 }}>
+              <User style={{ width: 14, height: 14 }} />
+              Last Name
+            </Typography>
+            {isEditing ? (
+              <TextField
+                size="small"
+                fullWidth
+                value={formData.last_name}
+                onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
+                placeholder="Doe"
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: '8px' } }}
+              />
+            ) : (
+              <Typography sx={{ color: '#111827' }}>{user.last_name || 'Not set'}</Typography>
             )}
-          </div>
+          </Grid>
 
-          {isChangingPassword && (
-            <form onSubmit={handleChangePassword} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Current Password
-                </label>
-                <input
-                  type="password"
-                  value={passwordData.old_password}
-                  onChange={(e) =>
-                    setPasswordData({ ...passwordData, old_password: e.target.value })
-                  }
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  placeholder="••••••••"
-                />
-              </div>
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Typography sx={{ fontSize: '0.8rem', fontWeight: 500, color: '#374151', mb: 0.75, display: 'flex', alignItems: 'center', gap: 0.5 }}>
+              <Mail style={{ width: 14, height: 14 }} />
+              Email
+            </Typography>
+            <Typography sx={{ color: '#111827' }}>{user.email}</Typography>
+            <Typography sx={{ fontSize: '0.7rem', color: '#9ca3af', mt: 0.25 }}>Email cannot be changed</Typography>
+          </Grid>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  New Password
-                </label>
-                <input
-                  type="password"
-                  value={passwordData.new_password}
-                  onChange={(e) =>
-                    setPasswordData({ ...passwordData, new_password: e.target.value })
-                  }
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  placeholder="••••••••"
-                />
-                <p className="text-xs text-gray-500 mt-1">Must be at least 8 characters</p>
-              </div>
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Typography sx={{ fontSize: '0.8rem', fontWeight: 500, color: '#374151', mb: 0.75, display: 'flex', alignItems: 'center', gap: 0.5 }}>
+              <Shield style={{ width: 14, height: 14 }} />
+              Username
+            </Typography>
+            <Typography sx={{ color: '#111827' }}>{user.username}</Typography>
+            <Typography sx={{ fontSize: '0.7rem', color: '#9ca3af', mt: 0.25 }}>Username cannot be changed</Typography>
+          </Grid>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Confirm New Password
-                </label>
-                <input
-                  type="password"
-                  value={passwordData.confirm_password}
-                  onChange={(e) =>
-                    setPasswordData({ ...passwordData, confirm_password: e.target.value })
-                  }
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  placeholder="••••••••"
-                />
-              </div>
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Typography sx={{ fontSize: '0.8rem', fontWeight: 500, color: '#374151', mb: 0.75, display: 'flex', alignItems: 'center', gap: 0.5 }}>
+              <Calendar style={{ width: 14, height: 14 }} />
+              Member Since
+            </Typography>
+            <Typography sx={{ color: '#111827' }}>{formatDate(user.created_at)}</Typography>
+          </Grid>
 
-              <div className="flex gap-2 pt-2">
-                <button
-                  type="button"
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Typography sx={{ fontSize: '0.8rem', fontWeight: 500, color: '#374151', mb: 0.75, display: 'flex', alignItems: 'center', gap: 0.5 }}>
+              <Shield style={{ width: 14, height: 14 }} />
+              Account Status
+            </Typography>
+            <Chip
+              label={user.active ? 'Active' : 'Inactive'}
+              size="small"
+              sx={{
+                backgroundColor: user.active ? '#ecfdf5' : '#fef2f2',
+                color: user.active ? '#15803d' : '#991b1b',
+                fontWeight: 500,
+                fontSize: '0.75rem',
+              }}
+            />
+          </Grid>
+        </Grid>
+      </Paper>
+
+      {/* Change Password Card */}
+      <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3, mb: 3 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
+          <Box>
+            <Typography sx={{ fontSize: '1.1rem', fontWeight: 600, color: '#111827' }}>
+              Change Password
+            </Typography>
+            <Typography sx={{ fontSize: '0.8rem', color: '#6b7280', mt: 0.25 }}>
+              Update your password to keep your account secure
+            </Typography>
+          </Box>
+          {!isChangingPassword && (
+            <Button
+              variant="outlined"
+              size="small"
+              startIcon={<Lock style={{ width: 14, height: 14 }} />}
+              onClick={() => setIsChangingPassword(true)}
+              sx={{ textTransform: 'none', borderRadius: '8px' }}
+            >
+              Change Password
+            </Button>
+          )}
+        </Box>
+
+        {isChangingPassword && (
+          <form onSubmit={handleChangePassword}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <TextField
+                size="small"
+                fullWidth
+                label="Current Password"
+                type="password"
+                value={passwordData.old_password}
+                onChange={(e) => setPasswordData({ ...passwordData, old_password: e.target.value })}
+                required
+                placeholder="Enter current password"
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: '8px' } }}
+              />
+              <TextField
+                size="small"
+                fullWidth
+                label="New Password"
+                type="password"
+                value={passwordData.new_password}
+                onChange={(e) => setPasswordData({ ...passwordData, new_password: e.target.value })}
+                required
+                placeholder="Min 8 characters"
+                helperText="Must be at least 8 characters"
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: '8px' } }}
+              />
+              <TextField
+                size="small"
+                fullWidth
+                label="Confirm New Password"
+                type="password"
+                value={passwordData.confirm_password}
+                onChange={(e) => setPasswordData({ ...passwordData, confirm_password: e.target.value })}
+                required
+                placeholder="Re-enter new password"
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: '8px' } }}
+              />
+              <Box sx={{ display: 'flex', gap: 1, pt: 1 }}>
+                <Button
+                  variant="outlined"
                   onClick={() => {
                     setIsChangingPassword(false);
                     setPasswordData({ old_password: '', new_password: '', confirm_password: '' });
                     setError('');
                   }}
-                  className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition"
+                  sx={{ textTransform: 'none', borderRadius: '8px' }}
                 >
                   Cancel
-                </button>
-                <button
+                </Button>
+                <Button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition"
+                  variant="contained"
+                  sx={{ textTransform: 'none', borderRadius: '8px' }}
                 >
                   Update Password
-                </button>
-              </div>
-            </form>
-          )}
-        </Card>
+                </Button>
+              </Box>
+            </Box>
+          </form>
+        )}
+      </Paper>
 
-        {/* Account Info Card */}
-        <Card className="p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Account Information</h2>
-          <div className="space-y-3 text-sm">
-            <div className="flex justify-between">
-              <span className="text-gray-600">User ID:</span>
-              <span className="text-gray-900 font-mono">{user.id}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Role:</span>
-              <span className="text-gray-900">{user.role}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Account Created:</span>
-              <span className="text-gray-900">{formatDate(user.created_at)}</span>
-            </div>
-          </div>
-        </Card>
-      </div>
-    </div>
+      {/* Account Info Card */}
+      <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3 }}>
+        <Typography sx={{ fontSize: '1.1rem', fontWeight: 600, color: '#111827', mb: 2.5 }}>
+          Account Information
+        </Typography>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Typography sx={{ fontSize: '0.875rem', color: '#6b7280' }}>User ID:</Typography>
+            <Typography sx={{ fontSize: '0.875rem', fontFamily: 'monospace', color: '#111827' }}>{user.id}</Typography>
+          </Box>
+          <Divider />
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Typography sx={{ fontSize: '0.875rem', color: '#6b7280' }}>Role:</Typography>
+            <Typography sx={{ fontSize: '0.875rem', color: '#111827' }}>{user.role}</Typography>
+          </Box>
+          <Divider />
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Typography sx={{ fontSize: '0.875rem', color: '#6b7280' }}>Account Created:</Typography>
+            <Typography sx={{ fontSize: '0.875rem', color: '#111827' }}>{formatDate(user.created_at)}</Typography>
+          </Box>
+        </Box>
+      </Paper>
+    </Box>
   );
 }

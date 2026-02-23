@@ -3,6 +3,14 @@
 import { useState, useEffect } from 'react';
 import { streamAPI, StreamMetrics } from '@/lib/api';
 import { Zap, Activity, CheckCircle, XCircle, Clock } from 'lucide-react';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Paper from '@mui/material/Paper';
+import Grid from '@mui/material/Grid';
+import Chip from '@mui/material/Chip';
+import CircularProgress from '@mui/material/CircularProgress';
+import { PageHeader } from '@/components/PageHeader';
+import { StatCard } from '@/components/StatCard';
 
 export default function StreamsPage() {
   const [metrics, setMetrics] = useState<StreamMetrics | null>(null);
@@ -44,9 +52,9 @@ export default function StreamsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
-      </div>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
+        <CircularProgress size={48} />
+      </Box>
     );
   }
 
@@ -58,127 +66,145 @@ export default function StreamsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Stream Monitoring</h1>
-          <p className="text-gray-500 mt-2">Real-time stream activity and metrics</p>
-        </div>
+    <Box sx={{ p: { xs: 2, sm: 3 } }}>
+      <PageHeader
+        title="Stream Monitoring"
+        subtitle="Real-time stream activity and metrics"
+      />
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      {/* Stats Grid */}
+      <Grid container spacing={3} sx={{ mb: 3 }}>
+        <Grid size={{ xs: 12, md: 3 }}>
           <StatCard
-            icon={<Activity className="w-6 h-6" />}
+            icon={<Activity size={20} />}
             label="Active Streams"
             value={metrics?.active_streams || 0}
             color="blue"
           />
+        </Grid>
+        <Grid size={{ xs: 12, md: 3 }}>
           <StatCard
-            icon={<CheckCircle className="w-6 h-6" />}
+            icon={<CheckCircle size={20} />}
             label="Completed"
             value={metrics?.completed_streams || 0}
             color="green"
           />
+        </Grid>
+        <Grid size={{ xs: 12, md: 3 }}>
           <StatCard
-            icon={<XCircle className="w-6 h-6" />}
+            icon={<XCircle size={20} />}
             label="Cancelled"
             value={metrics?.cancelled_streams || 0}
             color="yellow"
           />
+        </Grid>
+        <Grid size={{ xs: 12, md: 3 }}>
           <StatCard
-            icon={<Clock className="w-6 h-6" />}
+            icon={<Clock size={20} />}
             label="Errored"
             value={metrics?.errored_streams || 0}
             color="red"
           />
-        </div>
+        </Grid>
+      </Grid>
 
-        {/* Performance Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-lg shadow p-6">
-            <p className="text-sm text-gray-500 mb-2">Avg Duration</p>
-            <p className="text-3xl font-bold text-gray-900">
+      {/* Performance Metrics */}
+      <Grid container spacing={3} sx={{ mb: 3 }}>
+        <Grid size={{ xs: 12, md: 4 }}>
+          <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3 }}>
+            <Typography sx={{ fontSize: '0.875rem', color: '#6b7280', mb: 1 }}>Avg Duration</Typography>
+            <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, color: '#111827' }}>
               {(metrics?.avg_duration_ms || 0).toFixed(0)}ms
-            </p>
-          </div>
-
-          <div className="bg-white rounded-lg shadow p-6">
-            <p className="text-sm text-gray-500 mb-2">Avg Chunks/Stream</p>
-            <p className="text-3xl font-bold text-gray-900">
+            </Typography>
+          </Paper>
+        </Grid>
+        <Grid size={{ xs: 12, md: 4 }}>
+          <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3 }}>
+            <Typography sx={{ fontSize: '0.875rem', color: '#6b7280', mb: 1 }}>Avg Chunks/Stream</Typography>
+            <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, color: '#111827' }}>
               {(metrics?.avg_chunks_per_stream || 0).toFixed(1)}
-            </p>
-          </div>
-
-          <div className="bg-white rounded-lg shadow p-6">
-            <p className="text-sm text-gray-500 mb-2">Data Streamed</p>
-            <p className="text-3xl font-bold text-gray-900">
+            </Typography>
+          </Paper>
+        </Grid>
+        <Grid size={{ xs: 12, md: 4 }}>
+          <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3 }}>
+            <Typography sx={{ fontSize: '0.875rem', color: '#6b7280', mb: 1 }}>Data Streamed</Typography>
+            <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, color: '#111827' }}>
               {formatBytes(metrics?.bytes_streamed || 0)}
-            </p>
-          </div>
-        </div>
+            </Typography>
+          </Paper>
+        </Grid>
+      </Grid>
 
-        {/* Active Streams */}
-        <div className="bg-white rounded-lg shadow">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900">Active Streams</h2>
-          </div>
-          
-          <div className="p-6">
-            {activeStreams.length === 0 ? (
-              <div className="text-center py-12 text-gray-500">
-                <Zap className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-                <p>No active streams</p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {activeStreams.map((stream: any, index: number) => (
-                  <div
-                    key={stream.stream_id || index}
-                    className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="animate-pulse h-3 w-3 bg-green-500 rounded-full"></div>
-                        <div>
-                          <p className="font-mono text-sm text-gray-900">
-                            {stream.stream_id || `Stream ${index + 1}`}
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            {stream.type || 'completion'}
-                          </p>
-                        </div>
-                      </div>
-                      <span className="status-badge status-busy">
-                        Active
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
+      {/* Active Streams */}
+      <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px' }}>
+        <Box sx={{ px: 3, py: 2, borderBottom: '1px solid #e5e7eb' }}>
+          <Typography variant="h6" sx={{ fontSize: '1.1rem', fontWeight: 600, color: '#111827' }}>
+            Active Streams
+          </Typography>
+        </Box>
 
-function StatCard({ icon, label, value, color }: any) {
-  const colorClasses = {
-    blue: 'bg-blue-50 text-blue-600',
-    green: 'bg-green-50 text-green-600',
-    yellow: 'bg-yellow-50 text-yellow-600',
-    red: 'bg-red-50 text-red-600',
-  };
-
-  return (
-    <div className="bg-white rounded-lg shadow p-6">
-      <div className={`inline-flex p-3 rounded-lg mb-4 ${colorClasses[color as keyof typeof colorClasses]}`}>
-        {icon}
-      </div>
-      <p className="text-sm text-gray-500 mb-1">{label}</p>
-      <p className="text-3xl font-bold text-gray-900">{value}</p>
-    </div>
+        <Box sx={{ p: 3 }}>
+          {activeStreams.length === 0 ? (
+            <Box sx={{ textAlign: 'center', py: 6, color: '#9ca3af' }}>
+              <Zap size={48} style={{ margin: '0 auto 16px', display: 'block', color: '#d1d5db' }} />
+              <Typography>No active streams</Typography>
+            </Box>
+          ) : (
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              {activeStreams.map((stream: any, index: number) => (
+                <Paper
+                  key={stream.stream_id || index}
+                  elevation={0}
+                  sx={{
+                    border: '1px solid #e5e7eb',
+                    borderRadius: '12px',
+                    p: 2,
+                    transition: 'box-shadow 0.2s',
+                    '&:hover': { boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' },
+                  }}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                      <Box
+                        sx={{
+                          width: 12,
+                          height: 12,
+                          borderRadius: '50%',
+                          backgroundColor: '#22c55e',
+                          animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                          '@keyframes pulse': {
+                            '0%, 100%': { opacity: 1 },
+                            '50%': { opacity: 0.5 },
+                          },
+                        }}
+                      />
+                      <Box>
+                        <Typography sx={{ fontFamily: 'monospace', fontSize: '0.875rem', color: '#111827' }}>
+                          {stream.stream_id || `Stream ${index + 1}`}
+                        </Typography>
+                        <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>
+                          {stream.type || 'completion'}
+                        </Typography>
+                      </Box>
+                    </Box>
+                    <Chip
+                      size="small"
+                      label="Active"
+                      sx={{
+                        backgroundColor: '#eff6ff',
+                        color: '#2563eb',
+                        fontWeight: 600,
+                        fontSize: '0.7rem',
+                      }}
+                    />
+                  </Box>
+                </Paper>
+              ))}
+            </Box>
+          )}
+        </Box>
+      </Paper>
+    </Box>
   );
 }

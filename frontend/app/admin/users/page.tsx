@@ -9,6 +9,36 @@ import {
   Activity, X, Check,
   AlertTriangle, Crown, Code, Eye, User as UserIcon
 } from 'lucide-react';
+import { PageHeader } from '@/components/PageHeader';
+import { StatCard } from '@/components/StatCard';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Paper from '@mui/material/Paper';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import TextField from '@mui/material/TextField';
+import InputAdornment from '@mui/material/InputAdornment';
+import Table from '@mui/material/Table';
+import TableHead from '@mui/material/TableHead';
+import TableBody from '@mui/material/TableBody';
+import TableRow from '@mui/material/TableRow';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import Chip from '@mui/material/Chip';
+import Avatar from '@mui/material/Avatar';
+import Alert from '@mui/material/Alert';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import Grid from '@mui/material/Grid';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import CircularProgress from '@mui/material/CircularProgress';
 
 interface UserData {
   id: string;
@@ -42,11 +72,11 @@ interface UserStats {
   logins_last_24h: number;
 }
 
-const ROLE_CONFIG: Record<string, { label: string; color: string; icon: any; bg: string }> = {
-  admin: { label: 'Admin', color: 'text-red-700', icon: Crown, bg: 'bg-red-50 border-red-200' },
-  developer: { label: 'Developer', color: 'text-blue-700', icon: Code, bg: 'bg-blue-50 border-blue-200' },
-  viewer: { label: 'Viewer', color: 'text-gray-700', icon: Eye, bg: 'bg-gray-50 border-gray-200' },
-  user: { label: 'User', color: 'text-green-700', icon: UserIcon, bg: 'bg-green-50 border-green-200' },
+const ROLE_CONFIG: Record<string, { label: string; chipColor: string; chipBg: string; icon: any }> = {
+  admin: { label: 'Admin', chipColor: '#b91c1c', chipBg: '#fef2f2', icon: Crown },
+  developer: { label: 'Developer', chipColor: '#1d4ed8', chipBg: '#eff6ff', icon: Code },
+  viewer: { label: 'Viewer', chipColor: '#374151', chipBg: '#f9fafb', icon: Eye },
+  user: { label: 'User', chipColor: '#15803d', chipBg: '#ecfdf5', icon: UserIcon },
 };
 
 export default function AdminUsersPage() {
@@ -56,7 +86,7 @@ export default function AdminUsersPage() {
   const [activityLogs, setActivityLogs] = useState<ActivityLogEntry[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'users' | 'activity'>('users');
+  const [activeTab, setActiveTab] = useState(0);
   const [editingRole, setEditingRole] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [error, setError] = useState('');
@@ -158,7 +188,6 @@ export default function AdminUsersPage() {
     setCreating(true);
     setError('');
     try {
-      // Use the register endpoint to create user, then update role if needed
       const res = await api.post('/api/v1/auth/register', {
         email: createForm.email,
         username: createForm.username,
@@ -169,7 +198,6 @@ export default function AdminUsersPage() {
 
       const newUserId = res.data?.data?.user?.id;
 
-      // If a non-default role was selected, update it
       if (createForm.role !== 'user' && newUserId) {
         await userManagementAPI.updateRole(newUserId, createForm.role);
       }
@@ -193,154 +221,164 @@ export default function AdminUsersPage() {
     });
   };
 
-  const getActionColor = (action: string) => {
-    if (action.includes('delete')) return 'text-red-600 bg-red-50';
-    if (action.includes('role')) return 'text-purple-600 bg-purple-50';
-    if (action.includes('login')) return 'text-green-600 bg-green-50';
-    if (action.includes('create')) return 'text-blue-600 bg-blue-50';
-    return 'text-gray-600 bg-gray-50';
+  const getActionChipColor = (action: string): { bg: string; color: string } => {
+    if (action.includes('delete')) return { bg: '#fef2f2', color: '#dc2626' };
+    if (action.includes('role')) return { bg: '#f5f3ff', color: '#7c3aed' };
+    if (action.includes('login')) return { bg: '#ecfdf5', color: '#16a34a' };
+    if (action.includes('create')) return { bg: '#eff6ff', color: '#2563eb' };
+    return { bg: '#f9fafb', color: '#4b5563' };
   };
 
   if (!currentUser) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="max-w-7xl mx-auto px-6 py-20 text-center">
-          <Shield className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-700">Access Denied</h2>
-          <p className="text-gray-500 mt-2">You must be logged in as an admin to view this page.</p>
-        </div>
-      </div>
+      <Box sx={{ p: { xs: 2, sm: 3 }, display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+        <Box sx={{ textAlign: 'center' }}>
+          <Shield style={{ width: 64, height: 64, color: '#d1d5db', margin: '0 auto 16px' }} />
+          <Typography variant="h5" sx={{ fontWeight: 700, color: '#374151' }}>Access Denied</Typography>
+          <Typography sx={{ color: '#6b7280', mt: 1 }}>You must be logged in as an admin to view this page.</Typography>
+        </Box>
+      </Box>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-6 py-8">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-              <Users className="w-8 h-8 text-blue-600" />
-              User Management
-            </h1>
-            <p className="text-gray-500 mt-1">Manage users, roles, and permissions</p>
-          </div>
-          <button
+    <Box sx={{ p: { xs: 2, sm: 3 } }}>
+      <PageHeader
+        title="User Management"
+        subtitle="Manage users, roles, and permissions"
+        action={
+          <Button
+            variant="contained"
+            startIcon={<UserPlus style={{ width: 18, height: 18 }} />}
             onClick={() => setShowCreateModal(true)}
-            className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition shadow-sm"
+            sx={{ textTransform: 'none', borderRadius: '8px' }}
           >
-            <UserPlus className="w-4 h-4" />
             Create User
-          </button>
-        </div>
+          </Button>
+        }
+      />
 
-        {/* Alerts */}
-        {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2">
-            <AlertTriangle className="w-5 h-5 text-red-600" />
-            <p className="text-sm text-red-700">{error}</p>
-            <button onClick={() => setError('')} className="ml-auto"><X className="w-4 h-4" /></button>
-          </div>
-        )}
-        {success && (
-          <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg flex items-center gap-2">
-            <Check className="w-5 h-5 text-green-600" />
-            <p className="text-sm text-green-700">{success}</p>
-          </div>
-        )}
+      {/* Alerts */}
+      {error && (
+        <Alert severity="error" onClose={() => setError('')} sx={{ mb: 2, borderRadius: '8px' }}>
+          {error}
+        </Alert>
+      )}
+      {success && (
+        <Alert severity="success" sx={{ mb: 2, borderRadius: '8px' }}>
+          {success}
+        </Alert>
+      )}
 
-        {/* Stats Cards */}
-        {stats && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <div className="bg-white rounded-xl border p-4">
-              <div className="text-sm text-gray-500">Total Users</div>
-              <div className="text-2xl font-bold text-gray-900">{stats.total_users}</div>
-            </div>
-            <div className="bg-white rounded-xl border p-4">
-              <div className="text-sm text-gray-500">Active Users</div>
-              <div className="text-2xl font-bold text-green-600">{stats.active_users}</div>
-            </div>
-            <div className="bg-white rounded-xl border p-4">
-              <div className="text-sm text-gray-500">Admins</div>
-              <div className="text-2xl font-bold text-red-600">{stats.admins}</div>
-            </div>
-            <div className="bg-white rounded-xl border p-4">
-              <div className="text-sm text-gray-500">Logins (24h)</div>
-              <div className="text-2xl font-bold text-blue-600">{stats.logins_last_24h}</div>
-            </div>
-          </div>
-        )}
+      {/* Stats Cards */}
+      {stats && (
+        <Grid container spacing={2} sx={{ mb: 3 }}>
+          <Grid size={{ xs: 6, md: 3 }}>
+            <StatCard
+              icon={<Users style={{ width: 20, height: 20 }} />}
+              label="Total Users"
+              value={stats.total_users}
+              color="blue"
+            />
+          </Grid>
+          <Grid size={{ xs: 6, md: 3 }}>
+            <StatCard
+              icon={<Activity style={{ width: 20, height: 20 }} />}
+              label="Active Users"
+              value={stats.active_users}
+              color="green"
+            />
+          </Grid>
+          <Grid size={{ xs: 6, md: 3 }}>
+            <StatCard
+              icon={<Crown style={{ width: 20, height: 20 }} />}
+              label="Admins"
+              value={stats.admins}
+              color="red"
+            />
+          </Grid>
+          <Grid size={{ xs: 6, md: 3 }}>
+            <StatCard
+              icon={<Shield style={{ width: 20, height: 20 }} />}
+              label="Logins (24h)"
+              value={stats.logins_last_24h}
+              color="purple"
+            />
+          </Grid>
+        </Grid>
+      )}
 
-        {/* Tabs */}
-        <div className="flex gap-1 mb-6 bg-gray-100 p-1 rounded-lg w-fit">
-          {[
-            { key: 'users', label: 'Users', icon: Users },
-            { key: 'activity', label: 'Activity Log', icon: Activity },
-          ].map(({ key, label, icon: Icon }) => (
-            <button
-              key={key}
-              onClick={() => setActiveTab(key as any)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition ${
-                activeTab === key
-                  ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              <Icon className="w-4 h-4" />
-              {label}
-            </button>
-          ))}
-        </div>
+      {/* Tabs */}
+      <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', mb: 3 }}>
+        <Tabs
+          value={activeTab}
+          onChange={(_, v) => setActiveTab(v)}
+          sx={{
+            px: 2,
+            borderBottom: '1px solid #e5e7eb',
+            '& .MuiTab-root': { textTransform: 'none', fontWeight: 600, fontSize: '0.875rem' },
+          }}
+        >
+          <Tab icon={<Users style={{ width: 16, height: 16 }} />} iconPosition="start" label="Users" />
+          <Tab icon={<Activity style={{ width: 16, height: 16 }} />} iconPosition="start" label="Activity Log" />
+        </Tabs>
 
         {/* Users Tab */}
-        {activeTab === 'users' && (
-          <div className="bg-white rounded-xl border shadow-sm">
+        {activeTab === 0 && (
+          <>
             {/* Search Bar */}
-            <div className="p-4 border-b flex gap-3">
-              <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search by email, username, or name..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                  className="w-full pl-10 pr-4 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-              <button
+            <Box sx={{ p: 2, borderBottom: '1px solid #e5e7eb', display: 'flex', gap: 1.5 }}>
+              <TextField
+                size="small"
+                fullWidth
+                placeholder="Search by email, username, or name..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Search style={{ width: 16, height: 16, color: '#9ca3af' }} />
+                    </InputAdornment>
+                  ),
+                }}
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: '8px' } }}
+              />
+              <Button
+                variant="contained"
                 onClick={handleSearch}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition"
+                sx={{ textTransform: 'none', borderRadius: '8px', px: 3 }}
               >
                 Search
-              </button>
-            </div>
+              </Button>
+            </Box>
 
             {/* Users Table */}
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <th className="px-6 py-3">User</th>
-                    <th className="px-6 py-3">Role</th>
-                    <th className="px-6 py-3">Status</th>
-                    <th className="px-6 py-3">Joined</th>
-                    <th className="px-6 py-3 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100">
+            <TableContainer>
+              <Table>
+                <TableHead>
+                  <TableRow sx={{ backgroundColor: '#f9fafb' }}>
+                    <TableCell sx={{ fontWeight: 600, fontSize: '0.75rem', textTransform: 'uppercase', color: '#6b7280' }}>User</TableCell>
+                    <TableCell sx={{ fontWeight: 600, fontSize: '0.75rem', textTransform: 'uppercase', color: '#6b7280' }}>Role</TableCell>
+                    <TableCell sx={{ fontWeight: 600, fontSize: '0.75rem', textTransform: 'uppercase', color: '#6b7280' }}>Status</TableCell>
+                    <TableCell sx={{ fontWeight: 600, fontSize: '0.75rem', textTransform: 'uppercase', color: '#6b7280' }}>Joined</TableCell>
+                    <TableCell align="right" sx={{ fontWeight: 600, fontSize: '0.75rem', textTransform: 'uppercase', color: '#6b7280' }}>Actions</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
                   {loading ? (
-                    <tr>
-                      <td colSpan={5} className="px-6 py-12 text-center text-gray-400">
-                        Loading users...
-                      </td>
-                    </tr>
+                    <TableRow>
+                      <TableCell colSpan={5} sx={{ textAlign: 'center', py: 6 }}>
+                        <CircularProgress size={24} sx={{ mr: 1 }} />
+                        <Typography component="span" sx={{ color: '#9ca3af' }}>Loading users...</Typography>
+                      </TableCell>
+                    </TableRow>
                   ) : users.length === 0 ? (
-                    <tr>
-                      <td colSpan={5} className="px-6 py-12 text-center text-gray-400">
-                        No users found
-                      </td>
-                    </tr>
+                    <TableRow>
+                      <TableCell colSpan={5} sx={{ textAlign: 'center', py: 6 }}>
+                        <Typography sx={{ color: '#9ca3af' }}>No users found</Typography>
+                      </TableCell>
+                    </TableRow>
                   ) : (
                     users.map((u) => {
                       const roleConfig = ROLE_CONFIG[u.role] || ROLE_CONFIG.user;
@@ -348,272 +386,331 @@ export default function AdminUsersPage() {
                       const isCurrentUser = currentUser?.email === u.email;
 
                       return (
-                        <tr key={u.id} className="hover:bg-gray-50 transition">
-                          <td className="px-6 py-4">
-                            <div className="flex items-center gap-3">
-                              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-sm font-bold">
+                        <TableRow key={u.id} hover>
+                          <TableCell>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                              <Avatar
+                                sx={{
+                                  width: 36,
+                                  height: 36,
+                                  background: 'linear-gradient(135deg, #3b82f6, #9333ea)',
+                                  fontSize: '0.875rem',
+                                  fontWeight: 700,
+                                }}
+                              >
                                 {(u.first_name?.[0] || u.username[0]).toUpperCase()}
-                              </div>
-                              <div>
-                                <div className="font-medium text-gray-900">
-                                  {u.first_name} {u.last_name}
+                              </Avatar>
+                              <Box>
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                  <Typography sx={{ fontWeight: 500, fontSize: '0.875rem', color: '#111827' }}>
+                                    {u.first_name} {u.last_name}
+                                  </Typography>
                                   {isCurrentUser && (
-                                    <span className="ml-2 text-xs bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded">You</span>
+                                    <Chip
+                                      label="You"
+                                      size="small"
+                                      sx={{ height: 20, fontSize: '0.7rem', backgroundColor: '#dbeafe', color: '#1d4ed8' }}
+                                    />
                                   )}
-                                </div>
-                                <div className="text-sm text-gray-500">@{u.username} &middot; {u.email}</div>
-                              </div>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4">
+                                </Box>
+                                <Typography sx={{ fontSize: '0.8rem', color: '#6b7280' }}>
+                                  @{u.username} &middot; {u.email}
+                                </Typography>
+                              </Box>
+                            </Box>
+                          </TableCell>
+                          <TableCell>
                             {editingRole === u.id ? (
-                              <div className="flex items-center gap-2">
-                                <select
+                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <Select
+                                  size="small"
                                   defaultValue={u.role}
                                   onChange={(e) => handleRoleChange(u.id, e.target.value)}
-                                  className="text-sm border rounded-lg px-2 py-1 focus:ring-2 focus:ring-blue-500"
+                                  sx={{ fontSize: '0.8rem', borderRadius: '8px', minWidth: 100 }}
                                 >
-                                  <option value="user">User</option>
-                                  <option value="developer">Developer</option>
-                                  <option value="viewer">Viewer</option>
-                                  <option value="admin">Admin</option>
-                                </select>
-                                <button onClick={() => setEditingRole(null)} className="text-gray-400 hover:text-gray-600">
-                                  <X className="w-4 h-4" />
-                                </button>
-                              </div>
+                                  <MenuItem value="user">User</MenuItem>
+                                  <MenuItem value="developer">Developer</MenuItem>
+                                  <MenuItem value="viewer">Viewer</MenuItem>
+                                  <MenuItem value="admin">Admin</MenuItem>
+                                </Select>
+                                <IconButton size="small" onClick={() => setEditingRole(null)}>
+                                  <X style={{ width: 16, height: 16 }} />
+                                </IconButton>
+                              </Box>
                             ) : (
-                              <span
-                                className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${roleConfig.bg} ${roleConfig.color} cursor-pointer hover:opacity-80`}
+                              <Chip
+                                icon={<RoleIcon style={{ width: 12, height: 12 }} />}
+                                label={roleConfig.label}
+                                size="small"
                                 onClick={() => !isCurrentUser && setEditingRole(u.id)}
                                 title={isCurrentUser ? "Can't change own role" : 'Click to change role'}
-                              >
-                                <RoleIcon className="w-3 h-3" />
-                                {roleConfig.label}
-                              </span>
+                                sx={{
+                                  backgroundColor: roleConfig.chipBg,
+                                  color: roleConfig.chipColor,
+                                  border: '1px solid',
+                                  borderColor: roleConfig.chipColor + '30',
+                                  fontWeight: 500,
+                                  fontSize: '0.75rem',
+                                  cursor: isCurrentUser ? 'default' : 'pointer',
+                                  '&:hover': isCurrentUser ? {} : { opacity: 0.8 },
+                                }}
+                              />
                             )}
-                          </td>
-                          <td className="px-6 py-4">
-                            <button
+                          </TableCell>
+                          <TableCell>
+                            <Chip
+                              label={u.active ? 'Active' : 'Inactive'}
+                              size="small"
                               onClick={() => !isCurrentUser && handleToggleActive(u.id, u.active)}
-                              disabled={isCurrentUser}
-                              className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium ${
-                                u.active
-                                  ? 'bg-green-50 text-green-700 border border-green-200'
-                                  : 'bg-red-50 text-red-700 border border-red-200'
-                              } ${!isCurrentUser ? 'cursor-pointer hover:opacity-80' : 'cursor-default'}`}
                               title={isCurrentUser ? "Can't deactivate yourself" : 'Click to toggle'}
-                            >
-                              <span className={`w-1.5 h-1.5 rounded-full ${u.active ? 'bg-green-500' : 'bg-red-500'}`} />
-                              {u.active ? 'Active' : 'Inactive'}
-                            </button>
-                          </td>
-                          <td className="px-6 py-4 text-sm text-gray-500">
-                            {formatDate(u.created_at)}
-                          </td>
-                          <td className="px-6 py-4 text-right">
-                            <div className="flex items-center justify-end gap-2">
-                              {!isCurrentUser && (
-                                <>
-                                  {confirmDelete === u.id ? (
-                                    <div className="flex items-center gap-1">
-                                      <span className="text-xs text-red-600 mr-1">Delete?</span>
-                                      <button
-                                        onClick={() => handleDeleteUser(u.id)}
-                                        className="p-1 text-red-600 hover:bg-red-50 rounded"
-                                      >
-                                        <Check className="w-4 h-4" />
-                                      </button>
-                                      <button
-                                        onClick={() => setConfirmDelete(null)}
-                                        className="p-1 text-gray-400 hover:bg-gray-100 rounded"
-                                      >
-                                        <X className="w-4 h-4" />
-                                      </button>
-                                    </div>
-                                  ) : (
-                                    <button
-                                      onClick={() => setConfirmDelete(u.id)}
-                                      className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
-                                      title="Delete user"
-                                    >
-                                      <Trash2 className="w-4 h-4" />
-                                    </button>
-                                  )}
-                                </>
-                              )}
-                            </div>
-                          </td>
-                        </tr>
+                              sx={{
+                                backgroundColor: u.active ? '#ecfdf5' : '#fef2f2',
+                                color: u.active ? '#15803d' : '#b91c1c',
+                                border: '1px solid',
+                                borderColor: u.active ? '#bbf7d0' : '#fecaca',
+                                fontWeight: 500,
+                                fontSize: '0.75rem',
+                                cursor: isCurrentUser ? 'default' : 'pointer',
+                                '&::before': {
+                                  content: '""',
+                                  width: 6,
+                                  height: 6,
+                                  borderRadius: '50%',
+                                  backgroundColor: u.active ? '#22c55e' : '#ef4444',
+                                  display: 'inline-block',
+                                  marginRight: '6px',
+                                },
+                              }}
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <Typography sx={{ fontSize: '0.8rem', color: '#6b7280' }}>
+                              {formatDate(u.created_at)}
+                            </Typography>
+                          </TableCell>
+                          <TableCell align="right">
+                            {!isCurrentUser && (
+                              <>
+                                {confirmDelete === u.id ? (
+                                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 0.5 }}>
+                                    <Typography sx={{ fontSize: '0.75rem', color: '#dc2626', mr: 0.5 }}>Delete?</Typography>
+                                    <IconButton size="small" onClick={() => handleDeleteUser(u.id)} sx={{ color: '#dc2626' }}>
+                                      <Check style={{ width: 16, height: 16 }} />
+                                    </IconButton>
+                                    <IconButton size="small" onClick={() => setConfirmDelete(null)}>
+                                      <X style={{ width: 16, height: 16 }} />
+                                    </IconButton>
+                                  </Box>
+                                ) : (
+                                  <IconButton
+                                    size="small"
+                                    onClick={() => setConfirmDelete(u.id)}
+                                    title="Delete user"
+                                    sx={{ color: '#9ca3af', '&:hover': { color: '#dc2626', backgroundColor: '#fef2f2' } }}
+                                  >
+                                    <Trash2 style={{ width: 16, height: 16 }} />
+                                  </IconButton>
+                                )}
+                              </>
+                            )}
+                          </TableCell>
+                        </TableRow>
                       );
                     })
                   )}
-                </tbody>
-              </table>
-            </div>
+                </TableBody>
+              </Table>
+            </TableContainer>
 
             {/* Role Legend */}
-            <div className="px-6 py-3 border-t bg-gray-50 flex items-center gap-4 text-xs text-gray-500">
-              <span className="font-medium">Roles:</span>
+            <Box
+              sx={{
+                px: 3,
+                py: 1.5,
+                borderTop: '1px solid #e5e7eb',
+                backgroundColor: '#f9fafb',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 2,
+              }}
+            >
+              <Typography sx={{ fontSize: '0.75rem', fontWeight: 500, color: '#6b7280' }}>Roles:</Typography>
               {Object.entries(ROLE_CONFIG).map(([key, config]) => {
                 const Icon = config.icon;
                 return (
-                  <span key={key} className={`flex items-center gap-1 ${config.color}`}>
-                    <Icon className="w-3 h-3" />
-                    {config.label}
-                  </span>
+                  <Box key={key} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <Icon style={{ width: 12, height: 12, color: config.chipColor }} />
+                    <Typography sx={{ fontSize: '0.75rem', color: config.chipColor }}>{config.label}</Typography>
+                  </Box>
                 );
               })}
-            </div>
-          </div>
+            </Box>
+          </>
         )}
 
         {/* Activity Log Tab */}
-        {activeTab === 'activity' && (
-          <div className="bg-white rounded-xl border shadow-sm">
-            <div className="px-6 py-4 border-b">
-              <h3 className="font-semibold text-gray-900">Recent Activity</h3>
-              <p className="text-sm text-gray-500">Audit trail of user actions across the platform</p>
-            </div>
-            <div className="divide-y divide-gray-50">
-              {activityLogs.length === 0 ? (
-                <div className="px-6 py-12 text-center text-gray-400">
-                  <Activity className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-                  <p>No activity logs yet</p>
-                  <p className="text-sm mt-1">Actions like role changes and user updates will appear here</p>
-                </div>
-              ) : (
-                activityLogs.map((log) => (
-                  <div key={log.id} className="px-6 py-3 flex items-center gap-4 hover:bg-gray-50 transition">
-                    <div className={`px-2 py-1 rounded text-xs font-medium ${getActionColor(log.action)}`}>
-                      {log.action.replace(/_/g, ' ')}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <span className="text-sm font-medium text-gray-900">@{log.username}</span>
+        {activeTab === 1 && (
+          <Box>
+            <Box sx={{ px: 3, py: 2, borderBottom: '1px solid #e5e7eb' }}>
+              <Typography sx={{ fontWeight: 600, color: '#111827' }}>Recent Activity</Typography>
+              <Typography sx={{ fontSize: '0.8rem', color: '#6b7280' }}>
+                Audit trail of user actions across the platform
+              </Typography>
+            </Box>
+            {activityLogs.length === 0 ? (
+              <Box sx={{ px: 3, py: 6, textAlign: 'center' }}>
+                <Activity style={{ width: 48, height: 48, color: '#d1d5db', margin: '0 auto 12px' }} />
+                <Typography sx={{ color: '#9ca3af' }}>No activity logs yet</Typography>
+                <Typography sx={{ fontSize: '0.8rem', color: '#9ca3af', mt: 0.5 }}>
+                  Actions like role changes and user updates will appear here
+                </Typography>
+              </Box>
+            ) : (
+              activityLogs.map((log) => {
+                const chipColors = getActionChipColor(log.action);
+                return (
+                  <Box
+                    key={log.id}
+                    sx={{
+                      px: 3,
+                      py: 1.5,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 2,
+                      borderBottom: '1px solid #f3f4f6',
+                      '&:hover': { backgroundColor: '#f9fafb' },
+                    }}
+                  >
+                    <Chip
+                      label={log.action.replace(/_/g, ' ')}
+                      size="small"
+                      sx={{
+                        backgroundColor: chipColors.bg,
+                        color: chipColors.color,
+                        fontWeight: 500,
+                        fontSize: '0.7rem',
+                      }}
+                    />
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                      <Typography component="span" sx={{ fontSize: '0.8rem', fontWeight: 500, color: '#111827' }}>
+                        @{log.username}
+                      </Typography>
                       {log.details && (
-                        <span className="text-sm text-gray-500 ml-2">{log.details}</span>
+                        <Typography component="span" sx={{ fontSize: '0.8rem', color: '#6b7280', ml: 1 }}>
+                          {log.details}
+                        </Typography>
                       )}
-                    </div>
-                    <div className="text-xs text-gray-400 whitespace-nowrap">
+                    </Box>
+                    <Typography sx={{ fontSize: '0.75rem', color: '#9ca3af', whiteSpace: 'nowrap' }}>
                       {formatDate(log.created_at)}
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
+                    </Typography>
+                  </Box>
+                );
+              })
+            )}
+          </Box>
         )}
-      </div>
+      </Paper>
 
       {/* Create User Modal */}
-      {showCreateModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
-            <div className="flex items-center justify-between px-6 py-4 border-b">
-              <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                <UserPlus className="w-5 h-5 text-blue-600" />
-                Create New User
-              </h3>
-              <button onClick={() => setShowCreateModal(false)} className="p-1 hover:bg-gray-100 rounded-lg">
-                <X className="w-5 h-5 text-gray-500" />
-              </button>
-            </div>
-
-            <form onSubmit={handleCreateUser} className="p-6 space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
-                  <input
-                    type="text"
-                    value={createForm.first_name}
-                    onChange={(e) => setCreateForm({ ...createForm, first_name: e.target.value })}
-                    className="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="John"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
-                  <input
-                    type="text"
-                    value={createForm.last_name}
-                    onChange={(e) => setCreateForm({ ...createForm, last_name: e.target.value })}
-                    className="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Doe"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
-                <input
-                  type="email"
-                  required
-                  value={createForm.email}
-                  onChange={(e) => setCreateForm({ ...createForm, email: e.target.value })}
-                  className="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="john@example.com"
+      <Dialog
+        open={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{ sx: { borderRadius: '16px' } }}
+      >
+        <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <UserPlus style={{ width: 20, height: 20, color: '#2563eb' }} />
+          Create New User
+        </DialogTitle>
+        <form onSubmit={handleCreateUser}>
+          <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
+            <Grid container spacing={2}>
+              <Grid size={{ xs: 6 }}>
+                <TextField
+                  size="small"
+                  fullWidth
+                  label="First Name"
+                  value={createForm.first_name}
+                  onChange={(e) => setCreateForm({ ...createForm, first_name: e.target.value })}
+                  placeholder="John"
                 />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Username *</label>
-                <input
-                  type="text"
-                  required
-                  value={createForm.username}
-                  onChange={(e) => setCreateForm({ ...createForm, username: e.target.value })}
-                  className="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="johndoe"
+              </Grid>
+              <Grid size={{ xs: 6 }}>
+                <TextField
+                  size="small"
+                  fullWidth
+                  label="Last Name"
+                  value={createForm.last_name}
+                  onChange={(e) => setCreateForm({ ...createForm, last_name: e.target.value })}
+                  placeholder="Doe"
                 />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Password *</label>
-                <input
-                  type="password"
-                  required
-                  minLength={8}
-                  value={createForm.password}
-                  onChange={(e) => setCreateForm({ ...createForm, password: e.target.value })}
-                  className="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Min 8 characters"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
-                <select
-                  value={createForm.role}
-                  onChange={(e) => setCreateForm({ ...createForm, role: e.target.value })}
-                  className="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="user">User</option>
-                  <option value="developer">Developer</option>
-                  <option value="viewer">Viewer</option>
-                  <option value="admin">Admin</option>
-                </select>
-              </div>
-
-              <div className="flex gap-3 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setShowCreateModal(false)}
-                  className="flex-1 px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={creating}
-                  className="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition disabled:opacity-50"
-                >
-                  {creating ? 'Creating...' : 'Create User'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-    </div>
+              </Grid>
+            </Grid>
+            <TextField
+              size="small"
+              fullWidth
+              label="Email"
+              type="email"
+              required
+              value={createForm.email}
+              onChange={(e) => setCreateForm({ ...createForm, email: e.target.value })}
+              placeholder="john@example.com"
+            />
+            <TextField
+              size="small"
+              fullWidth
+              label="Username"
+              required
+              value={createForm.username}
+              onChange={(e) => setCreateForm({ ...createForm, username: e.target.value })}
+              placeholder="johndoe"
+            />
+            <TextField
+              size="small"
+              fullWidth
+              label="Password"
+              type="password"
+              required
+              inputProps={{ minLength: 8 }}
+              value={createForm.password}
+              onChange={(e) => setCreateForm({ ...createForm, password: e.target.value })}
+              placeholder="Min 8 characters"
+            />
+            <FormControl size="small" fullWidth>
+              <InputLabel>Role</InputLabel>
+              <Select
+                label="Role"
+                value={createForm.role}
+                onChange={(e) => setCreateForm({ ...createForm, role: e.target.value })}
+              >
+                <MenuItem value="user">User</MenuItem>
+                <MenuItem value="developer">Developer</MenuItem>
+                <MenuItem value="viewer">Viewer</MenuItem>
+                <MenuItem value="admin">Admin</MenuItem>
+              </Select>
+            </FormControl>
+          </DialogContent>
+          <DialogActions sx={{ px: 3, pb: 2.5, gap: 1 }}>
+            <Button
+              variant="outlined"
+              onClick={() => setShowCreateModal(false)}
+              sx={{ textTransform: 'none', borderRadius: '8px', flex: 1 }}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={creating}
+              sx={{ textTransform: 'none', borderRadius: '8px', flex: 1 }}
+            >
+              {creating ? 'Creating...' : 'Create User'}
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
+    </Box>
   );
 }

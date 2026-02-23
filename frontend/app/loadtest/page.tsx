@@ -2,6 +2,40 @@
 
 import React, { useState, useEffect } from 'react';
 import { loadTestAPI } from '@/lib/api';
+import { PageHeader } from '@/components/PageHeader';
+import { StatCard } from '@/components/StatCard';
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Chip from '@mui/material/Chip';
+import Grid from '@mui/material/Grid';
+import Alert from '@mui/material/Alert';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Switch from '@mui/material/Switch';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import LinearProgress from '@mui/material/LinearProgress';
+import CircularProgress from '@mui/material/CircularProgress';
+import SpeedIcon from '@mui/icons-material/Speed';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import TimerIcon from '@mui/icons-material/Timer';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 
 interface LoadTestConfig {
   id: number;
@@ -43,7 +77,7 @@ interface TestMetric {
 }
 
 export default function LoadTestPage() {
-  const [activeTab, setActiveTab] = useState<'quick' | 'configs' | 'runs'>('quick');
+  const [activeTab, setActiveTab] = useState(0);
   const [configs, setConfigs] = useState<LoadTestConfig[]>([]);
   const [runs, setRuns] = useState<LoadTestRun[]>([]);
   const [selectedRun, setSelectedRun] = useState<LoadTestRun | null>(null);
@@ -135,7 +169,7 @@ export default function LoadTestPage() {
       if (response.data) {
         alert('Quick benchmark started!');
         setSelectedRun(response.data.run);
-        setActiveTab('runs');
+        setActiveTab(2);
         fetchRuns();
       }
     } catch (error) {
@@ -179,7 +213,7 @@ export default function LoadTestPage() {
       if (response.data) {
         alert('Load test started!');
         setSelectedRun(response.data.run);
-        setActiveTab('runs');
+        setActiveTab(2);
         fetchRuns();
       }
     } catch (error) {
@@ -206,441 +240,527 @@ export default function LoadTestPage() {
     return new Date(dateString).toLocaleString();
   };
 
-  const getStatusBadge = (status: string) => {
-    const colors = {
-      queued: 'bg-gray-100 text-gray-800',
-      running: 'bg-blue-100 text-blue-800',
-      completed: 'bg-green-100 text-green-800',
-      failed: 'bg-red-100 text-red-800',
-      cancelled: 'bg-yellow-100 text-yellow-800',
+  const getStatusChip = (status: string) => {
+    const colorMap: Record<string, { bg: string; fg: string }> = {
+      queued: { bg: '#f3f4f6', fg: '#374151' },
+      running: { bg: '#dbeafe', fg: '#1e40af' },
+      completed: { bg: '#dcfce7', fg: '#166534' },
+      failed: { bg: '#fef2f2', fg: '#991b1b' },
+      cancelled: { bg: '#fefce8', fg: '#854d0e' },
     };
-    return colors[status as keyof typeof colors] || 'bg-gray-100 text-gray-800';
+    const colors = colorMap[status] || colorMap.queued;
+    return (
+      <Chip
+        label={status}
+        size="small"
+        sx={{
+          fontWeight: 600,
+          fontSize: '0.75rem',
+          textTransform: 'capitalize',
+          backgroundColor: colors.bg,
+          color: colors.fg,
+        }}
+      />
+    );
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">⚡ Load Testing & Benchmarks</h1>
+    <Box sx={{ p: { xs: 2, sm: 3 } }}>
+      <PageHeader title="Load Testing & Benchmarks" subtitle="Run performance benchmarks and load tests against your LLM gateway" />
 
-        {/* Tabs */}
-        <div className="flex space-x-4 mb-6 border-b border-gray-200">
-          <button
-            onClick={() => setActiveTab('quick')}
-            className={`px-6 py-3 font-medium border-b-2 transition-colors ${
-              activeTab === 'quick'
-                ? 'border-blue-600 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
-            }`}
-          >
-            🚀 Quick Benchmark
-          </button>
-          <button
-            onClick={() => setActiveTab('configs')}
-            className={`px-6 py-3 font-medium border-b-2 transition-colors ${
-              activeTab === 'configs'
-                ? 'border-blue-600 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
-            }`}
-          >
-            ⚙️ Configurations ({configs.length})
-          </button>
-          <button
-            onClick={() => setActiveTab('runs')}
-            className={`px-6 py-3 font-medium border-b-2 transition-colors ${
-              activeTab === 'runs'
-                ? 'border-blue-600 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
-            }`}
-          >
-            📊 Test Runs ({runs.length})
-          </button>
-        </div>
+      {/* Tabs */}
+      <Paper
+        elevation={0}
+        sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', mb: 3 }}
+      >
+        <Tabs
+          value={activeTab}
+          onChange={(_, v) => setActiveTab(v)}
+          sx={{
+            px: 2,
+            '& .MuiTab-root': { textTransform: 'none', fontWeight: 500, minHeight: 48 },
+          }}
+        >
+          <Tab label="Quick Benchmark" />
+          <Tab label={`Configurations (${configs.length})`} />
+          <Tab label={`Test Runs (${runs.length})`} />
+        </Tabs>
+      </Paper>
 
-        {/* Quick Benchmark Tab */}
-        {activeTab === 'quick' && (
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick 30-Second Benchmark</h2>
-            <p className="text-gray-600 mb-6">
-              Run a fast benchmark to test your system's performance under constant load.
-            </p>
+      {/* Quick Benchmark Tab */}
+      {activeTab === 0 && (
+        <Paper
+          elevation={0}
+          sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3 }}
+        >
+          <Typography variant="h6" sx={{ fontWeight: 600, color: '#111827', mb: 1 }}>
+            Quick 30-Second Benchmark
+          </Typography>
+          <Typography variant="body2" sx={{ color: '#6b7280', mb: 3 }}>
+            Run a fast benchmark to test your system's performance under constant load.
+          </Typography>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Target RPS (Requests Per Second)
-                </label>
-                <input
-                  type="number"
-                  value={quickRPS}
-                  onChange={(e) => setQuickRPS(parseInt(e.target.value))}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md"
-                  min="1"
-                  max="10000"
-                />
-                <p className="text-xs text-gray-500 mt-1">Recommended: 100-500 for initial tests</p>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Model</label>
-                <select
+          <Grid container spacing={3} sx={{ mb: 3 }}>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <TextField
+                fullWidth
+                label="Target RPS (Requests Per Second)"
+                type="number"
+                value={quickRPS}
+                onChange={(e) => setQuickRPS(parseInt(e.target.value))}
+                inputProps={{ min: 1, max: 10000 }}
+                helperText="Recommended: 100-500 for initial tests"
+                size="small"
+              />
+            </Grid>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <FormControl fullWidth size="small">
+                <InputLabel>Model</InputLabel>
+                <Select
                   value={quickModel}
+                  label="Model"
                   onChange={(e) => setQuickModel(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md"
                 >
-                  <option value="gpt-4">GPT-4</option>
-                  <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
-                  <option value="claude-3-opus">Claude 3 Opus</option>
-                  <option value="claude-3-sonnet">Claude 3 Sonnet</option>
-                </select>
-              </div>
-            </div>
+                  <MenuItem value="gpt-4">GPT-4</MenuItem>
+                  <MenuItem value="gpt-3.5-turbo">GPT-3.5 Turbo</MenuItem>
+                  <MenuItem value="claude-3-opus">Claude 3 Opus</MenuItem>
+                  <MenuItem value="claude-3-sonnet">Claude 3 Sonnet</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+          </Grid>
 
-            <button
-              onClick={handleQuickBenchmark}
-              disabled={loading}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+          <Button
+            variant="contained"
+            onClick={handleQuickBenchmark}
+            disabled={loading}
+            sx={{ textTransform: 'none', borderRadius: '8px', px: 4, py: 1.25 }}
+          >
+            {loading ? 'Starting...' : 'Start Quick Benchmark'}
+          </Button>
+
+          <Alert severity="info" sx={{ mt: 3 }}>
+            <Typography variant="body2" sx={{ fontWeight: 600, mb: 0.5 }}>
+              What gets tested:
+            </Typography>
+            <Box component="ul" sx={{ m: 0, pl: 2 }}>
+              <li>Duration: 30 seconds</li>
+              <li>Pattern: Constant load</li>
+              <li>Concurrency: 50 workers</li>
+              <li>Metrics: Latency (P50/P95/P99), RPS, Error Rate</li>
+            </Box>
+          </Alert>
+        </Paper>
+      )}
+
+      {/* Configurations Tab */}
+      {activeTab === 1 && (
+        <Box>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+            <Typography variant="h6" sx={{ fontWeight: 600, color: '#111827' }}>
+              Load Test Configurations
+            </Typography>
+            <Button
+              variant="contained"
+              onClick={() => setShowCreateModal(true)}
+              sx={{ textTransform: 'none', borderRadius: '8px' }}
             >
-              {loading ? 'Starting...' : '🚀 Start Quick Benchmark'}
-            </button>
+              + Create Configuration
+            </Button>
+          </Box>
 
-            <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <h3 className="font-medium text-blue-900 mb-2">📝 What gets tested:</h3>
-              <ul className="text-sm text-blue-800 space-y-1">
-                <li>• Duration: 30 seconds</li>
-                <li>• Pattern: Constant load</li>
-                <li>• Concurrency: 50 workers</li>
-                <li>• Metrics: Latency (P50/P95/P99), RPS, Error Rate</li>
-              </ul>
-            </div>
-          </div>
-        )}
-
-        {/* Configurations Tab */}
-        {activeTab === 'configs' && (
-          <div className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="text-xl font-semibold text-gray-900">Load Test Configurations</h2>
-              <button
-                onClick={() => setShowCreateModal(true)}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium"
-              >
-                + Create Configuration
-              </button>
-            </div>
-
-            {configs.length === 0 ? (
-              <div className="bg-white rounded-lg shadow-md p-12 text-center">
-                <p className="text-gray-500">No configurations yet. Create one to get started!</p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {configs.map((config) => (
-                  <div key={config.id} className="bg-white rounded-lg shadow-md p-6">
-                    <div className="flex justify-between items-start mb-4">
-                      <div>
-                        <h3 className="text-lg font-semibold text-gray-900">{config.name}</h3>
-                        <p className="text-sm text-gray-500">
+          {configs.length === 0 ? (
+            <Paper
+              elevation={0}
+              sx={{
+                border: '1px solid #e5e7eb',
+                borderRadius: '12px',
+                p: 6,
+                textAlign: 'center',
+              }}
+            >
+              <Typography sx={{ color: '#6b7280' }}>
+                No configurations yet. Create one to get started!
+              </Typography>
+            </Paper>
+          ) : (
+            <Grid container spacing={3}>
+              {configs.map((config) => (
+                <Grid size={{ xs: 12, md: 6 }} key={config.id}>
+                  <Paper
+                    elevation={0}
+                    sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3 }}
+                  >
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+                      <Box>
+                        <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#111827' }}>
+                          {config.name}
+                        </Typography>
+                        <Typography variant="body2" sx={{ color: '#6b7280' }}>
                           Created {new Date(config.created_at).toLocaleDateString()}
-                        </p>
-                      </div>
-                      <span className="px-3 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-full capitalize">
-                        {config.pattern}
-                      </span>
-                    </div>
+                        </Typography>
+                      </Box>
+                      <Chip
+                        label={config.pattern}
+                        size="small"
+                        sx={{
+                          textTransform: 'capitalize',
+                          backgroundColor: '#f3f4f6',
+                          color: '#374151',
+                          fontWeight: 500,
+                          fontSize: '0.75rem',
+                        }}
+                      />
+                    </Box>
 
-                    <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
-                      <div>
-                        <p className="text-gray-500">Target RPS</p>
-                        <p className="font-semibold text-gray-900">{config.target_rps}</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-500">Duration</p>
-                        <p className="font-semibold text-gray-900">{config.duration}s</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-500">Concurrency</p>
-                        <p className="font-semibold text-gray-900">{config.concurrency}</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-500">Model</p>
-                        <p className="font-semibold text-gray-900 truncate">{config.model}</p>
-                      </div>
-                    </div>
+                    <Grid container spacing={2} sx={{ mb: 2 }}>
+                      <Grid size={{ xs: 6 }}>
+                        <Typography variant="body2" sx={{ color: '#6b7280' }}>Target RPS</Typography>
+                        <Typography variant="body1" sx={{ fontWeight: 600 }}>{config.target_rps}</Typography>
+                      </Grid>
+                      <Grid size={{ xs: 6 }}>
+                        <Typography variant="body2" sx={{ color: '#6b7280' }}>Duration</Typography>
+                        <Typography variant="body1" sx={{ fontWeight: 600 }}>{config.duration}s</Typography>
+                      </Grid>
+                      <Grid size={{ xs: 6 }}>
+                        <Typography variant="body2" sx={{ color: '#6b7280' }}>Concurrency</Typography>
+                        <Typography variant="body1" sx={{ fontWeight: 600 }}>{config.concurrency}</Typography>
+                      </Grid>
+                      <Grid size={{ xs: 6 }}>
+                        <Typography variant="body2" sx={{ color: '#6b7280' }}>Model</Typography>
+                        <Typography variant="body1" sx={{ fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {config.model}
+                        </Typography>
+                      </Grid>
+                    </Grid>
 
-                    <button
+                    <Button
+                      variant="contained"
+                      color="success"
+                      fullWidth
                       onClick={() => handleStartTest(config.id)}
                       disabled={loading}
-                      className="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md font-medium disabled:opacity-50"
+                      sx={{ textTransform: 'none', borderRadius: '8px' }}
                     >
-                      ▶ Start Test
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
+                      Start Test
+                    </Button>
+                  </Paper>
+                </Grid>
+              ))}
+            </Grid>
+          )}
+        </Box>
+      )}
 
-        {/* Test Runs Tab */}
-        {activeTab === 'runs' && (
-          <div className="space-y-6">
-            <h2 className="text-xl font-semibold text-gray-900">Test Runs</h2>
+      {/* Test Runs Tab */}
+      {activeTab === 2 && (
+        <Box>
+          <Typography variant="h6" sx={{ fontWeight: 600, color: '#111827', mb: 3 }}>
+            Test Runs
+          </Typography>
 
-            {runs.length === 0 ? (
-              <div className="bg-white rounded-lg shadow-md p-12 text-center">
-                <p className="text-gray-500">No test runs yet. Start a benchmark to see results!</p>
-              </div>
-            ) : (
-              <div className="bg-white rounded-lg shadow-md overflow-hidden">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Config</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Requests</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Avg Latency</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">P95</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">RPS</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
+          {runs.length === 0 ? (
+            <Paper
+              elevation={0}
+              sx={{
+                border: '1px solid #e5e7eb',
+                borderRadius: '12px',
+                p: 6,
+                textAlign: 'center',
+              }}
+            >
+              <Typography sx={{ color: '#6b7280' }}>
+                No test runs yet. Start a benchmark to see results!
+              </Typography>
+            </Paper>
+          ) : (
+            <Paper
+              elevation={0}
+              sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', overflow: 'hidden' }}
+            >
+              <TableContainer>
+                <Table size="small">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell sx={{ fontWeight: 600, color: '#6b7280', fontSize: '0.75rem', textTransform: 'uppercase' }}>ID</TableCell>
+                      <TableCell sx={{ fontWeight: 600, color: '#6b7280', fontSize: '0.75rem', textTransform: 'uppercase' }}>Config</TableCell>
+                      <TableCell sx={{ fontWeight: 600, color: '#6b7280', fontSize: '0.75rem', textTransform: 'uppercase' }}>Status</TableCell>
+                      <TableCell sx={{ fontWeight: 600, color: '#6b7280', fontSize: '0.75rem', textTransform: 'uppercase' }}>Requests</TableCell>
+                      <TableCell sx={{ fontWeight: 600, color: '#6b7280', fontSize: '0.75rem', textTransform: 'uppercase' }}>Avg Latency</TableCell>
+                      <TableCell sx={{ fontWeight: 600, color: '#6b7280', fontSize: '0.75rem', textTransform: 'uppercase' }}>P95</TableCell>
+                      <TableCell sx={{ fontWeight: 600, color: '#6b7280', fontSize: '0.75rem', textTransform: 'uppercase' }}>RPS</TableCell>
+                      <TableCell sx={{ fontWeight: 600, color: '#6b7280', fontSize: '0.75rem', textTransform: 'uppercase' }}>Actions</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
                     {runs.map((run) => (
-                      <tr key={run.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                          #{run.id}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <TableRow key={run.id} hover>
+                        <TableCell sx={{ fontWeight: 500, fontSize: '0.875rem' }}>#{run.id}</TableCell>
+                        <TableCell sx={{ fontSize: '0.875rem' }}>
                           {run.config?.name || `Config #${run.config_id}`}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`px-2 py-1 text-xs font-semibold rounded-full capitalize ${getStatusBadge(run.status)}`}>
-                            {run.status}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        </TableCell>
+                        <TableCell>{getStatusChip(run.status)}</TableCell>
+                        <TableCell sx={{ fontSize: '0.875rem' }}>
                           {run.total_requests.toLocaleString()}
-                          <span className="text-gray-500 ml-1">
+                          <Typography component="span" sx={{ color: '#6b7280', ml: 0.5, fontSize: '0.875rem' }}>
                             ({run.failed_requests > 0 ? `${run.failed_requests} failed` : 'all ok'})
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          </Typography>
+                        </TableCell>
+                        <TableCell sx={{ fontSize: '0.875rem' }}>
                           {run.avg_latency_ms?.toFixed(2) || 'N/A'} ms
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        </TableCell>
+                        <TableCell sx={{ fontSize: '0.875rem' }}>
                           {run.p95_latency_ms?.toFixed(2) || 'N/A'} ms
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        </TableCell>
+                        <TableCell sx={{ fontSize: '0.875rem' }}>
                           {run.actual_rps?.toFixed(2) || 'N/A'}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm">
+                        </TableCell>
+                        <TableCell>
                           {run.status === 'running' ? (
-                            <button
+                            <Button
+                              size="small"
+                              color="error"
                               onClick={() => handleStopTest(run.id)}
-                              className="text-red-600 hover:text-red-800 font-medium"
+                              sx={{ textTransform: 'none', fontWeight: 500 }}
                             >
                               Stop
-                            </button>
+                            </Button>
                           ) : (
-                            <button
+                            <Button
+                              size="small"
                               onClick={() => {
                                 setSelectedRun(run);
                                 fetchMetrics(run.id);
                               }}
-                              className="text-blue-600 hover:text-blue-800 font-medium"
+                              sx={{ textTransform: 'none', fontWeight: 500 }}
                             >
                               View Details
-                            </button>
+                            </Button>
                           )}
-                        </td>
-                      </tr>
+                        </TableCell>
+                      </TableRow>
                     ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Paper>
+          )}
 
-            {/* Selected Run Details */}
-            {selectedRun && (
-              <div className="bg-white rounded-lg shadow-md p-6 mt-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                  Test Run #{selectedRun.id} Details
-                </h3>
+          {/* Selected Run Details */}
+          {selectedRun && (
+            <Paper
+              elevation={0}
+              sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3, mt: 3 }}
+            >
+              <Typography variant="h6" sx={{ fontWeight: 600, color: '#111827', mb: 3 }}>
+                Test Run #{selectedRun.id} Details
+              </Typography>
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-6">
-                  <div className="bg-blue-50 rounded-lg p-4">
-                    <p className="text-blue-600 text-sm font-medium mb-1">Total Requests</p>
-                    <p className="text-2xl font-bold text-blue-900">
-                      {selectedRun.total_requests.toLocaleString()}
-                    </p>
-                  </div>
-                  <div className="bg-green-50 rounded-lg p-4">
-                    <p className="text-green-600 text-sm font-medium mb-1">Success Rate</p>
-                    <p className="text-2xl font-bold text-green-900">
-                      {((selectedRun.successful_requests / selectedRun.total_requests) * 100).toFixed(1)}%
-                    </p>
-                  </div>
-                  <div className="bg-purple-50 rounded-lg p-4">
-                    <p className="text-purple-600 text-sm font-medium mb-1">Avg Latency</p>
-                    <p className="text-2xl font-bold text-purple-900">
-                      {selectedRun.avg_latency_ms?.toFixed(2)} ms
-                    </p>
-                  </div>
-                  <div className="bg-orange-50 rounded-lg p-4">
-                    <p className="text-orange-600 text-sm font-medium mb-1">Actual RPS</p>
-                    <p className="text-2xl font-bold text-orange-900">
-                      {selectedRun.actual_rps?.toFixed(2)}
-                    </p>
-                  </div>
-                </div>
-
-                {metrics.length > 0 && (
-                  <div className="mt-6">
-                    <h4 className="font-medium text-gray-900 mb-4">Real-Time Metrics</h4>
-                    <div className="bg-gray-50 rounded-lg p-4 max-h-96 overflow-y-auto">
-                      {metrics.map((metric, index) => (
-                        <div key={index} className="border-b border-gray-200 py-2 last:border-0">
-                          <div className="flex justify-between text-sm">
-                            <span className="text-gray-600">
-                              T+{metric.elapsed_seconds}s
-                            </span>
-                            <span className="font-medium">
-                              RPS: {metric.current_rps.toFixed(2)} | Latency: {metric.avg_latency_ms.toFixed(2)}ms |
-                              Errors: {metric.error_rate.toFixed(1)}%
-                            </span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Create Config Modal */}
-        {showCreateModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Create Load Test Configuration</h2>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
-                  <input
-                    type="text"
-                    value={newConfig.name}
-                    onChange={(e) => setNewConfig({ ...newConfig, name: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                    placeholder="My Load Test"
+              <Grid container spacing={2} sx={{ mb: 3 }}>
+                <Grid size={{ xs: 6, md: 3 }}>
+                  <StatCard
+                    icon={<SpeedIcon fontSize="small" />}
+                    label="Total Requests"
+                    value={selectedRun.total_requests.toLocaleString()}
+                    color="blue"
                   />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Pattern</label>
-                    <select
-                      value={newConfig.pattern}
-                      onChange={(e) => setNewConfig({ ...newConfig, pattern: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                    >
-                      <option value="constant">Constant</option>
-                      <option value="rampup">Ramp Up</option>
-                      <option value="spike">Spike</option>
-                      <option value="wave">Wave</option>
-                      <option value="burst">Burst</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Model</label>
-                    <select
-                      value={newConfig.model}
-                      onChange={(e) => setNewConfig({ ...newConfig, model: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                    >
-                      <option value="gpt-4">GPT-4</option>
-                      <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
-                      <option value="claude-3-opus">Claude 3 Opus</option>
-                      <option value="claude-3-sonnet">Claude 3 Sonnet</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Target RPS</label>
-                    <input
-                      type="number"
-                      value={newConfig.target_rps}
-                      onChange={(e) => setNewConfig({ ...newConfig, target_rps: parseInt(e.target.value) })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Duration (s)</label>
-                    <input
-                      type="number"
-                      value={newConfig.duration}
-                      onChange={(e) => setNewConfig({ ...newConfig, duration: parseInt(e.target.value) })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Concurrency</label>
-                    <input
-                      type="number"
-                      value={newConfig.concurrency}
-                      onChange={(e) => setNewConfig({ ...newConfig, concurrency: parseInt(e.target.value) })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Test Prompt</label>
-                  <textarea
-                    value={newConfig.prompt}
-                    onChange={(e) => setNewConfig({ ...newConfig, prompt: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                    rows={3}
+                </Grid>
+                <Grid size={{ xs: 6, md: 3 }}>
+                  <StatCard
+                    icon={<CheckCircleIcon fontSize="small" />}
+                    label="Success Rate"
+                    value={`${((selectedRun.successful_requests / selectedRun.total_requests) * 100).toFixed(1)}%`}
+                    color="green"
                   />
-                </div>
-
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={newConfig.enable_cache}
-                    onChange={(e) => setNewConfig({ ...newConfig, enable_cache: e.target.checked })}
-                    className="mr-2"
+                </Grid>
+                <Grid size={{ xs: 6, md: 3 }}>
+                  <StatCard
+                    icon={<TimerIcon fontSize="small" />}
+                    label="Avg Latency"
+                    value={`${selectedRun.avg_latency_ms?.toFixed(2)} ms`}
+                    color="purple"
                   />
-                  <label className="text-sm text-gray-700">Enable caching</label>
-                </div>
-              </div>
+                </Grid>
+                <Grid size={{ xs: 6, md: 3 }}>
+                  <StatCard
+                    icon={<TrendingUpIcon fontSize="small" />}
+                    label="Actual RPS"
+                    value={selectedRun.actual_rps?.toFixed(2) || 'N/A'}
+                    color="orange"
+                  />
+                </Grid>
+              </Grid>
 
-              <div className="flex justify-end space-x-3 mt-6">
-                <button
-                  onClick={() => setShowCreateModal(false)}
-                  className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleCreateConfig}
-                  disabled={loading || !newConfig.name}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
-                >
-                  Create Configuration
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
+              {metrics.length > 0 && (
+                <Box>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#111827', mb: 2 }}>
+                    Real-Time Metrics
+                  </Typography>
+                  <Paper
+                    elevation={0}
+                    sx={{
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '8px',
+                      p: 2,
+                      maxHeight: 384,
+                      overflow: 'auto',
+                      backgroundColor: '#f9fafb',
+                    }}
+                  >
+                    {metrics.map((metric, index) => (
+                      <Box
+                        key={index}
+                        sx={{
+                          borderBottom: '1px solid #e5e7eb',
+                          py: 1,
+                          '&:last-child': { borderBottom: 'none' },
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                        }}
+                      >
+                        <Typography variant="body2" sx={{ color: '#6b7280' }}>
+                          T+{metric.elapsed_seconds}s
+                        </Typography>
+                        <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                          RPS: {metric.current_rps.toFixed(2)} | Latency: {metric.avg_latency_ms.toFixed(2)}ms |
+                          Errors: {metric.error_rate.toFixed(1)}%
+                        </Typography>
+                      </Box>
+                    ))}
+                  </Paper>
+                </Box>
+              )}
+            </Paper>
+          )}
+        </Box>
+      )}
+
+      {/* Create Config Modal */}
+      <Dialog
+        open={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle sx={{ fontWeight: 600 }}>Create Load Test Configuration</DialogTitle>
+        <DialogContent dividers>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, pt: 1 }}>
+            <TextField
+              fullWidth
+              label="Name"
+              value={newConfig.name}
+              onChange={(e) => setNewConfig({ ...newConfig, name: e.target.value })}
+              placeholder="My Load Test"
+              size="small"
+            />
+
+            <Grid container spacing={2}>
+              <Grid size={{ xs: 6 }}>
+                <FormControl fullWidth size="small">
+                  <InputLabel>Pattern</InputLabel>
+                  <Select
+                    value={newConfig.pattern}
+                    label="Pattern"
+                    onChange={(e) => setNewConfig({ ...newConfig, pattern: e.target.value })}
+                  >
+                    <MenuItem value="constant">Constant</MenuItem>
+                    <MenuItem value="rampup">Ramp Up</MenuItem>
+                    <MenuItem value="spike">Spike</MenuItem>
+                    <MenuItem value="wave">Wave</MenuItem>
+                    <MenuItem value="burst">Burst</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid size={{ xs: 6 }}>
+                <FormControl fullWidth size="small">
+                  <InputLabel>Model</InputLabel>
+                  <Select
+                    value={newConfig.model}
+                    label="Model"
+                    onChange={(e) => setNewConfig({ ...newConfig, model: e.target.value })}
+                  >
+                    <MenuItem value="gpt-4">GPT-4</MenuItem>
+                    <MenuItem value="gpt-3.5-turbo">GPT-3.5 Turbo</MenuItem>
+                    <MenuItem value="claude-3-opus">Claude 3 Opus</MenuItem>
+                    <MenuItem value="claude-3-sonnet">Claude 3 Sonnet</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+            </Grid>
+
+            <Grid container spacing={2}>
+              <Grid size={{ xs: 4 }}>
+                <TextField
+                  fullWidth
+                  label="Target RPS"
+                  type="number"
+                  value={newConfig.target_rps}
+                  onChange={(e) => setNewConfig({ ...newConfig, target_rps: parseInt(e.target.value) })}
+                  size="small"
+                />
+              </Grid>
+              <Grid size={{ xs: 4 }}>
+                <TextField
+                  fullWidth
+                  label="Duration (s)"
+                  type="number"
+                  value={newConfig.duration}
+                  onChange={(e) => setNewConfig({ ...newConfig, duration: parseInt(e.target.value) })}
+                  size="small"
+                />
+              </Grid>
+              <Grid size={{ xs: 4 }}>
+                <TextField
+                  fullWidth
+                  label="Concurrency"
+                  type="number"
+                  value={newConfig.concurrency}
+                  onChange={(e) => setNewConfig({ ...newConfig, concurrency: parseInt(e.target.value) })}
+                  size="small"
+                />
+              </Grid>
+            </Grid>
+
+            <TextField
+              fullWidth
+              label="Test Prompt"
+              multiline
+              rows={3}
+              value={newConfig.prompt}
+              onChange={(e) => setNewConfig({ ...newConfig, prompt: e.target.value })}
+              size="small"
+            />
+
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={newConfig.enable_cache}
+                  onChange={(e) => setNewConfig({ ...newConfig, enable_cache: e.target.checked })}
+                  size="small"
+                />
+              }
+              label={<Typography variant="body2">Enable caching</Typography>}
+            />
+          </Box>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, py: 2 }}>
+          <Button
+            variant="outlined"
+            onClick={() => setShowCreateModal(false)}
+            sx={{ textTransform: 'none', borderRadius: '8px' }}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleCreateConfig}
+            disabled={loading || !newConfig.name}
+            sx={{ textTransform: 'none', borderRadius: '8px' }}
+          >
+            Create Configuration
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Box>
   );
 }

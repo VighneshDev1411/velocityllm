@@ -13,6 +13,27 @@ import {
   Check, Minus, Filter
 } from 'lucide-react';
 
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import Table from '@mui/material/Table';
+import TableHead from '@mui/material/TableHead';
+import TableBody from '@mui/material/TableBody';
+import TableRow from '@mui/material/TableRow';
+import TableCell from '@mui/material/TableCell';
+import LinearProgress from '@mui/material/LinearProgress';
+import Chip from '@mui/material/Chip';
+import CircularProgress from '@mui/material/CircularProgress';
+import Alert from '@mui/material/Alert';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import ToggleButton from '@mui/material/ToggleButton';
+import Grid from '@mui/material/Grid';
+import { StatCard } from '@/components/StatCard';
+import { PageHeader } from '@/components/PageHeader';
+
 // ---------------------------------------------------------------------------
 // Data hooks
 // ---------------------------------------------------------------------------
@@ -103,6 +124,95 @@ function truncate(str: string, len: number): string {
 }
 
 // ---------------------------------------------------------------------------
+// Sub-components
+// ---------------------------------------------------------------------------
+
+function PercentileBar({ label, value, max, color }: {
+  label: string; value: number; max: number; color: string;
+}) {
+  const pct = max > 0 ? Math.min((value / max) * 100, 100) : 0;
+  return (
+    <Box>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
+        <Typography sx={{ fontSize: '0.75rem', fontWeight: 500, color: '#4b5563' }}>{label}</Typography>
+        <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: '#111827' }}>{value}ms</Typography>
+      </Box>
+      <LinearProgress
+        variant="determinate"
+        value={pct}
+        sx={{
+          height: 8,
+          borderRadius: 4,
+          backgroundColor: '#f3f4f6',
+          '& .MuiLinearProgress-bar': {
+            borderRadius: 4,
+            backgroundColor: color,
+            transition: 'width 0.5s ease',
+          },
+        }}
+      />
+    </Box>
+  );
+}
+
+function StatusBadge({ status }: { status: string }) {
+  const map: Record<string, { bg: string; fg: string }> = {
+    completed: { bg: '#dcfce7', fg: '#15803d' },
+    cache_hit: { bg: '#dbeafe', fg: '#1d4ed8' },
+    error: { bg: '#fee2e2', fg: '#b91c1c' },
+  };
+  const colors = map[status] || { bg: '#f3f4f6', fg: '#4b5563' };
+  return (
+    <Chip
+      label={status || 'unknown'}
+      size="small"
+      sx={{
+        fontSize: '0.6875rem',
+        fontWeight: 500,
+        height: 22,
+        backgroundColor: colors.bg,
+        color: colors.fg,
+      }}
+    />
+  );
+}
+
+function ProviderBadge({ provider }: { provider: string }) {
+  const map: Record<string, { bg: string; fg: string }> = {
+    openai: { bg: '#dcfce7', fg: '#15803d' },
+    anthropic: { bg: '#ffedd5', fg: '#c2410c' },
+    google: { bg: '#dbeafe', fg: '#1d4ed8' },
+    cohere: { bg: '#f3e8ff', fg: '#7e22ce' },
+    local: { bg: '#f3f4f6', fg: '#4b5563' },
+  };
+  const colors = map[(provider || '').toLowerCase()] || { bg: '#f3f4f6', fg: '#4b5563' };
+  return (
+    <Chip
+      label={provider || '-'}
+      size="small"
+      sx={{
+        fontSize: '0.6875rem',
+        fontWeight: 500,
+        height: 22,
+        backgroundColor: colors.bg,
+        color: colors.fg,
+      }}
+    />
+  );
+}
+
+function ChartPlaceholder() {
+  return (
+    <Box sx={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <Box sx={{ textAlign: 'center' }}>
+        <CircularProgress size={24} sx={{ color: '#60a5fa' }} />
+        <Typography sx={{ mt: 1, fontSize: '0.75rem', color: '#9ca3af' }}>Loading chart...</Typography>
+      </Box>
+    </Box>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Main page
 // ---------------------------------------------------------------------------
 
@@ -163,487 +273,551 @@ export default function AnalyticsPage() {
   // ------ Loading state ------
   if (summaryLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto" />
-          <p className="mt-4 text-gray-600">Loading analytics...</p>
-        </div>
-      </div>
+      <Box sx={{ minHeight: '100vh', bgcolor: '#f9fafb', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Box sx={{ textAlign: 'center' }}>
+          <CircularProgress size={48} sx={{ color: '#2563eb' }} />
+          <Typography sx={{ mt: 2, color: '#4b5563' }}>Loading analytics...</Typography>
+        </Box>
+      </Box>
     );
   }
 
   // ------ Error state ------
   if (summaryError) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md">
-          <div className="flex items-center gap-3 mb-2">
-            <AlertCircle className="w-6 h-6 text-red-600" />
-            <h3 className="text-lg font-semibold text-red-900">Connection Error</h3>
-          </div>
-          <p className="text-red-700">Failed to load analytics data. Make sure the backend is running.</p>
-          <button
-            onClick={() => refetchSummary()}
-            className="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition flex items-center gap-2"
-          >
-            <RefreshCw className="w-4 h-4" /> Retry
-          </button>
-        </div>
-      </div>
+      <Box sx={{ minHeight: '100vh', bgcolor: '#f9fafb', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Alert
+          severity="error"
+          icon={<AlertCircle style={{ width: 24, height: 24 }} />}
+          sx={{ maxWidth: 400, borderRadius: '12px' }}
+          action={
+            <Button
+              color="error"
+              variant="contained"
+              size="small"
+              startIcon={<RefreshCw style={{ width: 16, height: 16 }} />}
+              onClick={() => refetchSummary()}
+              sx={{ textTransform: 'none', borderRadius: '8px' }}
+            >
+              Retry
+            </Button>
+          }
+        >
+          <Typography sx={{ fontWeight: 600, mb: 0.5 }}>Connection Error</Typography>
+          <Typography sx={{ fontSize: '0.875rem' }}>Failed to load analytics data. Make sure the backend is running.</Typography>
+        </Alert>
+      </Box>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <Box sx={{ p: { xs: 2, sm: 3 } }}>
       {/* ---------------------------------------------------------------- */}
       {/* Header                                                           */}
       {/* ---------------------------------------------------------------- */}
-      <header className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Analytics</h1>
-              <p className="text-sm text-gray-500 mt-1">
-                Deep-dive into request patterns, latency, costs, and model performance
-              </p>
-            </div>
-            <div className="flex bg-gray-100 rounded-lg p-0.5">
-              {['1h', '6h', '24h', '7d'].map((r) => (
-                <button
-                  key={r}
-                  onClick={() => setPeriod(r)}
-                  className={`px-3 py-1.5 text-xs font-medium rounded-md transition ${
-                    period === r
-                      ? 'bg-white text-blue-600 shadow-sm'
-                      : 'text-gray-500 hover:text-gray-700'
-                  }`}
-                >
-                  {r}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      </header>
+      <PageHeader
+        title="Analytics"
+        subtitle="Deep-dive into request patterns, latency, costs, and model performance"
+        action={
+          <ToggleButtonGroup
+            value={period}
+            exclusive
+            onChange={(_, val) => { if (val) setPeriod(val); }}
+            size="small"
+            sx={{
+              '& .MuiToggleButton-root': {
+                textTransform: 'none',
+                fontSize: '0.75rem',
+                fontWeight: 500,
+                px: 2,
+                py: 0.75,
+                border: '1px solid #e5e7eb',
+                color: '#6b7280',
+                '&.Mui-selected': {
+                  backgroundColor: '#fff',
+                  color: '#2563eb',
+                  boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                  '&:hover': { backgroundColor: '#f0f7ff' },
+                },
+                '&:hover': { backgroundColor: '#f9fafb' },
+              },
+            }}
+          >
+            {['1h', '6h', '24h', '7d'].map((r) => (
+              <ToggleButton key={r} value={r}>{r}</ToggleButton>
+            ))}
+          </ToggleButtonGroup>
+        }
+      />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
         {/* ---------------------------------------------------------------- */}
         {/* KPI Summary Row                                                  */}
         {/* ---------------------------------------------------------------- */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-          <KPICard icon={<BarChart3 className="w-5 h-5" />} label="Total Requests"
-            value={formatNumber(throughput.total_requests || 0)} color="blue" />
-          <KPICard icon={<Clock className="w-5 h-5" />} label="Avg Latency"
-            value={`${latency.mean_ms ?? 0}ms`} color="purple" />
-          <KPICard icon={<DollarSign className="w-5 h-5" />} label="Total Cost"
-            value={formatCost(cost.total_cost || 0)} color="green" />
-          <KPICard icon={<AlertCircle className="w-5 h-5" />} label="Error Rate"
-            value={`${errors.error_rate ?? 0}%`} color="red" />
-          <KPICard icon={<Zap className="w-5 h-5" />} label="Throughput"
-            value={`${throughput.requests_per_second ?? 0} req/s`} color="yellow" />
-          <KPICard icon={<Timer className="w-5 h-5" />} label="Uptime"
-            value={formatUptime(throughput.uptime_seconds || 0)} color="blue" />
-        </div>
+        <Grid container spacing={2}>
+          <Grid size={{ xs: 6, md: 4, lg: 2 }}>
+            <StatCard icon={<BarChart3 style={{ width: 20, height: 20 }} />} label="Total Requests"
+              value={formatNumber(throughput.total_requests || 0)} color="blue" />
+          </Grid>
+          <Grid size={{ xs: 6, md: 4, lg: 2 }}>
+            <StatCard icon={<Clock style={{ width: 20, height: 20 }} />} label="Avg Latency"
+              value={`${latency.mean_ms ?? 0}ms`} color="purple" />
+          </Grid>
+          <Grid size={{ xs: 6, md: 4, lg: 2 }}>
+            <StatCard icon={<DollarSign style={{ width: 20, height: 20 }} />} label="Total Cost"
+              value={formatCost(cost.total_cost || 0)} color="green" />
+          </Grid>
+          <Grid size={{ xs: 6, md: 4, lg: 2 }}>
+            <StatCard icon={<AlertCircle style={{ width: 20, height: 20 }} />} label="Error Rate"
+              value={`${errors.error_rate ?? 0}%`} color="red" />
+          </Grid>
+          <Grid size={{ xs: 6, md: 4, lg: 2 }}>
+            <StatCard icon={<Zap style={{ width: 20, height: 20 }} />} label="Throughput"
+              value={`${throughput.requests_per_second ?? 0} req/s`} color="yellow" />
+          </Grid>
+          <Grid size={{ xs: 6, md: 4, lg: 2 }}>
+            <StatCard icon={<Timer style={{ width: 20, height: 20 }} />} label="Uptime"
+              value={formatUptime(throughput.uptime_seconds || 0)} color="blue" />
+          </Grid>
+        </Grid>
 
         {/* ---------------------------------------------------------------- */}
         {/* Latency Analysis                                                 */}
         {/* ---------------------------------------------------------------- */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Grid container spacing={3}>
           {/* Latency Percentiles Time Series */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h3 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <Clock className="w-4 h-4 text-purple-600" />
-              Latency Percentiles Over Time
-            </h3>
-            <div className="h-64">
-              {tsLoading ? (
-                <ChartPlaceholder />
-              ) : (
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={timeSeries?.latency || []}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                    <XAxis dataKey="time" tickFormatter={formatTime}
-                      tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} unit="ms" />
-                    <Tooltip labelFormatter={(l) => new Date(l as string).toLocaleString()}
-                      contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '12px' }} />
-                    <Legend iconType="line" wrapperStyle={{ fontSize: '11px' }} />
-                    <Line type="monotone" dataKey="p50_ms" name="P50" stroke={CHART_GREEN} strokeWidth={2} dot={false} />
-                    <Line type="monotone" dataKey="p90_ms" name="P90" stroke={CHART_YELLOW} strokeWidth={2} dot={false} />
-                    <Line type="monotone" dataKey="p95_ms" name="P95" stroke={CHART_PURPLE} strokeWidth={2} dot={false} />
-                    <Line type="monotone" dataKey="p99_ms" name="P99" stroke={CHART_RED} strokeWidth={2} dot={false} />
-                  </LineChart>
-                </ResponsiveContainer>
-              )}
-            </div>
-          </div>
+          <Grid size={{ xs: 12, lg: 6 }}>
+            <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                <Clock style={{ width: 16, height: 16, color: '#7c3aed' }} />
+                <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#111827' }}>
+                  Latency Percentiles Over Time
+                </Typography>
+              </Box>
+              <Box sx={{ height: 256 }}>
+                {tsLoading ? (
+                  <ChartPlaceholder />
+                ) : (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={timeSeries?.latency || []}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                      <XAxis dataKey="time" tickFormatter={formatTime}
+                        tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
+                      <YAxis tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} unit="ms" />
+                      <Tooltip labelFormatter={(l) => new Date(l as string).toLocaleString()}
+                        contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '12px' }} />
+                      <Legend iconType="line" wrapperStyle={{ fontSize: '11px' }} />
+                      <Line type="monotone" dataKey="p50_ms" name="P50" stroke={CHART_GREEN} strokeWidth={2} dot={false} />
+                      <Line type="monotone" dataKey="p90_ms" name="P90" stroke={CHART_YELLOW} strokeWidth={2} dot={false} />
+                      <Line type="monotone" dataKey="p95_ms" name="P95" stroke={CHART_PURPLE} strokeWidth={2} dot={false} />
+                      <Line type="monotone" dataKey="p99_ms" name="P99" stroke={CHART_RED} strokeWidth={2} dot={false} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                )}
+              </Box>
+            </Paper>
+          </Grid>
 
           {/* Latency Distribution */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h3 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <BarChart3 className="w-4 h-4 text-purple-600" />
-              Latency Distribution
-            </h3>
-            <div className="space-y-4">
-              <PercentileBar label="P50 (Median)" value={latency.p50_ms || 0} max={latency.p99_ms || 100} color="bg-green-500" />
-              <PercentileBar label="P90" value={latency.p90_ms || 0} max={latency.p99_ms || 100} color="bg-yellow-500" />
-              <PercentileBar label="P95" value={latency.p95_ms || 0} max={latency.p99_ms || 100} color="bg-purple-500" />
-              <PercentileBar label="P99" value={latency.p99_ms || 0} max={latency.p99_ms || 100} color="bg-red-500" />
-            </div>
-            <div className="mt-6 pt-4 border-t border-gray-100 grid grid-cols-3 gap-4 text-center">
-              <div>
-                <p className="text-xs text-gray-500">Min</p>
-                <p className="text-sm font-bold text-gray-900">{latency.min_ms ?? 0}ms</p>
-              </div>
-              <div>
-                <p className="text-xs text-gray-500">Mean</p>
-                <p className="text-sm font-bold text-gray-900">{latency.mean_ms ?? 0}ms</p>
-              </div>
-              <div>
-                <p className="text-xs text-gray-500">Max</p>
-                <p className="text-sm font-bold text-gray-900">{latency.max_ms ?? 0}ms</p>
-              </div>
-            </div>
-          </div>
-        </div>
+          <Grid size={{ xs: 12, lg: 6 }}>
+            <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                <BarChart3 style={{ width: 16, height: 16, color: '#7c3aed' }} />
+                <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#111827' }}>
+                  Latency Distribution
+                </Typography>
+              </Box>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <PercentileBar label="P50 (Median)" value={latency.p50_ms || 0} max={latency.p99_ms || 100} color="#22c55e" />
+                <PercentileBar label="P90" value={latency.p90_ms || 0} max={latency.p99_ms || 100} color="#eab308" />
+                <PercentileBar label="P95" value={latency.p95_ms || 0} max={latency.p99_ms || 100} color="#8b5cf6" />
+                <PercentileBar label="P99" value={latency.p99_ms || 0} max={latency.p99_ms || 100} color="#ef4444" />
+              </Box>
+              <Box sx={{ mt: 3, pt: 2, borderTop: '1px solid #f3f4f6' }}>
+                <Grid container spacing={2}>
+                  <Grid size={4}>
+                    <Box sx={{ textAlign: 'center' }}>
+                      <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>Min</Typography>
+                      <Typography sx={{ fontSize: '0.875rem', fontWeight: 700, color: '#111827' }}>{latency.min_ms ?? 0}ms</Typography>
+                    </Box>
+                  </Grid>
+                  <Grid size={4}>
+                    <Box sx={{ textAlign: 'center' }}>
+                      <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>Mean</Typography>
+                      <Typography sx={{ fontSize: '0.875rem', fontWeight: 700, color: '#111827' }}>{latency.mean_ms ?? 0}ms</Typography>
+                    </Box>
+                  </Grid>
+                  <Grid size={4}>
+                    <Box sx={{ textAlign: 'center' }}>
+                      <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>Max</Typography>
+                      <Typography sx={{ fontSize: '0.875rem', fontWeight: 700, color: '#111827' }}>{latency.max_ms ?? 0}ms</Typography>
+                    </Box>
+                  </Grid>
+                </Grid>
+              </Box>
+            </Paper>
+          </Grid>
+        </Grid>
 
         {/* ---------------------------------------------------------------- */}
         {/* Throughput & Cost Analysis                                        */}
         {/* ---------------------------------------------------------------- */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Grid container spacing={3}>
           {/* Request Throughput */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h3 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <Zap className="w-4 h-4 text-blue-600" />
-              Request Throughput
-            </h3>
-            <div className="h-64">
-              {tsLoading ? (
-                <ChartPlaceholder />
-              ) : (
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={timeSeries?.requests || []}>
-                    <defs>
-                      <linearGradient id="throughputGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={CHART_BLUE} stopOpacity={0.3} />
-                        <stop offset="95%" stopColor={CHART_BLUE} stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                    <XAxis dataKey="time" tickFormatter={formatTime}
-                      tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
-                    <Tooltip labelFormatter={(l) => new Date(l as string).toLocaleString()}
-                      contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '12px' }} />
-                    <Area type="monotone" dataKey="requests" stroke={CHART_BLUE}
-                      strokeWidth={2} fill="url(#throughputGradient)" />
-                  </AreaChart>
-                </ResponsiveContainer>
-              )}
-            </div>
-          </div>
+          <Grid size={{ xs: 12, lg: 6 }}>
+            <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                <Zap style={{ width: 16, height: 16, color: '#2563eb' }} />
+                <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#111827' }}>
+                  Request Throughput
+                </Typography>
+              </Box>
+              <Box sx={{ height: 256 }}>
+                {tsLoading ? (
+                  <ChartPlaceholder />
+                ) : (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={timeSeries?.requests || []}>
+                      <defs>
+                        <linearGradient id="throughputGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor={CHART_BLUE} stopOpacity={0.3} />
+                          <stop offset="95%" stopColor={CHART_BLUE} stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                      <XAxis dataKey="time" tickFormatter={formatTime}
+                        tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
+                      <YAxis tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
+                      <Tooltip labelFormatter={(l) => new Date(l as string).toLocaleString()}
+                        contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '12px' }} />
+                      <Area type="monotone" dataKey="requests" stroke={CHART_BLUE}
+                        strokeWidth={2} fill="url(#throughputGradient)" />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                )}
+              </Box>
+            </Paper>
+          </Grid>
 
           {/* Cumulative Cost */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h3 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <DollarSign className="w-4 h-4 text-green-600" />
-              Cumulative Cost
-            </h3>
-            <div className="h-64">
-              {tsLoading ? (
-                <ChartPlaceholder />
-              ) : (
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={timeSeries?.cost || []}>
-                    <defs>
-                      <linearGradient id="costGradientAnalytics" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={CHART_GREEN} stopOpacity={0.3} />
-                        <stop offset="95%" stopColor={CHART_GREEN} stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                    <XAxis dataKey="time" tickFormatter={formatTime}
-                      tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false}
-                      tickFormatter={(v) => `$${v}`} />
-                    <Tooltip labelFormatter={(l) => new Date(l as string).toLocaleString()}
-                      formatter={(value: number) => [`$${value.toFixed(4)}`, 'Cost']}
-                      contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '12px' }} />
-                    <Area type="monotone" dataKey="cost" stroke={CHART_GREEN}
-                      strokeWidth={2} fill="url(#costGradientAnalytics)" />
-                  </AreaChart>
-                </ResponsiveContainer>
-              )}
-            </div>
-          </div>
-        </div>
+          <Grid size={{ xs: 12, lg: 6 }}>
+            <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                <DollarSign style={{ width: 16, height: 16, color: '#059669' }} />
+                <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#111827' }}>
+                  Cumulative Cost
+                </Typography>
+              </Box>
+              <Box sx={{ height: 256 }}>
+                {tsLoading ? (
+                  <ChartPlaceholder />
+                ) : (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={timeSeries?.cost || []}>
+                      <defs>
+                        <linearGradient id="costGradientAnalytics" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor={CHART_GREEN} stopOpacity={0.3} />
+                          <stop offset="95%" stopColor={CHART_GREEN} stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                      <XAxis dataKey="time" tickFormatter={formatTime}
+                        tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
+                      <YAxis tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false}
+                        tickFormatter={(v) => `$${v}`} />
+                      <Tooltip labelFormatter={(l) => new Date(l as string).toLocaleString()}
+                        formatter={(value: number) => [`$${value.toFixed(4)}`, 'Cost']}
+                        contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '12px' }} />
+                      <Area type="monotone" dataKey="cost" stroke={CHART_GREEN}
+                        strokeWidth={2} fill="url(#costGradientAnalytics)" />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                )}
+              </Box>
+            </Paper>
+          </Grid>
+        </Grid>
 
         {/* ---------------------------------------------------------------- */}
         {/* Model Comparison Table                                           */}
         {/* ---------------------------------------------------------------- */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h3 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
-            <BarChart3 className="w-4 h-4 text-blue-600" />
-            Model Comparison
-          </h3>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-gray-200">
-                  <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Model</th>
-                  <th className="text-right py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Requests</th>
-                  <th className="text-right py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Success Rate</th>
-                  <th className="text-right py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Avg Latency</th>
-                  <th className="text-right py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Cost</th>
-                  <th className="text-right py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Avg Cost/Req</th>
-                  <th className="text-right py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Last Used</th>
-                </tr>
-              </thead>
-              <tbody>
+        <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+            <BarChart3 style={{ width: 16, height: 16, color: '#2563eb' }} />
+            <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#111827' }}>
+              Model Comparison
+            </Typography>
+          </Box>
+          <Box sx={{ overflowX: 'auto' }}>
+            <Table size="small">
+              <TableHead>
+                <TableRow sx={{ '& th': { borderBottom: '1px solid #e5e7eb' } }}>
+                  <TableCell sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Model</TableCell>
+                  <TableCell align="right" sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Requests</TableCell>
+                  <TableCell align="right" sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Success Rate</TableCell>
+                  <TableCell align="right" sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Avg Latency</TableCell>
+                  <TableCell align="right" sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Total Cost</TableCell>
+                  <TableCell align="right" sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Avg Cost/Req</TableCell>
+                  <TableCell align="right" sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Last Used</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
                 {models.length === 0 && (
-                  <tr><td colSpan={7} className="py-8 text-center text-gray-400 text-sm">No model data available</td></tr>
+                  <TableRow>
+                    <TableCell colSpan={7} sx={{ py: 4, textAlign: 'center', color: '#9ca3af', fontSize: '0.875rem', border: 'none' }}>
+                      No model data available
+                    </TableCell>
+                  </TableRow>
                 )}
                 {models.map((m: any, i: number) => {
                   const rate = parseFloat(m.success_rate || '0');
+                  const rateColor = rate >= 99 ? { bg: '#dcfce7', fg: '#15803d' } : rate >= 95 ? { bg: '#fef9c3', fg: '#a16207' } : { bg: '#fee2e2', fg: '#b91c1c' };
                   return (
-                    <tr key={i} className={`border-b border-gray-100 ${i % 2 === 1 ? 'bg-gray-50' : ''} hover:bg-blue-50/30 transition`}>
-                      <td className="py-3 px-4 font-medium text-gray-900">{m.model_name || m.model}</td>
-                      <td className="py-3 px-4 text-right text-gray-700">{formatNumber(m.request_count || m.requests || 0)}</td>
-                      <td className="py-3 px-4 text-right">
-                        <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${
-                          rate >= 99 ? 'bg-green-100 text-green-700' :
-                          rate >= 95 ? 'bg-yellow-100 text-yellow-700' :
-                          'bg-red-100 text-red-700'
-                        }`}>
-                          {m.success_rate ?? `${rate.toFixed(1)}%`}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4 text-right text-gray-700">{m.avg_latency_ms ?? 0}ms</td>
-                      <td className="py-3 px-4 text-right text-gray-700">{m.total_cost ?? '$0.0000'}</td>
-                      <td className="py-3 px-4 text-right text-gray-700">{m.avg_cost_per_request ?? '$0.0000'}</td>
-                      <td className="py-3 px-4 text-right text-gray-500 text-xs">
+                    <TableRow
+                      key={i}
+                      sx={{
+                        backgroundColor: i % 2 === 1 ? '#f9fafb' : 'transparent',
+                        '&:hover': { backgroundColor: 'rgba(59,130,246,0.04)' },
+                        '& td': { borderBottom: '1px solid #f3f4f6' },
+                      }}
+                    >
+                      <TableCell sx={{ fontSize: '0.875rem', fontWeight: 500, color: '#111827' }}>{m.model_name || m.model}</TableCell>
+                      <TableCell align="right" sx={{ fontSize: '0.875rem', color: '#374151' }}>{formatNumber(m.request_count || m.requests || 0)}</TableCell>
+                      <TableCell align="right">
+                        <Chip
+                          label={m.success_rate ?? `${rate.toFixed(1)}%`}
+                          size="small"
+                          sx={{
+                            fontSize: '0.75rem',
+                            fontWeight: 500,
+                            height: 22,
+                            backgroundColor: rateColor.bg,
+                            color: rateColor.fg,
+                          }}
+                        />
+                      </TableCell>
+                      <TableCell align="right" sx={{ fontSize: '0.875rem', color: '#374151' }}>{m.avg_latency_ms ?? 0}ms</TableCell>
+                      <TableCell align="right" sx={{ fontSize: '0.875rem', color: '#374151' }}>{m.total_cost ?? '$0.0000'}</TableCell>
+                      <TableCell align="right" sx={{ fontSize: '0.875rem', color: '#374151' }}>{m.avg_cost_per_request ?? '$0.0000'}</TableCell>
+                      <TableCell align="right" sx={{ fontSize: '0.75rem', color: '#6b7280' }}>
                         {m.last_used ? formatTimestamp(m.last_used) : '-'}
-                      </td>
-                    </tr>
+                      </TableCell>
+                    </TableRow>
                   );
                 })}
-              </tbody>
-            </table>
-          </div>
-        </div>
+              </TableBody>
+            </Table>
+          </Box>
+        </Paper>
 
         {/* ---------------------------------------------------------------- */}
         {/* Request History Table                                             */}
         {/* ---------------------------------------------------------------- */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-            <h3 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
-              <Filter className="w-4 h-4 text-gray-500" />
-              Request History
-            </h3>
-            <div className="flex items-center gap-3">
-              <select
+        <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3 }}>
+          <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, alignItems: { sm: 'center' }, justifyContent: 'space-between', gap: 1.5, mb: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Filter style={{ width: 16, height: 16, color: '#6b7280' }} />
+              <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#111827' }}>
+                Request History
+              </Typography>
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <Select
                 value={logModel}
                 onChange={(e) => { setLogModel(e.target.value); setLogOffset(0); }}
-                className="text-xs border border-gray-200 rounded-lg px-3 py-1.5 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                displayEmpty
+                size="small"
+                sx={{
+                  fontSize: '0.75rem',
+                  minWidth: 140,
+                  '& .MuiOutlinedInput-notchedOutline': { borderColor: '#e5e7eb', borderRadius: '8px' },
+                  '& .MuiSelect-select': { py: 0.75, px: 1.5 },
+                }}
               >
-                <option value="">All Models</option>
+                <MenuItem value="" sx={{ fontSize: '0.75rem' }}>All Models</MenuItem>
                 {modelNames.map((n: string) => (
-                  <option key={n} value={n}>{n}</option>
+                  <MenuItem key={n} value={n} sx={{ fontSize: '0.75rem' }}>{n}</MenuItem>
                 ))}
-              </select>
-              <select
+              </Select>
+              <Select
                 value={logStatus}
                 onChange={(e) => { setLogStatus(e.target.value); setLogOffset(0); }}
-                className="text-xs border border-gray-200 rounded-lg px-3 py-1.5 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                displayEmpty
+                size="small"
+                sx={{
+                  fontSize: '0.75rem',
+                  minWidth: 130,
+                  '& .MuiOutlinedInput-notchedOutline': { borderColor: '#e5e7eb', borderRadius: '8px' },
+                  '& .MuiSelect-select': { py: 0.75, px: 1.5 },
+                }}
               >
-                <option value="">All Statuses</option>
-                <option value="completed">Completed</option>
-                <option value="cache_hit">Cache Hit</option>
-                <option value="error">Error</option>
-              </select>
-            </div>
-          </div>
+                <MenuItem value="" sx={{ fontSize: '0.75rem' }}>All Statuses</MenuItem>
+                <MenuItem value="completed" sx={{ fontSize: '0.75rem' }}>Completed</MenuItem>
+                <MenuItem value="cache_hit" sx={{ fontSize: '0.75rem' }}>Cache Hit</MenuItem>
+                <MenuItem value="error" sx={{ fontSize: '0.75rem' }}>Error</MenuItem>
+              </Select>
+            </Box>
+          </Box>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-gray-200">
-                  <th className="text-left py-2 px-3 text-xs font-semibold text-gray-500">Time</th>
-                  <th className="text-left py-2 px-3 text-xs font-semibold text-gray-500">Model</th>
-                  <th className="text-left py-2 px-3 text-xs font-semibold text-gray-500">Provider</th>
-                  <th className="text-left py-2 px-3 text-xs font-semibold text-gray-500">Prompt</th>
-                  <th className="text-right py-2 px-3 text-xs font-semibold text-gray-500">Latency</th>
-                  <th className="text-right py-2 px-3 text-xs font-semibold text-gray-500">Cost</th>
-                  <th className="text-center py-2 px-3 text-xs font-semibold text-gray-500">Status</th>
-                  <th className="text-center py-2 px-3 text-xs font-semibold text-gray-500">Cache</th>
-                </tr>
-              </thead>
-              <tbody>
+          <Box sx={{ overflowX: 'auto' }}>
+            <Table size="small">
+              <TableHead>
+                <TableRow sx={{ '& th': { borderBottom: '1px solid #e5e7eb' } }}>
+                  <TableCell sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#6b7280' }}>Time</TableCell>
+                  <TableCell sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#6b7280' }}>Model</TableCell>
+                  <TableCell sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#6b7280' }}>Provider</TableCell>
+                  <TableCell sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#6b7280' }}>Prompt</TableCell>
+                  <TableCell align="right" sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#6b7280' }}>Latency</TableCell>
+                  <TableCell align="right" sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#6b7280' }}>Cost</TableCell>
+                  <TableCell align="center" sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#6b7280' }}>Status</TableCell>
+                  <TableCell align="center" sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#6b7280' }}>Cache</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
                 {logLoading && (
-                  <tr><td colSpan={8} className="py-8 text-center text-gray-400 text-sm">Loading requests...</td></tr>
+                  <TableRow>
+                    <TableCell colSpan={8} sx={{ py: 4, textAlign: 'center', color: '#9ca3af', fontSize: '0.875rem', border: 'none' }}>
+                      Loading requests...
+                    </TableCell>
+                  </TableRow>
                 )}
                 {!logLoading && requestLog.length === 0 && (
-                  <tr><td colSpan={8} className="py-8 text-center text-gray-400 text-sm">No requests found</td></tr>
+                  <TableRow>
+                    <TableCell colSpan={8} sx={{ py: 4, textAlign: 'center', color: '#9ca3af', fontSize: '0.875rem', border: 'none' }}>
+                      No requests found
+                    </TableCell>
+                  </TableRow>
                 )}
                 {!logLoading && requestLog.map((r: any, i: number) => (
-                  <tr key={i} className={`border-b border-gray-50 ${i % 2 === 1 ? 'bg-gray-50/50' : ''} hover:bg-blue-50/20 transition`}>
-                    <td className="py-2 px-3 text-xs text-gray-600 whitespace-nowrap">
+                  <TableRow
+                    key={i}
+                    sx={{
+                      backgroundColor: i % 2 === 1 ? 'rgba(249,250,251,0.5)' : 'transparent',
+                      '&:hover': { backgroundColor: 'rgba(59,130,246,0.03)' },
+                      '& td': { borderBottom: '1px solid #f9fafb' },
+                    }}
+                  >
+                    <TableCell sx={{ fontSize: '0.75rem', color: '#4b5563', whiteSpace: 'nowrap' }}>
                       {r.timestamp ? formatTimestamp(r.timestamp) : '-'}
-                    </td>
-                    <td className="py-2 px-3 text-xs font-medium text-gray-900">{r.model || '-'}</td>
-                    <td className="py-2 px-3">
+                    </TableCell>
+                    <TableCell sx={{ fontSize: '0.75rem', fontWeight: 500, color: '#111827' }}>{r.model || '-'}</TableCell>
+                    <TableCell>
                       <ProviderBadge provider={r.provider} />
-                    </td>
-                    <td className="py-2 px-3 text-xs text-gray-600 max-w-[200px]" title={r.prompt}>
+                    </TableCell>
+                    <TableCell sx={{ fontSize: '0.75rem', color: '#4b5563', maxWidth: 200 }} title={r.prompt}>
                       {truncate(r.prompt || '', 50)}
-                    </td>
-                    <td className="py-2 px-3 text-xs text-right text-gray-700">{r.latency_ms ?? '-'}ms</td>
-                    <td className="py-2 px-3 text-xs text-right text-gray-700">{r.cost != null ? formatCost(r.cost) : '-'}</td>
-                    <td className="py-2 px-3 text-center">
+                    </TableCell>
+                    <TableCell align="right" sx={{ fontSize: '0.75rem', color: '#374151' }}>{r.latency_ms ?? '-'}ms</TableCell>
+                    <TableCell align="right" sx={{ fontSize: '0.75rem', color: '#374151' }}>{r.cost != null ? formatCost(r.cost) : '-'}</TableCell>
+                    <TableCell align="center">
                       <StatusBadge status={r.status} />
-                    </td>
-                    <td className="py-2 px-3 text-center">
+                    </TableCell>
+                    <TableCell align="center">
                       {r.cache_hit
-                        ? <Check className="w-4 h-4 text-green-500 mx-auto" />
-                        : <Minus className="w-4 h-4 text-gray-300 mx-auto" />}
-                    </td>
-                  </tr>
+                        ? <Check style={{ width: 16, height: 16, color: '#22c55e', margin: '0 auto' }} />
+                        : <Minus style={{ width: 16, height: 16, color: '#d1d5db', margin: '0 auto' }} />}
+                    </TableCell>
+                  </TableRow>
                 ))}
-              </tbody>
-            </table>
-          </div>
+              </TableBody>
+            </Table>
+          </Box>
 
           {/* Pagination */}
-          <div className="flex items-center justify-between mt-4 pt-3 border-t border-gray-100">
-            <p className="text-xs text-gray-500">
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mt: 2, pt: 1.5, borderTop: '1px solid #f3f4f6' }}>
+            <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>
               Showing {pagination.total > 0 ? pagination.offset + 1 : 0}-{Math.min(pagination.offset + pagination.limit, pagination.total)} of {pagination.total}
-            </p>
-            <div className="flex items-center gap-2">
-              <button
+            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Button
+                variant="outlined"
+                size="small"
+                startIcon={<ChevronLeft style={{ width: 14, height: 14 }} />}
                 onClick={() => setLogOffset(Math.max(0, logOffset - logLimit))}
                 disabled={logOffset === 0}
-                className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition"
+                sx={{
+                  fontSize: '0.75rem',
+                  fontWeight: 500,
+                  textTransform: 'none',
+                  borderColor: '#e5e7eb',
+                  color: '#4b5563',
+                  borderRadius: '8px',
+                  px: 1.5,
+                  py: 0.5,
+                  '&:hover': { backgroundColor: '#f9fafb', borderColor: '#d1d5db' },
+                  '&.Mui-disabled': { opacity: 0.4 },
+                }}
               >
-                <ChevronLeft className="w-3 h-3" /> Previous
-              </button>
-              <button
+                Previous
+              </Button>
+              <Button
+                variant="outlined"
+                size="small"
+                endIcon={<ChevronRight style={{ width: 14, height: 14 }} />}
                 onClick={() => setLogOffset(logOffset + logLimit)}
                 disabled={logOffset + logLimit >= pagination.total}
-                className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition"
+                sx={{
+                  fontSize: '0.75rem',
+                  fontWeight: 500,
+                  textTransform: 'none',
+                  borderColor: '#e5e7eb',
+                  color: '#4b5563',
+                  borderRadius: '8px',
+                  px: 1.5,
+                  py: 0.5,
+                  '&:hover': { backgroundColor: '#f9fafb', borderColor: '#d1d5db' },
+                  '&.Mui-disabled': { opacity: 0.4 },
+                }}
               >
-                Next <ChevronRight className="w-3 h-3" />
-              </button>
-            </div>
-          </div>
-        </div>
+                Next
+              </Button>
+            </Box>
+          </Box>
+        </Paper>
 
         {/* ---------------------------------------------------------------- */}
         {/* Export Section                                                    */}
         {/* ---------------------------------------------------------------- */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h3 className="text-sm font-semibold text-gray-900 mb-1">Export Analytics</h3>
-          <p className="text-xs text-gray-500 mb-4">Download analytics data for offline analysis or reporting.</p>
-          <div className="flex items-center gap-3">
-            <button
+        <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3 }}>
+          <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#111827', mb: 0.5 }}>Export Analytics</Typography>
+          <Typography sx={{ fontSize: '0.75rem', color: '#6b7280', mb: 2 }}>
+            Download analytics data for offline analysis or reporting.
+          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+            <Button
+              variant="contained"
+              startIcon={<Download style={{ width: 16, height: 16 }} />}
               onClick={exportCSV}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition"
+              sx={{
+                fontSize: '0.875rem',
+                fontWeight: 500,
+                textTransform: 'none',
+                borderRadius: '8px',
+                backgroundColor: '#2563eb',
+                '&:hover': { backgroundColor: '#1d4ed8' },
+              }}
             >
-              <Download className="w-4 h-4" /> Export as CSV
-            </button>
-            <button
+              Export as CSV
+            </Button>
+            <Button
+              variant="outlined"
+              startIcon={<FileJson style={{ width: 16, height: 16 }} />}
               onClick={exportSummary}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 transition"
+              sx={{
+                fontSize: '0.875rem',
+                fontWeight: 500,
+                textTransform: 'none',
+                borderRadius: '8px',
+                borderColor: '#e5e7eb',
+                color: '#374151',
+                '&:hover': { backgroundColor: '#f9fafb', borderColor: '#d1d5db' },
+              }}
             >
-              <FileJson className="w-4 h-4" /> Export Summary
-            </button>
-          </div>
-        </div>
-      </main>
-    </div>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// Sub-components
-// ---------------------------------------------------------------------------
-
-function KPICard({ icon, label, value, color }: {
-  icon: React.ReactNode; label: string; value: string; color: string;
-}) {
-  const colorMap: Record<string, string> = {
-    blue: 'bg-blue-50 text-blue-600',
-    green: 'bg-green-50 text-green-600',
-    purple: 'bg-purple-50 text-purple-600',
-    red: 'bg-red-50 text-red-600',
-    yellow: 'bg-yellow-50 text-yellow-600',
-  };
-
-  return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow">
-      <div className={`inline-flex p-2 rounded-lg mb-2 ${colorMap[color] || colorMap.blue}`}>{icon}</div>
-      <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">{label}</p>
-      <p className="text-xl font-bold text-gray-900 mt-0.5">{value}</p>
-    </div>
-  );
-}
-
-function PercentileBar({ label, value, max, color }: {
-  label: string; value: number; max: number; color: string;
-}) {
-  const pct = max > 0 ? Math.min((value / max) * 100, 100) : 0;
-  return (
-    <div>
-      <div className="flex justify-between items-center mb-1">
-        <span className="text-xs font-medium text-gray-600">{label}</span>
-        <span className="text-xs font-bold text-gray-900">{value}ms</span>
-      </div>
-      <div className="w-full bg-gray-100 rounded-full h-2">
-        <div
-          className={`h-2 rounded-full transition-all duration-500 ${color}`}
-          style={{ width: `${pct}%` }}
-        />
-      </div>
-    </div>
-  );
-}
-
-function StatusBadge({ status }: { status: string }) {
-  const map: Record<string, string> = {
-    completed: 'bg-green-100 text-green-700',
-    cache_hit: 'bg-blue-100 text-blue-700',
-    error: 'bg-red-100 text-red-700',
-  };
-  return (
-    <span className={`inline-block px-2 py-0.5 rounded-full text-[11px] font-medium ${map[status] || 'bg-gray-100 text-gray-600'}`}>
-      {status || 'unknown'}
-    </span>
-  );
-}
-
-function ProviderBadge({ provider }: { provider: string }) {
-  const map: Record<string, string> = {
-    openai: 'bg-emerald-100 text-emerald-700',
-    anthropic: 'bg-orange-100 text-orange-700',
-    google: 'bg-blue-100 text-blue-700',
-    cohere: 'bg-purple-100 text-purple-700',
-    local: 'bg-gray-100 text-gray-600',
-  };
-  const cls = map[(provider || '').toLowerCase()] || 'bg-gray-100 text-gray-600';
-  return (
-    <span className={`inline-block px-2 py-0.5 rounded-full text-[11px] font-medium ${cls}`}>
-      {provider || '-'}
-    </span>
-  );
-}
-
-function ChartPlaceholder() {
-  return (
-    <div className="h-full flex items-center justify-center text-gray-400">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-400 mx-auto" />
-        <p className="mt-2 text-xs">Loading chart...</p>
-      </div>
-    </div>
+              Export Summary
+            </Button>
+          </Box>
+        </Paper>
+      </Box>
+    </Box>
   );
 }
