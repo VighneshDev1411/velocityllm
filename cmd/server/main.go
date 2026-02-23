@@ -23,6 +23,7 @@ import (
 	"github.com/VighneshDev1411/velocityllm/internal/router"
 	"github.com/VighneshDev1411/velocityllm/internal/streaming"
 	"github.com/VighneshDev1411/velocityllm/internal/tokens"
+	webhooksPkg "github.com/VighneshDev1411/velocityllm/internal/webhooks"
 	"github.com/VighneshDev1411/velocityllm/internal/worker"
 	"github.com/VighneshDev1411/velocityllm/pkg/utils"
 )
@@ -355,6 +356,13 @@ func main() {
 		utils.Fatal("Failed to migrate load test tables", "error", err)
 	}
 	utils.Info("Load test service initialized (load_test_configs, load_test_runs, load_test_metrics, request_results, benchmark_comparisons)")
+
+	// Initialize webhook service (Day 24)
+	webhooksPkg.InitGlobalService(db)
+	if err := webhooksPkg.AutoMigrate(db); err != nil {
+		utils.Fatal("Failed to migrate webhook tables", "error", err)
+	}
+	utils.Info("Webhook service initialized (webhook_endpoints, webhook_deliveries, event_logs)")
 
 	// Setup API routes
 	api.SetupRoutes()

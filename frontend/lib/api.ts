@@ -372,3 +372,17 @@ export const loadTestAPI = {
   quickBenchmark: (targetRPS: number, model: string) =>
     api.post('/api/v1/loadtest/quick', { target_rps: targetRPS, model }),
 };
+
+// Webhook & Events API (Day 24)
+export const webhookAPI = {
+  list: () => api.get('/api/v1/webhooks'),
+  create: (data: any) => api.post('/api/v1/webhooks/create', data),
+  update: (data: any) => api.put('/api/v1/webhooks/update', data),
+  delete: (id: number) => api.delete(`/api/v1/webhooks/delete?id=${id}`),
+  toggle: (id: number, active: boolean) => api.post('/api/v1/webhooks/toggle', { id, active }),
+  deliveries: (endpointId: number, limit: number = 50) =>
+    api.get(`/api/v1/webhooks/deliveries?endpoint_id=${endpointId}&limit=${limit}`),
+  stats: () => api.get('/api/v1/webhooks/stats'),
+  availableEvents: () => api.get('/api/v1/webhooks/events'),
+  eventLogs: (limit: number = 50) => api.get(`/api/v1/events/logs?limit=${limit}`),
+};

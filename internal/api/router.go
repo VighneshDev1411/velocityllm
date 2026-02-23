@@ -336,5 +336,19 @@ func SetupRoutes() {
 	// Quick benchmark
 	http.Handle("/api/v1/loadtest/quick", auth.AuthMiddleware(http.HandlerFunc(QuickBenchmarkHandler)))
 
+	// ============================================
+	// WEBHOOK & EVENT ENDPOINTS (Day 24)
+	// ============================================
+
+	http.Handle("/api/v1/webhooks", auth.AuthMiddleware(http.HandlerFunc(ListWebhooksHandler)))
+	http.Handle("/api/v1/webhooks/create", auth.AuthMiddleware(http.HandlerFunc(CreateWebhookHandler)))
+	http.Handle("/api/v1/webhooks/update", auth.AuthMiddleware(http.HandlerFunc(UpdateWebhookHandler)))
+	http.Handle("/api/v1/webhooks/delete", auth.AuthMiddleware(http.HandlerFunc(DeleteWebhookHandler)))
+	http.Handle("/api/v1/webhooks/toggle", auth.AuthMiddleware(http.HandlerFunc(ToggleWebhookHandler)))
+	http.Handle("/api/v1/webhooks/deliveries", auth.AuthMiddleware(http.HandlerFunc(GetWebhookDeliveriesHandler)))
+	http.Handle("/api/v1/webhooks/stats", auth.AuthMiddleware(http.HandlerFunc(GetWebhookStatsHandler)))
+	http.Handle("/api/v1/webhooks/events", auth.AuthMiddleware(http.HandlerFunc(GetAvailableEventsHandler)))
+	http.Handle("/api/v1/events/logs", auth.AuthMiddleware(http.HandlerFunc(GetEventLogsHandler)))
+
 	utils.Info("All routes configured successfully")
 }
