@@ -188,6 +188,46 @@ func (s *Service) MarkInvoicePaid(invoiceID string) error {
 	}).Error
 }
 
+// DailyUsage represents usage data for a single day
+type DailyUsage struct {
+	Date     string  `json:"date"`
+	Requests int64   `json:"requests"`
+	Tokens   int64   `json:"tokens"`
+	Cost     float64 `json:"cost"`
+}
+
+// GetDailyUsage returns per-day usage breakdown for a user in a given period
+func (s *Service) GetDailyUsage(userID string, start, end time.Time) ([]DailyUsage, error) {
+	var results []DailyUsage
+	err := s.db.Model(&UsageRecord{}).
+		Select("DATE(timestamp) as date, COUNT(*) as requests, COALESCE(SUM(tokens), 0) as tokens, COALESCE(SUM(cost), 0) as cost").
+		Where("user_id = ? AND timestamp >= ? AND timestamp <= ?", userID, start, end).
+		Group("DATE(timestamp)").
+		Order("date ASC").
+		Scan(&results).Error
+	if err != nil {
+		return nil, err
+	}
+
+	// Fill in missing days with zeros
+	dayMap := make(map[string]DailyUsage)
+	for _, r := range results {
+		dayMap[r.Date] = r
+	}
+
+	var filled []DailyUsage
+	for d := start; !d.After(end); d = d.AddDate(0, 0, 1) {
+		key := d.Format("2006-01-02")
+		if usage, ok := dayMap[key]; ok {
+			filled = append(filled, usage)
+		} else {
+			filled = append(filled, DailyUsage{Date: key, Requests: 0, Tokens: 0, Cost: 0})
+		}
+	}
+
+	return filled, nil
+}
+
 // CheckUsageLimits checks if a user has exceeded their tier limits
 func (s *Service) CheckUsageLimits(userID string) (bool, string, error) {
 	sub, err := s.GetSubscription(userID)

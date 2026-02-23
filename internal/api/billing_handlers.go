@@ -172,7 +172,7 @@ func ListInvoicesHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// GetUsageHistoryHandler returns historical usage data
+// GetUsageHistoryHandler returns historical usage data with daily breakdown
 func GetUsageHistoryHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		types.WriteError(w, http.StatusMethodNotAllowed, "Method not allowed")
@@ -195,7 +195,16 @@ func GetUsageHistoryHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	types.WriteSuccess(w, "Usage history retrieved", stats)
+	daily, err := billingService.GetDailyUsage(user.ID, start, end)
+	if err != nil {
+		types.WriteError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	types.WriteSuccess(w, "Usage history retrieved", map[string]interface{}{
+		"summary": stats,
+		"daily":   daily,
+	})
 }
 
 // ExportUsageHandler exports usage data as CSV or JSON

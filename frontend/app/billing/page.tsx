@@ -1,12 +1,17 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { billingAPI } from '@/lib/api';
 import {
   CreditCard, TrendingUp, DollarSign, Calendar, Download,
-  Check, AlertTriangle, Zap, Crown, Shield
+  Check, AlertTriangle, Zap, Crown, Shield, BarChart3, PieChart as PieChartIcon,
+  ArrowUpRight, ArrowDownRight, Wallet
 } from 'lucide-react';
+import {
+  AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell,
+  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
+} from 'recharts';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
@@ -21,7 +26,10 @@ import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import Chip from '@mui/material/Chip';
 import CircularProgress from '@mui/material/CircularProgress';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
 import { PageHeader } from '@/components/PageHeader';
+import { StatCard } from '@/components/StatCard';
 
 interface Subscription {
   id: string;
@@ -49,6 +57,13 @@ interface UsageStats {
     requests: number;
     cost: number;
   }>;
+}
+
+interface DailyUsage {
+  date: string;
+  requests: number;
+  tokens: number;
+  cost: number;
 }
 
 interface Invoice {
@@ -89,41 +104,39 @@ const TIER_INFO = {
   },
 };
 
+const PIE_COLORS = ['#2563eb', '#7c3aed', '#059669', '#d97706', '#dc2626', '#0891b2', '#4f46e5', '#be185d'];
+
+const headerSx = { fontWeight: 600, color: '#6b7280', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' } as const;
+
 export default function BillingPage() {
   const { user } = useAuth();
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [limits, setLimits] = useState<TierLimits | null>(null);
   const [usage, setUsage] = useState<UsageStats | null>(null);
   const [usagePercentage, setUsagePercentage] = useState<{ requests: number; tokens: number } | null>(null);
+  const [dailyUsage, setDailyUsage] = useState<DailyUsage[]>([]);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [activeTab, setActiveTab] = useState(0);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const [subRes, usageRes, invoicesRes] = await Promise.all([
+      const [subRes, usageRes, invoicesRes, historyRes] = await Promise.all([
         billingAPI.getSubscription(),
         billingAPI.getUsage(),
         billingAPI.listInvoices(),
+        billingAPI.getUsageHistory(),
       ]);
 
-      if (subRes.data?.data?.subscription) {
-        setSubscription(subRes.data.data.subscription);
-      }
-      if (subRes.data?.data?.limits) {
-        setLimits(subRes.data.data.limits);
-      }
-      if (usageRes.data?.data?.stats) {
-        setUsage(usageRes.data.data.stats);
-      }
-      if (usageRes.data?.data?.usage_percentage) {
-        setUsagePercentage(usageRes.data.data.usage_percentage);
-      }
-      if (invoicesRes.data?.data?.invoices) {
-        setInvoices(invoicesRes.data.data.invoices);
-      }
+      if (subRes.data?.data?.subscription) setSubscription(subRes.data.data.subscription);
+      if (subRes.data?.data?.limits) setLimits(subRes.data.data.limits);
+      if (usageRes.data?.data?.stats) setUsage(usageRes.data.data.stats);
+      if (usageRes.data?.data?.usage_percentage) setUsagePercentage(usageRes.data.data.usage_percentage);
+      if (invoicesRes.data?.data?.invoices) setInvoices(invoicesRes.data.data.invoices);
+      if (historyRes.data?.data?.daily) setDailyUsage(historyRes.data.data.daily);
     } catch (err: any) {
       console.error('Failed to fetch billing data:', err);
       setError('Failed to load billing information');
@@ -132,9 +145,7 @@ export default function BillingPage() {
     }
   }, []);
 
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+  useEffect(() => { fetchData(); }, [fetchData]);
 
   const handleUpgrade = async (tier: string) => {
     try {
@@ -157,35 +168,74 @@ export default function BillingPage() {
       a.href = url;
       a.download = `usage.${format}`;
       a.click();
-    } catch (err) {
+    } catch {
       setError('Failed to export usage data');
     }
   };
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(amount);
-  };
+  // Cost projection: extrapolate current spend to end of billing cycle
+  const costProjection = useMemo(() => {
+    if (!subscription || !usage) return null;
+    const cycleStart = new Date(subscription.billing_cycle_start).getTime();
+    const cycleEnd = new Date(subscription.billing_cycle_end).getTime();
+    const now = Date.now();
+    const elapsed = now - cycleStart;
+    const total = cycleEnd - cycleStart;
+    if (elapsed <= 0 || total <= 0) return null;
+    const ratio = total / elapsed;
+    return {
+      projected_cost: usage.total_cost * ratio,
+      projected_requests: Math.round(usage.total_requests * ratio),
+      projected_tokens: Math.round(usage.total_tokens * ratio),
+      days_remaining: Math.max(0, Math.ceil((cycleEnd - now) / (1000 * 60 * 60 * 24))),
+      progress: Math.min(100, (elapsed / total) * 100),
+    };
+  }, [subscription, usage]);
 
-  const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    });
-  };
+  // Usage alerts
+  const alerts = useMemo(() => {
+    const result: Array<{ severity: 'warning' | 'error'; message: string }> = [];
+    if (!usagePercentage) return result;
+    if (usagePercentage.requests >= 100) {
+      result.push({ severity: 'error', message: 'You have exceeded your monthly request limit. Upgrade your plan to continue.' });
+    } else if (usagePercentage.requests >= 90) {
+      result.push({ severity: 'warning', message: `You've used ${usagePercentage.requests.toFixed(0)}% of your monthly request limit.` });
+    } else if (usagePercentage.requests >= 75) {
+      result.push({ severity: 'warning', message: `You've used ${usagePercentage.requests.toFixed(0)}% of your monthly request limit.` });
+    }
+    if (usagePercentage.tokens >= 100) {
+      result.push({ severity: 'error', message: 'You have exceeded your monthly token limit. Upgrade your plan to continue.' });
+    } else if (usagePercentage.tokens >= 90) {
+      result.push({ severity: 'warning', message: `You've used ${usagePercentage.tokens.toFixed(0)}% of your monthly token limit.` });
+    }
+    return result;
+  }, [usagePercentage]);
+
+  // Chart data: format daily usage for display
+  const chartData = useMemo(() => {
+    return dailyUsage.map(d => ({
+      ...d,
+      date: new Date(d.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+    }));
+  }, [dailyUsage]);
+
+  const formatCurrency = (amount: number) =>
+    new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
+
+  const formatDate = (dateStr: string) =>
+    new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
   const currentTier = subscription?.tier || 'free';
   const tierInfo = TIER_INFO[currentTier as keyof typeof TIER_INFO];
   const TierIcon = tierInfo.icon;
 
+  const progressColor = (pct: number) => pct >= 90 ? '#dc2626' : pct >= 75 ? '#d97706' : '#2563eb';
+
   return (
-    <Box sx={{ p: { xs: 2, sm: 3 }, maxWidth: '1100px', mx: 'auto' }}>
+    <Box sx={{ p: { xs: 2, sm: 3 }, maxWidth: '1200px', mx: 'auto' }}>
       <PageHeader
-        title="Billing & Usage"
-        subtitle="Manage your subscription and track usage"
+        title="Billing Dashboard"
+        subtitle="Manage your subscription, track spending, and monitor usage"
       />
 
       {/* Alerts */}
@@ -199,47 +249,27 @@ export default function BillingPage() {
           {success}
         </Alert>
       )}
+      {!loading && alerts.map((alert, idx) => (
+        <Alert key={idx} severity={alert.severity} icon={<AlertTriangle size={18} />} sx={{ mb: 2, borderRadius: '10px' }}>
+          {alert.message}
+        </Alert>
+      ))}
 
       {loading ? (
-        <Paper
-          elevation={0}
-          sx={{
-            border: '1px solid #e5e7eb',
-            borderRadius: '12px',
-            p: 4,
-            textAlign: 'center',
-          }}
-        >
+        <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 4, textAlign: 'center' }}>
           <CircularProgress size={28} />
-          <Typography sx={{ mt: 1, color: '#9ca3af' }}>Loading...</Typography>
+          <Typography sx={{ mt: 1, color: '#9ca3af' }}>Loading billing data...</Typography>
         </Paper>
       ) : (
         <>
-          {/* Current Plan */}
+          {/* Current Plan Banner */}
           <Paper
             elevation={0}
-            sx={{
-              mb: 4,
-              p: 3,
-              borderRadius: '12px',
-              border: `2px solid ${tierInfo.border}`,
-              bgcolor: tierInfo.bg,
-            }}
+            sx={{ mb: 3, p: 3, borderRadius: '12px', border: `2px solid ${tierInfo.border}`, bgcolor: tierInfo.bg }}
           >
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                <Box
-                  sx={{
-                    width: 48,
-                    height: 48,
-                    borderRadius: '12px',
-                    bgcolor: tierInfo.bg,
-                    border: `1px solid ${tierInfo.border}`,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
+                <Box sx={{ width: 48, height: 48, borderRadius: '12px', bgcolor: tierInfo.bg, border: `1px solid ${tierInfo.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <TierIcon size={24} color={tierInfo.color} />
                 </Box>
                 <Box>
@@ -247,7 +277,8 @@ export default function BillingPage() {
                     {tierInfo.name} Plan
                   </Typography>
                   <Typography variant="body2" sx={{ color: '#4b5563' }}>
-                    Billing cycle: {subscription && formatDate(subscription.billing_cycle_start)} - {subscription && formatDate(subscription.billing_cycle_end)}
+                    {subscription && `${formatDate(subscription.billing_cycle_start)} - ${formatDate(subscription.billing_cycle_end)}`}
+                    {costProjection && ` (${costProjection.days_remaining} days left)`}
                   </Typography>
                 </Box>
               </Box>
@@ -258,136 +289,309 @@ export default function BillingPage() {
                 <Typography variant="body2" sx={{ color: '#6b7280' }}>per month</Typography>
               </Box>
             </Box>
-
-            <Grid container spacing={1.5}>
-              {tierInfo.features.map((feature, idx) => (
-                <Grid size={{ xs: 6, md: 3 }} key={idx}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Check size={16} color="#16a34a" />
-                    <Typography variant="body2" sx={{ color: '#374151' }}>{feature}</Typography>
-                  </Box>
-                </Grid>
-              ))}
-            </Grid>
+            {costProjection && (
+              <Box sx={{ mt: 2 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                  <Typography variant="caption" sx={{ color: '#6b7280' }}>Billing cycle progress</Typography>
+                  <Typography variant="caption" sx={{ color: '#6b7280' }}>{costProjection.progress.toFixed(0)}%</Typography>
+                </Box>
+                <LinearProgress
+                  variant="determinate"
+                  value={costProjection.progress}
+                  sx={{ height: 6, borderRadius: 3, bgcolor: '#e5e7eb', '& .MuiLinearProgress-bar': { borderRadius: 3, bgcolor: tierInfo.color } }}
+                />
+              </Box>
+            )}
           </Paper>
 
-          {/* Usage Stats */}
-          <Grid container spacing={3} sx={{ mb: 4 }}>
-            {/* Requests */}
-            <Grid size={{ xs: 12, md: 4 }}>
-              <Paper
-                elevation={0}
-                sx={{
-                  border: '1px solid #e5e7eb',
-                  borderRadius: '12px',
-                  p: 3,
-                }}
-              >
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-                  <Typography variant="body2" sx={{ fontWeight: 500, color: '#6b7280' }}>
-                    Requests
-                  </Typography>
-                  <TrendingUp size={20} color="#9ca3af" />
-                </Box>
-                <Typography variant="h4" sx={{ fontWeight: 700, color: '#111827', mb: 1 }}>
-                  {usage?.total_requests.toLocaleString() || 0}
-                </Typography>
-                {limits && limits.requests_per_month > 0 && (
-                  <>
+          {/* Stat Cards Row */}
+          <Grid container spacing={2.5} sx={{ mb: 3 }}>
+            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+              <StatCard label="Requests" value={(usage?.total_requests || 0).toLocaleString()} icon={<TrendingUp size={20} />} color="blue" />
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+              <StatCard label="Tokens Used" value={(usage?.total_tokens || 0).toLocaleString()} icon={<Zap size={20} />} color="purple" />
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+              <StatCard label="Current Spend" value={formatCurrency(usage?.total_cost || 0)} icon={<DollarSign size={20} />} color="green" />
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+              <StatCard
+                label="Projected Cost"
+                value={costProjection ? formatCurrency(costProjection.projected_cost) : '--'}
+                icon={<ArrowUpRight size={20} />}
+                color="orange"
+              />
+            </Grid>
+          </Grid>
+
+          {/* Usage Limits */}
+          {limits && (limits.requests_per_month > 0 || limits.tokens_per_month > 0) && (
+            <Grid container spacing={2.5} sx={{ mb: 3 }}>
+              {limits.requests_per_month > 0 && (
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                      <Typography variant="body2" sx={{ fontWeight: 600, color: '#374151' }}>Request Usage</Typography>
+                      <Typography variant="body2" sx={{ color: '#6b7280' }}>
+                        {(usage?.total_requests || 0).toLocaleString()} / {limits.requests_per_month.toLocaleString()}
+                      </Typography>
+                    </Box>
                     <LinearProgress
                       variant="determinate"
                       value={Math.min(usagePercentage?.requests || 0, 100)}
                       sx={{
-                        height: 8,
-                        borderRadius: 4,
-                        bgcolor: '#e5e7eb',
-                        mb: 1,
-                        '& .MuiLinearProgress-bar': {
-                          borderRadius: 4,
-                          bgcolor: '#2563eb',
-                        },
+                        height: 10, borderRadius: 5, bgcolor: '#e5e7eb',
+                        '& .MuiLinearProgress-bar': { borderRadius: 5, bgcolor: progressColor(usagePercentage?.requests || 0) },
                       }}
                     />
-                    <Typography variant="caption" sx={{ color: '#6b7280' }}>
-                      {(usagePercentage?.requests || 0).toFixed(1)}% of {limits.requests_per_month.toLocaleString()} limit
+                    <Typography variant="caption" sx={{ color: '#6b7280', mt: 0.5, display: 'block' }}>
+                      {(usagePercentage?.requests || 0).toFixed(1)}% used
                     </Typography>
-                  </>
-                )}
-              </Paper>
-            </Grid>
-
-            {/* Tokens */}
-            <Grid size={{ xs: 12, md: 4 }}>
-              <Paper
-                elevation={0}
-                sx={{
-                  border: '1px solid #e5e7eb',
-                  borderRadius: '12px',
-                  p: 3,
-                }}
-              >
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-                  <Typography variant="body2" sx={{ fontWeight: 500, color: '#6b7280' }}>
-                    Tokens
-                  </Typography>
-                  <Zap size={20} color="#9ca3af" />
-                </Box>
-                <Typography variant="h4" sx={{ fontWeight: 700, color: '#111827', mb: 1 }}>
-                  {usage?.total_tokens.toLocaleString() || 0}
-                </Typography>
-                {limits && limits.tokens_per_month > 0 && (
-                  <>
+                  </Paper>
+                </Grid>
+              )}
+              {limits.tokens_per_month > 0 && (
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                      <Typography variant="body2" sx={{ fontWeight: 600, color: '#374151' }}>Token Usage</Typography>
+                      <Typography variant="body2" sx={{ color: '#6b7280' }}>
+                        {(usage?.total_tokens || 0).toLocaleString()} / {limits.tokens_per_month.toLocaleString()}
+                      </Typography>
+                    </Box>
                     <LinearProgress
                       variant="determinate"
                       value={Math.min(usagePercentage?.tokens || 0, 100)}
                       sx={{
-                        height: 8,
-                        borderRadius: 4,
-                        bgcolor: '#e5e7eb',
-                        mb: 1,
-                        '& .MuiLinearProgress-bar': {
-                          borderRadius: 4,
-                          bgcolor: '#9333ea',
-                        },
+                        height: 10, borderRadius: 5, bgcolor: '#e5e7eb',
+                        '& .MuiLinearProgress-bar': { borderRadius: 5, bgcolor: progressColor(usagePercentage?.tokens || 0) },
                       }}
                     />
-                    <Typography variant="caption" sx={{ color: '#6b7280' }}>
-                      {(usagePercentage?.tokens || 0).toFixed(1)}% of {limits.tokens_per_month.toLocaleString()} limit
+                    <Typography variant="caption" sx={{ color: '#6b7280', mt: 0.5, display: 'block' }}>
+                      {(usagePercentage?.tokens || 0).toFixed(1)}% used
                     </Typography>
-                  </>
+                  </Paper>
+                </Grid>
+              )}
+            </Grid>
+          )}
+
+          {/* Charts Section */}
+          <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3, mb: 3 }}>
+            <Tabs
+              value={activeTab}
+              onChange={(_, v) => setActiveTab(v)}
+              sx={{ mb: 2, '& .MuiTab-root': { textTransform: 'none', fontWeight: 600, fontSize: '0.875rem' } }}
+            >
+              <Tab label="Cost Trend" icon={<DollarSign size={16} />} iconPosition="start" />
+              <Tab label="Daily Requests" icon={<BarChart3 size={16} />} iconPosition="start" />
+              <Tab label="Cost by Model" icon={<PieChartIcon size={16} />} iconPosition="start" />
+            </Tabs>
+
+            {activeTab === 0 && (
+              <Box>
+                <Typography variant="body2" sx={{ color: '#6b7280', mb: 2 }}>
+                  Daily spending over the last 30 days
+                </Typography>
+                {chartData.length > 0 ? (
+                  <ResponsiveContainer width="100%" height={300}>
+                    <AreaChart data={chartData}>
+                      <defs>
+                        <linearGradient id="costGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#2563eb" stopOpacity={0.15} />
+                          <stop offset="95%" stopColor="#2563eb" stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
+                      <XAxis dataKey="date" tick={{ fontSize: 12, fill: '#9ca3af' }} interval="preserveStartEnd" />
+                      <YAxis tick={{ fontSize: 12, fill: '#9ca3af' }} tickFormatter={(v) => `$${v}`} />
+                      <Tooltip
+                        contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                        formatter={(value: number) => [`$${value.toFixed(4)}`, 'Cost']}
+                      />
+                      <Area type="monotone" dataKey="cost" stroke="#2563eb" strokeWidth={2} fill="url(#costGradient)" />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <Box sx={{ textAlign: 'center', py: 6 }}>
+                    <Typography sx={{ color: '#9ca3af' }}>No usage data available yet</Typography>
+                  </Box>
+                )}
+              </Box>
+            )}
+
+            {activeTab === 1 && (
+              <Box>
+                <Typography variant="body2" sx={{ color: '#6b7280', mb: 2 }}>
+                  Daily API requests over the last 30 days
+                </Typography>
+                {chartData.length > 0 ? (
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={chartData}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
+                      <XAxis dataKey="date" tick={{ fontSize: 12, fill: '#9ca3af' }} interval="preserveStartEnd" />
+                      <YAxis tick={{ fontSize: 12, fill: '#9ca3af' }} />
+                      <Tooltip
+                        contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                        formatter={(value: number) => [value.toLocaleString(), 'Requests']}
+                      />
+                      <Bar dataKey="requests" fill="#7c3aed" radius={[4, 4, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <Box sx={{ textAlign: 'center', py: 6 }}>
+                    <Typography sx={{ color: '#9ca3af' }}>No usage data available yet</Typography>
+                  </Box>
+                )}
+              </Box>
+            )}
+
+            {activeTab === 2 && (
+              <Box>
+                <Typography variant="body2" sx={{ color: '#6b7280', mb: 2 }}>
+                  Cost distribution across models
+                </Typography>
+                {usage?.by_model && usage.by_model.length > 0 ? (
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, flexWrap: 'wrap' }}>
+                    <ResponsiveContainer width={300} height={300}>
+                      <PieChart>
+                        <Pie
+                          data={usage.by_model}
+                          dataKey="cost"
+                          nameKey="model"
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={70}
+                          outerRadius={120}
+                          paddingAngle={2}
+                        >
+                          {usage.by_model.map((_, idx) => (
+                            <Cell key={idx} fill={PIE_COLORS[idx % PIE_COLORS.length]} />
+                          ))}
+                        </Pie>
+                        <Tooltip formatter={(value: number) => formatCurrency(value)} />
+                      </PieChart>
+                    </ResponsiveContainer>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                      {usage.by_model.map((m, idx) => (
+                        <Box key={idx} sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                          <Box sx={{ width: 12, height: 12, borderRadius: '3px', bgcolor: PIE_COLORS[idx % PIE_COLORS.length] }} />
+                          <Box>
+                            <Typography variant="body2" sx={{ fontWeight: 500, color: '#111827' }}>{m.model}</Typography>
+                            <Typography variant="caption" sx={{ color: '#6b7280' }}>
+                              {formatCurrency(m.cost)} ({m.requests.toLocaleString()} reqs)
+                            </Typography>
+                          </Box>
+                        </Box>
+                      ))}
+                    </Box>
+                  </Box>
+                ) : (
+                  <Box sx={{ textAlign: 'center', py: 6 }}>
+                    <Typography sx={{ color: '#9ca3af' }}>No model usage data available yet</Typography>
+                  </Box>
+                )}
+              </Box>
+            )}
+          </Paper>
+
+          {/* Usage by Model Table + Payment Method */}
+          <Grid container spacing={3} sx={{ mb: 3 }}>
+            {/* Usage by Model */}
+            <Grid size={{ xs: 12, md: 8 }}>
+              <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3, height: '100%' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+                  <Typography variant="h6" sx={{ fontWeight: 600, color: '#111827' }}>
+                    Usage by Model
+                  </Typography>
+                  <Box sx={{ display: 'flex', gap: 1 }}>
+                    <Button variant="outlined" size="small" startIcon={<Download size={14} />} onClick={() => handleExport('json')} sx={{ textTransform: 'none', borderRadius: '8px' }}>
+                      JSON
+                    </Button>
+                    <Button variant="outlined" size="small" startIcon={<Download size={14} />} onClick={() => handleExport('csv')} sx={{ textTransform: 'none', borderRadius: '8px' }}>
+                      CSV
+                    </Button>
+                  </Box>
+                </Box>
+                {usage?.by_model && usage.by_model.length > 0 ? (
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell sx={headerSx}>Model</TableCell>
+                        <TableCell align="right" sx={headerSx}>Requests</TableCell>
+                        <TableCell align="right" sx={headerSx}>Tokens</TableCell>
+                        <TableCell align="right" sx={headerSx}>Cost</TableCell>
+                        <TableCell align="right" sx={headerSx}>Avg Cost/Req</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {usage.by_model.map((m, idx) => (
+                        <TableRow key={idx} sx={{ '&:last-child td': { borderBottom: 0 } }}>
+                          <TableCell>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                              <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: PIE_COLORS[idx % PIE_COLORS.length] }} />
+                              <Typography variant="body2" sx={{ fontWeight: 500, color: '#111827' }}>{m.model}</Typography>
+                            </Box>
+                          </TableCell>
+                          <TableCell align="right" sx={{ color: '#374151' }}>{m.requests.toLocaleString()}</TableCell>
+                          <TableCell align="right" sx={{ color: '#374151' }}>{m.tokens.toLocaleString()}</TableCell>
+                          <TableCell align="right" sx={{ fontWeight: 500, color: '#111827' }}>{formatCurrency(m.cost)}</TableCell>
+                          <TableCell align="right" sx={{ color: '#6b7280' }}>
+                            {m.requests > 0 ? formatCurrency(m.cost / m.requests) : '--'}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                ) : (
+                  <Box sx={{ textAlign: 'center', py: 4 }}>
+                    <Typography sx={{ color: '#9ca3af' }}>No model usage data yet</Typography>
+                  </Box>
                 )}
               </Paper>
             </Grid>
 
-            {/* Total Cost */}
+            {/* Payment Method */}
             <Grid size={{ xs: 12, md: 4 }}>
-              <Paper
-                elevation={0}
-                sx={{
-                  border: '1px solid #e5e7eb',
-                  borderRadius: '12px',
-                  p: 3,
-                }}
-              >
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-                  <Typography variant="body2" sx={{ fontWeight: 500, color: '#6b7280' }}>
-                    Total Cost
+              <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3, height: '100%' }}>
+                <Typography variant="h6" sx={{ fontWeight: 600, color: '#111827', mb: 2 }}>
+                  Payment Method
+                </Typography>
+                <Box
+                  sx={{
+                    p: 2.5, borderRadius: '12px', bgcolor: 'linear-gradient(135deg, #1e3a5f 0%, #111827 100%)',
+                    background: 'linear-gradient(135deg, #1e3a5f 0%, #111827 100%)', color: 'white', mb: 2,
+                  }}
+                >
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
+                    <CreditCard size={28} />
+                    <Wallet size={20} />
+                  </Box>
+                  <Typography variant="body1" sx={{ fontFamily: 'monospace', letterSpacing: '0.15em', mb: 2 }}>
+                    **** **** **** 4242
                   </Typography>
-                  <DollarSign size={20} color="#9ca3af" />
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Box>
+                      <Typography variant="caption" sx={{ color: '#9ca3af', textTransform: 'uppercase', fontSize: '0.6rem' }}>Card Holder</Typography>
+                      <Typography variant="body2" sx={{ fontWeight: 500 }}>{user?.username || 'Card Holder'}</Typography>
+                    </Box>
+                    <Box>
+                      <Typography variant="caption" sx={{ color: '#9ca3af', textTransform: 'uppercase', fontSize: '0.6rem' }}>Expires</Typography>
+                      <Typography variant="body2" sx={{ fontWeight: 500 }}>12/27</Typography>
+                    </Box>
+                  </Box>
                 </Box>
-                <Typography variant="h4" sx={{ fontWeight: 700, color: '#111827', mb: 1 }}>
-                  {formatCurrency(usage?.total_cost || 0)}
-                </Typography>
-                <Typography variant="caption" sx={{ color: '#6b7280' }}>
-                  This billing cycle
-                </Typography>
+                <Button fullWidth variant="outlined" sx={{ textTransform: 'none', borderRadius: '8px', fontWeight: 600 }}>
+                  Update Payment Method
+                </Button>
               </Paper>
             </Grid>
           </Grid>
 
           {/* Upgrade Options */}
           {currentTier !== 'enterprise' && (
-            <Box sx={{ mb: 4 }}>
+            <Box sx={{ mb: 3 }}>
               <Typography variant="h6" sx={{ fontWeight: 600, color: '#111827', mb: 2 }}>
                 Upgrade Your Plan
               </Typography>
@@ -399,35 +603,17 @@ export default function BillingPage() {
                       <Paper
                         elevation={0}
                         sx={{
-                          p: 3,
-                          borderRadius: '12px',
-                          border: `2px solid ${info.border}`,
-                          transition: 'box-shadow 0.2s',
-                          '&:hover': { boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' },
+                          p: 3, borderRadius: '12px', border: `2px solid ${info.border}`,
+                          transition: 'box-shadow 0.2s', '&:hover': { boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' },
                         }}
                       >
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
-                          <Box
-                            sx={{
-                              width: 40,
-                              height: 40,
-                              borderRadius: '10px',
-                              bgcolor: info.bg,
-                              border: `1px solid ${info.border}`,
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                            }}
-                          >
+                          <Box sx={{ width: 40, height: 40, borderRadius: '10px', bgcolor: info.bg, border: `1px solid ${info.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             <Icon size={20} color={info.color} />
                           </Box>
                           <Box>
-                            <Typography variant="h6" sx={{ fontWeight: 700, color: info.color }}>
-                              {info.name}
-                            </Typography>
-                            <Typography variant="body2" sx={{ color: '#4b5563' }}>
-                              {tier === 'pro' ? '$49/month' : '$499/month'}
-                            </Typography>
+                            <Typography variant="h6" sx={{ fontWeight: 700, color: info.color }}>{info.name}</Typography>
+                            <Typography variant="body2" sx={{ color: '#4b5563' }}>{tier === 'pro' ? '$49/month' : '$499/month'}</Typography>
                           </Box>
                         </Box>
                         <Box component="ul" sx={{ listStyle: 'none', p: 0, m: 0, mb: 2, display: 'flex', flexDirection: 'column', gap: 1 }}>
@@ -439,14 +625,9 @@ export default function BillingPage() {
                           ))}
                         </Box>
                         <Button
-                          fullWidth
-                          variant="contained"
-                          onClick={() => handleUpgrade(tier)}
+                          fullWidth variant="contained" onClick={() => handleUpgrade(tier)}
                           sx={{
-                            textTransform: 'none',
-                            borderRadius: '8px',
-                            py: 1.25,
-                            fontWeight: 600,
+                            textTransform: 'none', borderRadius: '8px', py: 1.25, fontWeight: 600,
                             bgcolor: tier === 'pro' ? '#2563eb' : '#7c3aed',
                             '&:hover': { bgcolor: tier === 'pro' ? '#1d4ed8' : '#6d28d9' },
                           }}
@@ -461,86 +642,10 @@ export default function BillingPage() {
             </Box>
           )}
 
-          {/* Usage by Model */}
-          {usage?.by_model && usage.by_model.length > 0 && (
-            <Paper
-              elevation={0}
-              sx={{
-                mb: 4,
-                border: '1px solid #e5e7eb',
-                borderRadius: '12px',
-                p: 3,
-              }}
-            >
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-                <Typography variant="h6" sx={{ fontWeight: 600, color: '#111827' }}>
-                  Usage by Model
-                </Typography>
-                <Box sx={{ display: 'flex', gap: 1 }}>
-                  <Button
-                    variant="outlined"
-                    size="small"
-                    startIcon={<Download size={14} />}
-                    onClick={() => handleExport('json')}
-                    sx={{ textTransform: 'none', borderRadius: '8px' }}
-                  >
-                    JSON
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    size="small"
-                    startIcon={<Download size={14} />}
-                    onClick={() => handleExport('csv')}
-                    sx={{ textTransform: 'none', borderRadius: '8px' }}
-                  >
-                    CSV
-                  </Button>
-                </Box>
-              </Box>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell sx={{ fontWeight: 600, color: '#6b7280', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                      Model
-                    </TableCell>
-                    <TableCell align="right" sx={{ fontWeight: 600, color: '#6b7280', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                      Requests
-                    </TableCell>
-                    <TableCell align="right" sx={{ fontWeight: 600, color: '#6b7280', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                      Tokens
-                    </TableCell>
-                    <TableCell align="right" sx={{ fontWeight: 600, color: '#6b7280', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                      Cost
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {usage.by_model.map((m, idx) => (
-                    <TableRow key={idx} sx={{ '&:last-child td': { borderBottom: 0 } }}>
-                      <TableCell sx={{ fontWeight: 500, color: '#111827' }}>{m.model}</TableCell>
-                      <TableCell align="right" sx={{ color: '#374151' }}>{m.requests.toLocaleString()}</TableCell>
-                      <TableCell align="right" sx={{ color: '#374151' }}>{m.tokens.toLocaleString()}</TableCell>
-                      <TableCell align="right" sx={{ fontWeight: 500, color: '#111827' }}>{formatCurrency(m.cost)}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </Paper>
-          )}
-
           {/* Invoices */}
-          <Paper
-            elevation={0}
-            sx={{
-              border: '1px solid #e5e7eb',
-              borderRadius: '12px',
-              p: 3,
-            }}
-          >
+          <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-              <Typography variant="h6" sx={{ fontWeight: 600, color: '#111827' }}>
-                Invoices
-              </Typography>
+              <Typography variant="h6" sx={{ fontWeight: 600, color: '#111827' }}>Invoices</Typography>
               <Calendar size={20} color="#9ca3af" />
             </Box>
             {invoices.length === 0 ? (
@@ -554,15 +659,9 @@ export default function BillingPage() {
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell sx={{ fontWeight: 600, color: '#6b7280', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                      Period
-                    </TableCell>
-                    <TableCell sx={{ fontWeight: 600, color: '#6b7280', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                      Status
-                    </TableCell>
-                    <TableCell align="right" sx={{ fontWeight: 600, color: '#6b7280', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                      Amount
-                    </TableCell>
+                    <TableCell sx={headerSx}>Period</TableCell>
+                    <TableCell sx={headerSx}>Status</TableCell>
+                    <TableCell align="right" sx={headerSx}>Amount</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -575,35 +674,14 @@ export default function BillingPage() {
                       </TableCell>
                       <TableCell>
                         {invoice.status === 'paid' ? (
-                          <Chip
-                            icon={<Check size={14} />}
-                            label={`Paid on ${invoice.paid_at && formatDate(invoice.paid_at)}`}
-                            size="small"
-                            sx={{
-                              bgcolor: '#ecfdf5',
-                              color: '#16a34a',
-                              fontWeight: 500,
-                              fontSize: '0.75rem',
-                              '& .MuiChip-icon': { color: '#16a34a' },
-                            }}
-                          />
+                          <Chip icon={<Check size={14} />} label={`Paid ${invoice.paid_at ? formatDate(invoice.paid_at) : ''}`} size="small"
+                            sx={{ bgcolor: '#ecfdf5', color: '#16a34a', fontWeight: 500, fontSize: '0.75rem', '& .MuiChip-icon': { color: '#16a34a' } }} />
                         ) : (
-                          <Chip
-                            label="Pending"
-                            size="small"
-                            sx={{
-                              bgcolor: '#fffbeb',
-                              color: '#d97706',
-                              fontWeight: 500,
-                              fontSize: '0.75rem',
-                            }}
-                          />
+                          <Chip label="Pending" size="small" sx={{ bgcolor: '#fffbeb', color: '#d97706', fontWeight: 500, fontSize: '0.75rem' }} />
                         )}
                       </TableCell>
                       <TableCell align="right">
-                        <Typography variant="body2" sx={{ fontWeight: 700, color: '#111827' }}>
-                          {formatCurrency(invoice.amount)}
-                        </Typography>
+                        <Typography variant="body2" sx={{ fontWeight: 700, color: '#111827' }}>{formatCurrency(invoice.amount)}</Typography>
                       </TableCell>
                     </TableRow>
                   ))}
