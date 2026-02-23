@@ -1,102 +1,83 @@
-(base) vigneshmac@Vigneshs-MacBook-Pro velocityllm %   docker-compose up -d --build                        
-WARN[0000] /Users/vigneshmac/Desktop/velocityllm/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion 
-unable to get image 'redis:7-alpine': Cannot connect to the Docker daemon at unix:///Users/vigneshmac/.docker/run/docker.sock. Is the docker daemon running?
-(base) vigneshmac@Vigneshs-MacBook-Pro velocityllm %                               
+(base) vigneshmac@Vigneshs-MacBook-Pro velocityllm %      
   docker-compose up -d --build
 
 WARN[0000] /Users/vigneshmac/Desktop/velocityllm/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion 
-[+] Building 23.6s (33/37)                                                                                 
+[+] Building 18.4s (30/34)                                                                                 
  => [internal] load local bake definitions                                                            0.0s
  => => reading from stdin 702B                                                                        0.0s
  => [frontend internal] load build definition from Dockerfile                                         0.0s
  => => transferring dockerfile: 905B                                                                  0.0s
  => [backend internal] load build definition from Dockerfile                                          0.0s
  => => transferring dockerfile: 590B                                                                  0.0s
- => [frontend internal] load metadata for docker.io/library/node:18-alpine                            3.4s
- => [backend internal] load metadata for docker.io/library/alpine:latest                              3.4s
- => [backend internal] load metadata for docker.io/library/golang:1.24-alpine                         3.4s
- => [auth] library/node:pull token for registry-1.docker.io                                           0.0s
- => [auth] library/golang:pull token for registry-1.docker.io                                         0.0s
- => [auth] library/alpine:pull token for registry-1.docker.io                                         0.0s
+ => [frontend internal] load metadata for docker.io/library/node:18-alpine                            0.3s
+ => [backend internal] load metadata for docker.io/library/alpine:latest                              0.3s
+ => [backend internal] load metadata for docker.io/library/golang:1.24-alpine                         0.3s
  => [frontend internal] load .dockerignore                                                            0.0s
  => => transferring context: 172B                                                                     0.0s
- => [backend internal] load .dockerignore                                                             0.0s
- => => transferring context: 300B                                                                     0.0s
+ => [frontend internal] load build context                                                            0.0s
+ => => transferring context: 3.52kB                                                                   0.0s
  => [frontend deps 1/4] FROM docker.io/library/node:18-alpine@sha256:8d6421d663b4c28fd3ebc498332f249  0.0s
  => => resolve docker.io/library/node:18-alpine@sha256:8d6421d663b4c28fd3ebc498332f249011d118945588d  0.0s
- => [frontend internal] load build context                                                            0.0s
- => => transferring context: 95.26kB                                                                  0.0s
- => [backend builder 1/7] FROM docker.io/library/golang:1.24-alpine@sha256:8bee1901f1e530bfb4a7850aa  0.0s
- => => resolve docker.io/library/golang:1.24-alpine@sha256:8bee1901f1e530bfb4a7850aa7a479d17ae3a18be  0.0s
- => [backend stage-1 1/4] FROM docker.io/library/alpine:latest@sha256:25109184c71bdad752c8312a862323  0.0s
- => => resolve docker.io/library/alpine:latest@sha256:25109184c71bdad752c8312a8623239686a9a2071e8825  0.0s
- => [backend internal] load build context                                                             0.3s
- => => transferring context: 522.58kB                                                                 0.3s
  => CACHED [frontend deps 2/4] WORKDIR /app                                                           0.0s
  => CACHED [frontend deps 3/4] COPY package.json package-lock.json ./                                 0.0s
  => CACHED [frontend deps 4/4] RUN npm ci                                                             0.0s
  => CACHED [frontend builder 3/5] COPY --from=deps /app/node_modules ./node_modules                   0.0s
- => [frontend builder 4/5] COPY . .                                                                   0.1s
- => ERROR [frontend builder 5/5] RUN npm run build                                                   19.8s
+ => CACHED [frontend builder 4/5] COPY . .                                                            0.0s
+ => ERROR [frontend builder 5/5] RUN npm run build                                                   17.9s
+ => [backend internal] load .dockerignore                                                             0.0s
+ => => transferring context: 300B                                                                     0.0s
+ => [backend builder 1/7] FROM docker.io/library/golang:1.24-alpine@sha256:8bee1901f1e530bfb4a7850aa  0.0s
+ => => resolve docker.io/library/golang:1.24-alpine@sha256:8bee1901f1e530bfb4a7850aa7a479d17ae3a18be  0.0s
+ => [backend stage-1 1/4] FROM docker.io/library/alpine:latest@sha256:25109184c71bdad752c8312a862323  0.0s
+ => => resolve docker.io/library/alpine:latest@sha256:25109184c71bdad752c8312a8623239686a9a2071e8825  0.0s
+ => [backend internal] load build context                                                             0.1s
+ => => transferring context: 327.67kB                                                                 0.1s
  => CACHED [backend builder 2/7] WORKDIR /app                                                         0.0s
  => CACHED [backend builder 3/7] RUN apk add --no-cache git                                           0.0s
  => CACHED [backend builder 4/7] COPY go.mod go.sum ./                                                0.0s
  => CACHED [backend builder 5/7] RUN go mod download                                                  0.0s
- => [backend builder 6/7] COPY . .                                                                    0.8s
- => [backend builder 7/7] RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o server cmd  12.4s
+ => [backend builder 6/7] COPY . .                                                                    0.6s
+ => [backend builder 7/7] RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o server cmd  11.3s
  => CACHED [backend stage-1 2/4] RUN apk --no-cache add ca-certificates                               0.0s
  => CACHED [backend stage-1 3/4] WORKDIR /root/                                                       0.0s
- => [backend stage-1 4/4] COPY --from=builder /app/server .                                           0.1s
- => [backend] exporting to image                                                                      0.8s
- => => exporting layers                                                                               0.6s
+ => CACHED [backend stage-1 4/4] COPY --from=builder /app/server .                                    0.0s
+ => [backend] exporting to image                                                                      0.1s
+ => => exporting layers                                                                               0.0s
  => => exporting manifest sha256:cf72cfb1e20171b0ab45b63936d219ed671baeffa1ab06dfc8684104fdbeb7c3     0.0s
  => => exporting config sha256:4988a48b93030e0c39d10207946bc4bfe090273837fbaf4fb9732aeb58d589d5       0.0s
- => => exporting attestation manifest sha256:973981f75094643fb6dc7e255cfc91411a2e1f8db9db46f85a9ad8f  0.0s
- => => exporting manifest list sha256:6ed59c2c5077dcbe0e1f22ba417dd47fb2ec19b2787404fc3468e0aeff5856  0.0s
+ => => exporting attestation manifest sha256:eb0ebcad53a3f16ebc5ee63b6deaf3eba53576daa5bd442c1d7750c  0.0s
+ => => exporting manifest list sha256:a5d73a14da70dd518c1ca9ed5facdabc83e97f7393486b7dbe75557bef5c30  0.0s
  => => naming to docker.io/library/velocityllm-backend:latest                                         0.0s
- => => unpacking to docker.io/library/velocityllm-backend:latest                                      0.1s
+ => => unpacking to docker.io/library/velocityllm-backend:latest                                      0.0s
  => [backend] resolving provenance for metadata file                                                  0.0s
 ------
  > [frontend builder 5/5] RUN npm run build:
-0.556 
-0.556 > velocityllm-frontend@0.1.0 build
-0.556 > next build
-0.556 
-1.380    ▲ Next.js 14.0.4
-1.381 
-1.381    Creating an optimized production build ...
-15.36  ⚠ Compiled with warnings
-15.36 
-15.36 ./app/quota/page.tsx
-15.36 Attempted import error: '@/components/Navbar' does not contain a default export (imported as 'Navbar').
-15.36 
-15.36 Import trace for requested module:
-15.36 ./app/quota/page.tsx
-15.36 
-15.36 ./app/quota/page.tsx
-15.36 Attempted import error: '@/components/Navbar' does not contain a default export (imported as 'Navbar').
-15.36 
-15.36 Import trace for requested module:
-15.36 ./app/quota/page.tsx
-15.36 
-15.36    Linting and checking validity of types ...
-19.57 Failed to compile.
-19.57 
-19.57 ./app/loadtest/page.tsx:4:8
-19.57 Type error: Module '"/app/components/Navbar"' has no default export. Did you mean to use 'import { Navbar } from "/app/components/Navbar"' instead?
-19.57 
-19.57   2 |
-19.57   3 | import React, { useState, useEffect } from 'react';
-19.57 > 4 | import Navbar from '@/components/Navbar';
-19.57     |        ^
-19.57   5 | import { loadTestAPI } from '@/lib/api';
-19.57   6 |
-19.57   7 | interface LoadTestConfig {
-19.66 npm notice
-19.66 npm notice New major version of npm available! 10.8.2 -> 11.10.1
-19.66 npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.10.1
-19.66 npm notice To update run: npm install -g npm@11.10.1
-19.66 npm notice
+0.322 
+0.322 > velocityllm-frontend@0.1.0 build
+0.322 > next build
+0.322 
+0.761    ▲ Next.js 14.0.4
+0.761 
+0.762    Creating an optimized production build ...
+13.48  ✓ Compiled successfully
+13.48    Linting and checking validity of types ...
+17.65 Failed to compile.
+17.65 
+17.65 ./app/quota/page.tsx:118:10
+17.65 Type error: Cannot find name 'Navbar'.
+17.65 
+17.65   116 |     return (
+17.65   117 |       <div className="min-h-screen bg-gray-50">
+17.65 > 118 |         <Navbar />
+17.65       |          ^
+17.65   119 |         <div className="flex items-center justify-center h-96">
+17.65   120 |           <div className="text-gray-600">Loading quota data...</div>
+17.65   121 |         </div>
+17.72 npm notice
+17.72 npm notice New major version of npm available! 10.8.2 -> 11.10.1
+17.72 npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.10.1
+17.72 npm notice To update run: npm install -g npm@11.10.1
+17.72 npm notice
 ------
 Dockerfile:22
 
@@ -118,6 +99,6 @@ target frontend: failed to solve: process "/bin/sh -c npm run build" did not com
 
 
 
-View build details: docker-desktop://dashboard/build/default/default/a21raa0d1y1l1kx38dpzkrmz5
+View build details: docker-desktop://dashboard/build/default/default/h3ufx221h1pesm8e0q5kk2hlf
 
 (base) vigneshmac@Vigneshs-MacBook-Pro velocityllm % 

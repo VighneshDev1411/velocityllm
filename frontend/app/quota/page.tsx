@@ -115,7 +115,6 @@ export default function QuotaManagementPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Navbar />
         <div className="flex items-center justify-center h-96">
           <div className="text-gray-600">Loading quota data...</div>
         </div>
