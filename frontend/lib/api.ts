@@ -386,3 +386,11 @@ export const webhookAPI = {
   availableEvents: () => api.get('/api/v1/webhooks/events'),
   eventLogs: (limit: number = 50) => api.get(`/api/v1/events/logs?limit=${limit}`),
 };
+
+// Admin Dashboard API (Day 25)
+export const adminDashboardAPI = {
+  health: () => api.get('/api/v1/admin/dashboard/health'),
+  overview: () => api.get('/api/v1/admin/dashboard/overview'),
+  recentEvents: () => api.get('/api/v1/admin/dashboard/events'),
+  databaseStats: () => api.get('/api/v1/admin/dashboard/database'),
+};

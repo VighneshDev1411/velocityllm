@@ -350,5 +350,14 @@ func SetupRoutes() {
 	http.Handle("/api/v1/webhooks/events", auth.AuthMiddleware(http.HandlerFunc(GetAvailableEventsHandler)))
 	http.Handle("/api/v1/events/logs", auth.AuthMiddleware(http.HandlerFunc(GetEventLogsHandler)))
 
+	// ============================================
+	// ADMIN DASHBOARD ENDPOINTS (Day 25)
+	// ============================================
+
+	http.Handle("/api/v1/admin/dashboard/health", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(AdminSystemHealthHandler))))
+	http.Handle("/api/v1/admin/dashboard/overview", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(AdminDashboardOverviewHandler))))
+	http.Handle("/api/v1/admin/dashboard/events", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(AdminRecentEventsHandler))))
+	http.Handle("/api/v1/admin/dashboard/database", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(AdminDatabaseStatsHandler))))
+
 	utils.Info("All routes configured successfully")
 }
