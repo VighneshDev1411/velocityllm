@@ -387,6 +387,19 @@ export const webhookAPI = {
   eventLogs: (limit: number = 50) => api.get(`/api/v1/events/logs?limit=${limit}`),
 };
 
+// Logs & Debugging API (Day 27)
+export const logsAPI = {
+  getRequestLogs: (params?: { model?: string; status?: string; limit?: number; offset?: number }) =>
+    api.get('/api/v1/analytics/requests', { params }),
+  getActivityLogs: (params?: { user_id?: string; limit?: number; offset?: number }) =>
+    api.get('/api/v1/admin/activity', { params }),
+  getEventLogs: (limit: number = 100) =>
+    api.get('/api/v1/events/logs', { params: { limit } }),
+  getWebhookDeliveries: (endpointId: number, limit: number = 50) =>
+    api.get('/api/v1/webhooks/deliveries', { params: { endpoint_id: endpointId, limit } }),
+  listWebhooks: () => api.get('/api/v1/webhooks'),
+};
+
 // Admin Dashboard API (Day 25)
 export const adminDashboardAPI = {
   health: () => api.get('/api/v1/admin/dashboard/health'),

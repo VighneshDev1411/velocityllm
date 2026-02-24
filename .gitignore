@@ -40,6 +40,8 @@ Thumbs.db
 # Logs
 *.log
 logs/
+# Exception: Next.js app route named "logs"
+!frontend/app/logs/
 
 # Database
 *.db
