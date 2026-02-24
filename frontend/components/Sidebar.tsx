@@ -17,7 +17,7 @@ import { useTheme } from '@mui/material/styles';
 import {
   LayoutDashboard, FlaskConical, BarChart3, Activity,
   Cpu, Briefcase, Radio, Coins, Key, CreditCard, Gauge, Zap, Webhook,
-  Shield, Users, ChevronLeft, ChevronRight, Settings, ScrollText,
+  Shield, Users, ChevronLeft, ChevronRight, Settings, ScrollText, UsersRound,
 } from 'lucide-react';
 import { sidebarTheme } from '@/lib/theme';
 
@@ -48,6 +48,7 @@ const infraLinks: NavItem[] = [
   { href: '/loadtest', label: 'Load Test', icon: Zap },
   { href: '/webhooks', label: 'Webhooks', icon: Webhook },
   { href: '/logs', label: 'Logs', icon: ScrollText },
+  { href: '/teams', label: 'Teams', icon: UsersRound },
 ];
 
 const adminLinks: NavItem[] = [
