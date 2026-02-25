@@ -49,7 +49,7 @@ export function buildTheme(mode: PaletteMode) {
     },
 
     typography: {
-      fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+      fontFamily: 'var(--font-inter), "Inter", "Roboto", "Helvetica", "Arial", sans-serif',
       h4: { fontWeight: 700, fontSize: '1.75rem', letterSpacing: '-0.02em' },
       h5: { fontWeight: 700, fontSize: '1.25rem', letterSpacing: '-0.01em' },
       h6: { fontWeight: 600, fontSize: '1rem' },
@@ -68,6 +68,7 @@ export function buildTheme(mode: PaletteMode) {
       MuiCssBaseline: {
         styleOverrides: {
           body: {
+            fontFamily: 'var(--font-inter), "Inter", "Roboto", "Helvetica", "Arial", sans-serif',
             scrollbarWidth: 'thin',
             scrollbarColor: isDark ? '#334155 transparent' : '#cbd5e1 transparent',
             '&::-webkit-scrollbar': { width: 6, height: 6 },
