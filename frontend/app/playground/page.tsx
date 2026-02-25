@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
@@ -74,13 +74,11 @@ interface HistoryEntry {
 // Constants
 // ---------------------------------------------------------------------------
 
-const AVAILABLE_MODELS = [
-  { id: 'gpt-4', name: 'GPT-4', provider: 'OpenAI' },
-  { id: 'gpt-3.5-turbo', name: 'GPT-3.5 Turbo', provider: 'OpenAI' },
-  { id: 'claude-3-opus', name: 'Claude 3 Opus', provider: 'Anthropic' },
-  { id: 'claude-3-sonnet', name: 'Claude 3 Sonnet', provider: 'Anthropic' },
-  { id: 'llama-3-70b', name: 'Llama 3 70B', provider: 'Meta' },
-];
+interface AvailableModel {
+  id: string;
+  name: string;
+  provider: string;
+}
 
 const CODE_TABS = ['curl', 'Python', 'JavaScript', 'Go'] as const;
 type CodeTab = (typeof CODE_TABS)[number];
@@ -403,10 +401,28 @@ export default function PlaygroundPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   // Model & params
-  const [model, setModel] = useState('gpt-4');
+  const [availableModels, setAvailableModels] = useState<AvailableModel[]>([]);
+  const [model, setModel] = useState('');
   const [temperature, setTemperature] = useState(0.7);
   const [maxTokens, setMaxTokens] = useState(1024);
   const [topP, setTopP] = useState(1.0);
+
+  // Fetch models from backend on mount
+  useEffect(() => {
+    api.get('/api/v1/models').then((res) => {
+      const models: AvailableModel[] = (res.data?.data || []).map((m: any) => ({
+        id: m.name,
+        name: m.name,
+        provider: m.provider,
+      }));
+      if (models.length > 0) {
+        setAvailableModels(models);
+        setModel((prev) => prev || models[0].id);
+      }
+    }).catch(() => {
+      // silently fail — user can still type a model name
+    });
+  }, []);
 
   // Response state
   const [response, setResponse] = useState<string | null>(null);
@@ -536,7 +552,7 @@ export default function PlaygroundPage() {
   );
 
   const currentSnippet = generateCodeSnippet(activeCodeTab, model, prompt || 'Hello, world!', temperature, maxTokens, topP);
-  const selectedModel = AVAILABLE_MODELS.find((m) => m.id === model);
+  const selectedModel = availableModels.find((m) => m.id === model);
 
   // ------- Render -------
 
@@ -860,7 +876,7 @@ export default function PlaygroundPage() {
                     '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'divider' },
                   }}
                 >
-                  {AVAILABLE_MODELS.map((m) => (
+                  {availableModels.map((m) => (
                     <MenuItem key={m.id} value={m.id} sx={{ fontSize: '0.875rem' }}>
                       {m.name} ({m.provider})
                     </MenuItem>

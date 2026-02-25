@@ -108,7 +108,7 @@ export default function LoadTestPage() {
     fetchConfigs();
     fetchRuns();
     api.get('/api/v1/models').then((res) => {
-      setAvailableModels(res.data?.data?.models || []);
+      setAvailableModels(res.data?.data || []);
     }).catch(() => {});
   }, []);
 

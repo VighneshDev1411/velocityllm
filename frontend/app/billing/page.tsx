@@ -78,32 +78,23 @@ interface Invoice {
   paid_at: string | null;
 }
 
-const TIER_INFO = {
-  free: {
-    name: 'Free',
-    color: 'text.primary',
-    bg: 'background.default',
-    border: 'divider',
-    icon: Shield,
-    features: ['1K requests/month', '100K tokens/month', '2 API keys', 'Community support'],
-  },
-  pro: {
-    name: 'Pro',
-    color: 'primary.dark',
-    bg: 'rgba(59,130,246,0.1)',
-    border: '#bfdbfe',
-    icon: Zap,
-    features: ['50K requests/month', '5M tokens/month', '10 API keys', 'Email support'],
-  },
-  enterprise: {
-    name: 'Enterprise',
-    color: '#7c3aed',
-    bg: '#f5f3ff',
-    border: '#ddd6fe',
-    icon: Crown,
-    features: ['Unlimited requests', 'Unlimited tokens', 'Unlimited API keys', 'Priority support'],
-  },
+// Styling metadata per tier — feature lists are derived from real API limits
+const TIER_STYLE: Record<string, { name: string; color: string; bg: string; border: string; icon: typeof Shield }> = {
+  free: { name: 'Free', color: 'text.primary', bg: 'background.default', border: 'divider', icon: Shield },
+  pro: { name: 'Pro', color: 'primary.dark', bg: 'rgba(59,130,246,0.1)', border: '#bfdbfe', icon: Zap },
+  enterprise: { name: 'Enterprise', color: '#7c3aed', bg: '#f5f3ff', border: '#ddd6fe', icon: Crown },
 };
+
+function buildTierFeatures(tierLimits: TierLimits | null): string[] {
+  if (!tierLimits) return [];
+  const fmt = (n: number) => (n >= 1_000_000 ? `${(n / 1_000_000).toFixed(0)}M` : n >= 1_000 ? `${(n / 1_000).toFixed(0)}K` : String(n));
+  return [
+    tierLimits.requests_per_month >= 999_999_999 ? 'Unlimited requests' : `${fmt(tierLimits.requests_per_month)} requests/month`,
+    tierLimits.tokens_per_month >= 999_999_999 ? 'Unlimited tokens' : `${fmt(tierLimits.tokens_per_month)} tokens/month`,
+    tierLimits.max_api_keys >= 999 ? 'Unlimited API keys' : `${tierLimits.max_api_keys} API keys`,
+    tierLimits.support_level ? `${tierLimits.support_level.charAt(0).toUpperCase() + tierLimits.support_level.slice(1)} support` : 'Community support',
+  ];
+}
 
 const PIE_COLORS = ['#2563eb', '#7c3aed', '#059669', '#d97706', '#dc2626', '#0891b2', '#4f46e5', '#be185d'];
 
@@ -154,7 +145,7 @@ export default function BillingPage() {
     try {
       setError('');
       await billingAPI.updateSubscription(tier);
-      setSuccess(`Upgraded to ${TIER_INFO[tier as keyof typeof TIER_INFO].name}!`);
+      setSuccess(`Upgraded to ${(TIER_STYLE[tier] || { name: tier }).name}!`);
       fetchData();
       setTimeout(() => setSuccess(''), 3000);
     } catch (err: any) {
@@ -229,8 +220,9 @@ export default function BillingPage() {
     new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
   const currentTier = subscription?.tier || 'free';
-  const tierInfo = TIER_INFO[currentTier as keyof typeof TIER_INFO];
-  const TierIcon = tierInfo.icon;
+  const tierStyle = TIER_STYLE[currentTier] || TIER_STYLE.free;
+  const tierFeatures = buildTierFeatures(limits);
+  const TierIcon = tierStyle.icon;
 
   const progressColor = (pct: number) => pct >= 90 ? '#dc2626' : pct >= 75 ? '#d97706' : '#2563eb';
 
@@ -268,16 +260,16 @@ export default function BillingPage() {
           {/* Current Plan Banner */}
           <Paper
             elevation={0}
-            sx={{ mb: 3, p: 3, borderRadius: '12px', border: `2px solid ${tierInfo.border}`, bgcolor: tierInfo.bg }}
+            sx={{ mb: 3, p: 3, borderRadius: '12px', border: `2px solid ${tierStyle.border}`, bgcolor: tierStyle.bg }}
           >
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                <Box sx={{ width: 48, height: 48, borderRadius: '12px', bgcolor: tierInfo.bg, border: `1px solid ${tierInfo.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <TierIcon size={24} color={tierInfo.color} />
+                <Box sx={{ width: 48, height: 48, borderRadius: '12px', bgcolor: tierStyle.bg, border: `1px solid ${tierStyle.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <TierIcon size={24} color={tierStyle.color} />
                 </Box>
                 <Box>
-                  <Typography variant="h5" sx={{ fontWeight: 700, color: tierInfo.color }}>
-                    {tierInfo.name} Plan
+                  <Typography variant="h5" sx={{ fontWeight: 700, color: tierStyle.color }}>
+                    {tierStyle.name} Plan
                   </Typography>
                   <Typography variant="body2" sx={{ color: 'text.secondary' }}>
                     {subscription && `${formatDate(subscription.billing_cycle_start)} - ${formatDate(subscription.billing_cycle_end)}`}
@@ -301,8 +293,18 @@ export default function BillingPage() {
                 <LinearProgress
                   variant="determinate"
                   value={costProjection.progress}
-                  sx={{ height: 6, borderRadius: 3, bgcolor: 'divider', '& .MuiLinearProgress-bar': { borderRadius: 3, bgcolor: tierInfo.color } }}
+                  sx={{ height: 6, borderRadius: 3, bgcolor: 'divider', '& .MuiLinearProgress-bar': { borderRadius: 3, bgcolor: tierStyle.color } }}
                 />
+              </Box>
+            )}
+            {tierFeatures.length > 0 && (
+              <Box sx={{ mt: 2, display: 'flex', flexWrap: 'wrap', gap: 1.5 }}>
+                {tierFeatures.map((feature, idx) => (
+                  <Box key={idx} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <Check size={14} color="#16a34a" />
+                    <Typography variant="body2" sx={{ color: 'text.secondary', fontSize: '0.8rem' }}>{feature}</Typography>
+                  </Box>
+                ))}
               </Box>
             )}
           </Paper>
@@ -588,33 +590,29 @@ export default function BillingPage() {
                 Upgrade Your Plan
               </Typography>
               <Grid container spacing={3}>
-                {Object.entries(TIER_INFO).filter(([tier]) => tier !== currentTier && tier !== 'free').map(([tier, info]) => {
-                  const Icon = info.icon;
+                {Object.entries(TIER_STYLE).filter(([tier]) => tier !== currentTier && tier !== 'free').map(([tier, style]) => {
+                  const Icon = style.icon;
                   return (
                     <Grid size={{ xs: 12, md: 6 }} key={tier}>
                       <Paper
                         elevation={0}
                         sx={{
-                          p: 3, borderRadius: '12px', border: `2px solid ${info.border}`,
+                          p: 3, borderRadius: '12px', border: `2px solid ${style.border}`,
                           transition: 'box-shadow 0.2s', '&:hover': { boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' },
                         }}
                       >
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
-                          <Box sx={{ width: 40, height: 40, borderRadius: '10px', bgcolor: info.bg, border: `1px solid ${info.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <Icon size={20} color={info.color} />
+                          <Box sx={{ width: 40, height: 40, borderRadius: '10px', bgcolor: style.bg, border: `1px solid ${style.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <Icon size={20} color={style.color} />
                           </Box>
                           <Box>
-                            <Typography variant="h6" sx={{ fontWeight: 700, color: info.color }}>{info.name}</Typography>
-                            <Typography variant="body2" sx={{ color: 'text.secondary' }}>{tier === 'pro' ? '$49/month' : '$499/month'}</Typography>
+                            <Typography variant="h6" sx={{ fontWeight: 700, color: style.color }}>{style.name}</Typography>
+                            {limits && (
+                              <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                                {limits.price_per_month > 0 ? `$${limits.price_per_month}/month` : 'Contact sales'}
+                              </Typography>
+                            )}
                           </Box>
-                        </Box>
-                        <Box component="ul" sx={{ listStyle: 'none', p: 0, m: 0, mb: 2, display: 'flex', flexDirection: 'column', gap: 1 }}>
-                          {info.features.map((feature, idx) => (
-                            <Box component="li" key={idx} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                              <Check size={16} color="#16a34a" />
-                              <Typography variant="body2" sx={{ color: 'text.primary' }}>{feature}</Typography>
-                            </Box>
-                          ))}
                         </Box>
                         <Button
                           fullWidth variant="contained" onClick={() => handleUpgrade(tier)}
@@ -624,7 +622,7 @@ export default function BillingPage() {
                             '&:hover': { bgcolor: tier === 'pro' ? '#1d4ed8' : '#6d28d9' },
                           }}
                         >
-                          Upgrade to {info.name}
+                          Upgrade to {style.name}
                         </Button>
                       </Paper>
                     </Grid>
