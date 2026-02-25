@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"os"
@@ -12,6 +13,7 @@ import (
 	"github.com/VighneshDev1411/velocityllm/internal/auth"
 	"github.com/VighneshDev1411/velocityllm/internal/billing"
 	"github.com/VighneshDev1411/velocityllm/internal/cache"
+	"github.com/VighneshDev1411/velocityllm/internal/cluster"
 	"github.com/VighneshDev1411/velocityllm/internal/config"
 	"github.com/VighneshDev1411/velocityllm/internal/database"
 	"github.com/VighneshDev1411/velocityllm/internal/loadtest"
@@ -216,6 +218,36 @@ func main() {
 	utils.Info("Redis connected successfully")
 
 	// ============================================
+	// CLUSTER / HORIZONTAL SCALING INIT (Day 32)
+	// ============================================
+
+	// Build a stable node ID: prefer NODE_ID env var, else hostname:port
+	nodeID := cfg.Cluster.NodeID
+	if nodeID == "" {
+		hostname, _ := os.Hostname()
+		nodeID = fmt.Sprintf("%s:%d", hostname, cfg.Server.Port)
+	}
+
+	rdb := cache.GetClient()
+
+	// 1. Node registry — registers this instance & starts heartbeat
+	nodeRegistry := cluster.InitGlobalNodeRegistry(rdb, nodeID, cfg.App.Version, cfg.Server.Port)
+	clusterCtx := context.Background()
+	if err := nodeRegistry.Register(clusterCtx); err != nil {
+		utils.Error("Failed to register cluster node (non-fatal): %v", err)
+	}
+
+	// 2. Cluster coordinator — leader election
+	coordinator := cluster.InitGlobalCoordinator(nodeRegistry, rdb)
+	coordinator.Start(clusterCtx)
+
+	// 3. Distributed rate limiter — Redis sliding-window, cluster-wide limits
+	middleware.InitGlobalDistributedRateLimiter(rdb, rateLimiterConfig)
+	utils.Info("Distributed rate limiter initialised (Redis sliding-window)")
+
+	utils.Info("Cluster initialised: node=%s", nodeID)
+
+	// ============================================
 	// ADVANCED CACHING INITIALIZATION (Day 7)
 	// ============================================
 	cacheManagerConfig := cache.CacheManagerConfig{
@@ -389,12 +421,29 @@ func main() {
 
 		utils.Info("Shutting down server...")
 
-		// Shutdown components
+		shutCtx, shutCancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer shutCancel()
+
+		// Mark node as draining so load balancer stops sending traffic
+		if reg := cluster.GetGlobalNodeRegistry(); reg != nil {
+			reg.SetDraining(shutCtx)
+		}
+
+		// Stop coordinator (releases leader lock if held)
+		if coord := cluster.GetGlobalCoordinator(); coord != nil {
+			coord.Stop()
+		}
+
+		// Deregister node from cluster
+		if reg := cluster.GetGlobalNodeRegistry(); reg != nil {
+			reg.Deregister(shutCtx)
+		}
+
 		worker.ShutdownGlobalPool()
 		utils.Info("Worker pool shutdown complete")
 
-		router := api.GetRouter()
-		router.Shutdown()
+		r := api.GetRouter()
+		r.Shutdown()
 
 		database.Close()
 
@@ -416,7 +465,13 @@ func main() {
 	utils.Info("✓ Backpressure: %.0f%% threshold", backpressureConfig.QueueThreshold)
 	utils.Info("✓ Metrics: Collecting every %s", metricsConfig.CollectionInterval)
 	utils.Info("")
-	utils.Info("Total API Endpoints: 56")
+	utils.Info("✓ Cluster Node: %s", nodeID)
+	utils.Info("  - Node registry: active (heartbeat every 10s)")
+	utils.Info("  - Leader election: running")
+	utils.Info("  - Distributed rate limiter: Redis sliding-window")
+	utils.Info("  - Distributed locks: Redis SETNX + Lua")
+	utils.Info("")
+	utils.Info("Total API Endpoints: 61")
 	utils.Info("")
 	utils.Info("Press Ctrl+C to stop")
 

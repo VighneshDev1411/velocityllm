@@ -14,6 +14,7 @@ type Config struct {
 	Database DatabaseConfig
 	Redis    RedisConfig
 	App      AppConfig
+	Cluster  ClusterConfig
 }
 
 // ServerConfig holds server-related configuration
@@ -51,6 +52,19 @@ type AppConfig struct {
 	LogLevel    string
 }
 
+// ClusterConfig holds horizontal-scaling configuration.
+type ClusterConfig struct {
+	// NodeID uniquely identifies this instance in the cluster.
+	// Defaults to HOSTNAME:PORT; can be overridden via NODE_ID env var.
+	NodeID string
+	// HeartbeatInterval is how often this node refreshes its Redis TTL.
+	HeartbeatInterval time.Duration
+	// SessionTTL is the default lifetime of a distributed session.
+	SessionTTL time.Duration
+	// LockTTL is the default TTL for distributed locks.
+	LockTTL time.Duration
+}
+
 // Load loads configuration from environment variables
 func Load() (*Config, error) {
 	config := &Config{
@@ -80,6 +94,12 @@ func Load() (*Config, error) {
 			Version:     getEnv("APP_VERSION", "0.1.0"),
 			Environment: getEnv("APP_ENV", "development"),
 			LogLevel:    getEnv("LOG_LEVEL", "info"),
+		},
+		Cluster: ClusterConfig{
+			NodeID:            getEnv("NODE_ID", ""),
+			HeartbeatInterval: 10 * time.Second,
+			SessionTTL:        24 * time.Hour,
+			LockTTL:           30 * time.Second,
 		},
 	}
 

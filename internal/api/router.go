@@ -359,5 +359,18 @@ func SetupRoutes() {
 	http.Handle("/api/v1/admin/dashboard/events", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(AdminRecentEventsHandler))))
 	http.Handle("/api/v1/admin/dashboard/database", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(AdminDatabaseStatsHandler))))
 
+	// ============================================
+	// CLUSTER / HORIZONTAL SCALING ENDPOINTS (Day 32)
+	// ============================================
+
+	// Public cluster info (for health checks from load balancers)
+	http.HandleFunc("/api/v1/cluster/status", GetClusterStatusHandler)
+	http.HandleFunc("/api/v1/cluster/nodes", GetClusterNodesHandler)
+	http.HandleFunc("/api/v1/cluster/leader", GetClusterLeaderHandler)
+
+	// Admin-only cluster operations
+	http.Handle("/api/v1/cluster/drain", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(DrainNodeHandler))))
+	http.Handle("/api/v1/cluster/lock/acquire", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(AcquireLockHandler))))
+
 	utils.Info("All routes configured successfully")
 }
