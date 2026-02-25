@@ -73,6 +73,8 @@ func StreamingCompletionHandler(w http.ResponseWriter, r *http.Request) {
 
 		if err != nil {
 			utils.Error("LLM streaming error", "value", err)
+			// Send error event so the frontend knows what happened
+			sseHandler.WriteError("LLM_ERROR", err.Error(), "provider_error")
 		}
 
 		if writeErr := sseHandler.WriteDone(); writeErr != nil {

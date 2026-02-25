@@ -42,6 +42,17 @@ export interface StreamingOptions {
 // Hook
 // ---------------------------------------------------------------------------
 
+// Infer event type from data JSON when SSE `event:` line is absent
+function inferEventType(data: any): string {
+  // If data has a `token` field, it's a token event
+  if (data.token !== undefined) return 'token';
+  // If data has `status: "completed"`, it's a done event
+  if (data.status === 'completed') return 'done';
+  // If data has `code` and `message`, it's an error event
+  if (data.code && data.message) return 'error';
+  return '';
+}
+
 export function useStreaming() {
   const [state, setState] = useState<StreamingState>({
     text: '',
@@ -146,14 +157,16 @@ export function useStreaming() {
           const lines = buffer.split('\n');
           buffer = lines.pop() || ''; // Keep incomplete line in buffer
 
-          let eventType = '';
+          let sseEventType = '';
           for (const line of lines) {
             if (line.startsWith('event: ')) {
-              eventType = line.slice(7).trim();
+              sseEventType = line.slice(7).trim();
             } else if (line.startsWith('data: ')) {
               const dataStr = line.slice(6);
               try {
                 const data = JSON.parse(dataStr);
+                // Use SSE event type if present, otherwise infer from data
+                const eventType = sseEventType || inferEventType(data);
 
                 if (eventType === 'token') {
                   const token = data.token || '';
@@ -190,7 +203,7 @@ export function useStreaming() {
               } catch {
                 // Ignore unparseable data lines
               }
-              eventType = '';
+              sseEventType = '';
             }
           }
         }
