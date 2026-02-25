@@ -14,6 +14,7 @@ import (
 	"github.com/VighneshDev1411/velocityllm/internal/billing"
 	"github.com/VighneshDev1411/velocityllm/internal/cache"
 	"github.com/VighneshDev1411/velocityllm/internal/cluster"
+	"github.com/VighneshDev1411/velocityllm/internal/loadbalancer"
 	"github.com/VighneshDev1411/velocityllm/internal/config"
 	"github.com/VighneshDev1411/velocityllm/internal/database"
 	"github.com/VighneshDev1411/velocityllm/internal/loadtest"
@@ -248,6 +249,27 @@ func main() {
 	utils.Info("Cluster initialised: node=%s", nodeID)
 
 	// ============================================
+	// LOAD BALANCER INIT (Day 33)
+	// ============================================
+	// Seed with the current node as the only backend.
+	// In a multi-node deployment, additional backends are discovered via the
+	// Node Registry and added with lb.AddBackend().
+	selfBackend := &loadbalancer.Backend{
+		ID:      nodeID,
+		Address: fmt.Sprintf("127.0.0.1:%d", cfg.Server.Port),
+		Weight:  100,
+		Active:  true,
+		Healthy: true,
+	}
+	lb := loadbalancer.InitGlobal(loadbalancer.AlgorithmLeastConnections, []*loadbalancer.Backend{selfBackend})
+
+	// Health checker probes backends every 15s
+	lbHealthChecker := loadbalancer.NewHealthChecker(lb, 15*time.Second, 3*time.Second, "/health/live")
+	lbHealthChecker.Start()
+
+	utils.Info("Load balancer initialised: algorithm=least_connections backends=1")
+
+	// ============================================
 	// ADVANCED CACHING INITIALIZATION (Day 7)
 	// ============================================
 	cacheManagerConfig := cache.CacheManagerConfig{
@@ -399,6 +421,9 @@ func main() {
 	// Setup API routes
 	api.SetupRoutes()
 
+	// Signal that all components are initialised (readiness / startup probes)
+	api.MarkReady()
+
 	// Start server
 	port := fmt.Sprintf("%d", cfg.Server.Port)
 	if port == "0" {
@@ -428,6 +453,7 @@ func main() {
 		if reg := cluster.GetGlobalNodeRegistry(); reg != nil {
 			reg.SetDraining(shutCtx)
 		}
+		lbHealthChecker.Stop()
 
 		// Stop coordinator (releases leader lock if held)
 		if coord := cluster.GetGlobalCoordinator(); coord != nil {
@@ -471,7 +497,12 @@ func main() {
 	utils.Info("  - Distributed rate limiter: Redis sliding-window")
 	utils.Info("  - Distributed locks: Redis SETNX + Lua")
 	utils.Info("")
-	utils.Info("Total API Endpoints: 61")
+	utils.Info("✓ Load Balancer: algorithm=least_connections")
+	utils.Info("  - Health probes: /health/live, /health/ready, /health/startup")
+	utils.Info("  - Nginx config:  deployments/nginx/nginx.conf")
+	utils.Info("  - HAProxy config: deployments/haproxy/haproxy.cfg")
+	utils.Info("")
+	utils.Info("Total API Endpoints: 66")
 	utils.Info("")
 	utils.Info("Press Ctrl+C to stop")
 

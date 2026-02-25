@@ -9,8 +9,11 @@ import (
 
 // SetupRoutes configures all API routes
 func SetupRoutes() {
-	// Health check
+	// ── Health probes (Day 33) ──
 	http.HandleFunc("/health", HealthHandler)
+	http.HandleFunc("/health/live", LivenessHandler)      // liveness:  is the process alive?
+	http.HandleFunc("/health/ready", ReadinessHandler)    // readiness: safe to send traffic?
+	http.HandleFunc("/health/startup", StartupHandler)    // startup:   init complete?
 
 	// ============================================
 	// COMPLETION ENDPOINTS
@@ -358,6 +361,14 @@ func SetupRoutes() {
 	http.Handle("/api/v1/admin/dashboard/overview", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(AdminDashboardOverviewHandler))))
 	http.Handle("/api/v1/admin/dashboard/events", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(AdminRecentEventsHandler))))
 	http.Handle("/api/v1/admin/dashboard/database", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(AdminDatabaseStatsHandler))))
+
+	// ============================================
+	// LOAD BALANCER ENDPOINTS (Day 33)
+	// ============================================
+	http.HandleFunc("/api/v1/lb/stats", GetLBStatsHandler)
+	http.HandleFunc("/api/v1/lb/backends", GetLBBackendsHandler)
+	http.Handle("/api/v1/lb/algorithm", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(UpdateLBAlgorithmHandler))))
+	http.Handle("/api/v1/lb/backends/weight", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(UpdateBackendWeightHandler))))
 
 	// ============================================
 	// CLUSTER / HORIZONTAL SCALING ENDPOINTS (Day 32)
