@@ -36,9 +36,14 @@ import {
   AlertCircle,
   Sparkles,
   TrendingUp,
+  StopCircle,
+  Radio,
 } from 'lucide-react';
+import LinearProgress from '@mui/material/LinearProgress';
+import Switch from '@mui/material/Switch';
 import api from '@/lib/api';
 import { PageHeader } from '@/components/PageHeader';
+import { useStreaming } from '@/hooks/useStreaming';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -442,10 +447,60 @@ export default function PlaygroundPage() {
   const [expandedHistoryId, setExpandedHistoryId] = useState<string | null>(null);
   const [isHistoryOpen, setIsHistoryOpen] = useState(true);
 
+  // Streaming mode
+  const [streamMode, setStreamMode] = useState(true);
+  const streaming = useStreaming();
+
   // Refs
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const responseEndRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll during streaming
+  useEffect(() => {
+    if (streaming.isStreaming && responseEndRef.current) {
+      responseEndRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }, [streaming.text, streaming.isStreaming]);
 
   // ------- Handlers -------
+
+  const handleStreamSend = useCallback(() => {
+    if (!prompt.trim() || streaming.isStreaming) return;
+    setResponse(null);
+    setResponseError(null);
+    setResponseMeta(null);
+
+    streaming.start({
+      model,
+      prompt: prompt.trim(),
+      maxTokens,
+      temperature,
+      topP,
+      onDone: (fullText, tokenCount, elapsedMs) => {
+        setResponse(fullText);
+        setResponseMeta({ model, tokensUsed: tokenCount, cost: 0, latencyMs: elapsedMs });
+        setHistory((prev) => {
+          const entry: HistoryEntry = {
+            id: crypto.randomUUID(),
+            timestamp: new Date(),
+            prompt: prompt.trim(),
+            model,
+            temperature,
+            maxTokens,
+            topP,
+            response: fullText,
+            tokensUsed: tokenCount,
+            cost: 0,
+            latencyMs: elapsedMs,
+          };
+          return [entry, ...prev].slice(0, MAX_HISTORY);
+        });
+      },
+      onError: (errMsg) => {
+        setResponseError(errMsg);
+      },
+    });
+  }, [prompt, model, maxTokens, temperature, topP, streaming]);
 
   const handleSend = useCallback(async () => {
     if (!prompt.trim() || isLoading) return;
@@ -534,21 +589,25 @@ export default function PlaygroundPage() {
   }, [prompt, model, maxTokens, temperature, topP, isLoading]);
 
   const handleClear = useCallback(() => {
+    streaming.stop();
     setPrompt('');
     setResponse(null);
     setResponseError(null);
     setResponseMeta(null);
     textareaRef.current?.focus();
-  }, []);
+  }, [streaming]);
+
+  const activeSend = streamMode ? handleStreamSend : handleSend;
+  const isBusy = streamMode ? streaming.isStreaming : isLoading;
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
       if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
-        handleSend();
+        activeSend();
       }
     },
-    [handleSend],
+    [activeSend],
   );
 
   const currentSnippet = generateCodeSnippet(activeCodeTab, model, prompt || 'Hello, world!', temperature, maxTokens, topP);
@@ -624,12 +683,25 @@ export default function PlaygroundPage() {
                     to send
                   </Typography>
                 </Box>
-                <Box sx={{ display: 'flex', gap: 1 }}>
+                <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                  {/* Stream Mode Toggle */}
+                  <Box sx={{ display: 'flex', alignItems: 'center', mr: 1 }}>
+                    <Radio className="w-3.5 h-3.5" style={{ color: streamMode ? '#22c55e' : undefined, opacity: streamMode ? 1 : 0.4 }} />
+                    <Typography variant="caption" sx={{ color: streamMode ? 'success.main' : 'text.disabled', fontWeight: 500, mx: 0.5, userSelect: 'none' }}>
+                      Stream
+                    </Typography>
+                    <Switch
+                      size="small"
+                      checked={streamMode}
+                      onChange={(e) => setStreamMode(e.target.checked)}
+                      sx={{ '& .MuiSwitch-switchBase.Mui-checked': { color: '#22c55e' }, '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': { bgcolor: '#86efac' } }}
+                    />
+                  </Box>
                   <Button
                     variant="outlined"
                     size="small"
                     onClick={handleClear}
-                    disabled={isLoading}
+                    disabled={isBusy}
                     startIcon={<Trash2 className="w-3.5 h-3.5" />}
                     sx={{
                       textTransform: 'none',
@@ -641,29 +713,49 @@ export default function PlaygroundPage() {
                   >
                     Clear
                   </Button>
-                  <Button
-                    variant="contained"
-                    size="small"
-                    onClick={handleSend}
-                    disabled={!prompt.trim() || isLoading}
-                    startIcon={
-                      isLoading ? (
-                        <CircularProgress size={16} color="inherit" />
-                      ) : (
-                        <Send className="w-3.5 h-3.5" />
-                      )
-                    }
-                    sx={{
-                      textTransform: 'none',
-                      bgcolor: '#2563eb',
-                      borderRadius: '8px',
-                      boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
-                      '&:hover': { bgcolor: 'primary.dark' },
-                      '&.Mui-disabled': { bgcolor: '#93c5fd', color: '#fff' },
-                    }}
-                  >
-                    {isLoading ? 'Sending...' : 'Send'}
-                  </Button>
+                  {/* Stop button (streaming) */}
+                  {streaming.isStreaming && (
+                    <Button
+                      variant="contained"
+                      size="small"
+                      onClick={streaming.stop}
+                      startIcon={<StopCircle className="w-3.5 h-3.5" />}
+                      sx={{
+                        textTransform: 'none',
+                        bgcolor: '#dc2626',
+                        borderRadius: '8px',
+                        '&:hover': { bgcolor: '#b91c1c' },
+                      }}
+                    >
+                      Stop
+                    </Button>
+                  )}
+                  {/* Send button */}
+                  {!streaming.isStreaming && (
+                    <Button
+                      variant="contained"
+                      size="small"
+                      onClick={activeSend}
+                      disabled={!prompt.trim() || isBusy}
+                      startIcon={
+                        isBusy ? (
+                          <CircularProgress size={16} color="inherit" />
+                        ) : (
+                          <Send className="w-3.5 h-3.5" />
+                        )
+                      }
+                      sx={{
+                        textTransform: 'none',
+                        bgcolor: '#2563eb',
+                        borderRadius: '8px',
+                        boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                        '&:hover': { bgcolor: 'primary.dark' },
+                        '&.Mui-disabled': { bgcolor: '#93c5fd', color: '#fff' },
+                      }}
+                    >
+                      {isBusy ? 'Sending...' : 'Send'}
+                    </Button>
+                  )}
                 </Box>
               </Box>
             </Paper>
@@ -674,8 +766,39 @@ export default function PlaygroundPage() {
                 <Typography variant="body2" sx={{ fontWeight: 600, color: 'text.primary', display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Play className="w-4 h-4 text-green-500" />
                   Response
+                  {streaming.isStreaming && (
+                    <Chip
+                      label="LIVE"
+                      size="small"
+                      sx={{
+                        height: 20, fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.05em',
+                        bgcolor: 'rgba(239,68,68,0.1)', color: '#dc2626', border: '1px solid rgba(239,68,68,0.3)',
+                        animation: 'pulse 1.5s infinite',
+                        '@keyframes pulse': { '0%, 100%': { opacity: 1 }, '50%': { opacity: 0.6 } },
+                      }}
+                    />
+                  )}
                 </Typography>
-                {responseMeta && (
+                {/* Streaming stats */}
+                {streaming.isStreaming && (
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                    <Typography variant="caption" sx={{ color: 'text.secondary', display: 'flex', alignItems: 'center', gap: 0.5, fontFamily: 'monospace' }}>
+                      <Hash className="w-3 h-3" />
+                      {streaming.tokenCount} tokens
+                    </Typography>
+                    <Typography variant="caption" sx={{ color: 'text.secondary', display: 'flex', alignItems: 'center', gap: 0.5, fontFamily: 'monospace' }}>
+                      <Clock className="w-3 h-3" />
+                      {(streaming.elapsedMs / 1000).toFixed(1)}s
+                    </Typography>
+                    {streaming.tokenCount > 0 && streaming.elapsedMs > 0 && (
+                      <Typography variant="caption" sx={{ color: 'success.main', fontWeight: 600, fontFamily: 'monospace' }}>
+                        {(streaming.tokenCount / (streaming.elapsedMs / 1000)).toFixed(0)} tok/s
+                      </Typography>
+                    )}
+                  </Box>
+                )}
+                {/* Non-streaming stats */}
+                {!streaming.isStreaming && responseMeta && (
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                     <Typography variant="caption" sx={{ color: 'text.secondary', display: 'flex', alignItems: 'center', gap: 0.5 }}>
                       <Clock className="w-3 h-3" />
@@ -685,15 +808,67 @@ export default function PlaygroundPage() {
                       <Hash className="w-3 h-3" />
                       {responseMeta.tokensUsed} tokens
                     </Typography>
-                    <Typography variant="caption" sx={{ color: 'text.secondary', display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                      <DollarSign className="w-3 h-3" />${responseMeta.cost.toFixed(4)}
-                    </Typography>
+                    {responseMeta.cost > 0 && (
+                      <Typography variant="caption" sx={{ color: 'text.secondary', display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                        <DollarSign className="w-3 h-3" />${responseMeta.cost.toFixed(4)}
+                      </Typography>
+                    )}
                   </Box>
                 )}
               </Box>
 
+              {/* Streaming progress bar */}
+              {streaming.isStreaming && (
+                <LinearProgress
+                  variant="indeterminate"
+                  sx={{
+                    height: 2,
+                    bgcolor: 'transparent',
+                    '& .MuiLinearProgress-bar': { bgcolor: '#22c55e' },
+                  }}
+                />
+              )}
+
               <Box sx={{ px: 2.5, py: 2, minHeight: 180 }}>
-                {isLoading && (
+                {/* Streaming response — typewriter */}
+                {streaming.isStreaming && (
+                  <Box sx={{ position: 'relative' }}>
+                    <Box
+                      sx={{
+                        fontSize: '0.875rem',
+                        color: 'text.primary',
+                        whiteSpace: 'pre-wrap',
+                        lineHeight: 1.7,
+                        fontFamily: 'monospace',
+                        bgcolor: 'background.default',
+                        borderRadius: '8px',
+                        p: 2,
+                        border: '1px solid', borderColor: 'divider',
+                        maxHeight: 500,
+                        overflowY: 'auto',
+                      }}
+                    >
+                      {streaming.text}
+                      <Box
+                        component="span"
+                        sx={{
+                          display: 'inline-block',
+                          width: '2px',
+                          height: '1.1em',
+                          bgcolor: '#22c55e',
+                          ml: '1px',
+                          verticalAlign: 'text-bottom',
+                          animation: 'blink 0.8s step-end infinite',
+                          '@keyframes blink': { '0%, 100%': { opacity: 1 }, '50%': { opacity: 0 } },
+                        }}
+                      />
+                      <div ref={responseEndRef} />
+                    </Box>
+                  </Box>
+                )}
+
+                {/* Non-streaming loading */}
+                {!streaming.isStreaming && isLoading && (
                   <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', py: 6 }}>
                     <Box sx={{ textAlign: 'center' }}>
                       <CircularProgress size={32} sx={{ color: '#3b82f6' }} />
@@ -707,18 +882,20 @@ export default function PlaygroundPage() {
                   </Box>
                 )}
 
-                {!isLoading && responseError && (
+                {/* Error */}
+                {!isBusy && (responseError || streaming.error) && (
                   <Alert
                     severity="error"
                     icon={<AlertCircle className="w-5 h-5" />}
                     sx={{ borderRadius: '8px' }}
                   >
                     <Typography variant="body2" sx={{ fontWeight: 500 }}>Request Failed</Typography>
-                    <Typography variant="body2" sx={{ mt: 0.5 }}>{responseError}</Typography>
+                    <Typography variant="body2" sx={{ mt: 0.5 }}>{responseError || streaming.error}</Typography>
                   </Alert>
                 )}
 
-                {!isLoading && response && (
+                {/* Completed response */}
+                {!isBusy && response && !responseError && !streaming.error && (
                   <Box sx={{ position: 'relative', '&:hover .copy-btn': { opacity: 1 } }}>
                     <Box className="copy-btn" sx={{ position: 'absolute', top: 8, right: 8, opacity: 0, transition: 'opacity 0.2s' }}>
                       <CopyButton text={response} />
@@ -741,7 +918,8 @@ export default function PlaygroundPage() {
                   </Box>
                 )}
 
-                {!isLoading && !response && !responseError && (
+                {/* Empty state */}
+                {!isBusy && !response && !responseError && !streaming.error && !streaming.text && (
                   <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', py: 6, color: 'text.disabled' }}>
                     <Terminal className="w-12 h-12 mb-1.5" style={{ color: 'text.disabled' }} />
                     <Typography variant="body2" sx={{ fontWeight: 500 }}>No response yet</Typography>
@@ -752,7 +930,8 @@ export default function PlaygroundPage() {
                 )}
               </Box>
 
-              {responseMeta && (
+              {/* Footer stats */}
+              {responseMeta && !streaming.isStreaming && (
                 <Box sx={{ px: 2.5, py: 1.5, borderTop: '1px solid', borderColor: 'divider', bgcolor: 'rgba(249,250,251,0.5)' }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
                     <Typography variant="caption" sx={{ color: 'text.secondary' }}>
@@ -766,10 +945,22 @@ export default function PlaygroundPage() {
                     <Typography variant="caption" sx={{ color: 'text.secondary' }}>
                       Tokens: <Box component="span" sx={{ fontWeight: 500, color: 'text.primary' }}>{responseMeta.tokensUsed}</Box>
                     </Typography>
-                    <Typography variant="caption" sx={{ color: 'text.disabled' }}>|</Typography>
-                    <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                      Cost: <Box component="span" sx={{ fontWeight: 500, color: 'text.primary' }}>${responseMeta.cost.toFixed(4)}</Box>
-                    </Typography>
+                    {responseMeta.cost > 0 && (
+                      <>
+                        <Typography variant="caption" sx={{ color: 'text.disabled' }}>|</Typography>
+                        <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                          Cost: <Box component="span" sx={{ fontWeight: 500, color: 'text.primary' }}>${responseMeta.cost.toFixed(4)}</Box>
+                        </Typography>
+                      </>
+                    )}
+                    {streaming.completed && streaming.tokenCount > 0 && streaming.elapsedMs > 0 && (
+                      <>
+                        <Typography variant="caption" sx={{ color: 'text.disabled' }}>|</Typography>
+                        <Typography variant="caption" sx={{ color: 'success.main', fontWeight: 600 }}>
+                          {(streaming.tokenCount / (streaming.elapsedMs / 1000)).toFixed(0)} tok/s
+                        </Typography>
+                      </>
+                    )}
                   </Box>
                 </Box>
               )}
