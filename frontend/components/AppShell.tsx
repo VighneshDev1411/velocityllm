@@ -44,7 +44,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           width: { md: `calc(100% - ${sidebarWidth}px)` },
           ml: { md: 0 },
           mt: '56px',
-          backgroundColor: '#f5f5f5',
+          backgroundColor: 'background.default',
           minHeight: 'calc(100vh - 56px)',
           transition: 'width 0.2s ease-in-out',
         }}

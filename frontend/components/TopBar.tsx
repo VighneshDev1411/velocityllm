@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import Link from 'next/link';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
@@ -13,8 +12,10 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Divider from '@mui/material/Divider';
-import { Menu as MenuIcon, User, LogOut, Settings } from 'lucide-react';
+import Tooltip from '@mui/material/Tooltip';
+import { Menu as MenuIcon, User, LogOut, Settings, Sun, Moon } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useColorMode } from '@/contexts/ColorModeContext';
 
 const pageTitles: Record<string, string> = {
   '/dashboard': 'Dashboard',
@@ -32,6 +33,7 @@ const pageTitles: Record<string, string> = {
   '/webhooks': 'Webhooks',
   '/settings': 'Settings',
   '/profile': 'Profile',
+  '/docs': 'API Docs',
   '/admin/dashboard': 'Admin Dashboard',
   '/admin/users': 'User Management',
 };
@@ -45,6 +47,7 @@ export function TopBar({ onMenuClick, sidebarWidth }: TopBarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const { user, logout } = useAuth();
+  const { mode, toggleColorMode } = useColorMode();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const pageTitle = pageTitles[pathname] || 'VelocityLLM';
@@ -71,8 +74,6 @@ export function TopBar({ onMenuClick, sidebarWidth }: TopBarProps) {
       sx={{
         width: { md: `calc(100% - ${sidebarWidth}px)` },
         ml: { md: `${sidebarWidth}px` },
-        backgroundColor: '#ffffff',
-        borderBottom: '1px solid #e5e7eb',
         transition: 'width 0.2s ease-in-out, margin-left 0.2s ease-in-out',
       }}
     >
@@ -80,7 +81,8 @@ export function TopBar({ onMenuClick, sidebarWidth }: TopBarProps) {
         {/* Mobile menu button */}
         <IconButton
           onClick={onMenuClick}
-          sx={{ mr: 1.5, display: { md: 'none' }, color: '#374151' }}
+          sx={{ mr: 1.5, display: { md: 'none' } }}
+          color="inherit"
         >
           <MenuIcon className="w-5 h-5" />
         </IconButton>
@@ -88,17 +90,19 @@ export function TopBar({ onMenuClick, sidebarWidth }: TopBarProps) {
         {/* Page title */}
         <Typography
           variant="h6"
-          sx={{
-            color: '#111827',
-            fontWeight: 700,
-            fontSize: '1.1rem',
-            flexGrow: 1,
-          }}
+          sx={{ fontWeight: 700, fontSize: '1.1rem', flexGrow: 1 }}
         >
           {pageTitle}
         </Typography>
 
-        {/* User menu */}
+        {/* Dark / Light toggle */}
+        <Tooltip title={mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}>
+          <IconButton onClick={toggleColorMode} color="inherit" sx={{ mr: 1 }}>
+            {mode === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+          </IconButton>
+        </Tooltip>
+
+        {/* User menu trigger */}
         <Box
           onClick={handleMenuOpen}
           sx={{
@@ -109,7 +113,7 @@ export function TopBar({ onMenuClick, sidebarWidth }: TopBarProps) {
             px: 1.5,
             py: 0.75,
             borderRadius: '8px',
-            '&:hover': { backgroundColor: '#f3f4f6' },
+            '&:hover': { backgroundColor: 'action.hover' },
           }}
         >
           <Avatar
@@ -127,7 +131,6 @@ export function TopBar({ onMenuClick, sidebarWidth }: TopBarProps) {
             sx={{
               fontSize: '0.875rem',
               fontWeight: 500,
-              color: '#374151',
               display: { xs: 'none', sm: 'block' },
             }}
           >
@@ -147,17 +150,15 @@ export function TopBar({ onMenuClick, sidebarWidth }: TopBarProps) {
                 mt: 1,
                 minWidth: 200,
                 borderRadius: '10px',
-                border: '1px solid #e5e7eb',
-                boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)',
               },
             },
           }}
         >
           <Box sx={{ px: 2, py: 1.5 }}>
-            <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#111827' }}>
+            <Typography sx={{ fontSize: '0.875rem', fontWeight: 600 }}>
               {user?.username}
             </Typography>
-            <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>
+            <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>
               {user?.email}
             </Typography>
           </Box>
@@ -179,9 +180,9 @@ export function TopBar({ onMenuClick, sidebarWidth }: TopBarProps) {
           <Divider />
           <MenuItem
             onClick={handleLogout}
-            sx={{ fontSize: '0.875rem', py: 1, color: '#ef4444' }}
+            sx={{ fontSize: '0.875rem', py: 1, color: 'error.main' }}
           >
-            <ListItemIcon><LogOut className="w-4 h-4" style={{ color: '#ef4444' }} /></ListItemIcon>
+            <ListItemIcon><LogOut className="w-4 h-4" style={{ color: 'inherit' }} /></ListItemIcon>
             Logout
           </MenuItem>
         </Menu>

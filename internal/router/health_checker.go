@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/VighneshDev1411/velocityllm/internal/database"
+	"github.com/VighneshDev1411/velocityllm/internal/llm"
 	"github.com/VighneshDev1411/velocityllm/pkg/types"
 	"github.com/VighneshDev1411/velocityllm/pkg/utils"
 )
@@ -168,28 +169,14 @@ func (hc *HealthChecker) checkModel(model types.Model) {
 	}
 }
 
-// pingModel simulates pinging a model (placeholder)
+// pingModel makes a real lightweight HTTP request to verify the provider API
+// is reachable and the API key is valid.
+// For local models the database availability flag is used as the source of truth.
 func (hc *HealthChecker) pingModel(ctx context.Context, model types.Model) bool {
-	// In real implementation, this would:
-	// - For API models: Make a lightweight API call
-	// - For local models: Check if service is running
-
-	// Simulate: Most models are healthy
-	// For demo purposes, simulate occasional failures
-
-	// GPT-4 and Claude are usually healthy (95% success)
-	if model.Provider == "openai" || model.Provider == "anthropic" {
-		// 5% failure rate for simulation
-		return time.Now().Unix()%20 != 0
-	}
-
-	// Local models might be less stable (80% success)
 	if model.Provider == "local" {
-		// 20% failure rate for simulation
-		return time.Now().Unix()%5 != 0
+		return model.Available
 	}
-
-	return true
+	return llm.PingProvider(ctx, model.Provider)
 }
 
 // updateHealth updates health statistics for a model

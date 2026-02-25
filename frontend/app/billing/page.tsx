@@ -560,30 +560,19 @@ export default function BillingPage() {
                 </Typography>
                 <Box
                   sx={{
-                    p: 2.5, borderRadius: '12px', bgcolor: 'linear-gradient(135deg, #1e3a5f 0%, #111827 100%)',
+                    p: 2.5, borderRadius: '12px',
                     background: 'linear-gradient(135deg, #1e3a5f 0%, #111827 100%)', color: 'white', mb: 2,
+                    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                    minHeight: 120, gap: 1,
                   }}
                 >
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
-                    <CreditCard size={28} />
-                    <Wallet size={20} />
-                  </Box>
-                  <Typography variant="body1" sx={{ fontFamily: 'monospace', letterSpacing: '0.15em', mb: 2 }}>
-                    **** **** **** 4242
+                  <CreditCard size={32} style={{ opacity: 0.5 }} />
+                  <Typography variant="body2" sx={{ color: '#9ca3af', textAlign: 'center' }}>
+                    No payment method on file
                   </Typography>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Box>
-                      <Typography variant="caption" sx={{ color: '#9ca3af', textTransform: 'uppercase', fontSize: '0.6rem' }}>Card Holder</Typography>
-                      <Typography variant="body2" sx={{ fontWeight: 500 }}>{user?.username || 'Card Holder'}</Typography>
-                    </Box>
-                    <Box>
-                      <Typography variant="caption" sx={{ color: '#9ca3af', textTransform: 'uppercase', fontSize: '0.6rem' }}>Expires</Typography>
-                      <Typography variant="body2" sx={{ fontWeight: 500 }}>12/27</Typography>
-                    </Box>
-                  </Box>
                 </Box>
                 <Button fullWidth variant="outlined" sx={{ textTransform: 'none', borderRadius: '8px', fontWeight: 600 }}>
-                  Update Payment Method
+                  Add Payment Method
                 </Button>
               </Paper>
             </Grid>

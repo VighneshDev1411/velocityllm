@@ -333,6 +333,107 @@ func (mc *MetricsCollector) cleanup() {
 	}
 }
 
+// GetTimeSeries returns real time-series data bucketed from stored request history.
+// The three parallel arrays (requestTimestamps, latencies, costs) are scanned and
+// assigned to one of numPoints buckets spanning [now-duration, now].
+// Error counts come from the requestLog (which records per-request status).
+func (mc *MetricsCollector) GetTimeSeries(duration time.Duration, numPoints int) map[string][]map[string]interface{} {
+	mc.mu.RLock()
+	defer mc.mu.RUnlock()
+
+	now := time.Now()
+	start := now.Add(-duration)
+	interval := duration / time.Duration(numPoints)
+
+	type bucket struct {
+		count     int
+		errors    int
+		latencies []time.Duration
+		cost      float64
+	}
+	buckets := make([]bucket, numPoints)
+
+	// Bucket requests from the parallel arrays
+	for i, ts := range mc.requestTimestamps {
+		if ts.Before(start) {
+			continue
+		}
+		elapsed := ts.Sub(start)
+		idx := int(elapsed / interval)
+		if idx >= numPoints {
+			idx = numPoints - 1
+		}
+		buckets[idx].count++
+		if i < len(mc.latencies) {
+			buckets[idx].latencies = append(buckets[idx].latencies, mc.latencies[i])
+		}
+		if i < len(mc.costs) {
+			buckets[idx].cost += mc.costs[i]
+		}
+	}
+
+	// Add error counts from the request log (has per-request Status field)
+	for _, entry := range mc.requestLog {
+		if entry.Timestamp.Before(start) || entry.Status != "error" {
+			continue
+		}
+		elapsed := entry.Timestamp.Sub(start)
+		idx := int(elapsed / interval)
+		if idx >= numPoints {
+			idx = numPoints - 1
+		}
+		buckets[idx].errors++
+	}
+
+	requestSeries := make([]map[string]interface{}, 0, numPoints)
+	latencySeries := make([]map[string]interface{}, 0, numPoints)
+	costSeries := make([]map[string]interface{}, 0, numPoints)
+	errorSeries := make([]map[string]interface{}, 0, numPoints)
+
+	for i, b := range buckets {
+		t := start.Add(interval * time.Duration(i))
+		timeStr := t.Format(time.RFC3339)
+
+		var p50, p90, p95, p99 int64
+		if len(b.latencies) > 0 {
+			sorted := make([]time.Duration, len(b.latencies))
+			copy(sorted, b.latencies)
+			sort.Slice(sorted, func(a, c int) bool { return sorted[a] < sorted[c] })
+			p50 = calculatePercentile(sorted, 0.50).Milliseconds()
+			p90 = calculatePercentile(sorted, 0.90).Milliseconds()
+			p95 = calculatePercentile(sorted, 0.95).Milliseconds()
+			p99 = calculatePercentile(sorted, 0.99).Milliseconds()
+		}
+
+		requestSeries = append(requestSeries, map[string]interface{}{
+			"time":     timeStr,
+			"requests": b.count,
+		})
+		latencySeries = append(latencySeries, map[string]interface{}{
+			"time":   timeStr,
+			"p50_ms": p50,
+			"p90_ms": p90,
+			"p95_ms": p95,
+			"p99_ms": p99,
+		})
+		costSeries = append(costSeries, map[string]interface{}{
+			"time": timeStr,
+			"cost": b.cost,
+		})
+		errorSeries = append(errorSeries, map[string]interface{}{
+			"time":   timeStr,
+			"errors": b.errors,
+		})
+	}
+
+	return map[string][]map[string]interface{}{
+		"requests": requestSeries,
+		"latency":  latencySeries,
+		"cost":     costSeries,
+		"errors":   errorSeries,
+	}
+}
+
 // calculatePercentile calculates the given percentile from sorted data
 func calculatePercentile(sorted []time.Duration, percentile float64) time.Duration {
 	if len(sorted) == 0 {

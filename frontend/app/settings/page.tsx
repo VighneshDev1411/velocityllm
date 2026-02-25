@@ -541,32 +541,32 @@ export default function SettingsPage() {
         <Typography sx={{ fontSize: '0.7rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#6b7280', mb: 1.5 }}>
           Tier Limits
         </Typography>
-        <TableContainer>
-          <Table size="small">
-            <TableHead>
-              <TableRow>
-                <TableCell sx={{ fontWeight: 600, fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#6b7280' }}>Tier</TableCell>
-                <TableCell align="right" sx={{ fontWeight: 600, fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#6b7280' }}>RPM</TableCell>
-                <TableCell align="right" sx={{ fontWeight: 600, fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#6b7280' }}>Burst</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {Object.entries(rateLimiting.tiers || {
-                free: { rpm: 10, burst: 5 },
-                basic: { rpm: 100, burst: 20 },
-                premium: { rpm: 500, burst: 100 },
-                enterprise: { rpm: 2000, burst: 500 },
-                vip: { rpm: 10000, burst: 2000 },
-              }).map(([name, tier]: [string, any], i: number) => (
-                <TableRow key={name} sx={{ backgroundColor: i % 2 === 1 ? '#f9fafb' : 'transparent' }}>
-                  <TableCell sx={{ fontWeight: 500, textTransform: 'capitalize', fontSize: '0.85rem', color: '#111827' }}>{name}</TableCell>
-                  <TableCell align="right" sx={{ fontSize: '0.85rem', color: '#374151' }}>{tier.rpm?.toLocaleString()}</TableCell>
-                  <TableCell align="right" sx={{ fontSize: '0.85rem', color: '#374151' }}>{tier.burst?.toLocaleString()}</TableCell>
+        {Object.keys(rateLimiting.tiers || {}).length === 0 ? (
+          <Typography sx={{ fontSize: '0.875rem', color: '#9ca3af', fontStyle: 'italic' }}>
+            No rate limiting tiers configured
+          </Typography>
+        ) : (
+          <TableContainer>
+            <Table size="small">
+              <TableHead>
+                <TableRow>
+                  <TableCell sx={{ fontWeight: 600, fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#6b7280' }}>Tier</TableCell>
+                  <TableCell align="right" sx={{ fontWeight: 600, fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#6b7280' }}>RPM</TableCell>
+                  <TableCell align="right" sx={{ fontWeight: 600, fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#6b7280' }}>Burst</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+                {Object.entries(rateLimiting.tiers || {}).map(([name, tier]: [string, any], i: number) => (
+                  <TableRow key={name} sx={{ backgroundColor: i % 2 === 1 ? '#f9fafb' : 'transparent' }}>
+                    <TableCell sx={{ fontWeight: 500, textTransform: 'capitalize', fontSize: '0.85rem', color: '#111827' }}>{name}</TableCell>
+                    <TableCell align="right" sx={{ fontSize: '0.85rem', color: '#374151' }}>{tier.rpm?.toLocaleString()}</TableCell>
+                    <TableCell align="right" sx={{ fontSize: '0.85rem', color: '#374151' }}>{tier.burst?.toLocaleString()}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
       </Paper>
 
       {/* Backpressure & Load Shedding */}

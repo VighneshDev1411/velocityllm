@@ -142,3 +142,123 @@ func (r *RequestRepository) GetRequestsByDateRange(startDate, endDate time.Time,
 		Find(&requests).Error
 	return requests, err
 }
+
+// ModelStats holds aggregated stats per model from the requests table
+type ModelStats struct {
+	Model        string    `json:"model"`
+	Provider     string    `json:"provider"`
+	RequestCount int64     `json:"request_count"`
+	SuccessCount int64     `json:"success_count"`
+	ErrorCount   int64     `json:"error_count"`
+	AvgLatencyMs float64   `json:"avg_latency_ms"`
+	TotalCost    float64   `json:"total_cost"`
+	AvgCost      float64   `json:"avg_cost"`
+	LastUsed     time.Time `json:"last_used"`
+}
+
+// GetModelStats returns per-model aggregated stats from the DB
+func (r *RequestRepository) GetModelStats() ([]ModelStats, error) {
+	query := `
+		SELECT
+			model,
+			provider,
+			COUNT(*) AS request_count,
+			SUM(CASE WHEN status = 'success' THEN 1 ELSE 0 END) AS success_count,
+			SUM(CASE WHEN status = 'error' THEN 1 ELSE 0 END) AS error_count,
+			COALESCE(AVG(latency), 0) AS avg_latency_ms,
+			COALESCE(SUM(cost), 0) AS total_cost,
+			COALESCE(AVG(cost), 0) AS avg_cost,
+			MAX(created_at) AS last_used
+		FROM requests
+		WHERE deleted_at IS NULL
+		GROUP BY model, provider
+		ORDER BY request_count DESC`
+	var stats []ModelStats
+	result := r.db.Raw(query).Scan(&stats)
+	return stats, result.Error
+}
+
+// OverallLatencyStats holds overall latency percentiles from the DB
+type OverallLatencyStats struct {
+	P50Ms  float64 `json:"p50_ms"`
+	P90Ms  float64 `json:"p90_ms"`
+	P95Ms  float64 `json:"p95_ms"`
+	P99Ms  float64 `json:"p99_ms"`
+	MeanMs float64 `json:"mean_ms"`
+	MinMs  float64 `json:"min_ms"`
+	MaxMs  float64 `json:"max_ms"`
+	Count  int64   `json:"count"`
+}
+
+// GetOverallLatencyStats returns latency percentiles computed over all requests in the DB
+func (r *RequestRepository) GetOverallLatencyStats() (OverallLatencyStats, error) {
+	query := `
+		SELECT
+			COALESCE(PERCENTILE_CONT(0.50) WITHIN GROUP (ORDER BY latency), 0) AS p50_ms,
+			COALESCE(PERCENTILE_CONT(0.90) WITHIN GROUP (ORDER BY latency), 0) AS p90_ms,
+			COALESCE(PERCENTILE_CONT(0.95) WITHIN GROUP (ORDER BY latency), 0) AS p95_ms,
+			COALESCE(PERCENTILE_CONT(0.99) WITHIN GROUP (ORDER BY latency), 0) AS p99_ms,
+			COALESCE(AVG(latency), 0) AS mean_ms,
+			COALESCE(MIN(latency), 0) AS min_ms,
+			COALESCE(MAX(latency), 0) AS max_ms,
+			COUNT(*) AS count
+		FROM requests
+		WHERE deleted_at IS NULL`
+	var stats OverallLatencyStats
+	result := r.db.Raw(query).Scan(&stats)
+	return stats, result.Error
+}
+
+// GetFiltered retrieves requests with optional model and status filters, returning total count
+func (r *RequestRepository) GetFiltered(model, status string, limit, offset int) ([]types.Request, int64, error) {
+	var requests []types.Request
+	var total int64
+	q := r.db.Model(&types.Request{})
+	if model != "" {
+		q = q.Where("model = ?", model)
+	}
+	if status != "" {
+		q = q.Where("status = ?", status)
+	}
+	if err := q.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+	err := q.Limit(limit).Offset(offset).Order("created_at DESC").Find(&requests).Error
+	return requests, total, err
+}
+
+// TimeSeriesBucket holds aggregated metrics for a time bucket
+type TimeSeriesBucket struct {
+	BucketTime   time.Time `json:"time"`
+	Requests     int64     `json:"requests"`
+	Errors       int64     `json:"errors"`
+	AvgLatencyMs float64   `json:"avg_latency_ms"`
+	P50Ms        float64   `json:"p50_ms"`
+	P90Ms        float64   `json:"p90_ms"`
+	P95Ms        float64   `json:"p95_ms"`
+	P99Ms        float64   `json:"p99_ms"`
+	TotalCost    float64   `json:"total_cost"`
+}
+
+// GetTimeSeriesAggregation returns aggregated request metrics bucketed by time
+func (r *RequestRepository) GetTimeSeriesAggregation(start, end time.Time, truncUnit string) ([]TimeSeriesBucket, error) {
+	query := `
+		SELECT
+			date_trunc($1, created_at) AS bucket_time,
+			COUNT(*) AS requests,
+			SUM(CASE WHEN status = 'error' THEN 1 ELSE 0 END) AS errors,
+			COALESCE(AVG(latency), 0) AS avg_latency_ms,
+			COALESCE(PERCENTILE_CONT(0.50) WITHIN GROUP (ORDER BY latency), 0) AS p50_ms,
+			COALESCE(PERCENTILE_CONT(0.90) WITHIN GROUP (ORDER BY latency), 0) AS p90_ms,
+			COALESCE(PERCENTILE_CONT(0.95) WITHIN GROUP (ORDER BY latency), 0) AS p95_ms,
+			COALESCE(PERCENTILE_CONT(0.99) WITHIN GROUP (ORDER BY latency), 0) AS p99_ms,
+			COALESCE(SUM(cost), 0) AS total_cost
+		FROM requests
+		WHERE created_at BETWEEN $2 AND $3
+		  AND deleted_at IS NULL
+		GROUP BY date_trunc($1, created_at)
+		ORDER BY bucket_time ASC`
+	var buckets []TimeSeriesBucket
+	result := r.db.Raw(query, truncUnit, start, end).Scan(&buckets)
+	return buckets, result.Error
+}

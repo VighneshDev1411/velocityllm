@@ -18,6 +18,7 @@ import {
   LayoutDashboard, FlaskConical, BarChart3, Activity,
   Cpu, Briefcase, Radio, Coins, Key, CreditCard, Gauge, Zap, Webhook,
   Shield, Users, ChevronLeft, ChevronRight, Settings, ScrollText, UsersRound,
+  BookOpen,
 } from 'lucide-react';
 import { sidebarTheme } from '@/lib/theme';
 
@@ -35,6 +36,7 @@ const mainLinks: NavItem[] = [
   { href: '/playground', label: 'Playground', icon: FlaskConical },
   { href: '/analytics', label: 'Analytics', icon: BarChart3 },
   { href: '/monitoring', label: 'Monitoring', icon: Activity },
+  { href: '/docs', label: 'API Docs', icon: BookOpen },
 ];
 
 const infraLinks: NavItem[] = [

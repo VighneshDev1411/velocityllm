@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { loadTestAPI } from '@/lib/api';
+import api, { loadTestAPI } from '@/lib/api';
 import { PageHeader } from '@/components/PageHeader';
 import { StatCard } from '@/components/StatCard';
 import Box from '@mui/material/Box';
@@ -102,9 +102,14 @@ export default function LoadTestPage() {
     enable_cache: true,
   });
 
+  const [availableModels, setAvailableModels] = useState<{ name: string; id: string }[]>([]);
+
   useEffect(() => {
     fetchConfigs();
     fetchRuns();
+    api.get('/api/v1/models').then((res) => {
+      setAvailableModels(res.data?.data?.models || []);
+    }).catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -321,10 +326,9 @@ export default function LoadTestPage() {
                   label="Model"
                   onChange={(e) => setQuickModel(e.target.value)}
                 >
-                  <MenuItem value="gpt-4">GPT-4</MenuItem>
-                  <MenuItem value="gpt-3.5-turbo">GPT-3.5 Turbo</MenuItem>
-                  <MenuItem value="claude-3-opus">Claude 3 Opus</MenuItem>
-                  <MenuItem value="claude-3-sonnet">Claude 3 Sonnet</MenuItem>
+                  {availableModels.map((m) => (
+                    <MenuItem key={m.id} value={m.name}>{m.name}</MenuItem>
+                  ))}
                 </Select>
               </FormControl>
             </Grid>
@@ -679,10 +683,9 @@ export default function LoadTestPage() {
                     label="Model"
                     onChange={(e) => setNewConfig({ ...newConfig, model: e.target.value })}
                   >
-                    <MenuItem value="gpt-4">GPT-4</MenuItem>
-                    <MenuItem value="gpt-3.5-turbo">GPT-3.5 Turbo</MenuItem>
-                    <MenuItem value="claude-3-opus">Claude 3 Opus</MenuItem>
-                    <MenuItem value="claude-3-sonnet">Claude 3 Sonnet</MenuItem>
+                    {availableModels.map((m) => (
+                      <MenuItem key={m.id} value={m.name}>{m.name}</MenuItem>
+                    ))}
                   </Select>
                 </FormControl>
               </Grid>
