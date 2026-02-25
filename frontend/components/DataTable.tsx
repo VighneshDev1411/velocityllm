@@ -64,7 +64,7 @@ export function DataTable<T extends Record<string, any>>({
     : sortedRows;
 
   return (
-    <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', overflow: 'hidden' }}>
+    <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', overflow: 'hidden' }}>
       <TableContainer>
         <Table size="small">
           <TableHead>
@@ -94,7 +94,7 @@ export function DataTable<T extends Record<string, any>>({
             {displayedRows.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={columns.length} align="center" sx={{ py: 6 }}>
-                  <Typography sx={{ color: '#9ca3af', fontSize: '0.875rem' }}>
+                  <Typography sx={{ color: 'text.disabled', fontSize: '0.875rem' }}>
                     {emptyMessage}
                   </Typography>
                 </TableCell>
@@ -126,7 +126,7 @@ export function DataTable<T extends Record<string, any>>({
           rowsPerPage={rowsPerPage}
           onRowsPerPageChange={(e) => { setRowsPerPage(parseInt(e.target.value, 10)); setPage(0); }}
           rowsPerPageOptions={[5, 10, 25]}
-          sx={{ borderTop: '1px solid #f3f4f6' }}
+          sx={{ borderTop: '1px solid', borderColor: 'divider' }}
         />
       )}
     </Paper>

@@ -73,10 +73,10 @@ interface UserStats {
 }
 
 const ROLE_CONFIG: Record<string, { label: string; chipColor: string; chipBg: string; icon: any }> = {
-  admin: { label: 'Admin', chipColor: '#b91c1c', chipBg: '#fef2f2', icon: Crown },
-  developer: { label: 'Developer', chipColor: '#1d4ed8', chipBg: '#eff6ff', icon: Code },
-  viewer: { label: 'Viewer', chipColor: '#374151', chipBg: '#f9fafb', icon: Eye },
-  user: { label: 'User', chipColor: '#15803d', chipBg: '#ecfdf5', icon: UserIcon },
+  admin: { label: 'Admin', chipColor: '#b91c1c', chipBg: 'rgba(239,68,68,0.1)', icon: Crown },
+  developer: { label: 'Developer', chipColor: '#1d4ed8', chipBg: 'rgba(59,130,246,0.1)', icon: Code },
+  viewer: { label: 'Viewer', chipColor: 'text.primary', chipBg: 'background.default', icon: Eye },
+  user: { label: 'User', chipColor: '#15803d', chipBg: 'rgba(16,185,129,0.1)', icon: UserIcon },
 };
 
 export default function AdminUsersPage() {
@@ -222,20 +222,20 @@ export default function AdminUsersPage() {
   };
 
   const getActionChipColor = (action: string): { bg: string; color: string } => {
-    if (action.includes('delete')) return { bg: '#fef2f2', color: '#dc2626' };
+    if (action.includes('delete')) return { bg: 'rgba(239,68,68,0.1)', color: '#dc2626' };
     if (action.includes('role')) return { bg: '#f5f3ff', color: '#7c3aed' };
-    if (action.includes('login')) return { bg: '#ecfdf5', color: '#16a34a' };
-    if (action.includes('create')) return { bg: '#eff6ff', color: '#2563eb' };
-    return { bg: '#f9fafb', color: '#4b5563' };
+    if (action.includes('login')) return { bg: 'rgba(16,185,129,0.1)', color: '#16a34a' };
+    if (action.includes('create')) return { bg: 'rgba(59,130,246,0.1)', color: '#2563eb' };
+    return { bg: 'background.default', color: 'text.secondary' };
   };
 
   if (!currentUser) {
     return (
       <Box sx={{ p: { xs: 2, sm: 3 }, display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
         <Box sx={{ textAlign: 'center' }}>
-          <Shield style={{ width: 64, height: 64, color: '#d1d5db', margin: '0 auto 16px' }} />
-          <Typography variant="h5" sx={{ fontWeight: 700, color: '#374151' }}>Access Denied</Typography>
-          <Typography sx={{ color: '#6b7280', mt: 1 }}>You must be logged in as an admin to view this page.</Typography>
+          <Shield style={{ width: 64, height: 64, color: 'text.disabled', margin: '0 auto 16px' }} />
+          <Typography variant="h5" sx={{ fontWeight: 700, color: 'text.primary' }}>Access Denied</Typography>
+          <Typography sx={{ color: 'text.secondary', mt: 1 }}>You must be logged in as an admin to view this page.</Typography>
         </Box>
       </Box>
     );
@@ -309,13 +309,13 @@ export default function AdminUsersPage() {
       )}
 
       {/* Tabs */}
-      <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', mb: 3 }}>
+      <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', mb: 3 }}>
         <Tabs
           value={activeTab}
           onChange={(_, v) => setActiveTab(v)}
           sx={{
             px: 2,
-            borderBottom: '1px solid #e5e7eb',
+            borderBottom: '1px solid', borderColor: 'divider',
             '& .MuiTab-root': { textTransform: 'none', fontWeight: 600, fontSize: '0.875rem' },
           }}
         >
@@ -327,7 +327,7 @@ export default function AdminUsersPage() {
         {activeTab === 0 && (
           <>
             {/* Search Bar */}
-            <Box sx={{ p: 2, borderBottom: '1px solid #e5e7eb', display: 'flex', gap: 1.5 }}>
+            <Box sx={{ p: 2, borderBottom: '1px solid', borderColor: 'divider', display: 'flex', gap: 1.5 }}>
               <TextField
                 size="small"
                 fullWidth
@@ -338,7 +338,7 @@ export default function AdminUsersPage() {
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <Search style={{ width: 16, height: 16, color: '#9ca3af' }} />
+                      <Search style={{ width: 16, height: 16, color: 'text.disabled' }} />
                     </InputAdornment>
                   ),
                 }}
@@ -357,12 +357,12 @@ export default function AdminUsersPage() {
             <TableContainer>
               <Table>
                 <TableHead>
-                  <TableRow sx={{ backgroundColor: '#f9fafb' }}>
-                    <TableCell sx={{ fontWeight: 600, fontSize: '0.75rem', textTransform: 'uppercase', color: '#6b7280' }}>User</TableCell>
-                    <TableCell sx={{ fontWeight: 600, fontSize: '0.75rem', textTransform: 'uppercase', color: '#6b7280' }}>Role</TableCell>
-                    <TableCell sx={{ fontWeight: 600, fontSize: '0.75rem', textTransform: 'uppercase', color: '#6b7280' }}>Status</TableCell>
-                    <TableCell sx={{ fontWeight: 600, fontSize: '0.75rem', textTransform: 'uppercase', color: '#6b7280' }}>Joined</TableCell>
-                    <TableCell align="right" sx={{ fontWeight: 600, fontSize: '0.75rem', textTransform: 'uppercase', color: '#6b7280' }}>Actions</TableCell>
+                  <TableRow sx={{ backgroundColor: 'background.default' }}>
+                    <TableCell sx={{ fontWeight: 600, fontSize: '0.75rem', textTransform: 'uppercase', color: 'text.secondary' }}>User</TableCell>
+                    <TableCell sx={{ fontWeight: 600, fontSize: '0.75rem', textTransform: 'uppercase', color: 'text.secondary' }}>Role</TableCell>
+                    <TableCell sx={{ fontWeight: 600, fontSize: '0.75rem', textTransform: 'uppercase', color: 'text.secondary' }}>Status</TableCell>
+                    <TableCell sx={{ fontWeight: 600, fontSize: '0.75rem', textTransform: 'uppercase', color: 'text.secondary' }}>Joined</TableCell>
+                    <TableCell align="right" sx={{ fontWeight: 600, fontSize: '0.75rem', textTransform: 'uppercase', color: 'text.secondary' }}>Actions</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -370,13 +370,13 @@ export default function AdminUsersPage() {
                     <TableRow>
                       <TableCell colSpan={5} sx={{ textAlign: 'center', py: 6 }}>
                         <CircularProgress size={24} sx={{ mr: 1 }} />
-                        <Typography component="span" sx={{ color: '#9ca3af' }}>Loading users...</Typography>
+                        <Typography component="span" sx={{ color: 'text.disabled' }}>Loading users...</Typography>
                       </TableCell>
                     </TableRow>
                   ) : users.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={5} sx={{ textAlign: 'center', py: 6 }}>
-                        <Typography sx={{ color: '#9ca3af' }}>No users found</Typography>
+                        <Typography sx={{ color: 'text.disabled' }}>No users found</Typography>
                       </TableCell>
                     </TableRow>
                   ) : (
@@ -402,18 +402,18 @@ export default function AdminUsersPage() {
                               </Avatar>
                               <Box>
                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                  <Typography sx={{ fontWeight: 500, fontSize: '0.875rem', color: '#111827' }}>
+                                  <Typography sx={{ fontWeight: 500, fontSize: '0.875rem', color: 'text.primary' }}>
                                     {u.first_name} {u.last_name}
                                   </Typography>
                                   {isCurrentUser && (
                                     <Chip
                                       label="You"
                                       size="small"
-                                      sx={{ height: 20, fontSize: '0.7rem', backgroundColor: '#dbeafe', color: '#1d4ed8' }}
+                                      sx={{ height: 20, fontSize: '0.7rem', backgroundColor: 'rgba(59,130,246,0.1)', color: 'primary.dark' }}
                                     />
                                   )}
                                 </Box>
-                                <Typography sx={{ fontSize: '0.8rem', color: '#6b7280' }}>
+                                <Typography sx={{ fontSize: '0.8rem', color: 'text.secondary' }}>
                                   @{u.username} &middot; {u.email}
                                 </Typography>
                               </Box>
@@ -464,7 +464,7 @@ export default function AdminUsersPage() {
                               onClick={() => !isCurrentUser && handleToggleActive(u.id, u.active)}
                               title={isCurrentUser ? "Can't deactivate yourself" : 'Click to toggle'}
                               sx={{
-                                backgroundColor: u.active ? '#ecfdf5' : '#fef2f2',
+                                backgroundColor: u.active ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)',
                                 color: u.active ? '#15803d' : '#b91c1c',
                                 border: '1px solid',
                                 borderColor: u.active ? '#bbf7d0' : '#fecaca',
@@ -484,7 +484,7 @@ export default function AdminUsersPage() {
                             />
                           </TableCell>
                           <TableCell>
-                            <Typography sx={{ fontSize: '0.8rem', color: '#6b7280' }}>
+                            <Typography sx={{ fontSize: '0.8rem', color: 'text.secondary' }}>
                               {formatDate(u.created_at)}
                             </Typography>
                           </TableCell>
@@ -506,7 +506,7 @@ export default function AdminUsersPage() {
                                     size="small"
                                     onClick={() => setConfirmDelete(u.id)}
                                     title="Delete user"
-                                    sx={{ color: '#9ca3af', '&:hover': { color: '#dc2626', backgroundColor: '#fef2f2' } }}
+                                    sx={{ color: 'text.disabled', '&:hover': { color: '#dc2626', backgroundColor: 'rgba(239,68,68,0.1)' } }}
                                   >
                                     <Trash2 style={{ width: 16, height: 16 }} />
                                   </IconButton>
@@ -527,14 +527,14 @@ export default function AdminUsersPage() {
               sx={{
                 px: 3,
                 py: 1.5,
-                borderTop: '1px solid #e5e7eb',
-                backgroundColor: '#f9fafb',
+                borderTop: '1px solid', borderColor: 'divider',
+                backgroundColor: 'background.default',
                 display: 'flex',
                 alignItems: 'center',
                 gap: 2,
               }}
             >
-              <Typography sx={{ fontSize: '0.75rem', fontWeight: 500, color: '#6b7280' }}>Roles:</Typography>
+              <Typography sx={{ fontSize: '0.75rem', fontWeight: 500, color: 'text.secondary' }}>Roles:</Typography>
               {Object.entries(ROLE_CONFIG).map(([key, config]) => {
                 const Icon = config.icon;
                 return (
@@ -551,17 +551,17 @@ export default function AdminUsersPage() {
         {/* Activity Log Tab */}
         {activeTab === 1 && (
           <Box>
-            <Box sx={{ px: 3, py: 2, borderBottom: '1px solid #e5e7eb' }}>
-              <Typography sx={{ fontWeight: 600, color: '#111827' }}>Recent Activity</Typography>
-              <Typography sx={{ fontSize: '0.8rem', color: '#6b7280' }}>
+            <Box sx={{ px: 3, py: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
+              <Typography sx={{ fontWeight: 600, color: 'text.primary' }}>Recent Activity</Typography>
+              <Typography sx={{ fontSize: '0.8rem', color: 'text.secondary' }}>
                 Audit trail of user actions across the platform
               </Typography>
             </Box>
             {activityLogs.length === 0 ? (
               <Box sx={{ px: 3, py: 6, textAlign: 'center' }}>
-                <Activity style={{ width: 48, height: 48, color: '#d1d5db', margin: '0 auto 12px' }} />
-                <Typography sx={{ color: '#9ca3af' }}>No activity logs yet</Typography>
-                <Typography sx={{ fontSize: '0.8rem', color: '#9ca3af', mt: 0.5 }}>
+                <Activity style={{ width: 48, height: 48, color: 'text.disabled', margin: '0 auto 12px' }} />
+                <Typography sx={{ color: 'text.disabled' }}>No activity logs yet</Typography>
+                <Typography sx={{ fontSize: '0.8rem', color: 'text.disabled', mt: 0.5 }}>
                   Actions like role changes and user updates will appear here
                 </Typography>
               </Box>
@@ -577,8 +577,8 @@ export default function AdminUsersPage() {
                       display: 'flex',
                       alignItems: 'center',
                       gap: 2,
-                      borderBottom: '1px solid #f3f4f6',
-                      '&:hover': { backgroundColor: '#f9fafb' },
+                      borderBottom: '1px solid', borderColor: 'divider',
+                      '&:hover': { backgroundColor: 'background.default' },
                     }}
                   >
                     <Chip
@@ -592,16 +592,16 @@ export default function AdminUsersPage() {
                       }}
                     />
                     <Box sx={{ flex: 1, minWidth: 0 }}>
-                      <Typography component="span" sx={{ fontSize: '0.8rem', fontWeight: 500, color: '#111827' }}>
+                      <Typography component="span" sx={{ fontSize: '0.8rem', fontWeight: 500, color: 'text.primary' }}>
                         @{log.username}
                       </Typography>
                       {log.details && (
-                        <Typography component="span" sx={{ fontSize: '0.8rem', color: '#6b7280', ml: 1 }}>
+                        <Typography component="span" sx={{ fontSize: '0.8rem', color: 'text.secondary', ml: 1 }}>
                           {log.details}
                         </Typography>
                       )}
                     </Box>
-                    <Typography sx={{ fontSize: '0.75rem', color: '#9ca3af', whiteSpace: 'nowrap' }}>
+                    <Typography sx={{ fontSize: '0.75rem', color: 'text.disabled', whiteSpace: 'nowrap' }}>
                       {formatDate(log.created_at)}
                     </Typography>
                   </Box>

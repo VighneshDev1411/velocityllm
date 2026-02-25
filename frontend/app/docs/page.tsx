@@ -464,7 +464,7 @@ function EndpointDetail({ endpoint }: { endpoint: Endpoint }) {
             sx={{
               fontFamily: 'monospace',
               fontSize: '0.8rem',
-              color: '#e2e8f0',
+              color: 'divider',
               m: 0,
               whiteSpace: 'pre',
             }}
@@ -486,7 +486,7 @@ function EndpointDetail({ endpoint }: { endpoint: Endpoint }) {
             sx={{
               fontFamily: 'monospace',
               fontSize: '0.8rem',
-              color: '#e2e8f0',
+              color: 'divider',
               m: 0,
               whiteSpace: 'pre',
             }}
@@ -646,7 +646,7 @@ export default function DocsPage() {
                   Create scoped keys on the API Keys page. Never expose keys client-side.
                 </Typography>
                 <Paper sx={{ backgroundColor: '#0f172a', borderRadius: 2, p: 2 }}>
-                  <Typography component="pre" sx={{ fontFamily: 'monospace', fontSize: '0.82rem', color: '#e2e8f0', m: 0 }}>
+                  <Typography component="pre" sx={{ fontFamily: 'monospace', fontSize: '0.82rem', color: 'divider', m: 0 }}>
                     {`Authorization: Bearer vel_sk_prod_xxxxxxxxxxxxxxxxxxxx`}
                   </Typography>
                 </Paper>
@@ -665,7 +665,7 @@ export default function DocsPage() {
                   indicating when you can retry.
                 </Typography>
                 <Paper sx={{ backgroundColor: '#0f172a', borderRadius: 2, p: 2 }}>
-                  <Typography component="pre" sx={{ fontFamily: 'monospace', fontSize: '0.82rem', color: '#e2e8f0', m: 0 }}>
+                  <Typography component="pre" sx={{ fontFamily: 'monospace', fontSize: '0.82rem', color: 'divider', m: 0 }}>
                     {`HTTP/1.1 429 Too Many Requests
 Retry-After: 12
 X-RateLimit-Limit: 100

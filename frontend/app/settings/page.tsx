@@ -60,9 +60,9 @@ function InfoItem({ label, value, children }: {
 }) {
   return (
     <Box>
-      <Typography sx={{ fontSize: '0.75rem', color: '#6b7280', mb: 0.25 }}>{label}</Typography>
+      <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary', mb: 0.25 }}>{label}</Typography>
       {children || (
-        <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#111827' }}>
+        <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: 'text.primary' }}>
           {String(value ?? '-')}
         </Typography>
       )}
@@ -81,8 +81,8 @@ function FeatureBadge({ label, enabled }: { label: string; enabled?: boolean }) 
       label={label}
       size="small"
       sx={{
-        backgroundColor: enabled ? '#ecfdf5' : '#f3f4f6',
-        color: enabled ? '#15803d' : '#6b7280',
+        backgroundColor: enabled ? 'rgba(16,185,129,0.1)' : 'action.hover',
+        color: enabled ? 'success.dark' : 'text.secondary',
         fontWeight: 500,
         fontSize: '0.75rem',
         '& .MuiChip-icon': { color: 'inherit' },
@@ -103,7 +103,7 @@ function ProviderCard({ name, provider, providerKey, testing, testResult, onTest
   const models: string[] = provider?.models || provider?.supported_models || [];
 
   return (
-    <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '10px', p: 2.5 }}>
+    <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '10px', p: 2.5 }}>
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1.5 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <Box sx={{
@@ -112,7 +112,7 @@ function ProviderCard({ name, provider, providerKey, testing, testResult, onTest
             borderRadius: '50%',
             backgroundColor: configured ? '#22c55e' : '#f87171',
           }} />
-          <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#111827' }}>{name}</Typography>
+          <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: 'text.primary' }}>{name}</Typography>
         </Box>
         <Typography sx={{ fontSize: '0.75rem', fontWeight: 500, color: configured ? '#16a34a' : '#ef4444' }}>
           {configured ? 'Configured' : 'Not Configured'}
@@ -120,15 +120,15 @@ function ProviderCard({ name, provider, providerKey, testing, testResult, onTest
       </Box>
 
       <Box sx={{ mb: 1.5 }}>
-        <Typography sx={{ fontSize: '0.75rem', color: '#6b7280', mb: 0.25 }}>API Key</Typography>
-        <Typography sx={{ fontSize: '0.875rem', fontFamily: 'monospace', color: '#374151' }}>
+        <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary', mb: 0.25 }}>API Key</Typography>
+        <Typography sx={{ fontSize: '0.875rem', fontFamily: 'monospace', color: 'text.primary' }}>
           {maskKey(provider?.api_key)}
         </Typography>
       </Box>
 
       {models.length > 0 && (
         <Box sx={{ mb: 1.5 }}>
-          <Typography sx={{ fontSize: '0.75rem', color: '#6b7280', mb: 0.75 }}>Supported Models</Typography>
+          <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary', mb: 0.75 }}>Supported Models</Typography>
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75 }}>
             {models.map((m: string) => (
               <Chip
@@ -139,8 +139,8 @@ function ProviderCard({ name, provider, providerKey, testing, testResult, onTest
                   height: 22,
                   fontSize: '0.7rem',
                   fontWeight: 500,
-                  backgroundColor: '#f3f4f6',
-                  color: '#374151',
+                  backgroundColor: 'action.hover',
+                  color: 'text.primary',
                 }}
               />
             ))}
@@ -182,13 +182,13 @@ function ProviderCard({ name, provider, providerKey, testing, testResult, onTest
             {testResult.success ? 'Connection Successful' : 'Connection Failed'}
           </Typography>
           {testResult.success ? (
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.25, fontSize: '0.7rem', color: '#4b5563' }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.25, fontSize: '0.7rem', color: 'text.secondary' }}>
               {testResult.model && <Typography sx={{ fontSize: '0.7rem' }}>Model: <strong>{testResult.model}</strong></Typography>}
               {testResult.latency != null && <Typography sx={{ fontSize: '0.7rem' }}>Latency: <strong>{testResult.latency}ms</strong></Typography>}
               {testResult.status && <Typography sx={{ fontSize: '0.7rem' }}>Status: <strong>{testResult.status}</strong></Typography>}
               {testResult.tokens != null && <Typography sx={{ fontSize: '0.7rem' }}>Tokens: <strong>{testResult.tokens}</strong></Typography>}
               {testResult.response && (
-                <Typography sx={{ fontSize: '0.7rem', fontStyle: 'italic', color: '#6b7280', mt: 0.5 }} title={testResult.response}>
+                <Typography sx={{ fontSize: '0.7rem', fontStyle: 'italic', color: 'text.secondary', mt: 0.5 }} title={testResult.response}>
                   &quot;{testResult.response}&quot;
                 </Typography>
               )}
@@ -270,7 +270,7 @@ export default function SettingsPage() {
       <Box sx={{ p: { xs: 2, sm: 3 }, display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
         <Box sx={{ textAlign: 'center' }}>
           <CircularProgress size={40} />
-          <Typography sx={{ mt: 2, color: '#6b7280' }}>Loading settings...</Typography>
+          <Typography sx={{ mt: 2, color: 'text.secondary' }}>Loading settings...</Typography>
         </Box>
       </Box>
     );
@@ -319,10 +319,10 @@ export default function SettingsPage() {
       <PageHeader title="Settings" subtitle="System configuration and preferences" />
 
       {/* System Information */}
-      <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3, mb: 3 }}>
+      <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3, mb: 3 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2.5 }}>
           <Server style={{ width: 16, height: 16, color: '#2563eb' }} />
-          <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#111827' }}>
+          <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: 'text.primary' }}>
             System Information
           </Typography>
         </Box>
@@ -335,7 +335,7 @@ export default function SettingsPage() {
                 label={sys.environment || 'development'}
                 size="small"
                 sx={{
-                  backgroundColor: sys.environment === 'production' ? '#ecfdf5' : '#fefce8',
+                  backgroundColor: sys.environment === 'production' ? 'rgba(16,185,129,0.1)' : '#fefce8',
                   color: sys.environment === 'production' ? '#15803d' : '#a16207',
                   fontWeight: 500,
                   fontSize: '0.75rem',
@@ -354,10 +354,10 @@ export default function SettingsPage() {
       </Paper>
 
       {/* LLM Providers */}
-      <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3, mb: 3 }}>
+      <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3, mb: 3 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2.5 }}>
           <Cpu style={{ width: 16, height: 16, color: '#7c3aed' }} />
-          <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#111827' }}>
+          <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: 'text.primary' }}>
             LLM Providers
           </Typography>
         </Box>
@@ -386,15 +386,15 @@ export default function SettingsPage() {
       </Paper>
 
       {/* Routing Configuration */}
-      <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3, mb: 3 }}>
+      <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3, mb: 3 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2.5 }}>
           <Route style={{ width: 16, height: 16, color: '#4f46e5' }} />
-          <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#111827' }}>
+          <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: 'text.primary' }}>
             Routing Configuration
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 3, flexWrap: 'wrap' }}>
-          <Typography sx={{ fontSize: '0.875rem', fontWeight: 500, color: '#374151' }}>Strategy</Typography>
+          <Typography sx={{ fontSize: '0.875rem', fontWeight: 500, color: 'text.primary' }}>Strategy</Typography>
           <Select
             size="small"
             value={activeStrategy}
@@ -431,10 +431,10 @@ export default function SettingsPage() {
       </Paper>
 
       {/* Worker Pool */}
-      <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3, mb: 3 }}>
+      <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3, mb: 3 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2.5 }}>
           <Activity style={{ width: 16, height: 16, color: '#ea580c' }} />
-          <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#111827' }}>
+          <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: 'text.primary' }}>
             Worker Pool
           </Typography>
         </Box>
@@ -445,7 +445,7 @@ export default function SettingsPage() {
           <Grid size={{ xs: 6, md: 3 }}><InfoItem label="Job Timeout" value={formatDuration(workerPool.job_timeout)} /></Grid>
         </Grid>
 
-        <Typography sx={{ fontSize: '0.7rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#6b7280', mb: 1.5 }}>
+        <Typography sx={{ fontSize: '0.7rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'text.secondary', mb: 1.5 }}>
           Scaling Thresholds
         </Typography>
         <Grid container spacing={2.5} sx={{ mb: 2.5 }}>
@@ -456,7 +456,7 @@ export default function SettingsPage() {
 
         {workerPool.status && (
           <>
-            <Typography sx={{ fontSize: '0.7rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#6b7280', mb: 1.5 }}>
+            <Typography sx={{ fontSize: '0.7rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'text.secondary', mb: 1.5 }}>
               Current Status
             </Typography>
             <Grid container spacing={2.5}>
@@ -464,7 +464,7 @@ export default function SettingsPage() {
               <Grid size={{ xs: 6, md: 4 }}><InfoItem label="Busy Workers" value={workerPool.status?.busy_workers ?? '-'} /></Grid>
               <Grid size={{ xs: 12, md: 4 }}>
                 <Box>
-                  <Typography sx={{ fontSize: '0.75rem', color: '#6b7280', mb: 0.5 }}>Queue Utilization</Typography>
+                  <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary', mb: 0.5 }}>Queue Utilization</Typography>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                     <LinearProgress
                       variant="determinate"
@@ -474,7 +474,7 @@ export default function SettingsPage() {
                         height: 8,
                         borderRadius: '4px',
                         maxWidth: 120,
-                        backgroundColor: '#f3f4f6',
+                        backgroundColor: 'action.hover',
                         '& .MuiLinearProgress-bar': {
                           borderRadius: '4px',
                           backgroundColor:
@@ -483,7 +483,7 @@ export default function SettingsPage() {
                         },
                       }}
                     />
-                    <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#111827' }}>
+                    <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: 'text.primary' }}>
                       {workerPool.status?.queue_utilization ?? 0}%
                     </Typography>
                   </Box>
@@ -495,10 +495,10 @@ export default function SettingsPage() {
       </Paper>
 
       {/* Cache Configuration */}
-      <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3, mb: 3 }}>
+      <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3, mb: 3 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2.5 }}>
           <Layers style={{ width: 16, height: 16, color: '#0d9488' }} />
-          <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#111827' }}>
+          <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: 'text.primary' }}>
             Cache Configuration
           </Typography>
         </Box>
@@ -510,7 +510,7 @@ export default function SettingsPage() {
           <Grid size={{ xs: 6, md: 2.4 }}><InfoItem label="L2 TTL" value={formatDuration(cache.l2_ttl)} /></Grid>
         </Grid>
 
-        <Typography sx={{ fontSize: '0.7rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#6b7280', mb: 1.5 }}>
+        <Typography sx={{ fontSize: '0.7rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'text.secondary', mb: 1.5 }}>
           Features
         </Typography>
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
@@ -519,17 +519,17 @@ export default function SettingsPage() {
           <FeatureBadge label="Write-Through" enabled={cache.write_through} />
         </Box>
         {cache.semantic_threshold != null && (
-          <Typography sx={{ mt: 1.5, fontSize: '0.75rem', color: '#6b7280' }}>
-            Semantic threshold: <Box component="span" sx={{ fontWeight: 600, color: '#374151' }}>{cache.semantic_threshold}</Box>
+          <Typography sx={{ mt: 1.5, fontSize: '0.75rem', color: 'text.secondary' }}>
+            Semantic threshold: <Box component="span" sx={{ fontWeight: 600, color: 'text.primary' }}>{cache.semantic_threshold}</Box>
           </Typography>
         )}
       </Paper>
 
       {/* Rate Limiting */}
-      <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3, mb: 3 }}>
+      <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3, mb: 3 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2.5 }}>
           <Gauge style={{ width: 16, height: 16, color: '#d97706' }} />
-          <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#111827' }}>
+          <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: 'text.primary' }}>
             Rate Limiting
           </Typography>
         </Box>
@@ -538,11 +538,11 @@ export default function SettingsPage() {
           <Grid size={{ xs: 6 }}><InfoItem label="Burst Size" value={rateLimiting.default_burst ?? '-'} /></Grid>
         </Grid>
 
-        <Typography sx={{ fontSize: '0.7rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#6b7280', mb: 1.5 }}>
+        <Typography sx={{ fontSize: '0.7rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'text.secondary', mb: 1.5 }}>
           Tier Limits
         </Typography>
         {Object.keys(rateLimiting.tiers || {}).length === 0 ? (
-          <Typography sx={{ fontSize: '0.875rem', color: '#9ca3af', fontStyle: 'italic' }}>
+          <Typography sx={{ fontSize: '0.875rem', color: 'text.disabled', fontStyle: 'italic' }}>
             No rate limiting tiers configured
           </Typography>
         ) : (
@@ -550,17 +550,17 @@ export default function SettingsPage() {
             <Table size="small">
               <TableHead>
                 <TableRow>
-                  <TableCell sx={{ fontWeight: 600, fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#6b7280' }}>Tier</TableCell>
-                  <TableCell align="right" sx={{ fontWeight: 600, fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#6b7280' }}>RPM</TableCell>
-                  <TableCell align="right" sx={{ fontWeight: 600, fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#6b7280' }}>Burst</TableCell>
+                  <TableCell sx={{ fontWeight: 600, fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'text.secondary' }}>Tier</TableCell>
+                  <TableCell align="right" sx={{ fontWeight: 600, fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'text.secondary' }}>RPM</TableCell>
+                  <TableCell align="right" sx={{ fontWeight: 600, fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'text.secondary' }}>Burst</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {Object.entries(rateLimiting.tiers || {}).map(([name, tier]: [string, any], i: number) => (
-                  <TableRow key={name} sx={{ backgroundColor: i % 2 === 1 ? '#f9fafb' : 'transparent' }}>
-                    <TableCell sx={{ fontWeight: 500, textTransform: 'capitalize', fontSize: '0.85rem', color: '#111827' }}>{name}</TableCell>
-                    <TableCell align="right" sx={{ fontSize: '0.85rem', color: '#374151' }}>{tier.rpm?.toLocaleString()}</TableCell>
-                    <TableCell align="right" sx={{ fontSize: '0.85rem', color: '#374151' }}>{tier.burst?.toLocaleString()}</TableCell>
+                  <TableRow key={name} sx={{ backgroundColor: i % 2 === 1 ? 'background.default' : 'transparent' }}>
+                    <TableCell sx={{ fontWeight: 500, textTransform: 'capitalize', fontSize: '0.85rem', color: 'text.primary' }}>{name}</TableCell>
+                    <TableCell align="right" sx={{ fontSize: '0.85rem', color: 'text.primary' }}>{tier.rpm?.toLocaleString()}</TableCell>
+                    <TableCell align="right" sx={{ fontSize: '0.85rem', color: 'text.primary' }}>{tier.burst?.toLocaleString()}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -570,10 +570,10 @@ export default function SettingsPage() {
       </Paper>
 
       {/* Backpressure & Load Shedding */}
-      <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3, mb: 3 }}>
+      <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3, mb: 3 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2.5 }}>
           <Shield style={{ width: 16, height: 16, color: '#dc2626' }} />
-          <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#111827' }}>
+          <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: 'text.primary' }}>
             Backpressure & Load Shedding
           </Typography>
         </Box>
@@ -587,7 +587,7 @@ export default function SettingsPage() {
                 label={backpressure.active ? 'Active' : 'Inactive'}
                 size="small"
                 sx={{
-                  backgroundColor: backpressure.active ? '#fef2f2' : '#ecfdf5',
+                  backgroundColor: backpressure.active ? 'rgba(239,68,68,0.1)' : 'rgba(16,185,129,0.1)',
                   color: backpressure.active ? '#b91c1c' : '#15803d',
                   fontWeight: 500,
                   fontSize: '0.75rem',
@@ -597,27 +597,27 @@ export default function SettingsPage() {
           </Grid>
         </Grid>
         {backpressure.load_shedding && (
-          <Box sx={{ mt: 1, p: 2, backgroundColor: '#f9fafb', borderRadius: '8px' }}>
-            <Typography sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#4b5563', mb: 1 }}>
+          <Box sx={{ mt: 1, p: 2, backgroundColor: 'background.default', borderRadius: '8px' }}>
+            <Typography sx={{ fontSize: '0.75rem', fontWeight: 600, color: 'text.secondary', mb: 1 }}>
               Load Shedding Tiers
             </Typography>
             <Grid container spacing={1}>
               <Grid size={{ xs: 12, sm: 4 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Box sx={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#facc15' }} />
-                  <Typography sx={{ fontSize: '0.75rem', color: '#4b5563' }}>Warning: Shed low-priority traffic</Typography>
+                  <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>Warning: Shed low-priority traffic</Typography>
                 </Box>
               </Grid>
               <Grid size={{ xs: 12, sm: 4 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Box sx={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#f97316' }} />
-                  <Typography sx={{ fontSize: '0.75rem', color: '#4b5563' }}>Critical: Shed medium-priority traffic</Typography>
+                  <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>Critical: Shed medium-priority traffic</Typography>
                 </Box>
               </Grid>
               <Grid size={{ xs: 12, sm: 4 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Box sx={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#dc2626' }} />
-                  <Typography sx={{ fontSize: '0.75rem', color: '#4b5563' }}>Emergency: Only high-priority allowed</Typography>
+                  <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>Emergency: Only high-priority allowed</Typography>
                 </Box>
               </Grid>
             </Grid>
@@ -628,10 +628,10 @@ export default function SettingsPage() {
       {/* Database & Redis */}
       <Grid container spacing={3}>
         <Grid size={{ xs: 12, md: 6 }}>
-          <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3 }}>
+          <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2.5 }}>
               <Database style={{ width: 16, height: 16, color: '#2563eb' }} />
-              <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#111827' }}>Database</Typography>
+              <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: 'text.primary' }}>Database</Typography>
             </Box>
             <Grid container spacing={2.5}>
               <Grid size={{ xs: 6 }}><InfoItem label="Host" value={database.host || '-'} /></Grid>
@@ -643,10 +643,10 @@ export default function SettingsPage() {
         </Grid>
 
         <Grid size={{ xs: 12, md: 6 }}>
-          <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3 }}>
+          <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2.5 }}>
               <HardDrive style={{ width: 16, height: 16, color: '#dc2626' }} />
-              <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#111827' }}>Redis</Typography>
+              <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: 'text.primary' }}>Redis</Typography>
             </Box>
             <Grid container spacing={2.5}>
               <Grid size={{ xs: 6 }}><InfoItem label="Host" value={redis.host || '-'} /></Grid>

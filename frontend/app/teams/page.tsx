@@ -64,9 +64,9 @@ interface UserOption {
 
 /* ─────────────── Helpers ─────────────── */
 const ROLE_CONFIG = {
-  owner:  { label: 'Owner',  icon: Crown,  bg: '#fef3c7', color: '#d97706' },
-  admin:  { label: 'Admin',  icon: Shield, bg: '#eff6ff', color: '#2563eb' },
-  member: { label: 'Member', icon: User,   bg: '#f3f4f6', color: '#374151' },
+  owner:  { label: 'Owner',  icon: Crown,  bg: 'rgba(245,158,11,0.1)', color: '#d97706' },
+  admin:  { label: 'Admin',  icon: Shield, bg: 'rgba(59,130,246,0.1)', color: '#2563eb' },
+  member: { label: 'Member', icon: User,   bg: 'action.hover', color: 'text.primary' },
 };
 
 function RoleBadge({ role }: { role: string }) {
@@ -268,7 +268,7 @@ export default function TeamsPage() {
             variant="contained"
             startIcon={<Plus size={16} />}
             onClick={() => setCreateOpen(true)}
-            sx={{ textTransform: 'none', borderRadius: '8px', fontWeight: 600, bgcolor: '#2563eb', '&:hover': { bgcolor: '#1d4ed8' } }}
+            sx={{ textTransform: 'none', borderRadius: '8px', fontWeight: 600, bgcolor: '#2563eb', '&:hover': { bgcolor: 'primary.dark' } }}
           >
             New Team
           </Button>
@@ -298,15 +298,15 @@ export default function TeamsPage() {
 
       {/* Team List */}
       {loading ? (
-        <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 4, textAlign: 'center' }}>
+        <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 4, textAlign: 'center' }}>
           <CircularProgress size={28} />
-          <Typography sx={{ mt: 1, color: '#9ca3af' }}>Loading teams…</Typography>
+          <Typography sx={{ mt: 1, color: 'text.disabled' }}>Loading teams…</Typography>
         </Paper>
       ) : teams.length === 0 ? (
-        <Paper elevation={0} sx={{ border: '2px dashed #e5e7eb', borderRadius: '12px', p: 6, textAlign: 'center' }}>
-          <Users size={48} color="#d1d5db" />
-          <Typography variant="h6" sx={{ mt: 2, color: '#9ca3af', fontWeight: 500 }}>No teams yet</Typography>
-          <Typography variant="body2" sx={{ color: '#d1d5db', mt: 0.5 }}>Create your first team to start collaborating</Typography>
+        <Paper elevation={0} sx={{ border: '2px dashed var(--mui-palette-divider)', borderRadius: '12px', p: 6, textAlign: 'center' }}>
+          <Users size={48} color="var(--mui-palette-text-disabled)" />
+          <Typography variant="h6" sx={{ mt: 2, color: 'text.disabled', fontWeight: 500 }}>No teams yet</Typography>
+          <Typography variant="body2" sx={{ color: 'text.disabled', mt: 0.5 }}>Create your first team to start collaborating</Typography>
           <Button
             variant="contained"
             startIcon={<Plus size={16} />}
@@ -328,7 +328,7 @@ export default function TeamsPage() {
                 key={team.id}
                 elevation={0}
                 sx={{
-                  border: `1px solid ${isExpanded ? '#bfdbfe' : '#e5e7eb'}`,
+                  border: `1px solid ${isExpanded ? '#bfdbfe' : 'divider'}`,
                   borderRadius: '12px',
                   overflow: 'hidden',
                   transition: 'border-color 0.15s',
@@ -343,13 +343,13 @@ export default function TeamsPage() {
                     alignItems: 'center',
                     gap: 2,
                     cursor: 'pointer',
-                    bgcolor: isExpanded ? '#eff6ff' : 'white',
+                    bgcolor: isExpanded ? 'rgba(59,130,246,0.1)' : 'white',
                     transition: 'background-color 0.15s',
-                    '&:hover': { bgcolor: isExpanded ? '#eff6ff' : '#f9fafb' },
+                    '&:hover': { bgcolor: isExpanded ? 'rgba(59,130,246,0.1)' : 'background.default' },
                   }}
                 >
                   {/* Expand icon */}
-                  <Box sx={{ color: '#9ca3af', flexShrink: 0 }}>
+                  <Box sx={{ color: 'text.disabled', flexShrink: 0 }}>
                     {isExpanded ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
                   </Box>
 
@@ -370,8 +370,8 @@ export default function TeamsPage() {
 
                   {/* Team info */}
                   <Box sx={{ flex: 1, minWidth: 0 }}>
-                    <Typography variant="body1" sx={{ fontWeight: 700, color: '#111827' }}>{team.name}</Typography>
-                    <Typography variant="body2" sx={{ color: '#6b7280', fontSize: '0.82rem' }} noWrap>
+                    <Typography variant="body1" sx={{ fontWeight: 700, color: 'text.primary' }}>{team.name}</Typography>
+                    <Typography variant="body2" sx={{ color: 'text.secondary', fontSize: '0.82rem' }} noWrap>
                       {team.description || 'No description'} · Created {fmtDate(team.created_at)}
                     </Typography>
                   </Box>
@@ -389,11 +389,11 @@ export default function TeamsPage() {
                         </Tooltip>
                       ))}
                       {membersMap[team.id].length > 4 && (
-                        <Avatar sx={{ width: 28, height: 28, fontSize: '0.65rem', bgcolor: '#e5e7eb', color: '#6b7280', border: '2px solid white' }}>
+                        <Avatar sx={{ width: 28, height: 28, fontSize: '0.65rem', bgcolor: 'divider', color: 'text.secondary', border: '2px solid white' }}>
                           +{membersMap[team.id].length - 4}
                         </Avatar>
                       )}
-                      <Typography variant="caption" sx={{ color: '#6b7280', ml: 0.5 }}>
+                      <Typography variant="caption" sx={{ color: 'text.secondary', ml: 0.5 }}>
                         {membersMap[team.id].length} member{membersMap[team.id].length !== 1 ? 's' : ''}
                       </Typography>
                     </Box>
@@ -405,7 +405,7 @@ export default function TeamsPage() {
                       <IconButton
                         size="small"
                         onClick={() => handleOpenAddMember(team)}
-                        sx={{ color: '#2563eb', '&:hover': { bgcolor: '#eff6ff' } }}
+                        sx={{ color: '#2563eb', '&:hover': { bgcolor: 'rgba(59,130,246,0.1)' } }}
                       >
                         <UserPlus size={16} />
                       </IconButton>
@@ -414,7 +414,7 @@ export default function TeamsPage() {
                       <IconButton
                         size="small"
                         onClick={() => fetchMembers(team.id)}
-                        sx={{ color: '#6b7280', '&:hover': { bgcolor: '#f3f4f6' } }}
+                        sx={{ color: 'text.secondary', '&:hover': { bgcolor: 'action.hover' } }}
                       >
                         <RefreshCw size={14} />
                       </IconButton>
@@ -423,7 +423,7 @@ export default function TeamsPage() {
                       <IconButton
                         size="small"
                         onClick={() => setDeleteTeam(team)}
-                        sx={{ color: '#dc2626', '&:hover': { bgcolor: '#fef2f2' } }}
+                        sx={{ color: '#dc2626', '&:hover': { bgcolor: 'rgba(239,68,68,0.1)' } }}
                       >
                         <Trash2 size={16} />
                       </IconButton>
@@ -441,7 +441,7 @@ export default function TeamsPage() {
                       </Box>
                     ) : members.length === 0 ? (
                       <Box sx={{ textAlign: 'center', py: 3 }}>
-                        <Typography sx={{ color: '#9ca3af', fontSize: '0.875rem' }}>No members loaded</Typography>
+                        <Typography sx={{ color: 'text.disabled', fontSize: '0.875rem' }}>No members loaded</Typography>
                         <Button
                           size="small"
                           startIcon={<UserPlus size={14} />}
@@ -453,7 +453,7 @@ export default function TeamsPage() {
                       </Box>
                     ) : (
                       <Box>
-                        <Typography variant="caption" sx={{ color: '#9ca3af', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: '0.68rem', mb: 1.5, display: 'block' }}>
+                        <Typography variant="caption" sx={{ color: 'text.disabled', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: '0.68rem', mb: 1.5, display: 'block' }}>
                           {members.length} Member{members.length !== 1 ? 's' : ''}
                         </Typography>
                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.75 }}>
@@ -466,8 +466,8 @@ export default function TeamsPage() {
                                 gap: 1.5,
                                 p: 1.25,
                                 borderRadius: '8px',
-                                border: '1px solid #f3f4f6',
-                                '&:hover': { bgcolor: '#f9fafb', '& .remove-btn': { opacity: 1 } },
+                                border: '1px solid', borderColor: 'divider',
+                                '&:hover': { bgcolor: 'background.default', '& .remove-btn': { opacity: 1 } },
                               }}
                             >
                               <Avatar
@@ -476,12 +476,12 @@ export default function TeamsPage() {
                                 {initials(m.user)}
                               </Avatar>
                               <Box sx={{ flex: 1, minWidth: 0 }}>
-                                <Typography variant="body2" sx={{ fontWeight: 600, color: '#111827' }}>
+                                <Typography variant="body2" sx={{ fontWeight: 600, color: 'text.primary' }}>
                                   {m.user?.first_name && m.user?.last_name
                                     ? `${m.user.first_name} ${m.user.last_name}`
                                     : m.user?.username}
                                 </Typography>
-                                <Typography variant="caption" sx={{ color: '#6b7280' }}>
+                                <Typography variant="caption" sx={{ color: 'text.secondary' }}>
                                   {m.user?.email} · joined {fmtDate(m.joined_at)}
                                 </Typography>
                               </Box>
@@ -489,7 +489,7 @@ export default function TeamsPage() {
                               <Chip
                                 label={m.user?.role}
                                 size="small"
-                                sx={{ bgcolor: '#f3f4f6', color: '#6b7280', fontSize: '0.68rem', height: 20 }}
+                                sx={{ bgcolor: 'action.hover', color: 'text.secondary', fontSize: '0.68rem', height: 20 }}
                               />
                               <Tooltip title={`Remove ${m.user?.username}`}>
                                 <IconButton
@@ -497,7 +497,7 @@ export default function TeamsPage() {
                                   className="remove-btn"
                                   onClick={() => handleRemoveMember(team.id, m.user?.id, m.user?.username)}
                                   disabled={m.team_role === 'owner'}
-                                  sx={{ opacity: 0, transition: 'opacity 0.15s', color: '#dc2626', '&:hover': { bgcolor: '#fef2f2' }, '&.Mui-disabled': { opacity: 0.3 } }}
+                                  sx={{ opacity: 0, transition: 'opacity 0.15s', color: '#dc2626', '&:hover': { bgcolor: 'rgba(239,68,68,0.1)' }, '&.Mui-disabled': { opacity: 0.3 } }}
                                 >
                                   <UserMinus size={14} />
                                 </IconButton>
@@ -551,7 +551,7 @@ export default function TeamsPage() {
             variant="contained"
             onClick={handleCreate}
             disabled={!newName.trim() || creating}
-            sx={{ textTransform: 'none', borderRadius: '8px', fontWeight: 600, bgcolor: '#2563eb', '&:hover': { bgcolor: '#1d4ed8' } }}
+            sx={{ textTransform: 'none', borderRadius: '8px', fontWeight: 600, bgcolor: '#2563eb', '&:hover': { bgcolor: 'primary.dark' } }}
           >
             {creating ? <CircularProgress size={18} sx={{ color: 'white' }} /> : 'Create Team'}
           </Button>
@@ -570,15 +570,15 @@ export default function TeamsPage() {
             placeholder="Search by username or email…"
             value={userSearch}
             onChange={e => setUserSearch(e.target.value)}
-            InputProps={{ startAdornment: <Search size={14} style={{ marginRight: 8, color: '#9ca3af' }} /> }}
+            InputProps={{ startAdornment: <Search size={14} style={{ marginRight: 8, color: 'text.disabled' }} /> }}
             sx={{ mb: 2, mt: 0.5, '& .MuiOutlinedInput-root': { borderRadius: '8px' } }}
           />
 
           {/* User list */}
-          <Box sx={{ maxHeight: 220, overflowY: 'auto', mb: 2, border: '1px solid #e5e7eb', borderRadius: '8px' }}>
+          <Box sx={{ maxHeight: 220, overflowY: 'auto', mb: 2, border: '1px solid', borderColor: 'divider', borderRadius: '8px' }}>
             {availableUsers.length === 0 ? (
               <Box sx={{ textAlign: 'center', py: 3 }}>
-                <Typography variant="body2" sx={{ color: '#9ca3af' }}>
+                <Typography variant="body2" sx={{ color: 'text.disabled' }}>
                   {userSearch ? 'No users match your search' : 'No available users to add'}
                 </Typography>
               </Box>
@@ -593,19 +593,19 @@ export default function TeamsPage() {
                     gap: 1.5,
                     p: 1.25,
                     cursor: 'pointer',
-                    bgcolor: selectedUser === u.id ? '#eff6ff' : 'transparent',
+                    bgcolor: selectedUser === u.id ? 'rgba(59,130,246,0.1)' : 'transparent',
                     borderLeft: selectedUser === u.id ? '3px solid #2563eb' : '3px solid transparent',
-                    '&:hover': { bgcolor: selectedUser === u.id ? '#eff6ff' : '#f9fafb' },
+                    '&:hover': { bgcolor: selectedUser === u.id ? 'rgba(59,130,246,0.1)' : 'background.default' },
                   }}
                 >
                   <Avatar sx={{ width: 32, height: 32, fontSize: '0.75rem', fontWeight: 700, bgcolor: avatarColor(u.username), borderRadius: '7px' }}>
                     {u.username?.[0]?.toUpperCase()}
                   </Avatar>
                   <Box sx={{ flex: 1, minWidth: 0 }}>
-                    <Typography variant="body2" sx={{ fontWeight: 600, color: '#111827' }}>{u.username}</Typography>
-                    <Typography variant="caption" sx={{ color: '#6b7280' }}>{u.email}</Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 600, color: 'text.primary' }}>{u.username}</Typography>
+                    <Typography variant="caption" sx={{ color: 'text.secondary' }}>{u.email}</Typography>
                   </Box>
-                  {selectedUser === u.id && <Chip label="Selected" size="small" sx={{ bgcolor: '#dbeafe', color: '#2563eb', fontWeight: 600, fontSize: '0.7rem', height: 20 }} />}
+                  {selectedUser === u.id && <Chip label="Selected" size="small" sx={{ bgcolor: 'rgba(59,130,246,0.1)', color: '#2563eb', fontWeight: 600, fontSize: '0.7rem', height: 20 }} />}
                 </Box>
               ))
             )}
@@ -631,7 +631,7 @@ export default function TeamsPage() {
             variant="contained"
             onClick={handleAddMember}
             disabled={!selectedUser || adding}
-            sx={{ textTransform: 'none', borderRadius: '8px', fontWeight: 600, bgcolor: '#2563eb', '&:hover': { bgcolor: '#1d4ed8' } }}
+            sx={{ textTransform: 'none', borderRadius: '8px', fontWeight: 600, bgcolor: '#2563eb', '&:hover': { bgcolor: 'primary.dark' } }}
           >
             {adding ? <CircularProgress size={18} sx={{ color: 'white' }} /> : 'Add Member'}
           </Button>
@@ -642,7 +642,7 @@ export default function TeamsPage() {
       <Dialog open={!!deleteTeam} onClose={() => setDeleteTeam(null)} maxWidth="xs" fullWidth PaperProps={{ sx: { borderRadius: '14px' } }}>
         <DialogTitle sx={{ fontWeight: 700, pb: 1 }}>Delete Team?</DialogTitle>
         <DialogContent>
-          <Typography variant="body2" sx={{ color: '#374151' }}>
+          <Typography variant="body2" sx={{ color: 'text.primary' }}>
             Are you sure you want to delete <strong>{deleteTeam?.name}</strong>? This will remove all members and cannot be undone.
           </Typography>
         </DialogContent>
@@ -652,7 +652,7 @@ export default function TeamsPage() {
             variant="contained"
             onClick={handleDelete}
             disabled={deleting}
-            sx={{ textTransform: 'none', borderRadius: '8px', fontWeight: 600, bgcolor: '#dc2626', '&:hover': { bgcolor: '#b91c1c' } }}
+            sx={{ textTransform: 'none', borderRadius: '8px', fontWeight: 600, bgcolor: '#dc2626', '&:hover': { bgcolor: 'error.dark' } }}
           >
             {deleting ? <CircularProgress size={18} sx={{ color: 'white' }} /> : 'Delete Team'}
           </Button>

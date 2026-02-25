@@ -91,10 +91,10 @@ export default function RegisterPage() {
           >
             <Typography sx={{ color: '#fff', fontWeight: 700, fontSize: '1.25rem' }}>V</Typography>
           </Box>
-          <Typography variant="h4" sx={{ fontWeight: 700, color: '#111827' }}>
+          <Typography variant="h4" sx={{ fontWeight: 700, color: 'text.primary' }}>
             Create account
           </Typography>
-          <Typography sx={{ color: '#6b7280', mt: 0.5 }}>
+          <Typography sx={{ color: 'text.secondary', mt: 0.5 }}>
             Get started with VelocityLLM
           </Typography>
         </Box>
@@ -105,7 +105,7 @@ export default function RegisterPage() {
           sx={{
             p: 4,
             borderRadius: '16px',
-            border: '1px solid #e5e7eb',
+            border: '1px solid', borderColor: 'divider',
             boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
           }}
         >
@@ -204,7 +204,7 @@ export default function RegisterPage() {
           </form>
 
           {/* Divider */}
-          <Divider sx={{ my: 3, fontSize: '0.8rem', color: '#9ca3af' }}>
+          <Divider sx={{ my: 3, fontSize: '0.8rem', color: 'text.disabled' }}>
             or sign up with
           </Divider>
 
@@ -215,9 +215,9 @@ export default function RegisterPage() {
               href={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1'}/auth/oauth/redirect?provider=github`}
               component="a"
               sx={{
-                color: '#374151',
-                borderColor: '#d1d5db',
-                '&:hover': { borderColor: '#9ca3af', backgroundColor: '#f9fafb' },
+                color: 'text.primary',
+                borderColor: 'divider',
+                '&:hover': { borderColor: 'divider', backgroundColor: 'background.default' },
                 textTransform: 'none',
                 py: 1.25,
               }}
@@ -230,9 +230,9 @@ export default function RegisterPage() {
               href={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1'}/auth/oauth/redirect?provider=google`}
               component="a"
               sx={{
-                color: '#374151',
-                borderColor: '#d1d5db',
-                '&:hover': { borderColor: '#9ca3af', backgroundColor: '#f9fafb' },
+                color: 'text.primary',
+                borderColor: 'divider',
+                '&:hover': { borderColor: 'divider', backgroundColor: 'background.default' },
                 textTransform: 'none',
                 py: 1.25,
               }}
@@ -249,7 +249,7 @@ export default function RegisterPage() {
             </Button>
           </Box>
 
-          <Typography sx={{ textAlign: 'center', mt: 3, fontSize: '0.875rem', color: '#6b7280' }}>
+          <Typography sx={{ textAlign: 'center', mt: 3, fontSize: '0.875rem', color: 'text.secondary' }}>
             Already have an account?{' '}
             <Link href="/login" style={{ color: '#3b82f6', fontWeight: 600, textDecoration: 'none' }}>
               Sign in
@@ -257,7 +257,7 @@ export default function RegisterPage() {
           </Typography>
         </Paper>
 
-        <Typography sx={{ textAlign: 'center', mt: 3, fontSize: '0.8rem', color: '#9ca3af' }}>
+        <Typography sx={{ textAlign: 'center', mt: 3, fontSize: '0.8rem', color: 'text.disabled' }}>
           Production-Grade LLM Inference Engine
         </Typography>
       </Box>

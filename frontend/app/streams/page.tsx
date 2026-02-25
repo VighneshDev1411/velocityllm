@@ -111,25 +111,25 @@ export default function StreamsPage() {
       {/* Performance Metrics */}
       <Grid container spacing={3} sx={{ mb: 3 }}>
         <Grid size={{ xs: 12, md: 4 }}>
-          <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3 }}>
-            <Typography sx={{ fontSize: '0.875rem', color: '#6b7280', mb: 1 }}>Avg Duration</Typography>
-            <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, color: '#111827' }}>
+          <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3 }}>
+            <Typography sx={{ fontSize: '0.875rem', color: 'text.secondary', mb: 1 }}>Avg Duration</Typography>
+            <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, color: 'text.primary' }}>
               {(metrics?.avg_duration_ms || 0).toFixed(0)}ms
             </Typography>
           </Paper>
         </Grid>
         <Grid size={{ xs: 12, md: 4 }}>
-          <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3 }}>
-            <Typography sx={{ fontSize: '0.875rem', color: '#6b7280', mb: 1 }}>Avg Chunks/Stream</Typography>
-            <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, color: '#111827' }}>
+          <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3 }}>
+            <Typography sx={{ fontSize: '0.875rem', color: 'text.secondary', mb: 1 }}>Avg Chunks/Stream</Typography>
+            <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, color: 'text.primary' }}>
               {(metrics?.avg_chunks_per_stream || 0).toFixed(1)}
             </Typography>
           </Paper>
         </Grid>
         <Grid size={{ xs: 12, md: 4 }}>
-          <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3 }}>
-            <Typography sx={{ fontSize: '0.875rem', color: '#6b7280', mb: 1 }}>Data Streamed</Typography>
-            <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, color: '#111827' }}>
+          <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3 }}>
+            <Typography sx={{ fontSize: '0.875rem', color: 'text.secondary', mb: 1 }}>Data Streamed</Typography>
+            <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, color: 'text.primary' }}>
               {formatBytes(metrics?.bytes_streamed || 0)}
             </Typography>
           </Paper>
@@ -137,17 +137,17 @@ export default function StreamsPage() {
       </Grid>
 
       {/* Active Streams */}
-      <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px' }}>
-        <Box sx={{ px: 3, py: 2, borderBottom: '1px solid #e5e7eb' }}>
-          <Typography variant="h6" sx={{ fontSize: '1.1rem', fontWeight: 600, color: '#111827' }}>
+      <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px' }}>
+        <Box sx={{ px: 3, py: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
+          <Typography variant="h6" sx={{ fontSize: '1.1rem', fontWeight: 600, color: 'text.primary' }}>
             Active Streams
           </Typography>
         </Box>
 
         <Box sx={{ p: 3 }}>
           {activeStreams.length === 0 ? (
-            <Box sx={{ textAlign: 'center', py: 6, color: '#9ca3af' }}>
-              <Zap size={48} style={{ margin: '0 auto 16px', display: 'block', color: '#d1d5db' }} />
+            <Box sx={{ textAlign: 'center', py: 6, color: 'text.disabled' }}>
+              <Zap size={48} style={{ margin: '0 auto 16px', display: 'block', color: 'text.disabled' }} />
               <Typography>No active streams</Typography>
             </Box>
           ) : (
@@ -157,7 +157,7 @@ export default function StreamsPage() {
                   key={stream.stream_id || index}
                   elevation={0}
                   sx={{
-                    border: '1px solid #e5e7eb',
+                    border: '1px solid', borderColor: 'divider',
                     borderRadius: '12px',
                     p: 2,
                     transition: 'box-shadow 0.2s',
@@ -180,10 +180,10 @@ export default function StreamsPage() {
                         }}
                       />
                       <Box>
-                        <Typography sx={{ fontFamily: 'monospace', fontSize: '0.875rem', color: '#111827' }}>
+                        <Typography sx={{ fontFamily: 'monospace', fontSize: '0.875rem', color: 'text.primary' }}>
                           {stream.stream_id || `Stream ${index + 1}`}
                         </Typography>
-                        <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>
+                        <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>
                           {stream.type || 'completion'}
                         </Typography>
                       </Box>
@@ -192,7 +192,7 @@ export default function StreamsPage() {
                       size="small"
                       label="Active"
                       sx={{
-                        backgroundColor: '#eff6ff',
+                        backgroundColor: 'rgba(59,130,246,0.1)',
                         color: '#2563eb',
                         fontWeight: 600,
                         fontSize: '0.7rem',

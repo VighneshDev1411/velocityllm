@@ -89,8 +89,8 @@ export default function TokensPage() {
       {/* Context Statistics & Token Processing */}
       <Grid container spacing={3} sx={{ mb: 3 }}>
         <Grid size={{ xs: 12, lg: 6 }}>
-          <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3 }}>
-            <Typography variant="h6" sx={{ fontSize: '1.1rem', fontWeight: 600, color: '#111827', mb: 2.5 }}>
+          <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3 }}>
+            <Typography variant="h6" sx={{ fontSize: '1.1rem', fontWeight: 600, color: 'text.primary', mb: 2.5 }}>
               Context Statistics
             </Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
@@ -116,31 +116,31 @@ export default function TokensPage() {
         </Grid>
 
         <Grid size={{ xs: 12, lg: 6 }}>
-          <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3 }}>
-            <Typography variant="h6" sx={{ fontSize: '1.1rem', fontWeight: 600, color: '#111827', mb: 2.5 }}>
+          <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3 }}>
+            <Typography variant="h6" sx={{ fontSize: '1.1rem', fontWeight: 600, color: 'text.primary', mb: 2.5 }}>
               Token Processing
             </Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
               <Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                  <Typography sx={{ fontSize: '0.875rem', color: '#6b7280' }}>Total Messages</Typography>
-                  <Typography sx={{ fontSize: '0.875rem', fontWeight: 700, color: '#111827' }}>
+                  <Typography sx={{ fontSize: '0.875rem', color: 'text.secondary' }}>Total Messages</Typography>
+                  <Typography sx={{ fontSize: '0.875rem', fontWeight: 700, color: 'text.primary' }}>
                     {formatNumber(stats.total_messages || 0)}
                   </Typography>
                 </Box>
               </Box>
               <Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                  <Typography sx={{ fontSize: '0.875rem', color: '#6b7280' }}>Messages Truncated</Typography>
-                  <Typography sx={{ fontSize: '0.875rem', fontWeight: 700, color: '#111827' }}>
+                  <Typography sx={{ fontSize: '0.875rem', color: 'text.secondary' }}>Messages Truncated</Typography>
+                  <Typography sx={{ fontSize: '0.875rem', fontWeight: 700, color: 'text.primary' }}>
                     {stats.messages_truncated || 0}
                   </Typography>
                 </Box>
               </Box>
               <Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                  <Typography sx={{ fontSize: '0.875rem', color: '#6b7280' }}>Total Tokens</Typography>
-                  <Typography sx={{ fontSize: '0.875rem', fontWeight: 700, color: '#111827' }}>
+                  <Typography sx={{ fontSize: '0.875rem', color: 'text.secondary' }}>Total Tokens</Typography>
+                  <Typography sx={{ fontSize: '0.875rem', fontWeight: 700, color: 'text.primary' }}>
                     {formatNumber(stats.total_tokens || 0)}
                   </Typography>
                 </Box>
@@ -151,21 +151,21 @@ export default function TokensPage() {
       </Grid>
 
       {/* Active Contexts */}
-      <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3 }}>
+      <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2.5 }}>
-          <Typography variant="h6" sx={{ fontSize: '1.1rem', fontWeight: 600, color: '#111827' }}>
+          <Typography variant="h6" sx={{ fontSize: '1.1rem', fontWeight: 600, color: 'text.primary' }}>
             Active Contexts
           </Typography>
           <Chip
             label={`${contexts.length} contexts`}
             size="small"
-            sx={{ backgroundColor: '#eff6ff', color: '#2563eb', fontWeight: 600, fontSize: '0.75rem' }}
+            sx={{ backgroundColor: 'rgba(59,130,246,0.1)', color: '#2563eb', fontWeight: 600, fontSize: '0.75rem' }}
           />
         </Box>
 
         {contexts.length === 0 ? (
-          <Box sx={{ textAlign: 'center', py: 6, color: '#9ca3af' }}>
-            <Database size={48} style={{ margin: '0 auto 12px', display: 'block', color: '#d1d5db' }} />
+          <Box sx={{ textAlign: 'center', py: 6, color: 'text.disabled' }}>
+            <Database size={48} style={{ margin: '0 auto 12px', display: 'block', color: 'text.disabled' }} />
             <Typography>No active contexts</Typography>
             <Typography sx={{ fontSize: '0.875rem', mt: 0.5 }}>Create a context to get started</Typography>
           </Box>
@@ -180,26 +180,26 @@ export default function TokensPage() {
                   alignItems: 'center',
                   justifyContent: 'space-between',
                   p: 1.5,
-                  border: '1px solid #e5e7eb',
+                  border: '1px solid', borderColor: 'divider',
                   borderRadius: '10px',
                   transition: 'background-color 0.15s',
-                  '&:hover': { backgroundColor: '#f9fafb' },
+                  '&:hover': { backgroundColor: 'background.default' },
                 }}
               >
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                   <Database size={20} style={{ color: '#3b82f6' }} />
                   <Box>
-                    <Typography sx={{ fontWeight: 500, color: '#111827', fontSize: '0.9rem' }}>
+                    <Typography sx={{ fontWeight: 500, color: 'text.primary', fontSize: '0.9rem' }}>
                       {contextId}
                     </Typography>
-                    <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>Active context</Typography>
+                    <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>Active context</Typography>
                   </Box>
                 </Box>
                 <Chip
                   label="Active"
                   size="small"
                   sx={{
-                    backgroundColor: '#ecfdf5',
+                    backgroundColor: 'rgba(16,185,129,0.1)',
                     color: '#059669',
                     fontWeight: 600,
                     fontSize: '0.7rem',
@@ -227,8 +227,8 @@ function MetricRow({ label, value, max, color = 'blue' }: any) {
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-        <Typography sx={{ fontSize: '0.875rem', fontWeight: 500, color: '#374151' }}>{label}</Typography>
-        <Typography sx={{ fontSize: '0.875rem', fontWeight: 700, color: '#111827' }}>{value}</Typography>
+        <Typography sx={{ fontSize: '0.875rem', fontWeight: 500, color: 'text.primary' }}>{label}</Typography>
+        <Typography sx={{ fontSize: '0.875rem', fontWeight: 700, color: 'text.primary' }}>{value}</Typography>
       </Box>
       {max && (
         <LinearProgress
@@ -237,7 +237,7 @@ function MetricRow({ label, value, max, color = 'blue' }: any) {
           sx={{
             height: 8,
             borderRadius: 4,
-            backgroundColor: '#e5e7eb',
+            backgroundColor: 'divider',
             '& .MuiLinearProgress-bar': {
               backgroundColor: colorMap[color] || colorMap.blue,
               borderRadius: 4,

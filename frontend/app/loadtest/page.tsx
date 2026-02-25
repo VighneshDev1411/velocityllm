@@ -247,10 +247,10 @@ export default function LoadTestPage() {
 
   const getStatusChip = (status: string) => {
     const colorMap: Record<string, { bg: string; fg: string }> = {
-      queued: { bg: '#f3f4f6', fg: '#374151' },
-      running: { bg: '#dbeafe', fg: '#1e40af' },
-      completed: { bg: '#dcfce7', fg: '#166534' },
-      failed: { bg: '#fef2f2', fg: '#991b1b' },
+      queued: { bg: 'action.hover', fg: 'text.primary' },
+      running: { bg: 'rgba(59,130,246,0.1)', fg: '#1e40af' },
+      completed: { bg: 'rgba(16,185,129,0.1)', fg: '#166534' },
+      failed: { bg: 'rgba(239,68,68,0.1)', fg: '#991b1b' },
       cancelled: { bg: '#fefce8', fg: '#854d0e' },
     };
     const colors = colorMap[status] || colorMap.queued;
@@ -276,7 +276,7 @@ export default function LoadTestPage() {
       {/* Tabs */}
       <Paper
         elevation={0}
-        sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', mb: 3 }}
+        sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', mb: 3 }}
       >
         <Tabs
           value={activeTab}
@@ -296,12 +296,12 @@ export default function LoadTestPage() {
       {activeTab === 0 && (
         <Paper
           elevation={0}
-          sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3 }}
+          sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3 }}
         >
-          <Typography variant="h6" sx={{ fontWeight: 600, color: '#111827', mb: 1 }}>
+          <Typography variant="h6" sx={{ fontWeight: 600, color: 'text.primary', mb: 1 }}>
             Quick 30-Second Benchmark
           </Typography>
-          <Typography variant="body2" sx={{ color: '#6b7280', mb: 3 }}>
+          <Typography variant="body2" sx={{ color: 'text.secondary', mb: 3 }}>
             Run a fast benchmark to test your system's performance under constant load.
           </Typography>
 
@@ -361,7 +361,7 @@ export default function LoadTestPage() {
       {activeTab === 1 && (
         <Box>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-            <Typography variant="h6" sx={{ fontWeight: 600, color: '#111827' }}>
+            <Typography variant="h6" sx={{ fontWeight: 600, color: 'text.primary' }}>
               Load Test Configurations
             </Typography>
             <Button
@@ -377,13 +377,13 @@ export default function LoadTestPage() {
             <Paper
               elevation={0}
               sx={{
-                border: '1px solid #e5e7eb',
+                border: '1px solid', borderColor: 'divider',
                 borderRadius: '12px',
                 p: 6,
                 textAlign: 'center',
               }}
             >
-              <Typography sx={{ color: '#6b7280' }}>
+              <Typography sx={{ color: 'text.secondary' }}>
                 No configurations yet. Create one to get started!
               </Typography>
             </Paper>
@@ -393,14 +393,14 @@ export default function LoadTestPage() {
                 <Grid size={{ xs: 12, md: 6 }} key={config.id}>
                   <Paper
                     elevation={0}
-                    sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3 }}
+                    sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3 }}
                   >
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
                       <Box>
-                        <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#111827' }}>
+                        <Typography variant="subtitle1" sx={{ fontWeight: 600, color: 'text.primary' }}>
                           {config.name}
                         </Typography>
-                        <Typography variant="body2" sx={{ color: '#6b7280' }}>
+                        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
                           Created {new Date(config.created_at).toLocaleDateString()}
                         </Typography>
                       </Box>
@@ -409,8 +409,8 @@ export default function LoadTestPage() {
                         size="small"
                         sx={{
                           textTransform: 'capitalize',
-                          backgroundColor: '#f3f4f6',
-                          color: '#374151',
+                          backgroundColor: 'action.hover',
+                          color: 'text.primary',
                           fontWeight: 500,
                           fontSize: '0.75rem',
                         }}
@@ -419,19 +419,19 @@ export default function LoadTestPage() {
 
                     <Grid container spacing={2} sx={{ mb: 2 }}>
                       <Grid size={{ xs: 6 }}>
-                        <Typography variant="body2" sx={{ color: '#6b7280' }}>Target RPS</Typography>
+                        <Typography variant="body2" sx={{ color: 'text.secondary' }}>Target RPS</Typography>
                         <Typography variant="body1" sx={{ fontWeight: 600 }}>{config.target_rps}</Typography>
                       </Grid>
                       <Grid size={{ xs: 6 }}>
-                        <Typography variant="body2" sx={{ color: '#6b7280' }}>Duration</Typography>
+                        <Typography variant="body2" sx={{ color: 'text.secondary' }}>Duration</Typography>
                         <Typography variant="body1" sx={{ fontWeight: 600 }}>{config.duration}s</Typography>
                       </Grid>
                       <Grid size={{ xs: 6 }}>
-                        <Typography variant="body2" sx={{ color: '#6b7280' }}>Concurrency</Typography>
+                        <Typography variant="body2" sx={{ color: 'text.secondary' }}>Concurrency</Typography>
                         <Typography variant="body1" sx={{ fontWeight: 600 }}>{config.concurrency}</Typography>
                       </Grid>
                       <Grid size={{ xs: 6 }}>
-                        <Typography variant="body2" sx={{ color: '#6b7280' }}>Model</Typography>
+                        <Typography variant="body2" sx={{ color: 'text.secondary' }}>Model</Typography>
                         <Typography variant="body1" sx={{ fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {config.model}
                         </Typography>
@@ -459,7 +459,7 @@ export default function LoadTestPage() {
       {/* Test Runs Tab */}
       {activeTab === 2 && (
         <Box>
-          <Typography variant="h6" sx={{ fontWeight: 600, color: '#111827', mb: 3 }}>
+          <Typography variant="h6" sx={{ fontWeight: 600, color: 'text.primary', mb: 3 }}>
             Test Runs
           </Typography>
 
@@ -467,33 +467,33 @@ export default function LoadTestPage() {
             <Paper
               elevation={0}
               sx={{
-                border: '1px solid #e5e7eb',
+                border: '1px solid', borderColor: 'divider',
                 borderRadius: '12px',
                 p: 6,
                 textAlign: 'center',
               }}
             >
-              <Typography sx={{ color: '#6b7280' }}>
+              <Typography sx={{ color: 'text.secondary' }}>
                 No test runs yet. Start a benchmark to see results!
               </Typography>
             </Paper>
           ) : (
             <Paper
               elevation={0}
-              sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', overflow: 'hidden' }}
+              sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', overflow: 'hidden' }}
             >
               <TableContainer>
                 <Table size="small">
                   <TableHead>
                     <TableRow>
-                      <TableCell sx={{ fontWeight: 600, color: '#6b7280', fontSize: '0.75rem', textTransform: 'uppercase' }}>ID</TableCell>
-                      <TableCell sx={{ fontWeight: 600, color: '#6b7280', fontSize: '0.75rem', textTransform: 'uppercase' }}>Config</TableCell>
-                      <TableCell sx={{ fontWeight: 600, color: '#6b7280', fontSize: '0.75rem', textTransform: 'uppercase' }}>Status</TableCell>
-                      <TableCell sx={{ fontWeight: 600, color: '#6b7280', fontSize: '0.75rem', textTransform: 'uppercase' }}>Requests</TableCell>
-                      <TableCell sx={{ fontWeight: 600, color: '#6b7280', fontSize: '0.75rem', textTransform: 'uppercase' }}>Avg Latency</TableCell>
-                      <TableCell sx={{ fontWeight: 600, color: '#6b7280', fontSize: '0.75rem', textTransform: 'uppercase' }}>P95</TableCell>
-                      <TableCell sx={{ fontWeight: 600, color: '#6b7280', fontSize: '0.75rem', textTransform: 'uppercase' }}>RPS</TableCell>
-                      <TableCell sx={{ fontWeight: 600, color: '#6b7280', fontSize: '0.75rem', textTransform: 'uppercase' }}>Actions</TableCell>
+                      <TableCell sx={{ fontWeight: 600, color: 'text.secondary', fontSize: '0.75rem', textTransform: 'uppercase' }}>ID</TableCell>
+                      <TableCell sx={{ fontWeight: 600, color: 'text.secondary', fontSize: '0.75rem', textTransform: 'uppercase' }}>Config</TableCell>
+                      <TableCell sx={{ fontWeight: 600, color: 'text.secondary', fontSize: '0.75rem', textTransform: 'uppercase' }}>Status</TableCell>
+                      <TableCell sx={{ fontWeight: 600, color: 'text.secondary', fontSize: '0.75rem', textTransform: 'uppercase' }}>Requests</TableCell>
+                      <TableCell sx={{ fontWeight: 600, color: 'text.secondary', fontSize: '0.75rem', textTransform: 'uppercase' }}>Avg Latency</TableCell>
+                      <TableCell sx={{ fontWeight: 600, color: 'text.secondary', fontSize: '0.75rem', textTransform: 'uppercase' }}>P95</TableCell>
+                      <TableCell sx={{ fontWeight: 600, color: 'text.secondary', fontSize: '0.75rem', textTransform: 'uppercase' }}>RPS</TableCell>
+                      <TableCell sx={{ fontWeight: 600, color: 'text.secondary', fontSize: '0.75rem', textTransform: 'uppercase' }}>Actions</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -506,7 +506,7 @@ export default function LoadTestPage() {
                         <TableCell>{getStatusChip(run.status)}</TableCell>
                         <TableCell sx={{ fontSize: '0.875rem' }}>
                           {run.total_requests.toLocaleString()}
-                          <Typography component="span" sx={{ color: '#6b7280', ml: 0.5, fontSize: '0.875rem' }}>
+                          <Typography component="span" sx={{ color: 'text.secondary', ml: 0.5, fontSize: '0.875rem' }}>
                             ({run.failed_requests > 0 ? `${run.failed_requests} failed` : 'all ok'})
                           </Typography>
                         </TableCell>
@@ -554,9 +554,9 @@ export default function LoadTestPage() {
           {selectedRun && (
             <Paper
               elevation={0}
-              sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3, mt: 3 }}
+              sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3, mt: 3 }}
             >
-              <Typography variant="h6" sx={{ fontWeight: 600, color: '#111827', mb: 3 }}>
+              <Typography variant="h6" sx={{ fontWeight: 600, color: 'text.primary', mb: 3 }}>
                 Test Run #{selectedRun.id} Details
               </Typography>
 
@@ -597,32 +597,32 @@ export default function LoadTestPage() {
 
               {metrics.length > 0 && (
                 <Box>
-                  <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#111827', mb: 2 }}>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 600, color: 'text.primary', mb: 2 }}>
                     Real-Time Metrics
                   </Typography>
                   <Paper
                     elevation={0}
                     sx={{
-                      border: '1px solid #e5e7eb',
+                      border: '1px solid', borderColor: 'divider',
                       borderRadius: '8px',
                       p: 2,
                       maxHeight: 384,
                       overflow: 'auto',
-                      backgroundColor: '#f9fafb',
+                      backgroundColor: 'background.default',
                     }}
                   >
                     {metrics.map((metric, index) => (
                       <Box
                         key={index}
                         sx={{
-                          borderBottom: '1px solid #e5e7eb',
+                          borderBottom: '1px solid', borderColor: 'divider',
                           py: 1,
                           '&:last-child': { borderBottom: 'none' },
                           display: 'flex',
                           justifyContent: 'space-between',
                         }}
                       >
-                        <Typography variant="body2" sx={{ color: '#6b7280' }}>
+                        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
                           T+{metric.elapsed_seconds}s
                         </Typography>
                         <Typography variant="body2" sx={{ fontWeight: 500 }}>

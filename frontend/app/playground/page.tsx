@@ -197,7 +197,7 @@ func main() {
 
 const paperSx = {
   elevation: 0,
-  border: '1px solid #e5e7eb',
+  border: '1px solid', borderColor: 'divider',
   borderRadius: '12px',
   overflow: 'hidden',
 };
@@ -205,7 +205,7 @@ const paperSx = {
 const sectionHeaderSx = {
   px: 2.5,
   py: 1.5,
-  borderBottom: '1px solid #f3f4f6',
+  borderBottom: '1px solid', borderColor: 'divider',
   bgcolor: 'rgba(249,250,251,0.5)',
   display: 'flex',
   alignItems: 'center',
@@ -230,7 +230,7 @@ function CopyButton({ text }: { text: string }) {
       onClick={handleCopy}
       size="small"
       title="Copy to clipboard"
-      sx={{ color: copied ? '#22c55e' : '#9ca3af', '&:hover': { color: '#4b5563', bgcolor: '#f3f4f6' } }}
+      sx={{ color: copied ? 'success.main' : 'text.disabled', '&:hover': { color: 'text.secondary', bgcolor: 'action.hover' } }}
     >
       {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
     </IconButton>
@@ -259,7 +259,7 @@ function ParameterSlider({
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
         <Typography
           variant="body2"
-          sx={{ fontWeight: 500, color: '#374151', display: 'flex', alignItems: 'center', gap: 0.75 }}
+          sx={{ fontWeight: 500, color: 'text.primary', display: 'flex', alignItems: 'center', gap: 0.75 }}
         >
           {icon}
           {label}
@@ -289,8 +289,8 @@ function ParameterSlider({
         }}
       />
       <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-        <Typography variant="caption" sx={{ color: '#9ca3af' }}>{min}</Typography>
-        <Typography variant="caption" sx={{ color: '#9ca3af' }}>{max}</Typography>
+        <Typography variant="caption" sx={{ color: 'text.disabled' }}>{min}</Typography>
+        <Typography variant="caption" sx={{ color: 'text.disabled' }}>{max}</Typography>
       </Box>
     </Box>
   );
@@ -306,7 +306,7 @@ function HistoryItem({
   onToggle: () => void;
 }) {
   return (
-    <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '8px', overflow: 'hidden' }}>
+    <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', overflow: 'hidden' }}>
       <Box
         onClick={onToggle}
         sx={{
@@ -316,7 +316,7 @@ function HistoryItem({
           px: 2,
           py: 1.5,
           cursor: 'pointer',
-          '&:hover': { bgcolor: '#f9fafb' },
+          '&:hover': { bgcolor: 'background.default' },
           transition: 'background-color 0.15s',
         }}
       >
@@ -326,47 +326,47 @@ function HistoryItem({
           <ChevronRight className="w-4 h-4 text-gray-400 shrink-0" />
         )}
         <Box sx={{ flex: 1, minWidth: 0 }}>
-          <Typography variant="body2" sx={{ fontWeight: 500, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          <Typography variant="body2" sx={{ fontWeight: 500, color: 'text.primary', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {entry.prompt}
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mt: 0.5 }}>
-            <Chip label={entry.model} size="small" sx={{ height: 22, fontSize: '0.75rem', fontWeight: 500, bgcolor: '#dbeafe', color: '#1d4ed8' }} />
-            <Typography variant="caption" sx={{ color: '#6b7280', display: 'flex', alignItems: 'center', gap: 0.5 }}>
+            <Chip label={entry.model} size="small" sx={{ height: 22, fontSize: '0.75rem', fontWeight: 500, bgcolor: 'rgba(59,130,246,0.1)', color: 'primary.dark' }} />
+            <Typography variant="caption" sx={{ color: 'text.secondary', display: 'flex', alignItems: 'center', gap: 0.5 }}>
               <Clock className="w-3 h-3" />
               {entry.latencyMs}ms
             </Typography>
-            <Typography variant="caption" sx={{ color: '#6b7280', display: 'flex', alignItems: 'center', gap: 0.5 }}>
+            <Typography variant="caption" sx={{ color: 'text.secondary', display: 'flex', alignItems: 'center', gap: 0.5 }}>
               <Hash className="w-3 h-3" />
               {entry.tokensUsed} tokens
             </Typography>
           </Box>
         </Box>
-        <Typography variant="caption" sx={{ color: '#9ca3af', flexShrink: 0 }}>
+        <Typography variant="caption" sx={{ color: 'text.disabled', flexShrink: 0 }}>
           {entry.timestamp.toLocaleTimeString()}
         </Typography>
       </Box>
 
       <Collapse in={isExpanded}>
-        <Box sx={{ borderTop: '1px solid #e5e7eb', px: 2, py: 1.5, bgcolor: '#f9fafb' }}>
+        <Box sx={{ borderTop: '1px solid', borderColor: 'divider', px: 2, py: 1.5, bgcolor: 'background.default' }}>
           <Box sx={{ mb: 1.5 }}>
-            <Typography variant="caption" sx={{ fontWeight: 600, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            <Typography variant="caption" sx={{ fontWeight: 600, color: 'text.secondary', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               Prompt
             </Typography>
             <Typography
               variant="body2"
-              sx={{ whiteSpace: 'pre-wrap', bgcolor: '#fff', borderRadius: '6px', p: 1.5, border: '1px solid #e5e7eb', mt: 0.5, color: '#1f2937' }}
+              sx={{ whiteSpace: 'pre-wrap', bgcolor: 'background.paper', borderRadius: '6px', p: 1.5, border: '1px solid', borderColor: 'divider', mt: 0.5, color: 'text.primary' }}
             >
               {entry.prompt}
             </Typography>
           </Box>
           <Box sx={{ mb: 1.5 }}>
-            <Typography variant="caption" sx={{ fontWeight: 600, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            <Typography variant="caption" sx={{ fontWeight: 600, color: 'text.secondary', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               Response
             </Typography>
             <Typography
               variant="body2"
               component="div"
-              sx={{ whiteSpace: 'pre-wrap', bgcolor: '#fff', borderRadius: '6px', p: 1.5, border: '1px solid #e5e7eb', mt: 0.5, color: '#1f2937' }}
+              sx={{ whiteSpace: 'pre-wrap', bgcolor: 'background.paper', borderRadius: '6px', p: 1.5, border: '1px solid', borderColor: 'divider', mt: 0.5, color: 'text.primary' }}
             >
               {entry.error ? (
                 <Typography variant="body2" sx={{ color: '#dc2626' }}>{entry.error}</Typography>
@@ -376,14 +376,14 @@ function HistoryItem({
             </Typography>
           </Box>
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
-            <Typography variant="caption" sx={{ color: '#4b5563', display: 'flex', alignItems: 'center', gap: 0.5 }}>
+            <Typography variant="caption" sx={{ color: 'text.secondary', display: 'flex', alignItems: 'center', gap: 0.5 }}>
               <Settings2 className="w-3 h-3" />
               temp={entry.temperature}, top_p={entry.topP}, max_tokens={entry.maxTokens}
             </Typography>
-            <Typography variant="caption" sx={{ color: '#4b5563', display: 'flex', alignItems: 'center', gap: 0.5 }}>
+            <Typography variant="caption" sx={{ color: 'text.secondary', display: 'flex', alignItems: 'center', gap: 0.5 }}>
               <DollarSign className="w-3 h-3" />${entry.cost.toFixed(4)}
             </Typography>
-            <Typography variant="caption" sx={{ color: '#4b5563', display: 'flex', alignItems: 'center', gap: 0.5 }}>
+            <Typography variant="caption" sx={{ color: 'text.secondary', display: 'flex', alignItems: 'center', gap: 0.5 }}>
               <Zap className="w-3 h-3" />{entry.latencyMs}ms
             </Typography>
           </Box>
@@ -552,7 +552,7 @@ export default function PlaygroundPage() {
             size="small"
             sx={{
               bgcolor: '#f0fdf4',
-              color: '#15803d',
+              color: 'success.dark',
               border: '1px solid #bbf7d0',
               fontWeight: 500,
               '& .MuiChip-icon': { color: '#22c55e' },
@@ -569,11 +569,11 @@ export default function PlaygroundPage() {
             {/* Prompt Input */}
             <Paper sx={paperSx}>
               <Box sx={sectionHeaderSx}>
-                <Typography variant="body2" sx={{ fontWeight: 600, color: '#374151', display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography variant="body2" sx={{ fontWeight: 600, color: 'text.primary', display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Sparkles className="w-4 h-4 text-blue-500" />
                   Prompt
                 </Typography>
-                <Typography variant="caption" sx={{ color: '#9ca3af' }}>
+                <Typography variant="caption" sx={{ color: 'text.disabled' }}>
                   {prompt.length > 0 ? `${prompt.length} characters` : 'Enter your prompt below'}
                 </Typography>
               </Box>
@@ -591,20 +591,20 @@ export default function PlaygroundPage() {
                 variant="standard"
                 InputProps={{ disableUnderline: true }}
                 sx={{
-                  '& .MuiInputBase-root': { px: 2.5, py: 2, fontFamily: 'monospace', fontSize: '0.875rem', color: '#111827' },
-                  '& .MuiInputBase-input::placeholder': { color: '#9ca3af', opacity: 1 },
+                  '& .MuiInputBase-root': { px: 2.5, py: 2, fontFamily: 'monospace', fontSize: '0.875rem', color: 'text.primary' },
+                  '& .MuiInputBase-input::placeholder': { color: 'text.disabled', opacity: 1 },
                 }}
               />
 
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', px: 2.5, py: 1.5, borderTop: '1px solid #f3f4f6', bgcolor: 'rgba(249,250,251,0.5)' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', px: 2.5, py: 1.5, borderTop: '1px solid', borderColor: 'divider', bgcolor: 'rgba(249,250,251,0.5)' }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Typography
                     variant="caption"
-                    sx={{ px: 1, py: 0.25, bgcolor: '#e5e7eb', borderRadius: '4px', color: '#4b5563', fontFamily: 'monospace', fontSize: '0.7rem' }}
+                    sx={{ px: 1, py: 0.25, bgcolor: 'divider', borderRadius: '4px', color: 'text.secondary', fontFamily: 'monospace', fontSize: '0.7rem' }}
                   >
                     Ctrl+Enter
                   </Typography>
-                  <Typography variant="caption" sx={{ color: '#9ca3af' }}>
+                  <Typography variant="caption" sx={{ color: 'text.disabled' }}>
                     to send
                   </Typography>
                 </Box>
@@ -617,10 +617,10 @@ export default function PlaygroundPage() {
                     startIcon={<Trash2 className="w-3.5 h-3.5" />}
                     sx={{
                       textTransform: 'none',
-                      borderColor: '#d1d5db',
-                      color: '#4b5563',
+                      borderColor: 'divider',
+                      color: 'text.secondary',
                       borderRadius: '8px',
-                      '&:hover': { borderColor: '#9ca3af', bgcolor: '#f9fafb' },
+                      '&:hover': { borderColor: 'divider', bgcolor: 'background.default' },
                     }}
                   >
                     Clear
@@ -642,7 +642,7 @@ export default function PlaygroundPage() {
                       bgcolor: '#2563eb',
                       borderRadius: '8px',
                       boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
-                      '&:hover': { bgcolor: '#1d4ed8' },
+                      '&:hover': { bgcolor: 'primary.dark' },
                       '&.Mui-disabled': { bgcolor: '#93c5fd', color: '#fff' },
                     }}
                   >
@@ -655,21 +655,21 @@ export default function PlaygroundPage() {
             {/* Response Display */}
             <Paper sx={paperSx}>
               <Box sx={sectionHeaderSx}>
-                <Typography variant="body2" sx={{ fontWeight: 600, color: '#374151', display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography variant="body2" sx={{ fontWeight: 600, color: 'text.primary', display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Play className="w-4 h-4 text-green-500" />
                   Response
                 </Typography>
                 {responseMeta && (
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                    <Typography variant="caption" sx={{ color: '#6b7280', display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <Typography variant="caption" sx={{ color: 'text.secondary', display: 'flex', alignItems: 'center', gap: 0.5 }}>
                       <Clock className="w-3 h-3" />
                       {responseMeta.latencyMs}ms
                     </Typography>
-                    <Typography variant="caption" sx={{ color: '#6b7280', display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <Typography variant="caption" sx={{ color: 'text.secondary', display: 'flex', alignItems: 'center', gap: 0.5 }}>
                       <Hash className="w-3 h-3" />
                       {responseMeta.tokensUsed} tokens
                     </Typography>
-                    <Typography variant="caption" sx={{ color: '#6b7280', display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <Typography variant="caption" sx={{ color: 'text.secondary', display: 'flex', alignItems: 'center', gap: 0.5 }}>
                       <DollarSign className="w-3 h-3" />${responseMeta.cost.toFixed(4)}
                     </Typography>
                   </Box>
@@ -681,10 +681,10 @@ export default function PlaygroundPage() {
                   <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', py: 6 }}>
                     <Box sx={{ textAlign: 'center' }}>
                       <CircularProgress size={32} sx={{ color: '#3b82f6' }} />
-                      <Typography variant="body2" sx={{ mt: 1.5, color: '#6b7280' }}>
+                      <Typography variant="body2" sx={{ mt: 1.5, color: 'text.secondary' }}>
                         Generating response...
                       </Typography>
-                      <Typography variant="caption" sx={{ mt: 0.5, color: '#9ca3af', display: 'block' }}>
+                      <Typography variant="caption" sx={{ mt: 0.5, color: 'text.disabled', display: 'block' }}>
                         Using {selectedModel?.name || model}
                       </Typography>
                     </Box>
@@ -710,14 +710,14 @@ export default function PlaygroundPage() {
                     <Box
                       sx={{
                         fontSize: '0.875rem',
-                        color: '#1f2937',
+                        color: 'text.primary',
                         whiteSpace: 'pre-wrap',
                         lineHeight: 1.7,
                         fontFamily: 'monospace',
-                        bgcolor: '#f9fafb',
+                        bgcolor: 'background.default',
                         borderRadius: '8px',
                         p: 2,
-                        border: '1px solid #e5e7eb',
+                        border: '1px solid', borderColor: 'divider',
                       }}
                     >
                       {response}
@@ -726,8 +726,8 @@ export default function PlaygroundPage() {
                 )}
 
                 {!isLoading && !response && !responseError && (
-                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', py: 6, color: '#9ca3af' }}>
-                    <Terminal className="w-12 h-12 mb-1.5" style={{ color: '#d1d5db' }} />
+                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', py: 6, color: 'text.disabled' }}>
+                    <Terminal className="w-12 h-12 mb-1.5" style={{ color: 'text.disabled' }} />
                     <Typography variant="body2" sx={{ fontWeight: 500 }}>No response yet</Typography>
                     <Typography variant="caption" sx={{ mt: 0.5 }}>
                       Enter a prompt above and click Send to get started
@@ -737,22 +737,22 @@ export default function PlaygroundPage() {
               </Box>
 
               {responseMeta && (
-                <Box sx={{ px: 2.5, py: 1.5, borderTop: '1px solid #f3f4f6', bgcolor: 'rgba(249,250,251,0.5)' }}>
+                <Box sx={{ px: 2.5, py: 1.5, borderTop: '1px solid', borderColor: 'divider', bgcolor: 'rgba(249,250,251,0.5)' }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
-                    <Typography variant="caption" sx={{ color: '#6b7280' }}>
-                      Model: <Box component="span" sx={{ fontWeight: 500, color: '#374151' }}>{responseMeta.model}</Box>
+                    <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                      Model: <Box component="span" sx={{ fontWeight: 500, color: 'text.primary' }}>{responseMeta.model}</Box>
                     </Typography>
-                    <Typography variant="caption" sx={{ color: '#d1d5db' }}>|</Typography>
-                    <Typography variant="caption" sx={{ color: '#6b7280' }}>
-                      Latency: <Box component="span" sx={{ fontWeight: 500, color: '#374151' }}>{responseMeta.latencyMs}ms</Box>
+                    <Typography variant="caption" sx={{ color: 'text.disabled' }}>|</Typography>
+                    <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                      Latency: <Box component="span" sx={{ fontWeight: 500, color: 'text.primary' }}>{responseMeta.latencyMs}ms</Box>
                     </Typography>
-                    <Typography variant="caption" sx={{ color: '#d1d5db' }}>|</Typography>
-                    <Typography variant="caption" sx={{ color: '#6b7280' }}>
-                      Tokens: <Box component="span" sx={{ fontWeight: 500, color: '#374151' }}>{responseMeta.tokensUsed}</Box>
+                    <Typography variant="caption" sx={{ color: 'text.disabled' }}>|</Typography>
+                    <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                      Tokens: <Box component="span" sx={{ fontWeight: 500, color: 'text.primary' }}>{responseMeta.tokensUsed}</Box>
                     </Typography>
-                    <Typography variant="caption" sx={{ color: '#d1d5db' }}>|</Typography>
-                    <Typography variant="caption" sx={{ color: '#6b7280' }}>
-                      Cost: <Box component="span" sx={{ fontWeight: 500, color: '#374151' }}>${responseMeta.cost.toFixed(4)}</Box>
+                    <Typography variant="caption" sx={{ color: 'text.disabled' }}>|</Typography>
+                    <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                      Cost: <Box component="span" sx={{ fontWeight: 500, color: 'text.primary' }}>${responseMeta.cost.toFixed(4)}</Box>
                     </Typography>
                   </Box>
                 </Box>
@@ -770,7 +770,7 @@ export default function PlaygroundPage() {
                   transition: 'background-color 0.15s',
                 }}
               >
-                <Typography variant="body2" sx={{ fontWeight: 600, color: '#374151', display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography variant="body2" sx={{ fontWeight: 600, color: 'text.primary', display: 'flex', alignItems: 'center', gap: 1 }}>
                   <History className="w-4 h-4 text-purple-500" />
                   Request History
                   {history.length > 0 && (
@@ -791,8 +791,8 @@ export default function PlaygroundPage() {
               <Collapse in={isHistoryOpen}>
                 <Box sx={{ px: 2.5, py: 2 }}>
                   {history.length === 0 ? (
-                    <Box sx={{ textAlign: 'center', py: 4, color: '#9ca3af' }}>
-                      <History className="w-10 h-10 mx-auto mb-1" style={{ color: '#d1d5db' }} />
+                    <Box sx={{ textAlign: 'center', py: 4, color: 'text.disabled' }}>
+                      <History className="w-10 h-10 mx-auto mb-1" style={{ color: 'text.disabled' }} />
                       <Typography variant="body2">No requests yet</Typography>
                       <Typography variant="caption" sx={{ mt: 0.5, display: 'block' }}>
                         Your request history will appear here (max {MAX_HISTORY} entries)
@@ -816,7 +816,7 @@ export default function PlaygroundPage() {
                   )}
 
                   {history.length > 0 && (
-                    <Box sx={{ mt: 1.5, pt: 1.5, borderTop: '1px solid #f3f4f6', display: 'flex', justifyContent: 'flex-end' }}>
+                    <Box sx={{ mt: 1.5, pt: 1.5, borderTop: '1px solid', borderColor: 'divider', display: 'flex', justifyContent: 'flex-end' }}>
                       <Button
                         size="small"
                         onClick={() => {
@@ -824,7 +824,7 @@ export default function PlaygroundPage() {
                           setExpandedHistoryId(null);
                         }}
                         startIcon={<Trash2 className="w-3 h-3" />}
-                        sx={{ textTransform: 'none', color: '#ef4444', fontSize: '0.75rem', '&:hover': { color: '#dc2626', bgcolor: '#fef2f2' } }}
+                        sx={{ textTransform: 'none', color: '#ef4444', fontSize: '0.75rem', '&:hover': { color: '#dc2626', bgcolor: 'rgba(239,68,68,0.1)' } }}
                       >
                         Clear History
                       </Button>
@@ -842,7 +842,7 @@ export default function PlaygroundPage() {
             {/* Model Selection */}
             <Paper sx={paperSx}>
               <Box sx={sectionHeaderSx}>
-                <Typography variant="body2" sx={{ fontWeight: 600, color: '#374151', display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography variant="body2" sx={{ fontWeight: 600, color: 'text.primary', display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Zap className="w-4 h-4 text-yellow-500" />
                   Model
                 </Typography>
@@ -856,8 +856,8 @@ export default function PlaygroundPage() {
                   sx={{
                     borderRadius: '8px',
                     fontSize: '0.875rem',
-                    '& .MuiOutlinedInput-notchedOutline': { borderColor: '#d1d5db' },
-                    '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#9ca3af' },
+                    '& .MuiOutlinedInput-notchedOutline': { borderColor: 'divider' },
+                    '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'divider' },
                   }}
                 >
                   {AVAILABLE_MODELS.map((m) => (
@@ -871,9 +871,9 @@ export default function PlaygroundPage() {
                     <Chip
                       label={selectedModel.provider}
                       size="small"
-                      sx={{ height: 24, fontSize: '0.75rem', fontWeight: 500, bgcolor: '#eff6ff', color: '#2563eb', border: '1px solid #bfdbfe' }}
+                      sx={{ height: 24, fontSize: '0.75rem', fontWeight: 500, bgcolor: 'rgba(59,130,246,0.1)', color: '#2563eb', border: '1px solid #bfdbfe' }}
                     />
-                    <Typography variant="caption" sx={{ color: '#6b7280' }}>{selectedModel.id}</Typography>
+                    <Typography variant="caption" sx={{ color: 'text.secondary' }}>{selectedModel.id}</Typography>
                   </Box>
                 )}
               </Box>
@@ -882,7 +882,7 @@ export default function PlaygroundPage() {
             {/* Parameter Controls */}
             <Paper sx={paperSx}>
               <Box sx={sectionHeaderSx}>
-                <Typography variant="body2" sx={{ fontWeight: 600, color: '#374151', display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography variant="body2" sx={{ fontWeight: 600, color: 'text.primary', display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Settings2 className="w-4 h-4 text-gray-500" />
                   Parameters
                 </Typography>
@@ -929,11 +929,11 @@ export default function PlaygroundPage() {
                   sx={{
                     textTransform: 'none',
                     fontSize: '0.75rem',
-                    color: '#6b7280',
-                    borderColor: '#d1d5db',
+                    color: 'text.secondary',
+                    borderColor: 'divider',
                     borderStyle: 'dashed',
                     borderRadius: '8px',
-                    '&:hover': { borderColor: '#9ca3af', bgcolor: '#f9fafb', borderStyle: 'dashed' },
+                    '&:hover': { borderColor: 'divider', bgcolor: 'background.default', borderStyle: 'dashed' },
                   }}
                 >
                   Reset to defaults
@@ -944,7 +944,7 @@ export default function PlaygroundPage() {
             {/* Code Examples */}
             <Paper sx={paperSx}>
               <Box sx={sectionHeaderSx}>
-                <Typography variant="body2" sx={{ fontWeight: 600, color: '#374151', display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography variant="body2" sx={{ fontWeight: 600, color: 'text.primary', display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Code2 className="w-4 h-4 text-indigo-500" />
                   Code Examples
                 </Typography>
@@ -956,14 +956,14 @@ export default function PlaygroundPage() {
                 onChange={(_, idx) => setActiveCodeTab(CODE_TABS[idx])}
                 variant="fullWidth"
                 sx={{
-                  borderBottom: '1px solid #e5e7eb',
+                  borderBottom: '1px solid', borderColor: 'divider',
                   minHeight: 40,
                   '& .MuiTab-root': {
                     textTransform: 'none',
                     fontSize: '0.75rem',
                     fontWeight: 500,
                     minHeight: 40,
-                    color: '#6b7280',
+                    color: 'text.secondary',
                     '&.Mui-selected': { color: '#2563eb' },
                   },
                   '& .MuiTabs-indicator': { bgcolor: '#2563eb' },
@@ -987,8 +987,8 @@ export default function PlaygroundPage() {
                     fontSize: '0.75rem',
                     fontFamily: 'monospace',
                     overflowX: 'auto',
-                    bgcolor: '#111827',
-                    color: '#e5e7eb',
+                    bgcolor: 'text.primary',
+                    color: 'divider',
                     lineHeight: 1.7,
                     maxHeight: 400,
                     m: 0,
@@ -998,8 +998,8 @@ export default function PlaygroundPage() {
                 </Box>
               </Box>
 
-              <Box sx={{ px: 2.5, py: 1.5, borderTop: '1px solid #f3f4f6', bgcolor: 'rgba(249,250,251,0.5)' }}>
-                <Typography variant="caption" sx={{ color: '#9ca3af' }}>
+              <Box sx={{ px: 2.5, py: 1.5, borderTop: '1px solid', borderColor: 'divider', bgcolor: 'rgba(249,250,251,0.5)' }}>
+                <Typography variant="caption" sx={{ color: 'text.disabled' }}>
                   Code updates dynamically based on your current settings
                 </Typography>
               </Box>
@@ -1008,45 +1008,45 @@ export default function PlaygroundPage() {
             {/* Quick Reference */}
             <Paper sx={paperSx}>
               <Box sx={sectionHeaderSx}>
-                <Typography variant="body2" sx={{ fontWeight: 600, color: '#374151', display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography variant="body2" sx={{ fontWeight: 600, color: 'text.primary', display: 'flex', alignItems: 'center', gap: 1 }}>
                   <AlertCircle className="w-4 h-4 text-gray-400" />
                   API Reference
                 </Typography>
               </Box>
               <Box sx={{ px: 2.5, py: 2, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
                 <Box>
-                  <Typography variant="caption" sx={{ fontWeight: 500, color: '#4b5563' }}>Completions</Typography>
+                  <Typography variant="caption" sx={{ fontWeight: 500, color: 'text.secondary' }}>Completions</Typography>
                   <Box
                     component="code"
-                    sx={{ display: 'block', mt: 0.5, fontSize: '0.75rem', color: '#2563eb', bgcolor: '#eff6ff', px: 1, py: 0.5, borderRadius: '4px' }}
+                    sx={{ display: 'block', mt: 0.5, fontSize: '0.75rem', color: '#2563eb', bgcolor: 'rgba(59,130,246,0.1)', px: 1, py: 0.5, borderRadius: '4px' }}
                   >
                     POST /api/v1/completions
                   </Box>
                 </Box>
                 <Box>
-                  <Typography variant="caption" sx={{ fontWeight: 500, color: '#4b5563' }}>Streaming</Typography>
+                  <Typography variant="caption" sx={{ fontWeight: 500, color: 'text.secondary' }}>Streaming</Typography>
                   <Box
                     component="code"
-                    sx={{ display: 'block', mt: 0.5, fontSize: '0.75rem', color: '#2563eb', bgcolor: '#eff6ff', px: 1, py: 0.5, borderRadius: '4px' }}
+                    sx={{ display: 'block', mt: 0.5, fontSize: '0.75rem', color: '#2563eb', bgcolor: 'rgba(59,130,246,0.1)', px: 1, py: 0.5, borderRadius: '4px' }}
                   >
                     POST /api/v1/completions/stream
                   </Box>
                 </Box>
                 <Box>
-                  <Typography variant="caption" sx={{ fontWeight: 500, color: '#4b5563' }}>List Models</Typography>
+                  <Typography variant="caption" sx={{ fontWeight: 500, color: 'text.secondary' }}>List Models</Typography>
                   <Box
                     component="code"
-                    sx={{ display: 'block', mt: 0.5, fontSize: '0.75rem', color: '#2563eb', bgcolor: '#eff6ff', px: 1, py: 0.5, borderRadius: '4px' }}
+                    sx={{ display: 'block', mt: 0.5, fontSize: '0.75rem', color: '#2563eb', bgcolor: 'rgba(59,130,246,0.1)', px: 1, py: 0.5, borderRadius: '4px' }}
                   >
                     GET /api/v1/models
                   </Box>
                 </Box>
-                <Box sx={{ pt: 1, borderTop: '1px solid #f3f4f6' }}>
-                  <Typography variant="caption" sx={{ color: '#6b7280' }}>
+                <Box sx={{ pt: 1, borderTop: '1px solid', borderColor: 'divider' }}>
+                  <Typography variant="caption" sx={{ color: 'text.secondary' }}>
                     Base URL:{' '}
                     <Box
                       component="code"
-                      sx={{ color: '#374151', bgcolor: '#f3f4f6', px: 0.75, py: 0.25, borderRadius: '4px' }}
+                      sx={{ color: 'text.primary', bgcolor: 'action.hover', px: 0.75, py: 0.25, borderRadius: '4px' }}
                     >
                       {process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'}
                     </Box>

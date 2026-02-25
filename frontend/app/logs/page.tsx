@@ -88,7 +88,7 @@ interface WebhookDelivery {
 /* ─────────────────── Helpers ─────────────────── */
 const thSx = {
   fontWeight: 600,
-  color: '#6b7280',
+  color: 'text.secondary',
   fontSize: '0.72rem',
   textTransform: 'uppercase',
   letterSpacing: '0.05em',
@@ -103,14 +103,14 @@ const fmtMs = (ms: number) => (ms >= 1000 ? `${(ms / 1000).toFixed(2)}s` : `${ms
 function StatusChip({ status }: { status: string }) {
   const s = status?.toLowerCase();
   const map: Record<string, { bg: string; color: string; label: string }> = {
-    success: { bg: '#ecfdf5', color: '#059669', label: 'Success' },
-    completed: { bg: '#ecfdf5', color: '#059669', label: 'Completed' },
-    failed: { bg: '#fef2f2', color: '#dc2626', label: 'Failed' },
-    error: { bg: '#fef2f2', color: '#dc2626', label: 'Error' },
-    pending: { bg: '#fffbeb', color: '#d97706', label: 'Pending' },
-    warning: { bg: '#fffbeb', color: '#d97706', label: 'Warning' },
+    success: { bg: 'rgba(16,185,129,0.1)', color: '#059669', label: 'Success' },
+    completed: { bg: 'rgba(16,185,129,0.1)', color: '#059669', label: 'Completed' },
+    failed: { bg: 'rgba(239,68,68,0.1)', color: '#dc2626', label: 'Failed' },
+    error: { bg: 'rgba(239,68,68,0.1)', color: '#dc2626', label: 'Error' },
+    pending: { bg: 'rgba(245,158,11,0.1)', color: '#d97706', label: 'Pending' },
+    warning: { bg: 'rgba(245,158,11,0.1)', color: '#d97706', label: 'Warning' },
   };
-  const style = map[s] ?? { bg: '#f3f4f6', color: '#6b7280', label: status };
+  const style = map[s] ?? { bg: 'action.hover', color: 'text.secondary', label: status };
   return (
     <Chip
       label={style.label}
@@ -130,12 +130,12 @@ function ExpandableRow({ children, detail }: { children: React.ReactNode; detail
         sx={{ cursor: 'pointer', '& td': { borderBottom: open ? 0 : undefined } }}
       >
         <TableCell sx={{ width: 24, pr: 0, py: 1 }}>
-          {open ? <ChevronDown size={14} color="#9ca3af" /> : <ChevronRight size={14} color="#9ca3af" />}
+          {open ? <ChevronDown size={14} color="var(--mui-palette-text-disabled)" /> : <ChevronRight size={14} color="var(--mui-palette-text-disabled)" />}
         </TableCell>
         {children}
       </TableRow>
       <TableRow>
-        <TableCell colSpan={99} sx={{ py: 0, bgcolor: '#f9fafb' }}>
+        <TableCell colSpan={99} sx={{ py: 0, bgcolor: 'background.default' }}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ p: 2 }}>{detail}</Box>
           </Collapse>
@@ -148,13 +148,13 @@ function ExpandableRow({ children, detail }: { children: React.ReactNode; detail
 function DetailBlock({ label, value }: { label: string; value: string }) {
   return (
     <Box sx={{ mb: 1 }}>
-      <Typography variant="caption" sx={{ color: '#9ca3af', textTransform: 'uppercase', fontWeight: 600, fontSize: '0.65rem' }}>
+      <Typography variant="caption" sx={{ color: 'text.disabled', textTransform: 'uppercase', fontWeight: 600, fontSize: '0.65rem' }}>
         {label}
       </Typography>
       <Box
         component="pre"
         sx={{
-          mt: 0.25, p: 1, bgcolor: '#111827', color: '#e5e7eb', borderRadius: '6px',
+          mt: 0.25, p: 1, bgcolor: 'text.primary', color: 'divider', borderRadius: '6px',
           fontSize: '0.75rem', overflowX: 'auto', whiteSpace: 'pre-wrap', wordBreak: 'break-all', m: 0,
         }}
       >
@@ -313,7 +313,7 @@ export default function LogsPage() {
         </Alert>
       )}
 
-      <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', overflow: 'hidden' }}>
+      <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', overflow: 'hidden' }}>
         {/* Toolbar */}
         <Box sx={{ px: 2, pt: 1.5, pb: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 1 }}>
           <Tabs
@@ -333,16 +333,16 @@ export default function LogsPage() {
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <FormControlLabel
               control={<Switch checked={autoRefresh} onChange={e => setAutoRefresh(e.target.checked)} size="small" />}
-              label={<Typography variant="caption" sx={{ color: '#6b7280' }}>Auto-refresh (10s)</Typography>}
+              label={<Typography variant="caption" sx={{ color: 'text.secondary' }}>Auto-refresh (10s)</Typography>}
               sx={{ mr: 0 }}
             />
             <Tooltip title="Refresh now">
-              <IconButton size="small" onClick={fetchCurrentTab} disabled={loading} sx={{ color: '#6b7280' }}>
+              <IconButton size="small" onClick={fetchCurrentTab} disabled={loading} sx={{ color: 'text.secondary' }}>
                 <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
               </IconButton>
             </Tooltip>
             <Tooltip title="Export as JSON">
-              <IconButton size="small" onClick={handleExport} sx={{ color: '#6b7280' }}>
+              <IconButton size="small" onClick={handleExport} sx={{ color: 'text.secondary' }}>
                 <Download size={16} />
               </IconButton>
             </Tooltip>
@@ -352,13 +352,13 @@ export default function LogsPage() {
         {/* ─── Tab 0: Request Logs ─── */}
         {tab === 0 && (
           <>
-            <Box sx={{ px: 2, py: 1.5, borderBottom: '1px solid #f3f4f6', display: 'flex', gap: 1.5, flexWrap: 'wrap' }}>
+            <Box sx={{ px: 2, py: 1.5, borderBottom: '1px solid', borderColor: 'divider', display: 'flex', gap: 1.5, flexWrap: 'wrap' }}>
               <TextField
                 size="small"
                 placeholder="Search prompt or model…"
                 value={reqSearch}
                 onChange={e => setReqSearch(e.target.value)}
-                InputProps={{ startAdornment: <Search size={14} style={{ marginRight: 6, color: '#9ca3af' }} /> }}
+                InputProps={{ startAdornment: <Search size={14} style={{ marginRight: 6, color: 'text.disabled' }} /> }}
                 sx={{ width: 260, '& .MuiOutlinedInput-root': { borderRadius: '8px', fontSize: '0.85rem' } }}
               />
               <Select
@@ -383,7 +383,7 @@ export default function LogsPage() {
                 <MenuItem value="failed">Failed</MenuItem>
                 <MenuItem value="pending">Pending</MenuItem>
               </Select>
-              <Typography variant="caption" sx={{ color: '#9ca3af', alignSelf: 'center', ml: 1 }}>
+              <Typography variant="caption" sx={{ color: 'text.disabled', alignSelf: 'center', ml: 1 }}>
                 {filteredRequests.length} entries
               </Typography>
             </Box>
@@ -392,15 +392,15 @@ export default function LogsPage() {
               <Box sx={{ textAlign: 'center', py: 6 }}><CircularProgress size={28} /></Box>
             ) : filteredRequests.length === 0 ? (
               <Box sx={{ textAlign: 'center', py: 8 }}>
-                <Terminal size={40} color="#d1d5db" />
-                <Typography sx={{ color: '#9ca3af', mt: 1 }}>No request logs found</Typography>
-                <Typography variant="caption" sx={{ color: '#d1d5db' }}>Logs appear here after API calls are made</Typography>
+                <Terminal size={40} color="var(--mui-palette-text-disabled)" />
+                <Typography sx={{ color: 'text.disabled', mt: 1 }}>No request logs found</Typography>
+                <Typography variant="caption" sx={{ color: 'text.disabled' }}>Logs appear here after API calls are made</Typography>
               </Box>
             ) : (
               <Box sx={{ overflowX: 'auto' }}>
                 <Table size="small">
                   <TableHead>
-                    <TableRow sx={{ bgcolor: '#f9fafb' }}>
+                    <TableRow sx={{ bgcolor: 'background.default' }}>
                       <TableCell sx={{ width: 24 }} />
                       <TableCell sx={thSx}>Timestamp</TableCell>
                       <TableCell sx={thSx}>Model</TableCell>
@@ -425,29 +425,29 @@ export default function LogsPage() {
                           </Box>
                         }
                       >
-                        <TableCell sx={{ color: '#6b7280', fontSize: '0.8rem' }}>{fmtTime(r.timestamp)}</TableCell>
+                        <TableCell sx={{ color: 'text.secondary', fontSize: '0.8rem' }}>{fmtTime(r.timestamp)}</TableCell>
                         <TableCell>
-                          <Typography variant="body2" sx={{ fontWeight: 500, color: '#111827', fontSize: '0.82rem' }}>
+                          <Typography variant="body2" sx={{ fontWeight: 500, color: 'text.primary', fontSize: '0.82rem' }}>
                             {r.model || '—'}
                           </Typography>
                         </TableCell>
                         <TableCell><StatusChip status={r.status} /></TableCell>
                         <TableCell align="right">
-                          <Typography variant="body2" sx={{ fontFamily: 'monospace', fontSize: '0.8rem', color: r.latency > 2000 ? '#d97706' : '#374151' }}>
+                          <Typography variant="body2" sx={{ fontFamily: 'monospace', fontSize: '0.8rem', color: r.latency > 2000 ? '#d97706' : 'text.primary' }}>
                             {r.latency ? fmtMs(r.latency) : '—'}
                           </Typography>
                         </TableCell>
-                        <TableCell align="right" sx={{ color: '#374151', fontSize: '0.82rem' }}>
+                        <TableCell align="right" sx={{ color: 'text.primary', fontSize: '0.82rem' }}>
                           {r.tokens?.toLocaleString() || '—'}
                         </TableCell>
-                        <TableCell align="right" sx={{ fontFamily: 'monospace', fontSize: '0.8rem', color: '#374151' }}>
+                        <TableCell align="right" sx={{ fontFamily: 'monospace', fontSize: '0.8rem', color: 'text.primary' }}>
                           {r.cost != null ? `$${r.cost.toFixed(5)}` : '—'}
                         </TableCell>
                         <TableCell>
                           {r.cache_hit ? (
-                            <Chip label="HIT" size="small" sx={{ bgcolor: '#ecfdf5', color: '#059669', fontWeight: 700, fontSize: '0.65rem', height: 18 }} />
+                            <Chip label="HIT" size="small" sx={{ bgcolor: 'rgba(16,185,129,0.1)', color: '#059669', fontWeight: 700, fontSize: '0.65rem', height: 18 }} />
                           ) : (
-                            <Chip label="MISS" size="small" sx={{ bgcolor: '#f3f4f6', color: '#9ca3af', fontWeight: 600, fontSize: '0.65rem', height: 18 }} />
+                            <Chip label="MISS" size="small" sx={{ bgcolor: 'action.hover', color: 'text.disabled', fontWeight: 600, fontSize: '0.65rem', height: 18 }} />
                           )}
                         </TableCell>
                       </ExpandableRow>
@@ -462,16 +462,16 @@ export default function LogsPage() {
         {/* ─── Tab 1: Activity Logs ─── */}
         {tab === 1 && (
           <>
-            <Box sx={{ px: 2, py: 1.5, borderBottom: '1px solid #f3f4f6', display: 'flex', gap: 1.5, alignItems: 'center' }}>
+            <Box sx={{ px: 2, py: 1.5, borderBottom: '1px solid', borderColor: 'divider', display: 'flex', gap: 1.5, alignItems: 'center' }}>
               <TextField
                 size="small"
                 placeholder="Search user or action…"
                 value={actSearch}
                 onChange={e => setActSearch(e.target.value)}
-                InputProps={{ startAdornment: <Search size={14} style={{ marginRight: 6, color: '#9ca3af' }} /> }}
+                InputProps={{ startAdornment: <Search size={14} style={{ marginRight: 6, color: 'text.disabled' }} /> }}
                 sx={{ width: 280, '& .MuiOutlinedInput-root': { borderRadius: '8px', fontSize: '0.85rem' } }}
               />
-              <Typography variant="caption" sx={{ color: '#9ca3af' }}>
+              <Typography variant="caption" sx={{ color: 'text.disabled' }}>
                 {filteredActivity.length} entries
               </Typography>
             </Box>
@@ -480,15 +480,15 @@ export default function LogsPage() {
               <Box sx={{ textAlign: 'center', py: 6 }}><CircularProgress size={28} /></Box>
             ) : filteredActivity.length === 0 ? (
               <Box sx={{ textAlign: 'center', py: 8 }}>
-                <Shield size={40} color="#d1d5db" />
-                <Typography sx={{ color: '#9ca3af', mt: 1 }}>No activity logs</Typography>
-                <Typography variant="caption" sx={{ color: '#d1d5db' }}>Requires admin role to view all activity</Typography>
+                <Shield size={40} color="var(--mui-palette-text-disabled)" />
+                <Typography sx={{ color: 'text.disabled', mt: 1 }}>No activity logs</Typography>
+                <Typography variant="caption" sx={{ color: 'text.disabled' }}>Requires admin role to view all activity</Typography>
               </Box>
             ) : (
               <Box sx={{ overflowX: 'auto' }}>
                 <Table size="small">
                   <TableHead>
-                    <TableRow sx={{ bgcolor: '#f9fafb' }}>
+                    <TableRow sx={{ bgcolor: 'background.default' }}>
                       <TableCell sx={{ width: 24 }} />
                       <TableCell sx={thSx}>Timestamp</TableCell>
                       <TableCell sx={thSx}>User</TableCell>
@@ -508,9 +508,9 @@ export default function LogsPage() {
                           </Box>
                         }
                       >
-                        <TableCell sx={{ color: '#6b7280', fontSize: '0.8rem' }}>{fmtTime(a.created_at)}</TableCell>
+                        <TableCell sx={{ color: 'text.secondary', fontSize: '0.8rem' }}>{fmtTime(a.created_at)}</TableCell>
                         <TableCell>
-                          <Typography variant="body2" sx={{ fontWeight: 500, color: '#111827', fontSize: '0.82rem' }}>
+                          <Typography variant="body2" sx={{ fontWeight: 500, color: 'text.primary', fontSize: '0.82rem' }}>
                             {a.username || a.user_id}
                           </Typography>
                         </TableCell>
@@ -519,7 +519,7 @@ export default function LogsPage() {
                             label={a.action}
                             size="small"
                             sx={{
-                              bgcolor: a.action?.includes('delete') || a.action?.includes('revoke') ? '#fef2f2' : '#eff6ff',
+                              bgcolor: a.action?.includes('delete') || a.action?.includes('revoke') ? 'rgba(239,68,68,0.1)' : 'rgba(59,130,246,0.1)',
                               color: a.action?.includes('delete') || a.action?.includes('revoke') ? '#dc2626' : '#2563eb',
                               fontWeight: 600,
                               fontSize: '0.7rem',
@@ -527,11 +527,11 @@ export default function LogsPage() {
                             }}
                           />
                         </TableCell>
-                        <TableCell sx={{ color: '#6b7280', fontSize: '0.8rem', fontFamily: 'monospace' }}>
+                        <TableCell sx={{ color: 'text.secondary', fontSize: '0.8rem', fontFamily: 'monospace' }}>
                           {a.ip_address || '—'}
                         </TableCell>
-                        <TableCell sx={{ color: '#374151', fontSize: '0.82rem', maxWidth: 280 }}>
-                          <Typography noWrap variant="body2" sx={{ fontSize: '0.8rem', color: '#374151', maxWidth: 260 }}>
+                        <TableCell sx={{ color: 'text.primary', fontSize: '0.82rem', maxWidth: 280 }}>
+                          <Typography noWrap variant="body2" sx={{ fontSize: '0.8rem', color: 'text.primary', maxWidth: 260 }}>
                             {a.details || '—'}
                           </Typography>
                         </TableCell>
@@ -547,7 +547,7 @@ export default function LogsPage() {
         {/* ─── Tab 2: Event Logs ─── */}
         {tab === 2 && (
           <>
-            <Box sx={{ px: 2, py: 1.5, borderBottom: '1px solid #f3f4f6', display: 'flex', gap: 1.5, alignItems: 'center' }}>
+            <Box sx={{ px: 2, py: 1.5, borderBottom: '1px solid', borderColor: 'divider', display: 'flex', gap: 1.5, alignItems: 'center' }}>
               <Select
                 size="small"
                 value={evtType}
@@ -558,7 +558,7 @@ export default function LogsPage() {
                 <MenuItem value="">All Event Types</MenuItem>
                 {uniqueEventTypes.map(t => <MenuItem key={t} value={t}>{t}</MenuItem>)}
               </Select>
-              <Typography variant="caption" sx={{ color: '#9ca3af' }}>
+              <Typography variant="caption" sx={{ color: 'text.disabled' }}>
                 {filteredEvents.length} entries
               </Typography>
             </Box>
@@ -567,15 +567,15 @@ export default function LogsPage() {
               <Box sx={{ textAlign: 'center', py: 6 }}><CircularProgress size={28} /></Box>
             ) : filteredEvents.length === 0 ? (
               <Box sx={{ textAlign: 'center', py: 8 }}>
-                <Zap size={40} color="#d1d5db" />
-                <Typography sx={{ color: '#9ca3af', mt: 1 }}>No system events</Typography>
-                <Typography variant="caption" sx={{ color: '#d1d5db' }}>Events are emitted on API calls, quota warnings, model changes, etc.</Typography>
+                <Zap size={40} color="var(--mui-palette-text-disabled)" />
+                <Typography sx={{ color: 'text.disabled', mt: 1 }}>No system events</Typography>
+                <Typography variant="caption" sx={{ color: 'text.disabled' }}>Events are emitted on API calls, quota warnings, model changes, etc.</Typography>
               </Box>
             ) : (
               <Box sx={{ overflowX: 'auto' }}>
                 <Table size="small">
                   <TableHead>
-                    <TableRow sx={{ bgcolor: '#f9fafb' }}>
+                    <TableRow sx={{ bgcolor: 'background.default' }}>
                       <TableCell sx={{ width: 24 }} />
                       <TableCell sx={thSx}>Timestamp</TableCell>
                       <TableCell sx={thSx}>Event Type</TableCell>
@@ -597,20 +597,20 @@ export default function LogsPage() {
                             </Box>
                           }
                         >
-                          <TableCell sx={{ color: '#6b7280', fontSize: '0.8rem' }}>{fmtTime(e.created_at)}</TableCell>
+                          <TableCell sx={{ color: 'text.secondary', fontSize: '0.8rem' }}>{fmtTime(e.created_at)}</TableCell>
                           <TableCell>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
                               {isAlert ? <AlertCircle size={14} color="#dc2626" /> : isWarning ? <AlertCircle size={14} color="#d97706" /> : <CheckCircle size={14} color="#059669" />}
-                              <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.82rem', color: isAlert ? '#dc2626' : isWarning ? '#d97706' : '#111827' }}>
+                              <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.82rem', color: isAlert ? '#dc2626' : isWarning ? '#d97706' : 'text.primary' }}>
                                 {e.event_type}
                               </Typography>
                             </Box>
                           </TableCell>
                           <TableCell>
-                            <Chip label={e.source || 'system'} size="small" sx={{ bgcolor: '#f3f4f6', color: '#374151', fontSize: '0.7rem', height: 20 }} />
+                            <Chip label={e.source || 'system'} size="small" sx={{ bgcolor: 'action.hover', color: 'text.primary', fontSize: '0.7rem', height: 20 }} />
                           </TableCell>
                           <TableCell sx={{ maxWidth: 320 }}>
-                            <Typography noWrap variant="body2" sx={{ fontSize: '0.8rem', color: '#6b7280', fontFamily: 'monospace', maxWidth: 300 }}>
+                            <Typography noWrap variant="body2" sx={{ fontSize: '0.8rem', color: 'text.secondary', fontFamily: 'monospace', maxWidth: 300 }}>
                               {e.payload?.slice(0, 80) || '—'}
                             </Typography>
                           </TableCell>
@@ -627,7 +627,7 @@ export default function LogsPage() {
         {/* ─── Tab 3: Webhook Deliveries ─── */}
         {tab === 3 && (
           <>
-            <Box sx={{ px: 2, py: 1.5, borderBottom: '1px solid #f3f4f6', display: 'flex', gap: 1.5, alignItems: 'center', flexWrap: 'wrap' }}>
+            <Box sx={{ px: 2, py: 1.5, borderBottom: '1px solid', borderColor: 'divider', display: 'flex', gap: 1.5, alignItems: 'center', flexWrap: 'wrap' }}>
               <Select
                 size="small"
                 value={selectedWebhook}
@@ -643,7 +643,7 @@ export default function LogsPage() {
                 ))}
               </Select>
               {selectedWebhook !== '' && (
-                <Typography variant="caption" sx={{ color: '#9ca3af' }}>
+                <Typography variant="caption" sx={{ color: 'text.disabled' }}>
                   {deliveries.length} deliveries
                 </Typography>
               )}
@@ -651,22 +651,22 @@ export default function LogsPage() {
 
             {!selectedWebhook ? (
               <Box sx={{ textAlign: 'center', py: 8 }}>
-                <Webhook size={40} color="#d1d5db" />
-                <Typography sx={{ color: '#9ca3af', mt: 1 }}>Select a webhook endpoint above</Typography>
-                <Typography variant="caption" sx={{ color: '#d1d5db' }}>View delivery attempts and HTTP responses for each endpoint</Typography>
+                <Webhook size={40} color="var(--mui-palette-text-disabled)" />
+                <Typography sx={{ color: 'text.disabled', mt: 1 }}>Select a webhook endpoint above</Typography>
+                <Typography variant="caption" sx={{ color: 'text.disabled' }}>View delivery attempts and HTTP responses for each endpoint</Typography>
               </Box>
             ) : loading ? (
               <Box sx={{ textAlign: 'center', py: 6 }}><CircularProgress size={28} /></Box>
             ) : deliveries.length === 0 ? (
               <Box sx={{ textAlign: 'center', py: 8 }}>
-                <Clock size={40} color="#d1d5db" />
-                <Typography sx={{ color: '#9ca3af', mt: 1 }}>No deliveries yet for this endpoint</Typography>
+                <Clock size={40} color="var(--mui-palette-text-disabled)" />
+                <Typography sx={{ color: 'text.disabled', mt: 1 }}>No deliveries yet for this endpoint</Typography>
               </Box>
             ) : (
               <Box sx={{ overflowX: 'auto' }}>
                 <Table size="small">
                   <TableHead>
-                    <TableRow sx={{ bgcolor: '#f9fafb' }}>
+                    <TableRow sx={{ bgcolor: 'background.default' }}>
                       <TableCell sx={{ width: 24 }} />
                       <TableCell sx={thSx}>Delivered At</TableCell>
                       <TableCell sx={thSx}>Event Type</TableCell>
@@ -686,8 +686,8 @@ export default function LogsPage() {
                           </Box>
                         }
                       >
-                        <TableCell sx={{ color: '#6b7280', fontSize: '0.8rem' }}>{fmtTime(d.delivered_at)}</TableCell>
-                        <TableCell sx={{ fontWeight: 500, fontSize: '0.82rem', color: '#111827' }}>{d.event_type}</TableCell>
+                        <TableCell sx={{ color: 'text.secondary', fontSize: '0.8rem' }}>{fmtTime(d.delivered_at)}</TableCell>
+                        <TableCell sx={{ fontWeight: 500, fontSize: '0.82rem', color: 'text.primary' }}>{d.event_type}</TableCell>
                         <TableCell>
                           {d.success ? (
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
@@ -706,7 +706,7 @@ export default function LogsPage() {
                             label={d.status_code || '—'}
                             size="small"
                             sx={{
-                              bgcolor: d.status_code >= 200 && d.status_code < 300 ? '#ecfdf5' : '#fef2f2',
+                              bgcolor: d.status_code >= 200 && d.status_code < 300 ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)',
                               color: d.status_code >= 200 && d.status_code < 300 ? '#059669' : '#dc2626',
                               fontWeight: 700,
                               fontSize: '0.7rem',
@@ -714,10 +714,10 @@ export default function LogsPage() {
                             }}
                           />
                         </TableCell>
-                        <TableCell align="right" sx={{ fontFamily: 'monospace', fontSize: '0.8rem', color: '#374151' }}>
+                        <TableCell align="right" sx={{ fontFamily: 'monospace', fontSize: '0.8rem', color: 'text.primary' }}>
                           {d.latency_ms ? fmtMs(d.latency_ms) : '—'}
                         </TableCell>
-                        <TableCell align="right" sx={{ color: d.attempt > 1 ? '#d97706' : '#9ca3af', fontSize: '0.82rem', fontWeight: d.attempt > 1 ? 600 : 400 }}>
+                        <TableCell align="right" sx={{ color: d.attempt > 1 ? '#d97706' : 'text.disabled', fontSize: '0.82rem', fontWeight: d.attempt > 1 ? 600 : 400 }}>
                           #{d.attempt}
                         </TableCell>
                       </ExpandableRow>

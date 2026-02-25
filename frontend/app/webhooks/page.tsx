@@ -216,17 +216,17 @@ export default function WebhooksPage() {
       {/* Endpoints List */}
       <Paper
         elevation={0}
-        sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', mb: 3 }}
+        sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', mb: 3 }}
       >
-        <Box sx={{ p: 3, borderBottom: '1px solid #e5e7eb' }}>
-          <Typography variant="h6" sx={{ fontWeight: 600, color: '#111827' }}>
+        <Box sx={{ p: 3, borderBottom: '1px solid', borderColor: 'divider' }}>
+          <Typography variant="h6" sx={{ fontWeight: 600, color: 'text.primary' }}>
             Webhook Endpoints
           </Typography>
         </Box>
 
         {endpoints.length === 0 ? (
           <Box sx={{ p: 6, textAlign: 'center' }}>
-            <Typography sx={{ color: '#6b7280' }}>
+            <Typography sx={{ color: 'text.secondary' }}>
               No webhook endpoints configured. Create one to start receiving events!
             </Typography>
           </Box>
@@ -244,7 +244,7 @@ export default function WebhooksPage() {
                 >
                   <Box sx={{ flex: 1 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                      <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#111827' }}>
+                      <Typography variant="subtitle1" sx={{ fontWeight: 600, color: 'text.primary' }}>
                         {ep.name}
                       </Typography>
                       <Chip
@@ -253,14 +253,14 @@ export default function WebhooksPage() {
                         sx={{
                           fontWeight: 600,
                           fontSize: '0.7rem',
-                          backgroundColor: ep.active ? '#dcfce7' : '#f3f4f6',
-                          color: ep.active ? '#166534' : '#6b7280',
+                          backgroundColor: ep.active ? 'rgba(16,185,129,0.1)' : 'action.hover',
+                          color: ep.active ? '#166534' : 'text.secondary',
                         }}
                       />
                     </Box>
                     <Typography
                       variant="body2"
-                      sx={{ color: '#6b7280', mt: 0.5, fontFamily: 'monospace', fontSize: '0.8rem' }}
+                      sx={{ color: 'text.secondary', mt: 0.5, fontFamily: 'monospace', fontSize: '0.8rem' }}
                     >
                       {ep.url}
                     </Typography>
@@ -273,8 +273,8 @@ export default function WebhooksPage() {
                           sx={{
                             fontSize: '0.7rem',
                             height: 22,
-                            backgroundColor: '#eff6ff',
-                            color: '#1d4ed8',
+                            backgroundColor: 'rgba(59,130,246,0.1)',
+                            color: 'primary.dark',
                           }}
                         />
                       ))}
@@ -292,7 +292,7 @@ export default function WebhooksPage() {
                       size="small"
                       color="inherit"
                       onClick={() => handleToggle(ep.id, ep.active)}
-                      sx={{ textTransform: 'none', fontWeight: 500, color: '#6b7280' }}
+                      sx={{ textTransform: 'none', fontWeight: 500, color: 'text.secondary' }}
                     >
                       {ep.active ? 'Disable' : 'Enable'}
                     </Button>
@@ -317,18 +317,18 @@ export default function WebhooksPage() {
       {selectedEndpoint && (
         <Paper
           elevation={0}
-          sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', mb: 3 }}
+          sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', mb: 3 }}
         >
           <Box
             sx={{
               p: 3,
-              borderBottom: '1px solid #e5e7eb',
+              borderBottom: '1px solid', borderColor: 'divider',
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
             }}
           >
-            <Typography variant="h6" sx={{ fontWeight: 600, color: '#111827' }}>
+            <Typography variant="h6" sx={{ fontWeight: 600, color: 'text.primary' }}>
               Recent Deliveries (Endpoint #{selectedEndpoint})
             </Typography>
             <IconButton onClick={() => setSelectedEndpoint(null)} size="small">
@@ -338,19 +338,19 @@ export default function WebhooksPage() {
 
           {deliveries.length === 0 ? (
             <Box sx={{ p: 4, textAlign: 'center' }}>
-              <Typography sx={{ color: '#6b7280' }}>No deliveries yet.</Typography>
+              <Typography sx={{ color: 'text.secondary' }}>No deliveries yet.</Typography>
             </Box>
           ) : (
             <TableContainer>
               <Table size="small">
                 <TableHead>
                   <TableRow>
-                    <TableCell sx={{ fontWeight: 600, color: '#6b7280', fontSize: '0.75rem', textTransform: 'uppercase' }}>Time</TableCell>
-                    <TableCell sx={{ fontWeight: 600, color: '#6b7280', fontSize: '0.75rem', textTransform: 'uppercase' }}>Event</TableCell>
-                    <TableCell sx={{ fontWeight: 600, color: '#6b7280', fontSize: '0.75rem', textTransform: 'uppercase' }}>Status</TableCell>
-                    <TableCell sx={{ fontWeight: 600, color: '#6b7280', fontSize: '0.75rem', textTransform: 'uppercase' }}>Latency</TableCell>
-                    <TableCell sx={{ fontWeight: 600, color: '#6b7280', fontSize: '0.75rem', textTransform: 'uppercase' }}>Attempt</TableCell>
-                    <TableCell sx={{ fontWeight: 600, color: '#6b7280', fontSize: '0.75rem', textTransform: 'uppercase' }}>Error</TableCell>
+                    <TableCell sx={{ fontWeight: 600, color: 'text.secondary', fontSize: '0.75rem', textTransform: 'uppercase' }}>Time</TableCell>
+                    <TableCell sx={{ fontWeight: 600, color: 'text.secondary', fontSize: '0.75rem', textTransform: 'uppercase' }}>Event</TableCell>
+                    <TableCell sx={{ fontWeight: 600, color: 'text.secondary', fontSize: '0.75rem', textTransform: 'uppercase' }}>Status</TableCell>
+                    <TableCell sx={{ fontWeight: 600, color: 'text.secondary', fontSize: '0.75rem', textTransform: 'uppercase' }}>Latency</TableCell>
+                    <TableCell sx={{ fontWeight: 600, color: 'text.secondary', fontSize: '0.75rem', textTransform: 'uppercase' }}>Attempt</TableCell>
+                    <TableCell sx={{ fontWeight: 600, color: 'text.secondary', fontSize: '0.75rem', textTransform: 'uppercase' }}>Error</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -367,13 +367,13 @@ export default function WebhooksPage() {
                           sx={{
                             fontWeight: 600,
                             fontSize: '0.7rem',
-                            backgroundColor: d.success ? '#dcfce7' : '#fef2f2',
+                            backgroundColor: d.success ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)',
                             color: d.success ? '#166534' : '#991b1b',
                           }}
                         />
                       </TableCell>
-                      <TableCell sx={{ color: '#6b7280', fontSize: '0.875rem' }}>{d.latency_ms}ms</TableCell>
-                      <TableCell sx={{ color: '#6b7280', fontSize: '0.875rem' }}>{d.attempt}/3</TableCell>
+                      <TableCell sx={{ color: 'text.secondary', fontSize: '0.875rem' }}>{d.latency_ms}ms</TableCell>
+                      <TableCell sx={{ color: 'text.secondary', fontSize: '0.875rem' }}>{d.attempt}/3</TableCell>
                       <TableCell
                         sx={{
                           color: '#dc2626',
@@ -436,7 +436,7 @@ export default function WebhooksPage() {
             />
 
             <Box>
-              <Typography variant="body2" sx={{ fontWeight: 500, color: '#374151', mb: 1 }}>
+              <Typography variant="body2" sx={{ fontWeight: 500, color: 'text.primary', mb: 1 }}>
                 Events ({form.events.length} selected)
               </Typography>
               <Paper
@@ -459,7 +459,7 @@ export default function WebhooksPage() {
                           p: 1.5,
                           cursor: 'pointer',
                           borderRadius: '4px',
-                          '&:hover': { backgroundColor: '#f9fafb' },
+                          '&:hover': { backgroundColor: 'background.default' },
                         }}
                       >
                         <Checkbox
@@ -469,10 +469,10 @@ export default function WebhooksPage() {
                           sx={{ mt: -0.5 }}
                         />
                         <Box>
-                          <Typography variant="body2" sx={{ fontWeight: 500, color: '#111827' }}>
+                          <Typography variant="body2" sx={{ fontWeight: 500, color: 'text.primary' }}>
                             {evt.type}
                           </Typography>
-                          <Typography variant="caption" sx={{ color: '#6b7280' }}>
+                          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
                             {evt.description}
                           </Typography>
                         </Box>

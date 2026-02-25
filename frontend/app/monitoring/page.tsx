@@ -24,6 +24,7 @@ import TableHead from '@mui/material/TableHead';
 import TableBody from '@mui/material/TableBody';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
+import { useTheme } from '@mui/material/styles';
 import { PageHeader } from '@/components/PageHeader';
 
 const COLORS = ['#10b981', '#3b82f6', '#ef4444', '#f59e0b', '#8b5cf6'];
@@ -110,6 +111,8 @@ function useMetricsSnapshot() {
 // --- Main Component ---
 
 export default function MonitoringPage() {
+  const theme = useTheme();
+  const tooltipStyle = { backgroundColor: theme.palette.background.paper, border: `1px solid ${theme.palette.divider}`, borderRadius: '8px', fontSize: '11px', color: theme.palette.text.primary };
   const { data: health, isLoading: healthLoading } = useSystemHealth();
   const { data: workerMetrics } = useWorkerMetrics();
   const { data: workers } = useWorkerList();
@@ -125,7 +128,7 @@ export default function MonitoringPage() {
     return (
       <Box sx={{ p: { xs: 2, sm: 3 }, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
         <CircularProgress size={48} sx={{ color: '#10b981' }} />
-        <Typography sx={{ mt: 2, color: '#6b7280', fontSize: '0.875rem' }}>Connecting to monitoring...</Typography>
+        <Typography sx={{ mt: 2, color: 'text.secondary', fontSize: '0.875rem' }}>Connecting to monitoring...</Typography>
       </Box>
     );
   }
@@ -140,9 +143,9 @@ export default function MonitoringPage() {
         subtitle="Real-time infrastructure health"
         action={
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: '#6b7280', fontSize: '0.75rem' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: 'text.secondary', fontSize: '0.75rem' }}>
               <RefreshCw className="w-3 h-3 animate-spin" />
-              <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>Auto-refresh 5s</Typography>
+              <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>Auto-refresh 5s</Typography>
             </Box>
             <Chip
               label={systemStatus}
@@ -176,7 +179,7 @@ export default function MonitoringPage() {
             sx={{ borderRadius: '12px' }}
           >
             <Typography sx={{ fontWeight: 600, fontSize: '0.875rem' }}>Backpressure Active</Typography>
-            <Typography sx={{ fontSize: '0.8125rem', color: '#6b7280' }}>
+            <Typography sx={{ fontSize: '0.8125rem', color: 'text.secondary' }}>
               {backpressure.reason || 'System is under heavy load. Some requests may be rejected.'}
             </Typography>
           </Alert>
@@ -187,7 +190,7 @@ export default function MonitoringPage() {
           <Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
               <Bell className="w-4 h-4" style={{ color: '#f59e0b' }} />
-              <Typography sx={{ fontSize: '0.8125rem', fontWeight: 500, color: '#374151' }}>Alerts ({alerts.length})</Typography>
+              <Typography sx={{ fontSize: '0.8125rem', fontWeight: 500, color: 'text.primary' }}>Alerts ({alerts.length})</Typography>
             </Box>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
               {alerts.map((alert, i) => (
@@ -209,10 +212,10 @@ export default function MonitoringPage() {
         )}
 
         {/* System Health Checks */}
-        <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3 }}>
+        <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
             <Shield className="w-4 h-4" style={{ color: '#10b981' }} />
-            <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#374151' }}>Health Checks</Typography>
+            <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: 'text.primary' }}>Health Checks</Typography>
           </Box>
           <Grid container spacing={2}>
             {health?.checks && Object.entries(health.checks).map(([name, check]: [string, any]) => (
@@ -223,15 +226,15 @@ export default function MonitoringPage() {
                     p: 1.5,
                     borderRadius: '8px',
                     border: '1px solid',
-                    borderColor: check.status ? '#d1fae5' : '#fecaca',
-                    backgroundColor: check.status ? '#f0fdf4' : '#fef2f2',
+                    borderColor: check.status ? 'rgba(16,185,129,0.1)' : '#fecaca',
+                    backgroundColor: check.status ? '#f0fdf4' : 'rgba(239,68,68,0.1)',
                   }}
                 >
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
                     {check.status ? <CheckCircle className="w-4 h-4" style={{ color: '#10b981' }} /> : <XCircle className="w-4 h-4" style={{ color: '#ef4444' }} />}
-                    <Typography sx={{ fontSize: '0.75rem', fontWeight: 500, color: '#374151', textTransform: 'capitalize' }}>{name.replace('_', ' ')}</Typography>
+                    <Typography sx={{ fontSize: '0.75rem', fontWeight: 500, color: 'text.primary', textTransform: 'capitalize' }}>{name.replace('_', ' ')}</Typography>
                   </Box>
-                  <Typography sx={{ fontSize: '0.6875rem', color: '#6b7280' }}>
+                  <Typography sx={{ fontSize: '0.6875rem', color: 'text.secondary' }}>
                     {typeof check === 'object' ? Object.entries(check).filter(([k]) => k !== 'status').map(([k, v]) => `${k}: ${v}`).join(', ') : String(check)}
                   </Typography>
                 </Paper>
@@ -244,10 +247,10 @@ export default function MonitoringPage() {
         <Grid container spacing={3}>
           {/* Worker Grid */}
           <Grid size={{ xs: 12, lg: 8 }}>
-            <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3, height: '100%' }}>
+            <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3, height: '100%' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
                 <Server className="w-4 h-4" style={{ color: '#3b82f6' }} />
-                <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#374151' }}>
+                <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: 'text.primary' }}>
                   Worker Pool ({workerMetrics?.total_workers || 0} workers)
                 </Typography>
               </Box>
@@ -261,29 +264,29 @@ export default function MonitoringPage() {
                     sx={{
                       aspectRatio: '1',
                       borderRadius: '8px',
-                      backgroundColor: '#f3f4f6',
-                      border: '1px solid #e5e7eb',
+                      backgroundColor: 'action.hover',
+                      border: '1px solid', borderColor: 'divider',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                     }}
                   >
-                    <Typography sx={{ fontSize: '10px', color: '#9ca3af' }}>{i + 1}</Typography>
+                    <Typography sx={{ fontSize: '10px', color: 'text.disabled' }}>{i + 1}</Typography>
                   </Box>
                 ))}
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                   <Box sx={{ width: 10, height: 10, borderRadius: '2px', backgroundColor: '#10b981' }} />
-                  <Typography sx={{ fontSize: '0.6875rem', color: '#6b7280' }}>Idle</Typography>
+                  <Typography sx={{ fontSize: '0.6875rem', color: 'text.secondary' }}>Idle</Typography>
                 </Box>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                   <Box sx={{ width: 10, height: 10, borderRadius: '2px', backgroundColor: '#3b82f6' }} />
-                  <Typography sx={{ fontSize: '0.6875rem', color: '#6b7280' }}>Busy</Typography>
+                  <Typography sx={{ fontSize: '0.6875rem', color: 'text.secondary' }}>Busy</Typography>
                 </Box>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                   <Box sx={{ width: 10, height: 10, borderRadius: '2px', backgroundColor: '#ef4444' }} />
-                  <Typography sx={{ fontSize: '0.6875rem', color: '#6b7280' }}>Unhealthy</Typography>
+                  <Typography sx={{ fontSize: '0.6875rem', color: 'text.secondary' }}>Unhealthy</Typography>
                 </Box>
               </Box>
             </Paper>
@@ -291,10 +294,10 @@ export default function MonitoringPage() {
 
           {/* Queue Status */}
           <Grid size={{ xs: 12, lg: 4 }}>
-            <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3, height: '100%' }}>
+            <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3, height: '100%' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
                 <TrendingUp className="w-4 h-4" style={{ color: '#8b5cf6' }} />
-                <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#374151' }}>Queue Status</Typography>
+                <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: 'text.primary' }}>Queue Status</Typography>
               </Box>
               <Box>
                 <GaugeCircle
@@ -311,14 +314,14 @@ export default function MonitoringPage() {
                   <Grid size={{ xs: 6 }}><MetricBox label="Processed" value={workerMetrics?.total_jobs_processed || 0} color="green" /></Grid>
                   <Grid size={{ xs: 6 }}><MetricBox label="Failed" value={workerMetrics?.total_jobs_failed || 0} color="red" /></Grid>
                 </Grid>
-                <Box sx={{ pt: 2, mt: 2, borderTop: '1px solid #e5e7eb' }}>
+                <Box sx={{ pt: 2, mt: 2, borderTop: '1px solid', borderColor: 'divider' }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-                    <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>Throughput</Typography>
-                    <Typography sx={{ fontSize: '0.75rem', color: '#374151', fontFamily: 'monospace' }}>{(workerMetrics?.throughput_jobs_per_sec || 0).toFixed(2)} jobs/s</Typography>
+                    <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>Throughput</Typography>
+                    <Typography sx={{ fontSize: '0.75rem', color: 'text.primary', fontFamily: 'monospace' }}>{(workerMetrics?.throughput_jobs_per_sec || 0).toFixed(2)} jobs/s</Typography>
                   </Box>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>Avg Duration</Typography>
-                    <Typography sx={{ fontSize: '0.75rem', color: '#374151', fontFamily: 'monospace' }}>{(workerMetrics?.avg_job_duration_ms || 0).toFixed(0)}ms</Typography>
+                    <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>Avg Duration</Typography>
+                    <Typography sx={{ fontSize: '0.75rem', color: 'text.primary', fontFamily: 'monospace' }}>{(workerMetrics?.avg_job_duration_ms || 0).toFixed(0)}ms</Typography>
                   </Box>
                 </Box>
               </Box>
@@ -358,37 +361,37 @@ export default function MonitoringPage() {
         <Grid container spacing={3}>
           {/* Rate Limiter */}
           <Grid size={{ xs: 12, lg: 6 }}>
-            <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3, height: '100%' }}>
+            <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3, height: '100%' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
                 <Shield className="w-4 h-4" style={{ color: '#f59e0b' }} />
-                <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#374151' }}>Rate Limiting</Typography>
+                <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: 'text.primary' }}>Rate Limiting</Typography>
               </Box>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>Total Requests</Typography>
-                  <Typography sx={{ fontSize: '0.8125rem', fontFamily: 'monospace', color: '#111827' }}>{rateLimiter?.total_requests || 0}</Typography>
+                  <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>Total Requests</Typography>
+                  <Typography sx={{ fontSize: '0.8125rem', fontFamily: 'monospace', color: 'text.primary' }}>{rateLimiter?.total_requests || 0}</Typography>
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>Allowed</Typography>
+                  <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>Allowed</Typography>
                   <Typography sx={{ fontSize: '0.8125rem', fontFamily: 'monospace', color: '#10b981' }}>{rateLimiter?.allowed || 0}</Typography>
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>Rejected</Typography>
+                  <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>Rejected</Typography>
                   <Typography sx={{ fontSize: '0.8125rem', fontFamily: 'monospace', color: '#ef4444' }}>{rateLimiter?.rejected || 0}</Typography>
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>Active Users</Typography>
-                  <Typography sx={{ fontSize: '0.8125rem', fontFamily: 'monospace', color: '#111827' }}>{rateLimiter?.active_users || 0}</Typography>
+                  <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>Active Users</Typography>
+                  <Typography sx={{ fontSize: '0.8125rem', fontFamily: 'monospace', color: 'text.primary' }}>{rateLimiter?.active_users || 0}</Typography>
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>Limit</Typography>
-                  <Typography sx={{ fontSize: '0.8125rem', fontFamily: 'monospace', color: '#111827' }}>{rateLimiter?.requests_per_minute || 100} req/min</Typography>
+                  <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>Limit</Typography>
+                  <Typography sx={{ fontSize: '0.8125rem', fontFamily: 'monospace', color: 'text.primary' }}>{rateLimiter?.requests_per_minute || 100} req/min</Typography>
                 </Box>
                 {/* Rejection rate bar */}
                 <Box sx={{ pt: 1 }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-                    <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>Rejection Rate</Typography>
-                    <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>
+                    <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>Rejection Rate</Typography>
+                    <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>
                       {rateLimiter?.total_requests > 0
                         ? ((rateLimiter.rejected / rateLimiter.total_requests) * 100).toFixed(1)
                         : '0.0'}%
@@ -402,7 +405,7 @@ export default function MonitoringPage() {
                     sx={{
                       height: 6,
                       borderRadius: 3,
-                      backgroundColor: '#e5e7eb',
+                      backgroundColor: 'divider',
                       '& .MuiLinearProgress-bar': {
                         borderRadius: 3,
                         backgroundColor: '#ef4444',
@@ -416,30 +419,30 @@ export default function MonitoringPage() {
 
           {/* Performance Summary */}
           <Grid size={{ xs: 12, lg: 6 }}>
-            <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3, height: '100%' }}>
+            <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3, height: '100%' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
                 <Zap className="w-4 h-4" style={{ color: '#f97316' }} />
-                <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#374151' }}>Performance Metrics</Typography>
+                <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: 'text.primary' }}>Performance Metrics</Typography>
               </Box>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>Total Requests</Typography>
-                  <Typography sx={{ fontSize: '0.8125rem', fontFamily: 'monospace', color: '#111827' }}>{metricsSnapshot?.throughput?.total_requests || 0}</Typography>
+                  <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>Total Requests</Typography>
+                  <Typography sx={{ fontSize: '0.8125rem', fontFamily: 'monospace', color: 'text.primary' }}>{metricsSnapshot?.throughput?.total_requests || 0}</Typography>
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>Req/Second</Typography>
+                  <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>Req/Second</Typography>
                   <Typography sx={{ fontSize: '0.8125rem', fontFamily: 'monospace', color: '#3b82f6' }}>{metricsSnapshot?.throughput?.requests_per_second || '0.00'}</Typography>
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>P50 Latency</Typography>
+                  <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>P50 Latency</Typography>
                   <Typography sx={{ fontSize: '0.8125rem', fontFamily: 'monospace', color: '#10b981' }}>{metricsSnapshot?.latency?.p50_ms || 0}ms</Typography>
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>P99 Latency</Typography>
+                  <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>P99 Latency</Typography>
                   <Typography sx={{ fontSize: '0.8125rem', fontFamily: 'monospace', color: '#f59e0b' }}>{metricsSnapshot?.latency?.p99_ms || 0}ms</Typography>
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>Error Rate</Typography>
+                  <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>Error Rate</Typography>
                   <Typography sx={{
                     fontSize: '0.8125rem',
                     fontFamily: 'monospace',
@@ -447,12 +450,12 @@ export default function MonitoringPage() {
                   }}>{metricsSnapshot?.errors?.error_rate || '0.00%'}</Typography>
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>Total Cost</Typography>
-                  <Typography sx={{ fontSize: '0.8125rem', fontFamily: 'monospace', color: '#111827' }}>{metricsSnapshot?.cost?.total_cost || '$0.0000'}</Typography>
+                  <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>Total Cost</Typography>
+                  <Typography sx={{ fontSize: '0.8125rem', fontFamily: 'monospace', color: 'text.primary' }}>{metricsSnapshot?.cost?.total_cost || '$0.0000'}</Typography>
                 </Box>
                 {/* Latency bar chart */}
-                <Box sx={{ pt: 2, mt: 1, borderTop: '1px solid #e5e7eb' }}>
-                  <Typography sx={{ fontSize: '0.75rem', color: '#6b7280', mb: 1 }}>Latency Percentiles</Typography>
+                <Box sx={{ pt: 2, mt: 1, borderTop: '1px solid', borderColor: 'divider' }}>
+                  <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary', mb: 1 }}>Latency Percentiles</Typography>
                   <Box sx={{ height: 128 }}>
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={[
@@ -461,10 +464,10 @@ export default function MonitoringPage() {
                         { name: 'P95', value: metricsSnapshot?.latency?.p95_ms || 0 },
                         { name: 'P99', value: metricsSnapshot?.latency?.p99_ms || 0 },
                       ]}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                        <XAxis dataKey="name" tick={{ fontSize: 10, fill: '#6b7280' }} axisLine={false} tickLine={false} />
-                        <YAxis tick={{ fontSize: 10, fill: '#6b7280' }} axisLine={false} tickLine={false} unit="ms" />
-                        <Tooltip contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '8px', fontSize: '11px', color: '#374151' }} />
+                        <CartesianGrid strokeDasharray="3 3" stroke="var(--mui-palette-divider)" />
+                        <XAxis dataKey="name" tick={{ fontSize: 10, fill: 'var(--mui-palette-text-secondary)' }} axisLine={false} tickLine={false} />
+                        <YAxis tick={{ fontSize: 10, fill: 'var(--mui-palette-text-secondary)' }} axisLine={false} tickLine={false} unit="ms" />
+                        <Tooltip contentStyle={tooltipStyle} />
                         <Bar dataKey="value" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
                       </BarChart>
                     </ResponsiveContainer>
@@ -476,10 +479,10 @@ export default function MonitoringPage() {
         </Grid>
 
         {/* Backpressure Status */}
-        <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3 }}>
+        <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
             <Activity className="w-4 h-4" style={{ color: '#06b6d4' }} />
-            <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#374151' }}>Backpressure Status</Typography>
+            <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: 'text.primary' }}>Backpressure Status</Typography>
           </Box>
           <Grid container spacing={2}>
             <Grid size={{ xs: 6, md: 3 }}>
@@ -492,25 +495,25 @@ export default function MonitoringPage() {
                   icon={backpressure?.active ? <AlertTriangle className="w-3 h-3" /> : <CheckCircle className="w-3 h-3" />}
                   sx={{ fontSize: '0.75rem' }}
                 />
-                <Typography sx={{ fontSize: '10px', color: '#6b7280', mt: 0.5 }}>Status</Typography>
+                <Typography sx={{ fontSize: '10px', color: 'text.secondary', mt: 0.5 }}>Status</Typography>
               </Box>
             </Grid>
             <Grid size={{ xs: 6, md: 3 }}>
               <Box sx={{ textAlign: 'center' }}>
-                <Typography sx={{ fontSize: '1.125rem', fontFamily: 'monospace', fontWeight: 700, color: '#111827' }}>{backpressure?.queue_usage || '0.00%'}</Typography>
-                <Typography sx={{ fontSize: '10px', color: '#6b7280' }}>Queue Usage</Typography>
+                <Typography sx={{ fontSize: '1.125rem', fontFamily: 'monospace', fontWeight: 700, color: 'text.primary' }}>{backpressure?.queue_usage || '0.00%'}</Typography>
+                <Typography sx={{ fontSize: '10px', color: 'text.secondary' }}>Queue Usage</Typography>
               </Box>
             </Grid>
             <Grid size={{ xs: 6, md: 3 }}>
               <Box sx={{ textAlign: 'center' }}>
-                <Typography sx={{ fontSize: '1.125rem', fontFamily: 'monospace', fontWeight: 700, color: '#111827' }}>{backpressure?.worker_utilization || '0.00%'}</Typography>
-                <Typography sx={{ fontSize: '10px', color: '#6b7280' }}>Worker Utilization</Typography>
+                <Typography sx={{ fontSize: '1.125rem', fontFamily: 'monospace', fontWeight: 700, color: 'text.primary' }}>{backpressure?.worker_utilization || '0.00%'}</Typography>
+                <Typography sx={{ fontSize: '10px', color: 'text.secondary' }}>Worker Utilization</Typography>
               </Box>
             </Grid>
             <Grid size={{ xs: 6, md: 3 }}>
               <Box sx={{ textAlign: 'center' }}>
                 <Typography sx={{ fontSize: '1.125rem', fontFamily: 'monospace', fontWeight: 700, color: '#ef4444' }}>{backpressure?.requests_rejected || 0}</Typography>
-                <Typography sx={{ fontSize: '10px', color: '#6b7280' }}>Rejected</Typography>
+                <Typography sx={{ fontSize: '10px', color: 'text.secondary' }}>Rejected</Typography>
               </Box>
             </Grid>
           </Grid>
@@ -518,15 +521,15 @@ export default function MonitoringPage() {
 
         {/* Model Performance */}
         {metricsSnapshot?.models && metricsSnapshot.models.length > 0 && (
-          <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3 }}>
+          <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
               <Zap className="w-4 h-4" style={{ color: '#f59e0b' }} />
-              <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#374151' }}>Model Performance</Typography>
+              <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: 'text.primary' }}>Model Performance</Typography>
             </Box>
             <Box sx={{ overflowX: 'auto' }}>
               <Table size="small">
                 <TableHead>
-                  <TableRow sx={{ '& th': { borderBottom: '1px solid #e5e7eb', color: '#6b7280', fontSize: '0.75rem', fontWeight: 500, py: 1 } }}>
+                  <TableRow sx={{ '& th': { borderBottom: '1px solid', borderColor: 'divider', color: 'text.secondary', fontSize: '0.75rem', fontWeight: 500, py: 1 } }}>
                     <TableCell>Model</TableCell>
                     <TableCell align="right">Requests</TableCell>
                     <TableCell align="right">Success Rate</TableCell>
@@ -539,17 +542,17 @@ export default function MonitoringPage() {
                     <TableRow
                       key={i}
                       sx={{
-                        '& td': { borderBottom: '1px solid #f3f4f6', fontSize: '0.75rem', py: 1 },
-                        '&:hover': { backgroundColor: '#f9fafb' },
+                        '& td': { borderBottom: '1px solid', borderColor: 'divider', fontSize: '0.75rem', py: 1 },
+                        '&:hover': { backgroundColor: 'background.default' },
                       }}
                     >
-                      <TableCell sx={{ fontFamily: 'monospace', color: '#111827' }}>{m.model_name}</TableCell>
-                      <TableCell align="right" sx={{ color: '#374151' }}>{m.request_count}</TableCell>
+                      <TableCell sx={{ fontFamily: 'monospace', color: 'text.primary' }}>{m.model_name}</TableCell>
+                      <TableCell align="right" sx={{ color: 'text.primary' }}>{m.request_count}</TableCell>
                       <TableCell align="right" sx={{ color: parseFloat(m.success_rate) > 95 ? '#10b981' : '#f59e0b' }}>
                         {m.success_rate}
                       </TableCell>
-                      <TableCell align="right" sx={{ color: '#374151' }}>{m.avg_latency_ms}ms</TableCell>
-                      <TableCell align="right" sx={{ color: '#374151' }}>{m.total_cost}</TableCell>
+                      <TableCell align="right" sx={{ color: 'text.primary' }}>{m.avg_latency_ms}ms</TableCell>
+                      <TableCell align="right" sx={{ color: 'text.primary' }}>{m.total_cost}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -567,8 +570,8 @@ export default function MonitoringPage() {
 function WorkerDot({ worker }: { worker: any }) {
   const status = worker.status || 'idle';
   const colorMap: Record<string, { bg: string; border: string }> = {
-    idle: { bg: '#10b981', border: '#d1fae5' },
-    busy: { bg: '#3b82f6', border: '#dbeafe' },
+    idle: { bg: '#10b981', border: 'rgba(16,185,129,0.1)' },
+    busy: { bg: '#3b82f6', border: 'rgba(59,130,246,0.1)' },
     unhealthy: { bg: '#ef4444', border: '#fecaca' },
   };
 
@@ -607,7 +610,7 @@ function GaugeCircle({ value, label, color }: { value: number; label: string; co
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
       <svg width="100" height="100" style={{ transform: 'rotate(-90deg)' }}>
-        <circle cx="50" cy="50" r="40" fill="none" stroke="#e5e7eb" strokeWidth="8" />
+        <circle cx="50" cy="50" r="40" fill="none" stroke="var(--mui-palette-divider)" strokeWidth="8" />
         <circle
           cx="50" cy="50" r="40" fill="none"
           stroke={color} strokeWidth="8" strokeLinecap="round"
@@ -617,9 +620,9 @@ function GaugeCircle({ value, label, color }: { value: number; label: string; co
         />
       </svg>
       <Box sx={{ position: 'absolute', top: '32px', textAlign: 'center' }}>
-        <Typography sx={{ fontSize: '1.125rem', fontWeight: 700, fontFamily: 'monospace', color: '#111827' }}>{value.toFixed(1)}%</Typography>
+        <Typography sx={{ fontSize: '1.125rem', fontWeight: 700, fontFamily: 'monospace', color: 'text.primary' }}>{value.toFixed(1)}%</Typography>
       </Box>
-      <Typography sx={{ fontSize: '10px', color: '#6b7280', mt: 0.5 }}>{label}</Typography>
+      <Typography sx={{ fontSize: '10px', color: 'text.secondary', mt: 0.5 }}>{label}</Typography>
     </Box>
   );
 }
@@ -636,15 +639,15 @@ function MetricBox({ label, value, color }: { label: string; value: number; colo
     <Paper
       elevation={0}
       sx={{
-        backgroundColor: '#f9fafb',
-        border: '1px solid #e5e7eb',
+        backgroundColor: 'background.default',
+        border: '1px solid', borderColor: 'divider',
         borderRadius: '8px',
         p: 1,
         textAlign: 'center',
       }}
     >
       <Typography sx={{ fontSize: '1.125rem', fontWeight: 700, fontFamily: 'monospace', color: colorMap[color] }}>{value}</Typography>
-      <Typography sx={{ fontSize: '10px', color: '#6b7280' }}>{label}</Typography>
+      <Typography sx={{ fontSize: '10px', color: 'text.secondary' }}>{label}</Typography>
     </Paper>
   );
 }
@@ -663,28 +666,28 @@ function PoolCard({ icon, title, data, color }: { icon: React.ReactNode; title: 
   const pct = total > 0 ? (used / total) * 100 : 0;
 
   return (
-    <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 2.5 }}>
+    <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 2.5 }}>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
         <Box sx={{ color: colorMap[color] }}>{icon}</Box>
-        <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: '#374151' }}>{title}</Typography>
+        <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, color: 'text.primary' }}>{title}</Typography>
       </Box>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-          <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>Active</Typography>
-          <Typography sx={{ fontSize: '0.75rem', color: '#374151', fontFamily: 'monospace' }}>{active}</Typography>
+          <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>Active</Typography>
+          <Typography sx={{ fontSize: '0.75rem', color: 'text.primary', fontFamily: 'monospace' }}>{active}</Typography>
         </Box>
         <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-          <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>Idle</Typography>
-          <Typography sx={{ fontSize: '0.75rem', color: '#374151', fontFamily: 'monospace' }}>{idle}</Typography>
+          <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>Idle</Typography>
+          <Typography sx={{ fontSize: '0.75rem', color: 'text.primary', fontFamily: 'monospace' }}>{idle}</Typography>
         </Box>
         <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-          <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>Max</Typography>
-          <Typography sx={{ fontSize: '0.75rem', color: '#374151', fontFamily: 'monospace' }}>{total}</Typography>
+          <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>Max</Typography>
+          <Typography sx={{ fontSize: '0.75rem', color: 'text.primary', fontFamily: 'monospace' }}>{total}</Typography>
         </Box>
         <Box sx={{ pt: 1 }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-            <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>Usage</Typography>
-            <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>{pct.toFixed(0)}%</Typography>
+            <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>Usage</Typography>
+            <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>{pct.toFixed(0)}%</Typography>
           </Box>
           <LinearProgress
             variant="determinate"
@@ -692,7 +695,7 @@ function PoolCard({ icon, title, data, color }: { icon: React.ReactNode; title: 
             sx={{
               height: 6,
               borderRadius: 3,
-              backgroundColor: '#e5e7eb',
+              backgroundColor: 'divider',
               '& .MuiLinearProgress-bar': {
                 borderRadius: 3,
                 backgroundColor: colorMap[color],

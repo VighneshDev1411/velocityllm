@@ -31,6 +31,7 @@ import Alert from '@mui/material/Alert';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import ToggleButton from '@mui/material/ToggleButton';
 import Grid from '@mui/material/Grid';
+import { useTheme } from '@mui/material/styles';
 import { StatCard } from '@/components/StatCard';
 import { PageHeader } from '@/components/PageHeader';
 
@@ -134,8 +135,8 @@ function PercentileBar({ label, value, max, color }: {
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
-        <Typography sx={{ fontSize: '0.75rem', fontWeight: 500, color: '#4b5563' }}>{label}</Typography>
-        <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: '#111827' }}>{value}ms</Typography>
+        <Typography sx={{ fontSize: '0.75rem', fontWeight: 500, color: 'text.secondary' }}>{label}</Typography>
+        <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: 'text.primary' }}>{value}ms</Typography>
       </Box>
       <LinearProgress
         variant="determinate"
@@ -143,7 +144,7 @@ function PercentileBar({ label, value, max, color }: {
         sx={{
           height: 8,
           borderRadius: 4,
-          backgroundColor: '#f3f4f6',
+          backgroundColor: 'action.hover',
           '& .MuiLinearProgress-bar': {
             borderRadius: 4,
             backgroundColor: color,
@@ -157,11 +158,11 @@ function PercentileBar({ label, value, max, color }: {
 
 function StatusBadge({ status }: { status: string }) {
   const map: Record<string, { bg: string; fg: string }> = {
-    completed: { bg: '#dcfce7', fg: '#15803d' },
-    cache_hit: { bg: '#dbeafe', fg: '#1d4ed8' },
-    error: { bg: '#fee2e2', fg: '#b91c1c' },
+    completed: { bg: 'rgba(16,185,129,0.1)', fg: '#15803d' },
+    cache_hit: { bg: 'rgba(59,130,246,0.1)', fg: '#1d4ed8' },
+    error: { bg: 'rgba(239,68,68,0.1)', fg: '#b91c1c' },
   };
-  const colors = map[status] || { bg: '#f3f4f6', fg: '#4b5563' };
+  const colors = map[status] || { bg: 'action.hover', fg: 'text.secondary' };
   return (
     <Chip
       label={status || 'unknown'}
@@ -179,13 +180,13 @@ function StatusBadge({ status }: { status: string }) {
 
 function ProviderBadge({ provider }: { provider: string }) {
   const map: Record<string, { bg: string; fg: string }> = {
-    openai: { bg: '#dcfce7', fg: '#15803d' },
+    openai: { bg: 'rgba(16,185,129,0.1)', fg: '#15803d' },
     anthropic: { bg: '#ffedd5', fg: '#c2410c' },
-    google: { bg: '#dbeafe', fg: '#1d4ed8' },
+    google: { bg: 'rgba(59,130,246,0.1)', fg: '#1d4ed8' },
     cohere: { bg: '#f3e8ff', fg: '#7e22ce' },
-    local: { bg: '#f3f4f6', fg: '#4b5563' },
+    local: { bg: 'action.hover', fg: 'text.secondary' },
   };
-  const colors = map[(provider || '').toLowerCase()] || { bg: '#f3f4f6', fg: '#4b5563' };
+  const colors = map[(provider || '').toLowerCase()] || { bg: 'action.hover', fg: 'text.secondary' };
   return (
     <Chip
       label={provider || '-'}
@@ -206,7 +207,7 @@ function ChartPlaceholder() {
     <Box sx={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <Box sx={{ textAlign: 'center' }}>
         <CircularProgress size={24} sx={{ color: '#60a5fa' }} />
-        <Typography sx={{ mt: 1, fontSize: '0.75rem', color: '#9ca3af' }}>Loading chart...</Typography>
+        <Typography sx={{ mt: 1, fontSize: '0.75rem', color: 'text.disabled' }}>Loading chart...</Typography>
       </Box>
     </Box>
   );
@@ -217,6 +218,8 @@ function ChartPlaceholder() {
 // ---------------------------------------------------------------------------
 
 export default function AnalyticsPage() {
+  const theme = useTheme();
+  const tooltipStyle = { backgroundColor: theme.palette.background.paper, border: `1px solid ${theme.palette.divider}`, borderRadius: '8px', fontSize: '12px', color: theme.palette.text.primary };
   const [period, setPeriod] = useState('24h');
   const [logModel, setLogModel] = useState('');
   const [logStatus, setLogStatus] = useState('');
@@ -273,10 +276,10 @@ export default function AnalyticsPage() {
   // ------ Loading state ------
   if (summaryLoading) {
     return (
-      <Box sx={{ minHeight: '100vh', bgcolor: '#f9fafb', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <Box sx={{ textAlign: 'center' }}>
           <CircularProgress size={48} sx={{ color: '#2563eb' }} />
-          <Typography sx={{ mt: 2, color: '#4b5563' }}>Loading analytics...</Typography>
+          <Typography sx={{ mt: 2, color: 'text.secondary' }}>Loading analytics...</Typography>
         </Box>
       </Box>
     );
@@ -285,7 +288,7 @@ export default function AnalyticsPage() {
   // ------ Error state ------
   if (summaryError) {
     return (
-      <Box sx={{ minHeight: '100vh', bgcolor: '#f9fafb', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <Alert
           severity="error"
           icon={<AlertCircle style={{ width: 24, height: 24 }} />}
@@ -331,15 +334,15 @@ export default function AnalyticsPage() {
                 fontWeight: 500,
                 px: 2,
                 py: 0.75,
-                border: '1px solid #e5e7eb',
-                color: '#6b7280',
+                border: '1px solid', borderColor: 'divider',
+                color: 'text.secondary',
                 '&.Mui-selected': {
-                  backgroundColor: '#fff',
+                  backgroundColor: 'background.paper',
                   color: '#2563eb',
                   boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
                   '&:hover': { backgroundColor: '#f0f7ff' },
                 },
-                '&:hover': { backgroundColor: '#f9fafb' },
+                '&:hover': { backgroundColor: 'background.default' },
               },
             }}
           >
@@ -387,10 +390,10 @@ export default function AnalyticsPage() {
         <Grid container spacing={3}>
           {/* Latency Percentiles Time Series */}
           <Grid size={{ xs: 12, lg: 6 }}>
-            <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3 }}>
+            <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
                 <Clock style={{ width: 16, height: 16, color: '#7c3aed' }} />
-                <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#111827' }}>
+                <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: 'text.primary' }}>
                   Latency Percentiles Over Time
                 </Typography>
               </Box>
@@ -402,10 +405,10 @@ export default function AnalyticsPage() {
                     <LineChart data={timeSeries?.latency || []}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                       <XAxis dataKey="time" tickFormatter={formatTime}
-                        tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
-                      <YAxis tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} unit="ms" />
+                        tick={{ fontSize: 11, fill: 'var(--mui-palette-text-disabled)' }} axisLine={false} tickLine={false} />
+                      <YAxis tick={{ fontSize: 11, fill: 'var(--mui-palette-text-disabled)' }} axisLine={false} tickLine={false} unit="ms" />
                       <Tooltip labelFormatter={(l) => new Date(l as string).toLocaleString()}
-                        contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '12px' }} />
+                        contentStyle={tooltipStyle} />
                       <Legend iconType="line" wrapperStyle={{ fontSize: '11px' }} />
                       <Line type="monotone" dataKey="p50_ms" name="P50" stroke={CHART_GREEN} strokeWidth={2} dot={false} />
                       <Line type="monotone" dataKey="p90_ms" name="P90" stroke={CHART_YELLOW} strokeWidth={2} dot={false} />
@@ -420,10 +423,10 @@ export default function AnalyticsPage() {
 
           {/* Latency Distribution */}
           <Grid size={{ xs: 12, lg: 6 }}>
-            <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3 }}>
+            <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
                 <BarChart3 style={{ width: 16, height: 16, color: '#7c3aed' }} />
-                <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#111827' }}>
+                <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: 'text.primary' }}>
                   Latency Distribution
                 </Typography>
               </Box>
@@ -433,24 +436,24 @@ export default function AnalyticsPage() {
                 <PercentileBar label="P95" value={latency.p95_ms || 0} max={latency.p99_ms || 100} color="#8b5cf6" />
                 <PercentileBar label="P99" value={latency.p99_ms || 0} max={latency.p99_ms || 100} color="#ef4444" />
               </Box>
-              <Box sx={{ mt: 3, pt: 2, borderTop: '1px solid #f3f4f6' }}>
+              <Box sx={{ mt: 3, pt: 2, borderTop: '1px solid', borderColor: 'divider' }}>
                 <Grid container spacing={2}>
                   <Grid size={4}>
                     <Box sx={{ textAlign: 'center' }}>
-                      <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>Min</Typography>
-                      <Typography sx={{ fontSize: '0.875rem', fontWeight: 700, color: '#111827' }}>{latency.min_ms ?? 0}ms</Typography>
+                      <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>Min</Typography>
+                      <Typography sx={{ fontSize: '0.875rem', fontWeight: 700, color: 'text.primary' }}>{latency.min_ms ?? 0}ms</Typography>
                     </Box>
                   </Grid>
                   <Grid size={4}>
                     <Box sx={{ textAlign: 'center' }}>
-                      <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>Mean</Typography>
-                      <Typography sx={{ fontSize: '0.875rem', fontWeight: 700, color: '#111827' }}>{latency.mean_ms ?? 0}ms</Typography>
+                      <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>Mean</Typography>
+                      <Typography sx={{ fontSize: '0.875rem', fontWeight: 700, color: 'text.primary' }}>{latency.mean_ms ?? 0}ms</Typography>
                     </Box>
                   </Grid>
                   <Grid size={4}>
                     <Box sx={{ textAlign: 'center' }}>
-                      <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>Max</Typography>
-                      <Typography sx={{ fontSize: '0.875rem', fontWeight: 700, color: '#111827' }}>{latency.max_ms ?? 0}ms</Typography>
+                      <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>Max</Typography>
+                      <Typography sx={{ fontSize: '0.875rem', fontWeight: 700, color: 'text.primary' }}>{latency.max_ms ?? 0}ms</Typography>
                     </Box>
                   </Grid>
                 </Grid>
@@ -465,10 +468,10 @@ export default function AnalyticsPage() {
         <Grid container spacing={3}>
           {/* Request Throughput */}
           <Grid size={{ xs: 12, lg: 6 }}>
-            <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3 }}>
+            <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
                 <Zap style={{ width: 16, height: 16, color: '#2563eb' }} />
-                <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#111827' }}>
+                <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: 'text.primary' }}>
                   Request Throughput
                 </Typography>
               </Box>
@@ -486,10 +489,10 @@ export default function AnalyticsPage() {
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                       <XAxis dataKey="time" tickFormatter={formatTime}
-                        tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
-                      <YAxis tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
+                        tick={{ fontSize: 11, fill: 'var(--mui-palette-text-disabled)' }} axisLine={false} tickLine={false} />
+                      <YAxis tick={{ fontSize: 11, fill: 'var(--mui-palette-text-disabled)' }} axisLine={false} tickLine={false} />
                       <Tooltip labelFormatter={(l) => new Date(l as string).toLocaleString()}
-                        contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '12px' }} />
+                        contentStyle={tooltipStyle} />
                       <Area type="monotone" dataKey="requests" stroke={CHART_BLUE}
                         strokeWidth={2} fill="url(#throughputGradient)" />
                     </AreaChart>
@@ -501,10 +504,10 @@ export default function AnalyticsPage() {
 
           {/* Cumulative Cost */}
           <Grid size={{ xs: 12, lg: 6 }}>
-            <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3 }}>
+            <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
                 <DollarSign style={{ width: 16, height: 16, color: '#059669' }} />
-                <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#111827' }}>
+                <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: 'text.primary' }}>
                   Cumulative Cost
                 </Typography>
               </Box>
@@ -522,12 +525,12 @@ export default function AnalyticsPage() {
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                       <XAxis dataKey="time" tickFormatter={formatTime}
-                        tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
-                      <YAxis tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false}
+                        tick={{ fontSize: 11, fill: 'var(--mui-palette-text-disabled)' }} axisLine={false} tickLine={false} />
+                      <YAxis tick={{ fontSize: 11, fill: 'var(--mui-palette-text-disabled)' }} axisLine={false} tickLine={false}
                         tickFormatter={(v) => `$${v}`} />
                       <Tooltip labelFormatter={(l) => new Date(l as string).toLocaleString()}
                         formatter={(value: number) => [`$${value.toFixed(4)}`, 'Cost']}
-                        contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '12px' }} />
+                        contentStyle={tooltipStyle} />
                       <Area type="monotone" dataKey="cost" stroke={CHART_GREEN}
                         strokeWidth={2} fill="url(#costGradientAnalytics)" />
                     </AreaChart>
@@ -541,48 +544,48 @@ export default function AnalyticsPage() {
         {/* ---------------------------------------------------------------- */}
         {/* Model Comparison Table                                           */}
         {/* ---------------------------------------------------------------- */}
-        <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3 }}>
+        <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
             <BarChart3 style={{ width: 16, height: 16, color: '#2563eb' }} />
-            <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#111827' }}>
+            <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: 'text.primary' }}>
               Model Comparison
             </Typography>
           </Box>
           <Box sx={{ overflowX: 'auto' }}>
             <Table size="small">
               <TableHead>
-                <TableRow sx={{ '& th': { borderBottom: '1px solid #e5e7eb' } }}>
-                  <TableCell sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Model</TableCell>
-                  <TableCell align="right" sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Requests</TableCell>
-                  <TableCell align="right" sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Success Rate</TableCell>
-                  <TableCell align="right" sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Avg Latency</TableCell>
-                  <TableCell align="right" sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Total Cost</TableCell>
-                  <TableCell align="right" sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Avg Cost/Req</TableCell>
-                  <TableCell align="right" sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Last Used</TableCell>
+                <TableRow sx={{ '& th': { borderBottom: '1px solid', borderColor: 'divider' } }}>
+                  <TableCell sx={{ fontSize: '0.75rem', fontWeight: 600, color: 'text.secondary', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Model</TableCell>
+                  <TableCell align="right" sx={{ fontSize: '0.75rem', fontWeight: 600, color: 'text.secondary', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Requests</TableCell>
+                  <TableCell align="right" sx={{ fontSize: '0.75rem', fontWeight: 600, color: 'text.secondary', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Success Rate</TableCell>
+                  <TableCell align="right" sx={{ fontSize: '0.75rem', fontWeight: 600, color: 'text.secondary', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Avg Latency</TableCell>
+                  <TableCell align="right" sx={{ fontSize: '0.75rem', fontWeight: 600, color: 'text.secondary', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Total Cost</TableCell>
+                  <TableCell align="right" sx={{ fontSize: '0.75rem', fontWeight: 600, color: 'text.secondary', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Avg Cost/Req</TableCell>
+                  <TableCell align="right" sx={{ fontSize: '0.75rem', fontWeight: 600, color: 'text.secondary', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Last Used</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {models.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={7} sx={{ py: 4, textAlign: 'center', color: '#9ca3af', fontSize: '0.875rem', border: 'none' }}>
+                    <TableCell colSpan={7} sx={{ py: 4, textAlign: 'center', color: 'text.disabled', fontSize: '0.875rem', border: 'none' }}>
                       No model data available
                     </TableCell>
                   </TableRow>
                 )}
                 {models.map((m: any, i: number) => {
                   const rate = parseFloat(m.success_rate || '0');
-                  const rateColor = rate >= 99 ? { bg: '#dcfce7', fg: '#15803d' } : rate >= 95 ? { bg: '#fef9c3', fg: '#a16207' } : { bg: '#fee2e2', fg: '#b91c1c' };
+                  const rateColor = rate >= 99 ? { bg: 'rgba(16,185,129,0.1)', fg: '#15803d' } : rate >= 95 ? { bg: '#fef9c3', fg: '#a16207' } : { bg: 'rgba(239,68,68,0.1)', fg: '#b91c1c' };
                   return (
                     <TableRow
                       key={i}
                       sx={{
-                        backgroundColor: i % 2 === 1 ? '#f9fafb' : 'transparent',
+                        backgroundColor: i % 2 === 1 ? 'background.default' : 'transparent',
                         '&:hover': { backgroundColor: 'rgba(59,130,246,0.04)' },
-                        '& td': { borderBottom: '1px solid #f3f4f6' },
+                        '& td': { borderBottom: '1px solid', borderColor: 'divider' },
                       }}
                     >
-                      <TableCell sx={{ fontSize: '0.875rem', fontWeight: 500, color: '#111827' }}>{m.model_name || m.model}</TableCell>
-                      <TableCell align="right" sx={{ fontSize: '0.875rem', color: '#374151' }}>{formatNumber(m.request_count || m.requests || 0)}</TableCell>
+                      <TableCell sx={{ fontSize: '0.875rem', fontWeight: 500, color: 'text.primary' }}>{m.model_name || m.model}</TableCell>
+                      <TableCell align="right" sx={{ fontSize: '0.875rem', color: 'text.primary' }}>{formatNumber(m.request_count || m.requests || 0)}</TableCell>
                       <TableCell align="right">
                         <Chip
                           label={m.success_rate ?? `${rate.toFixed(1)}%`}
@@ -596,10 +599,10 @@ export default function AnalyticsPage() {
                           }}
                         />
                       </TableCell>
-                      <TableCell align="right" sx={{ fontSize: '0.875rem', color: '#374151' }}>{m.avg_latency_ms ?? 0}ms</TableCell>
-                      <TableCell align="right" sx={{ fontSize: '0.875rem', color: '#374151' }}>{m.total_cost ?? '$0.0000'}</TableCell>
-                      <TableCell align="right" sx={{ fontSize: '0.875rem', color: '#374151' }}>{m.avg_cost_per_request ?? '$0.0000'}</TableCell>
-                      <TableCell align="right" sx={{ fontSize: '0.75rem', color: '#6b7280' }}>
+                      <TableCell align="right" sx={{ fontSize: '0.875rem', color: 'text.primary' }}>{m.avg_latency_ms ?? 0}ms</TableCell>
+                      <TableCell align="right" sx={{ fontSize: '0.875rem', color: 'text.primary' }}>{m.total_cost ?? '$0.0000'}</TableCell>
+                      <TableCell align="right" sx={{ fontSize: '0.875rem', color: 'text.primary' }}>{m.avg_cost_per_request ?? '$0.0000'}</TableCell>
+                      <TableCell align="right" sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>
                         {m.last_used ? formatTimestamp(m.last_used) : '-'}
                       </TableCell>
                     </TableRow>
@@ -613,11 +616,11 @@ export default function AnalyticsPage() {
         {/* ---------------------------------------------------------------- */}
         {/* Request History Table                                             */}
         {/* ---------------------------------------------------------------- */}
-        <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3 }}>
+        <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3 }}>
           <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, alignItems: { sm: 'center' }, justifyContent: 'space-between', gap: 1.5, mb: 2 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Filter style={{ width: 16, height: 16, color: '#6b7280' }} />
-              <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#111827' }}>
+              <Filter style={{ width: 16, height: 16, color: 'text.secondary' }} />
+              <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: 'text.primary' }}>
                 Request History
               </Typography>
             </Box>
@@ -630,7 +633,7 @@ export default function AnalyticsPage() {
                 sx={{
                   fontSize: '0.75rem',
                   minWidth: 140,
-                  '& .MuiOutlinedInput-notchedOutline': { borderColor: '#e5e7eb', borderRadius: '8px' },
+                  '& .MuiOutlinedInput-notchedOutline': { borderColor: 'divider', borderRadius: '8px' },
                   '& .MuiSelect-select': { py: 0.75, px: 1.5 },
                 }}
               >
@@ -647,7 +650,7 @@ export default function AnalyticsPage() {
                 sx={{
                   fontSize: '0.75rem',
                   minWidth: 130,
-                  '& .MuiOutlinedInput-notchedOutline': { borderColor: '#e5e7eb', borderRadius: '8px' },
+                  '& .MuiOutlinedInput-notchedOutline': { borderColor: 'divider', borderRadius: '8px' },
                   '& .MuiSelect-select': { py: 0.75, px: 1.5 },
                 }}
               >
@@ -662,28 +665,28 @@ export default function AnalyticsPage() {
           <Box sx={{ overflowX: 'auto' }}>
             <Table size="small">
               <TableHead>
-                <TableRow sx={{ '& th': { borderBottom: '1px solid #e5e7eb' } }}>
-                  <TableCell sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#6b7280' }}>Time</TableCell>
-                  <TableCell sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#6b7280' }}>Model</TableCell>
-                  <TableCell sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#6b7280' }}>Provider</TableCell>
-                  <TableCell sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#6b7280' }}>Prompt</TableCell>
-                  <TableCell align="right" sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#6b7280' }}>Latency</TableCell>
-                  <TableCell align="right" sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#6b7280' }}>Cost</TableCell>
-                  <TableCell align="center" sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#6b7280' }}>Status</TableCell>
-                  <TableCell align="center" sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#6b7280' }}>Cache</TableCell>
+                <TableRow sx={{ '& th': { borderBottom: '1px solid', borderColor: 'divider' } }}>
+                  <TableCell sx={{ fontSize: '0.75rem', fontWeight: 600, color: 'text.secondary' }}>Time</TableCell>
+                  <TableCell sx={{ fontSize: '0.75rem', fontWeight: 600, color: 'text.secondary' }}>Model</TableCell>
+                  <TableCell sx={{ fontSize: '0.75rem', fontWeight: 600, color: 'text.secondary' }}>Provider</TableCell>
+                  <TableCell sx={{ fontSize: '0.75rem', fontWeight: 600, color: 'text.secondary' }}>Prompt</TableCell>
+                  <TableCell align="right" sx={{ fontSize: '0.75rem', fontWeight: 600, color: 'text.secondary' }}>Latency</TableCell>
+                  <TableCell align="right" sx={{ fontSize: '0.75rem', fontWeight: 600, color: 'text.secondary' }}>Cost</TableCell>
+                  <TableCell align="center" sx={{ fontSize: '0.75rem', fontWeight: 600, color: 'text.secondary' }}>Status</TableCell>
+                  <TableCell align="center" sx={{ fontSize: '0.75rem', fontWeight: 600, color: 'text.secondary' }}>Cache</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {logLoading && (
                   <TableRow>
-                    <TableCell colSpan={8} sx={{ py: 4, textAlign: 'center', color: '#9ca3af', fontSize: '0.875rem', border: 'none' }}>
+                    <TableCell colSpan={8} sx={{ py: 4, textAlign: 'center', color: 'text.disabled', fontSize: '0.875rem', border: 'none' }}>
                       Loading requests...
                     </TableCell>
                   </TableRow>
                 )}
                 {!logLoading && requestLog.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={8} sx={{ py: 4, textAlign: 'center', color: '#9ca3af', fontSize: '0.875rem', border: 'none' }}>
+                    <TableCell colSpan={8} sx={{ py: 4, textAlign: 'center', color: 'text.disabled', fontSize: '0.875rem', border: 'none' }}>
                       No requests found
                     </TableCell>
                   </TableRow>
@@ -694,28 +697,28 @@ export default function AnalyticsPage() {
                     sx={{
                       backgroundColor: i % 2 === 1 ? 'rgba(249,250,251,0.5)' : 'transparent',
                       '&:hover': { backgroundColor: 'rgba(59,130,246,0.03)' },
-                      '& td': { borderBottom: '1px solid #f9fafb' },
+                      '& td': { borderBottom: '1px solid var(--mui-palette-divider)' },
                     }}
                   >
-                    <TableCell sx={{ fontSize: '0.75rem', color: '#4b5563', whiteSpace: 'nowrap' }}>
+                    <TableCell sx={{ fontSize: '0.75rem', color: 'text.secondary', whiteSpace: 'nowrap' }}>
                       {r.timestamp ? formatTimestamp(r.timestamp) : '-'}
                     </TableCell>
-                    <TableCell sx={{ fontSize: '0.75rem', fontWeight: 500, color: '#111827' }}>{r.model || '-'}</TableCell>
+                    <TableCell sx={{ fontSize: '0.75rem', fontWeight: 500, color: 'text.primary' }}>{r.model || '-'}</TableCell>
                     <TableCell>
                       <ProviderBadge provider={r.provider} />
                     </TableCell>
-                    <TableCell sx={{ fontSize: '0.75rem', color: '#4b5563', maxWidth: 200 }} title={r.prompt}>
+                    <TableCell sx={{ fontSize: '0.75rem', color: 'text.secondary', maxWidth: 200 }} title={r.prompt}>
                       {truncate(r.prompt || '', 50)}
                     </TableCell>
-                    <TableCell align="right" sx={{ fontSize: '0.75rem', color: '#374151' }}>{r.latency_ms ?? '-'}ms</TableCell>
-                    <TableCell align="right" sx={{ fontSize: '0.75rem', color: '#374151' }}>{r.cost != null ? formatCost(r.cost) : '-'}</TableCell>
+                    <TableCell align="right" sx={{ fontSize: '0.75rem', color: 'text.primary' }}>{r.latency_ms ?? '-'}ms</TableCell>
+                    <TableCell align="right" sx={{ fontSize: '0.75rem', color: 'text.primary' }}>{r.cost != null ? formatCost(r.cost) : '-'}</TableCell>
                     <TableCell align="center">
                       <StatusBadge status={r.status} />
                     </TableCell>
                     <TableCell align="center">
                       {r.cache_hit
                         ? <Check style={{ width: 16, height: 16, color: '#22c55e', margin: '0 auto' }} />
-                        : <Minus style={{ width: 16, height: 16, color: '#d1d5db', margin: '0 auto' }} />}
+                        : <Minus style={{ width: 16, height: 16, color: 'text.disabled', margin: '0 auto' }} />}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -724,8 +727,8 @@ export default function AnalyticsPage() {
           </Box>
 
           {/* Pagination */}
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mt: 2, pt: 1.5, borderTop: '1px solid #f3f4f6' }}>
-            <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mt: 2, pt: 1.5, borderTop: '1px solid', borderColor: 'divider' }}>
+            <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>
               Showing {pagination.total > 0 ? pagination.offset + 1 : 0}-{Math.min(pagination.offset + pagination.limit, pagination.total)} of {pagination.total}
             </Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -739,12 +742,12 @@ export default function AnalyticsPage() {
                   fontSize: '0.75rem',
                   fontWeight: 500,
                   textTransform: 'none',
-                  borderColor: '#e5e7eb',
-                  color: '#4b5563',
+                  borderColor: 'divider',
+                  color: 'text.secondary',
                   borderRadius: '8px',
                   px: 1.5,
                   py: 0.5,
-                  '&:hover': { backgroundColor: '#f9fafb', borderColor: '#d1d5db' },
+                  '&:hover': { backgroundColor: 'background.default', borderColor: 'divider' },
                   '&.Mui-disabled': { opacity: 0.4 },
                 }}
               >
@@ -760,12 +763,12 @@ export default function AnalyticsPage() {
                   fontSize: '0.75rem',
                   fontWeight: 500,
                   textTransform: 'none',
-                  borderColor: '#e5e7eb',
-                  color: '#4b5563',
+                  borderColor: 'divider',
+                  color: 'text.secondary',
                   borderRadius: '8px',
                   px: 1.5,
                   py: 0.5,
-                  '&:hover': { backgroundColor: '#f9fafb', borderColor: '#d1d5db' },
+                  '&:hover': { backgroundColor: 'background.default', borderColor: 'divider' },
                   '&.Mui-disabled': { opacity: 0.4 },
                 }}
               >
@@ -778,9 +781,9 @@ export default function AnalyticsPage() {
         {/* ---------------------------------------------------------------- */}
         {/* Export Section                                                    */}
         {/* ---------------------------------------------------------------- */}
-        <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3 }}>
-          <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#111827', mb: 0.5 }}>Export Analytics</Typography>
-          <Typography sx={{ fontSize: '0.75rem', color: '#6b7280', mb: 2 }}>
+        <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3 }}>
+          <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: 'text.primary', mb: 0.5 }}>Export Analytics</Typography>
+          <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary', mb: 2 }}>
             Download analytics data for offline analysis or reporting.
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
@@ -808,9 +811,9 @@ export default function AnalyticsPage() {
                 fontWeight: 500,
                 textTransform: 'none',
                 borderRadius: '8px',
-                borderColor: '#e5e7eb',
-                color: '#374151',
-                '&:hover': { backgroundColor: '#f9fafb', borderColor: '#d1d5db' },
+                borderColor: 'divider',
+                color: 'text.primary',
+                '&:hover': { backgroundColor: 'background.default', borderColor: 'divider' },
               }}
             >
               Export Summary

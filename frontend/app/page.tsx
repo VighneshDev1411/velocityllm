@@ -47,7 +47,7 @@ export default function LandingPage() {
                 sx={{
                   fontSize: '1.25rem',
                   fontWeight: 700,
-                  color: '#111827',
+                  color: 'text.primary',
                 }}
               >
                 VelocityLLM
@@ -57,13 +57,13 @@ export default function LandingPage() {
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               {isAuthenticated ? (
                 <>
-                  <Button component={Link} href="/dashboard" sx={{ color: '#374151', fontWeight: 500 }}>
+                  <Button component={Link} href="/dashboard" sx={{ color: 'text.primary', fontWeight: 500 }}>
                     Dashboard
                   </Button>
                 </>
               ) : (
                 <>
-                  <Button component={Link} href="/login" sx={{ color: '#374151', fontWeight: 500 }}>
+                  <Button component={Link} href="/login" sx={{ color: 'text.primary', fontWeight: 500 }}>
                     Login
                   </Button>
                   <Button component={Link} href="/register" variant="contained" size="small">
@@ -85,7 +85,7 @@ export default function LandingPage() {
               fontSize: { xs: '2.5rem', md: '3.75rem' },
               fontWeight: 800,
               mb: 3,
-              color: '#111827',
+              color: 'text.primary',
             }}
           >
             VelocityLLM
@@ -93,7 +93,7 @@ export default function LandingPage() {
           <Typography
             sx={{
               fontSize: { xs: '1.25rem', md: '1.5rem' },
-              color: '#4b5563',
+              color: 'text.secondary',
               mb: 2,
               fontWeight: 500,
             }}
@@ -103,7 +103,7 @@ export default function LandingPage() {
           <Typography
             sx={{
               fontSize: '1.1rem',
-              color: '#6b7280',
+              color: 'text.secondary',
               mb: 5,
               maxWidth: 640,
               mx: 'auto',
@@ -145,9 +145,9 @@ export default function LandingPage() {
                     px: 5,
                     py: 1.75,
                     fontSize: '1rem',
-                    borderColor: '#d1d5db',
-                    color: '#374151',
-                    '&:hover': { borderColor: '#9ca3af', backgroundColor: '#f9fafb' },
+                    borderColor: 'divider',
+                    color: 'text.primary',
+                    '&:hover': { borderColor: 'divider', backgroundColor: 'background.default' },
                   }}
                 >
                   Sign In
@@ -165,7 +165,7 @@ export default function LandingPage() {
           sx={{
             textAlign: 'center',
             fontWeight: 700,
-            color: '#111827',
+            color: 'text.primary',
             mb: 8,
             fontSize: { xs: '1.75rem', md: '2.25rem' },
           }}
@@ -186,17 +186,17 @@ export default function LandingPage() {
                 sx={{
                   p: 4,
                   height: '100%',
-                  border: '1px solid #e5e7eb',
+                  border: '1px solid', borderColor: 'divider',
                   borderRadius: '16px',
                   transition: 'all 0.2s',
                   '&:hover': { boxShadow: '0 10px 25px -5px rgb(0 0 0 / 0.1)', transform: 'translateY(-2px)' },
                 }}
               >
                 <Box sx={{ mb: 2 }}>{feature.icon}</Box>
-                <Typography sx={{ fontSize: '1.15rem', fontWeight: 600, color: '#111827', mb: 1 }}>
+                <Typography sx={{ fontSize: '1.15rem', fontWeight: 600, color: 'text.primary', mb: 1 }}>
                   {feature.title}
                 </Typography>
-                <Typography sx={{ fontSize: '0.9rem', color: '#6b7280', lineHeight: 1.6 }}>
+                <Typography sx={{ fontSize: '0.9rem', color: 'text.secondary', lineHeight: 1.6 }}>
                   {feature.description}
                 </Typography>
               </Paper>
@@ -206,11 +206,11 @@ export default function LandingPage() {
       </Container>
 
       {/* Features List */}
-      <Box sx={{ backgroundColor: '#ffffff', py: { xs: 8, md: 12 } }}>
+      <Box sx={{ backgroundColor: 'background.paper', py: { xs: 8, md: 12 } }}>
         <Container maxWidth="lg">
           <Grid container spacing={8}>
             <Grid size={{ xs: 12, md: 6 }}>
-              <Typography sx={{ fontSize: '1.5rem', fontWeight: 700, color: '#111827', mb: 3 }}>
+              <Typography sx={{ fontSize: '1.5rem', fontWeight: 700, color: 'text.primary', mb: 3 }}>
                 Advanced Features
               </Typography>
               <Box component="ul" sx={{ listStyle: 'none', p: 0, m: 0, '& > li + li': { mt: 2 } }}>
@@ -224,13 +224,13 @@ export default function LandingPage() {
                 ].map((text, idx) => (
                   <Box component="li" key={idx} sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5 }}>
                     <CheckCircle className="w-5 h-5" style={{ color: '#10b981', flexShrink: 0, marginTop: 2 }} />
-                    <Typography sx={{ color: '#374151', fontSize: '0.95rem' }}>{text}</Typography>
+                    <Typography sx={{ color: 'text.primary', fontSize: '0.95rem' }}>{text}</Typography>
                   </Box>
                 ))}
               </Box>
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
-              <Typography sx={{ fontSize: '1.5rem', fontWeight: 700, color: '#111827', mb: 3 }}>
+              <Typography sx={{ fontSize: '1.5rem', fontWeight: 700, color: 'text.primary', mb: 3 }}>
                 Developer Experience
               </Typography>
               <Box component="ul" sx={{ listStyle: 'none', p: 0, m: 0, '& > li + li': { mt: 2 } }}>
@@ -244,7 +244,7 @@ export default function LandingPage() {
                 ].map((text, idx) => (
                   <Box component="li" key={idx} sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5 }}>
                     <CheckCircle className="w-5 h-5" style={{ color: '#10b981', flexShrink: 0, marginTop: 2 }} />
-                    <Typography sx={{ color: '#374151', fontSize: '0.95rem' }}>{text}</Typography>
+                    <Typography sx={{ color: 'text.primary', fontSize: '0.95rem' }}>{text}</Typography>
                   </Box>
                 ))}
               </Box>
@@ -277,9 +277,9 @@ export default function LandingPage() {
                 px: 5,
                 py: 1.75,
                 fontSize: '1rem',
-                backgroundColor: '#ffffff',
+                backgroundColor: 'background.paper',
                 color: '#3b82f6',
-                '&:hover': { backgroundColor: '#f3f4f6' },
+                '&:hover': { backgroundColor: 'action.hover' },
                 boxShadow: '0 4px 14px 0 rgb(0 0 0 / 0.15)',
               }}
             >
@@ -293,12 +293,12 @@ export default function LandingPage() {
       <Box
         component="footer"
         sx={{
-          backgroundColor: '#111827',
+          backgroundColor: 'text.primary',
           py: 4,
           textAlign: 'center',
         }}
       >
-        <Typography sx={{ color: '#9ca3af', fontSize: '0.875rem' }}>
+        <Typography sx={{ color: 'text.disabled', fontSize: '0.875rem' }}>
           &copy; 2026 VelocityLLM. Production-Grade LLM Inference Engine.
         </Typography>
       </Box>

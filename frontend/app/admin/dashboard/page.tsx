@@ -92,7 +92,7 @@ export default function AdminDashboardPage() {
       <Box sx={{ p: { xs: 2, sm: 3 }, display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
         <Box sx={{ textAlign: 'center' }}>
           <CircularProgress size={40} />
-          <Typography sx={{ mt: 2, color: '#6b7280' }}>Loading admin dashboard...</Typography>
+          <Typography sx={{ mt: 2, color: 'text.secondary' }}>Loading admin dashboard...</Typography>
         </Box>
       </Box>
     );
@@ -104,16 +104,16 @@ export default function AdminDashboardPage() {
 
       {/* System Health */}
       {health && (
-        <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3, mb: 3 }}>
+        <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3, mb: 3 }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2.5 }}>
-            <Typography sx={{ fontSize: '1.1rem', fontWeight: 600, color: '#111827' }}>
+            <Typography sx={{ fontSize: '1.1rem', fontWeight: 600, color: 'text.primary' }}>
               System Health
             </Typography>
             <Chip
               label={health.status.toUpperCase()}
               size="small"
               sx={{
-                backgroundColor: health.status === 'healthy' ? '#ecfdf5' : '#fef2f2',
+                backgroundColor: health.status === 'healthy' ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)',
                 color: health.status === 'healthy' ? '#15803d' : '#b91c1c',
                 fontWeight: 600,
                 fontSize: '0.75rem',
@@ -123,15 +123,15 @@ export default function AdminDashboardPage() {
 
           <Grid container spacing={2} sx={{ mb: 2 }}>
             <Grid size={{ xs: 6, md: 3 }}>
-              <Box sx={{ backgroundColor: '#eff6ff', borderRadius: '10px', p: 2 }}>
+              <Box sx={{ backgroundColor: 'rgba(59,130,246,0.1)', borderRadius: '10px', p: 2 }}>
                 <Typography sx={{ fontSize: '0.8rem', fontWeight: 500, color: '#2563eb' }}>Uptime</Typography>
                 <Typography sx={{ fontSize: '1.1rem', fontWeight: 700, color: '#1e3a5f' }}>{health.uptime_human}</Typography>
               </Box>
             </Grid>
             <Grid size={{ xs: 6, md: 3 }}>
-              <Box sx={{ backgroundColor: '#ecfdf5', borderRadius: '10px', p: 2 }}>
+              <Box sx={{ backgroundColor: 'rgba(16,185,129,0.1)', borderRadius: '10px', p: 2 }}>
                 <Typography sx={{ fontSize: '0.8rem', fontWeight: 500, color: '#16a34a' }}>Goroutines</Typography>
-                <Typography sx={{ fontSize: '1.1rem', fontWeight: 700, color: '#14532d' }}>{health.goroutines}</Typography>
+                <Typography sx={{ fontSize: '1.1rem', fontWeight: 700, color: 'success.dark' }}>{health.goroutines}</Typography>
               </Box>
             </Grid>
             <Grid size={{ xs: 6, md: 3 }}>
@@ -141,7 +141,7 @@ export default function AdminDashboardPage() {
               </Box>
             </Grid>
             <Grid size={{ xs: 6, md: 3 }}>
-              <Box sx={{ backgroundColor: '#fff7ed', borderRadius: '10px', p: 2 }}>
+              <Box sx={{ backgroundColor: 'rgba(245,158,11,0.1)', borderRadius: '10px', p: 2 }}>
                 <Typography sx={{ fontSize: '0.8rem', fontWeight: 500, color: '#ea580c' }}>GC Cycles</Typography>
                 <Typography sx={{ fontSize: '1.1rem', fontWeight: 700, color: '#7c2d12' }}>{health.memory.gc_cycles}</Typography>
               </Box>
@@ -150,26 +150,26 @@ export default function AdminDashboardPage() {
 
           <Grid container spacing={2}>
             <Grid size={{ xs: 6, md: 3 }}>
-              <Box sx={{ backgroundColor: '#f9fafb', borderRadius: '10px', p: 2 }}>
-                <Typography sx={{ fontSize: '0.8rem', color: '#6b7280' }}>Go Version</Typography>
+              <Box sx={{ backgroundColor: 'background.default', borderRadius: '10px', p: 2 }}>
+                <Typography sx={{ fontSize: '0.8rem', color: 'text.secondary' }}>Go Version</Typography>
                 <Typography sx={{ fontWeight: 600, fontSize: '0.9rem' }}>{health.go_version}</Typography>
               </Box>
             </Grid>
             <Grid size={{ xs: 6, md: 3 }}>
-              <Box sx={{ backgroundColor: '#f9fafb', borderRadius: '10px', p: 2 }}>
-                <Typography sx={{ fontSize: '0.8rem', color: '#6b7280' }}>CPU Cores</Typography>
+              <Box sx={{ backgroundColor: 'background.default', borderRadius: '10px', p: 2 }}>
+                <Typography sx={{ fontSize: '0.8rem', color: 'text.secondary' }}>CPU Cores</Typography>
                 <Typography sx={{ fontWeight: 600, fontSize: '0.9rem' }}>{health.cpu_cores}</Typography>
               </Box>
             </Grid>
             <Grid size={{ xs: 6, md: 3 }}>
-              <Box sx={{ backgroundColor: '#f9fafb', borderRadius: '10px', p: 2 }}>
-                <Typography sx={{ fontSize: '0.8rem', color: '#6b7280' }}>System Memory</Typography>
+              <Box sx={{ backgroundColor: 'background.default', borderRadius: '10px', p: 2 }}>
+                <Typography sx={{ fontSize: '0.8rem', color: 'text.secondary' }}>System Memory</Typography>
                 <Typography sx={{ fontWeight: 600, fontSize: '0.9rem' }}>{health.memory.sys_mb.toFixed(1)} MB</Typography>
               </Box>
             </Grid>
             <Grid size={{ xs: 6, md: 3 }}>
-              <Box sx={{ backgroundColor: '#f9fafb', borderRadius: '10px', p: 2 }}>
-                <Typography sx={{ fontSize: '0.8rem', color: '#6b7280' }}>DB Connections</Typography>
+              <Box sx={{ backgroundColor: 'background.default', borderRadius: '10px', p: 2 }}>
+                <Typography sx={{ fontSize: '0.8rem', color: 'text.secondary' }}>DB Connections</Typography>
                 <Typography sx={{ fontWeight: 600, fontSize: '0.9rem' }}>
                   {health.database?.in_use || 0}/{health.database?.max_open || 0}
                 </Typography>
@@ -237,19 +237,19 @@ export default function AdminDashboardPage() {
         {/* Subscription Tiers */}
         {overview && (
           <Grid size={{ xs: 12, lg: 6 }}>
-            <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3 }}>
-              <Typography sx={{ fontSize: '1rem', fontWeight: 600, color: '#111827', mb: 2.5 }}>
+            <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3 }}>
+              <Typography sx={{ fontSize: '1rem', fontWeight: 600, color: 'text.primary', mb: 2.5 }}>
                 Subscription Distribution
               </Typography>
               {(overview.users.tiers || []).length === 0 ? (
-                <Typography sx={{ color: '#6b7280' }}>No subscriptions yet.</Typography>
+                <Typography sx={{ color: 'text.secondary' }}>No subscriptions yet.</Typography>
               ) : (
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                   {overview.users.tiers.map((tier) => {
                     const total = overview.users.total || 1;
                     const pct = ((tier.count / total) * 100);
                     const colorMap: Record<string, string> = {
-                      free: '#9ca3af',
+                      free: 'text.disabled',
                       pro: '#3b82f6',
                       enterprise: '#8b5cf6',
                     };
@@ -259,7 +259,7 @@ export default function AdminDashboardPage() {
                           <Typography sx={{ fontSize: '0.875rem', fontWeight: 500, textTransform: 'capitalize' }}>
                             {tier.tier}
                           </Typography>
-                          <Typography sx={{ fontSize: '0.875rem', color: '#6b7280' }}>
+                          <Typography sx={{ fontSize: '0.875rem', color: 'text.secondary' }}>
                             {tier.count} ({pct.toFixed(1)}%)
                           </Typography>
                         </Box>
@@ -269,10 +269,10 @@ export default function AdminDashboardPage() {
                           sx={{
                             height: 10,
                             borderRadius: '5px',
-                            backgroundColor: '#e5e7eb',
+                            backgroundColor: 'divider',
                             '& .MuiLinearProgress-bar': {
                               borderRadius: '5px',
-                              backgroundColor: colorMap[tier.tier] || '#9ca3af',
+                              backgroundColor: colorMap[tier.tier] || 'text.disabled',
                             },
                           }}
                         />
@@ -287,18 +287,18 @@ export default function AdminDashboardPage() {
 
         {/* Database Table Stats */}
         <Grid size={{ xs: 12, lg: 6 }}>
-          <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3 }}>
-            <Typography sx={{ fontSize: '1rem', fontWeight: 600, color: '#111827', mb: 2.5 }}>
+          <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3 }}>
+            <Typography sx={{ fontSize: '1rem', fontWeight: 600, color: 'text.primary', mb: 2.5 }}>
               Database Tables
             </Typography>
             <TableContainer>
               <Table size="small">
                 <TableHead>
                   <TableRow>
-                    <TableCell sx={{ fontWeight: 500, fontSize: '0.8rem', color: '#6b7280', borderBottom: '1px solid #e5e7eb' }}>
+                    <TableCell sx={{ fontWeight: 500, fontSize: '0.8rem', color: 'text.secondary', borderBottom: '1px solid', borderColor: 'divider' }}>
                       Table
                     </TableCell>
-                    <TableCell align="right" sx={{ fontWeight: 500, fontSize: '0.8rem', color: '#6b7280', borderBottom: '1px solid #e5e7eb' }}>
+                    <TableCell align="right" sx={{ fontWeight: 500, fontSize: '0.8rem', color: 'text.secondary', borderBottom: '1px solid', borderColor: 'divider' }}>
                       Rows
                     </TableCell>
                   </TableRow>
@@ -306,10 +306,10 @@ export default function AdminDashboardPage() {
                 <TableBody>
                   {dbStats.map((stat) => (
                     <TableRow key={stat.table}>
-                      <TableCell sx={{ fontSize: '0.85rem', fontFamily: 'monospace', color: '#111827', borderBottom: '1px solid #f3f4f6' }}>
+                      <TableCell sx={{ fontSize: '0.85rem', fontFamily: 'monospace', color: 'text.primary', borderBottom: '1px solid', borderColor: 'divider' }}>
                         {stat.table}
                       </TableCell>
-                      <TableCell align="right" sx={{ fontSize: '0.85rem', fontWeight: 600, color: '#111827', borderBottom: '1px solid #f3f4f6' }}>
+                      <TableCell align="right" sx={{ fontSize: '0.85rem', fontWeight: 600, color: 'text.primary', borderBottom: '1px solid', borderColor: 'divider' }}>
                         {stat.count.toLocaleString()}
                       </TableCell>
                     </TableRow>
@@ -323,8 +323,8 @@ export default function AdminDashboardPage() {
 
       {/* Recent Activity */}
       {overview && overview.recent_activity && overview.recent_activity.length > 0 && (
-        <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3, mt: 3 }}>
-          <Typography sx={{ fontSize: '1rem', fontWeight: 600, color: '#111827', mb: 2.5 }}>
+        <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3, mt: 3 }}>
+          <Typography sx={{ fontSize: '1rem', fontWeight: 600, color: 'text.primary', mb: 2.5 }}>
             Recent Activity
           </Typography>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
@@ -336,15 +336,15 @@ export default function AdminDashboardPage() {
                   alignItems: 'center',
                   gap: 2,
                   py: 1,
-                  borderBottom: index < overview.recent_activity.length - 1 ? '1px solid #f3f4f6' : 'none',
+                  borderBottom: index < overview.recent_activity.length - 1 ? '1px solid var(--mui-palette-divider)' : 'none',
                 }}
               >
                 <Box sx={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#3b82f6', flexShrink: 0 }} />
                 <Box sx={{ flex: 1 }}>
-                  <Typography sx={{ fontSize: '0.85rem', color: '#111827' }}>
+                  <Typography sx={{ fontSize: '0.85rem', color: 'text.primary' }}>
                     {activity.action || activity.event_type}
                   </Typography>
-                  <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>
+                  <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>
                     User #{activity.user_id} - {new Date(activity.created_at).toLocaleString()}
                   </Typography>
                 </Box>

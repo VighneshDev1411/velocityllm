@@ -153,17 +153,17 @@ export default function QuotaManagementPage() {
       {/* Current Quota Usage */}
       <Paper
         elevation={0}
-        sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3, mb: 3 }}
+        sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3, mb: 3 }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
-          <BarChartIcon sx={{ color: '#6b7280' }} />
-          <Typography variant="h6" sx={{ fontWeight: 600, color: '#111827' }}>
+          <BarChartIcon sx={{ color: 'text.secondary' }} />
+          <Typography variant="h6" sx={{ fontWeight: 600, color: 'text.primary' }}>
             Current Usage
           </Typography>
         </Box>
 
         {quotaUsage.length === 0 ? (
-          <Typography sx={{ color: '#6b7280' }}>No quota usage data available.</Typography>
+          <Typography sx={{ color: 'text.secondary' }}>No quota usage data available.</Typography>
         ) : (
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
             {quotaUsage.map((usage) => {
@@ -174,7 +174,7 @@ export default function QuotaManagementPage() {
                 <Box
                   key={usage.id}
                   sx={{
-                    borderBottom: '1px solid #e5e7eb',
+                    borderBottom: '1px solid', borderColor: 'divider',
                     pb: 3,
                     '&:last-child': { borderBottom: 'none', pb: 0 },
                   }}
@@ -183,20 +183,20 @@ export default function QuotaManagementPage() {
                     <Box>
                       <Typography
                         variant="subtitle1"
-                        sx={{ fontWeight: 500, color: '#111827', textTransform: 'capitalize' }}
+                        sx={{ fontWeight: 500, color: 'text.primary', textTransform: 'capitalize' }}
                       >
                         {usage.type} Quota ({usage.period})
                       </Typography>
-                      <Typography variant="body2" sx={{ color: '#6b7280' }}>
+                      <Typography variant="body2" sx={{ color: 'text.secondary' }}>
                         Period: {new Date(usage.period_start).toLocaleDateString()} -{' '}
                         {new Date(usage.period_end).toLocaleDateString()}
                       </Typography>
                     </Box>
                     <Box sx={{ textAlign: 'right' }}>
-                      <Typography variant="h5" sx={{ fontWeight: 700, color: '#111827' }}>
+                      <Typography variant="h5" sx={{ fontWeight: 700, color: 'text.primary' }}>
                         {usage.current_usage.toLocaleString()}
                       </Typography>
-                      <Typography variant="body2" sx={{ color: '#6b7280' }}>
+                      <Typography variant="body2" sx={{ color: 'text.secondary' }}>
                         of {usage.quota_limit.toLocaleString()}
                       </Typography>
                     </Box>
@@ -210,7 +210,7 @@ export default function QuotaManagementPage() {
                       sx={{
                         height: 24,
                         borderRadius: '12px',
-                        backgroundColor: '#e5e7eb',
+                        backgroundColor: 'divider',
                         '& .MuiLinearProgress-bar': {
                           borderRadius: '12px',
                           transition: 'transform 0.5s ease',
@@ -225,7 +225,7 @@ export default function QuotaManagementPage() {
                         transform: 'translate(-50%, -50%)',
                         fontSize: '0.75rem',
                         fontWeight: 600,
-                        color: percentage > 40 ? '#fff' : '#374151',
+                        color: percentage > 40 ? '#fff' : 'text.primary',
                       }}
                     >
                       {percentage.toFixed(1)}%
@@ -248,11 +248,11 @@ export default function QuotaManagementPage() {
       {/* Alert Configuration */}
       <Paper
         elevation={0}
-        sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3, mb: 3 }}
+        sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3, mb: 3 }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
-          <NotificationsIcon sx={{ color: '#6b7280' }} />
-          <Typography variant="h6" sx={{ fontWeight: 600, color: '#111827' }}>
+          <NotificationsIcon sx={{ color: 'text.secondary' }} />
+          <Typography variant="h6" sx={{ fontWeight: 600, color: 'text.primary' }}>
             Alert Configuration
           </Typography>
         </Box>
@@ -262,10 +262,10 @@ export default function QuotaManagementPage() {
           <Grid size={{ xs: 12, md: 6 }}>
             <Paper
               elevation={0}
-              sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 2.5 }}
+              sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 2.5 }}
             >
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
-                <Typography sx={{ fontWeight: 500, color: '#111827' }}>Email Alerts</Typography>
+                <Typography sx={{ fontWeight: 500, color: 'text.primary' }}>Email Alerts</Typography>
                 <Switch
                   checked={alertConfig.email_enabled}
                   onChange={(e) =>
@@ -274,7 +274,7 @@ export default function QuotaManagementPage() {
                   size="small"
                 />
               </Box>
-              <Typography variant="body2" sx={{ color: '#6b7280' }}>
+              <Typography variant="body2" sx={{ color: 'text.secondary' }}>
                 Receive email notifications when quota thresholds are reached.
               </Typography>
             </Paper>
@@ -284,10 +284,10 @@ export default function QuotaManagementPage() {
           <Grid size={{ xs: 12, md: 6 }}>
             <Paper
               elevation={0}
-              sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 2.5 }}
+              sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 2.5 }}
             >
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
-                <Typography sx={{ fontWeight: 500, color: '#111827' }}>Webhook Alerts</Typography>
+                <Typography sx={{ fontWeight: 500, color: 'text.primary' }}>Webhook Alerts</Typography>
                 <Switch
                   checked={alertConfig.webhook_enabled}
                   onChange={(e) =>
@@ -314,10 +314,10 @@ export default function QuotaManagementPage() {
           <Grid size={{ xs: 12, md: 6 }}>
             <Paper
               elevation={0}
-              sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 2.5 }}
+              sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 2.5 }}
             >
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
-                <Typography sx={{ fontWeight: 500, color: '#111827' }}>Slack Alerts</Typography>
+                <Typography sx={{ fontWeight: 500, color: 'text.primary' }}>Slack Alerts</Typography>
                 <Switch
                   checked={alertConfig.slack_enabled}
                   onChange={(e) =>
@@ -346,14 +346,14 @@ export default function QuotaManagementPage() {
           <Grid size={{ xs: 12, md: 6 }}>
             <Paper
               elevation={0}
-              sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 2.5 }}
+              sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 2.5 }}
             >
-              <Typography sx={{ fontWeight: 500, color: '#111827', mb: 2 }}>
+              <Typography sx={{ fontWeight: 500, color: 'text.primary', mb: 2 }}>
                 Alert Thresholds
               </Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, px: 1 }}>
                 <Box>
-                  <Typography variant="body2" sx={{ color: '#6b7280', mb: 0.5 }}>
+                  <Typography variant="body2" sx={{ color: 'text.secondary', mb: 0.5 }}>
                     Warning ({alertConfig.threshold_warning}%)
                   </Typography>
                   <Slider
@@ -368,7 +368,7 @@ export default function QuotaManagementPage() {
                   />
                 </Box>
                 <Box>
-                  <Typography variant="body2" sx={{ color: '#6b7280', mb: 0.5 }}>
+                  <Typography variant="body2" sx={{ color: 'text.secondary', mb: 0.5 }}>
                     Critical ({alertConfig.threshold_critical}%)
                   </Typography>
                   <Slider
@@ -383,7 +383,7 @@ export default function QuotaManagementPage() {
                   />
                 </Box>
                 <Box>
-                  <Typography variant="body2" sx={{ color: '#6b7280', mb: 0.5 }}>
+                  <Typography variant="body2" sx={{ color: 'text.secondary', mb: 0.5 }}>
                     Exceeded ({alertConfig.threshold_exceeded}%)
                   </Typography>
                   <Slider
@@ -416,38 +416,38 @@ export default function QuotaManagementPage() {
       {/* Rate Limit Events */}
       <Paper
         elevation={0}
-        sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3 }}
+        sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3 }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
-          <TrafficIcon sx={{ color: '#6b7280' }} />
-          <Typography variant="h6" sx={{ fontWeight: 600, color: '#111827' }}>
+          <TrafficIcon sx={{ color: 'text.secondary' }} />
+          <Typography variant="h6" sx={{ fontWeight: 600, color: 'text.primary' }}>
             Recent Rate Limit Events
           </Typography>
         </Box>
 
         {rateLimitEvents.length === 0 ? (
-          <Typography sx={{ color: '#6b7280' }}>No rate limit events recorded.</Typography>
+          <Typography sx={{ color: 'text.secondary' }}>No rate limit events recorded.</Typography>
         ) : (
           <TableContainer>
             <Table size="small">
               <TableHead>
                 <TableRow>
-                  <TableCell sx={{ fontWeight: 600, color: '#6b7280', fontSize: '0.75rem', textTransform: 'uppercase' }}>
+                  <TableCell sx={{ fontWeight: 600, color: 'text.secondary', fontSize: '0.75rem', textTransform: 'uppercase' }}>
                     Time
                   </TableCell>
-                  <TableCell sx={{ fontWeight: 600, color: '#6b7280', fontSize: '0.75rem', textTransform: 'uppercase' }}>
+                  <TableCell sx={{ fontWeight: 600, color: 'text.secondary', fontSize: '0.75rem', textTransform: 'uppercase' }}>
                     Type
                   </TableCell>
-                  <TableCell sx={{ fontWeight: 600, color: '#6b7280', fontSize: '0.75rem', textTransform: 'uppercase' }}>
+                  <TableCell sx={{ fontWeight: 600, color: 'text.secondary', fontSize: '0.75rem', textTransform: 'uppercase' }}>
                     Path
                   </TableCell>
-                  <TableCell sx={{ fontWeight: 600, color: '#6b7280', fontSize: '0.75rem', textTransform: 'uppercase' }}>
+                  <TableCell sx={{ fontWeight: 600, color: 'text.secondary', fontSize: '0.75rem', textTransform: 'uppercase' }}>
                     Usage
                   </TableCell>
-                  <TableCell sx={{ fontWeight: 600, color: '#6b7280', fontSize: '0.75rem', textTransform: 'uppercase' }}>
+                  <TableCell sx={{ fontWeight: 600, color: 'text.secondary', fontSize: '0.75rem', textTransform: 'uppercase' }}>
                     Status
                   </TableCell>
-                  <TableCell sx={{ fontWeight: 600, color: '#6b7280', fontSize: '0.75rem', textTransform: 'uppercase' }}>
+                  <TableCell sx={{ fontWeight: 600, color: 'text.secondary', fontSize: '0.75rem', textTransform: 'uppercase' }}>
                     Message
                   </TableCell>
                 </TableRow>
@@ -461,7 +461,7 @@ export default function QuotaManagementPage() {
                     <TableCell sx={{ textTransform: 'capitalize', fontSize: '0.875rem' }}>
                       {event.quota_type}
                     </TableCell>
-                    <TableCell sx={{ color: '#6b7280', fontSize: '0.875rem' }}>
+                    <TableCell sx={{ color: 'text.secondary', fontSize: '0.875rem' }}>
                       {event.request_path || 'N/A'}
                     </TableCell>
                     <TableCell sx={{ fontSize: '0.875rem' }}>
@@ -474,12 +474,12 @@ export default function QuotaManagementPage() {
                         sx={{
                           fontWeight: 600,
                           fontSize: '0.75rem',
-                          backgroundColor: event.blocked ? '#fef2f2' : '#ecfdf5',
+                          backgroundColor: event.blocked ? 'rgba(239,68,68,0.1)' : 'rgba(16,185,129,0.1)',
                           color: event.blocked ? '#991b1b' : '#065f46',
                         }}
                       />
                     </TableCell>
-                    <TableCell sx={{ color: '#6b7280', fontSize: '0.875rem' }}>
+                    <TableCell sx={{ color: 'text.secondary', fontSize: '0.875rem' }}>
                       {event.message}
                     </TableCell>
                   </TableRow>

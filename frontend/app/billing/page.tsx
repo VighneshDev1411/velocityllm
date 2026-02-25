@@ -28,6 +28,7 @@ import Chip from '@mui/material/Chip';
 import CircularProgress from '@mui/material/CircularProgress';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
+import { useTheme } from '@mui/material/styles';
 import { PageHeader } from '@/components/PageHeader';
 import { StatCard } from '@/components/StatCard';
 
@@ -80,16 +81,16 @@ interface Invoice {
 const TIER_INFO = {
   free: {
     name: 'Free',
-    color: '#374151',
-    bg: '#f9fafb',
-    border: '#e5e7eb',
+    color: 'text.primary',
+    bg: 'background.default',
+    border: 'divider',
     icon: Shield,
     features: ['1K requests/month', '100K tokens/month', '2 API keys', 'Community support'],
   },
   pro: {
     name: 'Pro',
-    color: '#1d4ed8',
-    bg: '#eff6ff',
+    color: 'primary.dark',
+    bg: 'rgba(59,130,246,0.1)',
     border: '#bfdbfe',
     icon: Zap,
     features: ['50K requests/month', '5M tokens/month', '10 API keys', 'Email support'],
@@ -106,9 +107,11 @@ const TIER_INFO = {
 
 const PIE_COLORS = ['#2563eb', '#7c3aed', '#059669', '#d97706', '#dc2626', '#0891b2', '#4f46e5', '#be185d'];
 
-const headerSx = { fontWeight: 600, color: '#6b7280', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' } as const;
+const headerSx = { fontWeight: 600, color: 'text.secondary', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' } as const;
 
 export default function BillingPage() {
+  const theme = useTheme();
+  const tooltipStyle = { backgroundColor: theme.palette.background.paper, border: `1px solid ${theme.palette.divider}`, borderRadius: '8px', fontSize: '12px', color: theme.palette.text.primary };
   const { user } = useAuth();
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [limits, setLimits] = useState<TierLimits | null>(null);
@@ -256,9 +259,9 @@ export default function BillingPage() {
       ))}
 
       {loading ? (
-        <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 4, textAlign: 'center' }}>
+        <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 4, textAlign: 'center' }}>
           <CircularProgress size={28} />
-          <Typography sx={{ mt: 1, color: '#9ca3af' }}>Loading billing data...</Typography>
+          <Typography sx={{ mt: 1, color: 'text.disabled' }}>Loading billing data...</Typography>
         </Paper>
       ) : (
         <>
@@ -276,29 +279,29 @@ export default function BillingPage() {
                   <Typography variant="h5" sx={{ fontWeight: 700, color: tierInfo.color }}>
                     {tierInfo.name} Plan
                   </Typography>
-                  <Typography variant="body2" sx={{ color: '#4b5563' }}>
+                  <Typography variant="body2" sx={{ color: 'text.secondary' }}>
                     {subscription && `${formatDate(subscription.billing_cycle_start)} - ${formatDate(subscription.billing_cycle_end)}`}
                     {costProjection && ` (${costProjection.days_remaining} days left)`}
                   </Typography>
                 </Box>
               </Box>
               <Box sx={{ textAlign: 'right' }}>
-                <Typography variant="h4" sx={{ fontWeight: 700, color: '#111827' }}>
+                <Typography variant="h4" sx={{ fontWeight: 700, color: 'text.primary' }}>
                   {limits?.price_per_month === 0 ? 'Free' : formatCurrency(limits?.price_per_month || 0)}
                 </Typography>
-                <Typography variant="body2" sx={{ color: '#6b7280' }}>per month</Typography>
+                <Typography variant="body2" sx={{ color: 'text.secondary' }}>per month</Typography>
               </Box>
             </Box>
             {costProjection && (
               <Box sx={{ mt: 2 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-                  <Typography variant="caption" sx={{ color: '#6b7280' }}>Billing cycle progress</Typography>
-                  <Typography variant="caption" sx={{ color: '#6b7280' }}>{costProjection.progress.toFixed(0)}%</Typography>
+                  <Typography variant="caption" sx={{ color: 'text.secondary' }}>Billing cycle progress</Typography>
+                  <Typography variant="caption" sx={{ color: 'text.secondary' }}>{costProjection.progress.toFixed(0)}%</Typography>
                 </Box>
                 <LinearProgress
                   variant="determinate"
                   value={costProjection.progress}
-                  sx={{ height: 6, borderRadius: 3, bgcolor: '#e5e7eb', '& .MuiLinearProgress-bar': { borderRadius: 3, bgcolor: tierInfo.color } }}
+                  sx={{ height: 6, borderRadius: 3, bgcolor: 'divider', '& .MuiLinearProgress-bar': { borderRadius: 3, bgcolor: tierInfo.color } }}
                 />
               </Box>
             )}
@@ -330,10 +333,10 @@ export default function BillingPage() {
             <Grid container spacing={2.5} sx={{ mb: 3 }}>
               {limits.requests_per_month > 0 && (
                 <Grid size={{ xs: 12, md: 6 }}>
-                  <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3 }}>
+                  <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3 }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                      <Typography variant="body2" sx={{ fontWeight: 600, color: '#374151' }}>Request Usage</Typography>
-                      <Typography variant="body2" sx={{ color: '#6b7280' }}>
+                      <Typography variant="body2" sx={{ fontWeight: 600, color: 'text.primary' }}>Request Usage</Typography>
+                      <Typography variant="body2" sx={{ color: 'text.secondary' }}>
                         {(usage?.total_requests || 0).toLocaleString()} / {limits.requests_per_month.toLocaleString()}
                       </Typography>
                     </Box>
@@ -341,11 +344,11 @@ export default function BillingPage() {
                       variant="determinate"
                       value={Math.min(usagePercentage?.requests || 0, 100)}
                       sx={{
-                        height: 10, borderRadius: 5, bgcolor: '#e5e7eb',
+                        height: 10, borderRadius: 5, bgcolor: 'divider',
                         '& .MuiLinearProgress-bar': { borderRadius: 5, bgcolor: progressColor(usagePercentage?.requests || 0) },
                       }}
                     />
-                    <Typography variant="caption" sx={{ color: '#6b7280', mt: 0.5, display: 'block' }}>
+                    <Typography variant="caption" sx={{ color: 'text.secondary', mt: 0.5, display: 'block' }}>
                       {(usagePercentage?.requests || 0).toFixed(1)}% used
                     </Typography>
                   </Paper>
@@ -353,10 +356,10 @@ export default function BillingPage() {
               )}
               {limits.tokens_per_month > 0 && (
                 <Grid size={{ xs: 12, md: 6 }}>
-                  <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3 }}>
+                  <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3 }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                      <Typography variant="body2" sx={{ fontWeight: 600, color: '#374151' }}>Token Usage</Typography>
-                      <Typography variant="body2" sx={{ color: '#6b7280' }}>
+                      <Typography variant="body2" sx={{ fontWeight: 600, color: 'text.primary' }}>Token Usage</Typography>
+                      <Typography variant="body2" sx={{ color: 'text.secondary' }}>
                         {(usage?.total_tokens || 0).toLocaleString()} / {limits.tokens_per_month.toLocaleString()}
                       </Typography>
                     </Box>
@@ -364,11 +367,11 @@ export default function BillingPage() {
                       variant="determinate"
                       value={Math.min(usagePercentage?.tokens || 0, 100)}
                       sx={{
-                        height: 10, borderRadius: 5, bgcolor: '#e5e7eb',
+                        height: 10, borderRadius: 5, bgcolor: 'divider',
                         '& .MuiLinearProgress-bar': { borderRadius: 5, bgcolor: progressColor(usagePercentage?.tokens || 0) },
                       }}
                     />
-                    <Typography variant="caption" sx={{ color: '#6b7280', mt: 0.5, display: 'block' }}>
+                    <Typography variant="caption" sx={{ color: 'text.secondary', mt: 0.5, display: 'block' }}>
                       {(usagePercentage?.tokens || 0).toFixed(1)}% used
                     </Typography>
                   </Paper>
@@ -378,7 +381,7 @@ export default function BillingPage() {
           )}
 
           {/* Charts Section */}
-          <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3, mb: 3 }}>
+          <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3, mb: 3 }}>
             <Tabs
               value={activeTab}
               onChange={(_, v) => setActiveTab(v)}
@@ -391,7 +394,7 @@ export default function BillingPage() {
 
             {activeTab === 0 && (
               <Box>
-                <Typography variant="body2" sx={{ color: '#6b7280', mb: 2 }}>
+                <Typography variant="body2" sx={{ color: 'text.secondary', mb: 2 }}>
                   Daily spending over the last 30 days
                 </Typography>
                 {chartData.length > 0 ? (
@@ -403,11 +406,11 @@ export default function BillingPage() {
                           <stop offset="95%" stopColor="#2563eb" stopOpacity={0} />
                         </linearGradient>
                       </defs>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
-                      <XAxis dataKey="date" tick={{ fontSize: 12, fill: '#9ca3af' }} interval="preserveStartEnd" />
-                      <YAxis tick={{ fontSize: 12, fill: '#9ca3af' }} tickFormatter={(v) => `$${v}`} />
+                      <CartesianGrid strokeDasharray="3 3" stroke="var(--mui-palette-divider)" />
+                      <XAxis dataKey="date" tick={{ fontSize: 12, fill: 'var(--mui-palette-text-disabled)' }} interval="preserveStartEnd" />
+                      <YAxis tick={{ fontSize: 12, fill: 'var(--mui-palette-text-disabled)' }} tickFormatter={(v) => `$${v}`} />
                       <Tooltip
-                        contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                        contentStyle={tooltipStyle}
                         formatter={(value: number) => [`$${value.toFixed(4)}`, 'Cost']}
                       />
                       <Area type="monotone" dataKey="cost" stroke="#2563eb" strokeWidth={2} fill="url(#costGradient)" />
@@ -415,7 +418,7 @@ export default function BillingPage() {
                   </ResponsiveContainer>
                 ) : (
                   <Box sx={{ textAlign: 'center', py: 6 }}>
-                    <Typography sx={{ color: '#9ca3af' }}>No usage data available yet</Typography>
+                    <Typography sx={{ color: 'text.disabled' }}>No usage data available yet</Typography>
                   </Box>
                 )}
               </Box>
@@ -423,17 +426,17 @@ export default function BillingPage() {
 
             {activeTab === 1 && (
               <Box>
-                <Typography variant="body2" sx={{ color: '#6b7280', mb: 2 }}>
+                <Typography variant="body2" sx={{ color: 'text.secondary', mb: 2 }}>
                   Daily API requests over the last 30 days
                 </Typography>
                 {chartData.length > 0 ? (
                   <ResponsiveContainer width="100%" height={300}>
                     <BarChart data={chartData}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
-                      <XAxis dataKey="date" tick={{ fontSize: 12, fill: '#9ca3af' }} interval="preserveStartEnd" />
-                      <YAxis tick={{ fontSize: 12, fill: '#9ca3af' }} />
+                      <CartesianGrid strokeDasharray="3 3" stroke="var(--mui-palette-divider)" />
+                      <XAxis dataKey="date" tick={{ fontSize: 12, fill: 'var(--mui-palette-text-disabled)' }} interval="preserveStartEnd" />
+                      <YAxis tick={{ fontSize: 12, fill: 'var(--mui-palette-text-disabled)' }} />
                       <Tooltip
-                        contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                        contentStyle={tooltipStyle}
                         formatter={(value: number) => [value.toLocaleString(), 'Requests']}
                       />
                       <Bar dataKey="requests" fill="#7c3aed" radius={[4, 4, 0, 0]} />
@@ -441,7 +444,7 @@ export default function BillingPage() {
                   </ResponsiveContainer>
                 ) : (
                   <Box sx={{ textAlign: 'center', py: 6 }}>
-                    <Typography sx={{ color: '#9ca3af' }}>No usage data available yet</Typography>
+                    <Typography sx={{ color: 'text.disabled' }}>No usage data available yet</Typography>
                   </Box>
                 )}
               </Box>
@@ -449,7 +452,7 @@ export default function BillingPage() {
 
             {activeTab === 2 && (
               <Box>
-                <Typography variant="body2" sx={{ color: '#6b7280', mb: 2 }}>
+                <Typography variant="body2" sx={{ color: 'text.secondary', mb: 2 }}>
                   Cost distribution across models
                 </Typography>
                 {usage?.by_model && usage.by_model.length > 0 ? (
@@ -478,8 +481,8 @@ export default function BillingPage() {
                         <Box key={idx} sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                           <Box sx={{ width: 12, height: 12, borderRadius: '3px', bgcolor: PIE_COLORS[idx % PIE_COLORS.length] }} />
                           <Box>
-                            <Typography variant="body2" sx={{ fontWeight: 500, color: '#111827' }}>{m.model}</Typography>
-                            <Typography variant="caption" sx={{ color: '#6b7280' }}>
+                            <Typography variant="body2" sx={{ fontWeight: 500, color: 'text.primary' }}>{m.model}</Typography>
+                            <Typography variant="caption" sx={{ color: 'text.secondary' }}>
                               {formatCurrency(m.cost)} ({m.requests.toLocaleString()} reqs)
                             </Typography>
                           </Box>
@@ -489,7 +492,7 @@ export default function BillingPage() {
                   </Box>
                 ) : (
                   <Box sx={{ textAlign: 'center', py: 6 }}>
-                    <Typography sx={{ color: '#9ca3af' }}>No model usage data available yet</Typography>
+                    <Typography sx={{ color: 'text.disabled' }}>No model usage data available yet</Typography>
                   </Box>
                 )}
               </Box>
@@ -500,9 +503,9 @@ export default function BillingPage() {
           <Grid container spacing={3} sx={{ mb: 3 }}>
             {/* Usage by Model */}
             <Grid size={{ xs: 12, md: 8 }}>
-              <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3, height: '100%' }}>
+              <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3, height: '100%' }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-                  <Typography variant="h6" sx={{ fontWeight: 600, color: '#111827' }}>
+                  <Typography variant="h6" sx={{ fontWeight: 600, color: 'text.primary' }}>
                     Usage by Model
                   </Typography>
                   <Box sx={{ display: 'flex', gap: 1 }}>
@@ -531,13 +534,13 @@ export default function BillingPage() {
                           <TableCell>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                               <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: PIE_COLORS[idx % PIE_COLORS.length] }} />
-                              <Typography variant="body2" sx={{ fontWeight: 500, color: '#111827' }}>{m.model}</Typography>
+                              <Typography variant="body2" sx={{ fontWeight: 500, color: 'text.primary' }}>{m.model}</Typography>
                             </Box>
                           </TableCell>
-                          <TableCell align="right" sx={{ color: '#374151' }}>{m.requests.toLocaleString()}</TableCell>
-                          <TableCell align="right" sx={{ color: '#374151' }}>{m.tokens.toLocaleString()}</TableCell>
-                          <TableCell align="right" sx={{ fontWeight: 500, color: '#111827' }}>{formatCurrency(m.cost)}</TableCell>
-                          <TableCell align="right" sx={{ color: '#6b7280' }}>
+                          <TableCell align="right" sx={{ color: 'text.primary' }}>{m.requests.toLocaleString()}</TableCell>
+                          <TableCell align="right" sx={{ color: 'text.primary' }}>{m.tokens.toLocaleString()}</TableCell>
+                          <TableCell align="right" sx={{ fontWeight: 500, color: 'text.primary' }}>{formatCurrency(m.cost)}</TableCell>
+                          <TableCell align="right" sx={{ color: 'text.secondary' }}>
                             {m.requests > 0 ? formatCurrency(m.cost / m.requests) : '--'}
                           </TableCell>
                         </TableRow>
@@ -546,7 +549,7 @@ export default function BillingPage() {
                   </Table>
                 ) : (
                   <Box sx={{ textAlign: 'center', py: 4 }}>
-                    <Typography sx={{ color: '#9ca3af' }}>No model usage data yet</Typography>
+                    <Typography sx={{ color: 'text.disabled' }}>No model usage data yet</Typography>
                   </Box>
                 )}
               </Paper>
@@ -554,20 +557,20 @@ export default function BillingPage() {
 
             {/* Payment Method */}
             <Grid size={{ xs: 12, md: 4 }}>
-              <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3, height: '100%' }}>
-                <Typography variant="h6" sx={{ fontWeight: 600, color: '#111827', mb: 2 }}>
+              <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3, height: '100%' }}>
+                <Typography variant="h6" sx={{ fontWeight: 600, color: 'text.primary', mb: 2 }}>
                   Payment Method
                 </Typography>
                 <Box
                   sx={{
                     p: 2.5, borderRadius: '12px',
-                    background: 'linear-gradient(135deg, #1e3a5f 0%, #111827 100%)', color: 'white', mb: 2,
+                    background: 'linear-gradient(135deg, #1e3a5f 0%, #0a0f1e 100%)', color: 'white', mb: 2,
                     display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
                     minHeight: 120, gap: 1,
                   }}
                 >
                   <CreditCard size={32} style={{ opacity: 0.5 }} />
-                  <Typography variant="body2" sx={{ color: '#9ca3af', textAlign: 'center' }}>
+                  <Typography variant="body2" sx={{ color: 'text.disabled', textAlign: 'center' }}>
                     No payment method on file
                   </Typography>
                 </Box>
@@ -581,7 +584,7 @@ export default function BillingPage() {
           {/* Upgrade Options */}
           {currentTier !== 'enterprise' && (
             <Box sx={{ mb: 3 }}>
-              <Typography variant="h6" sx={{ fontWeight: 600, color: '#111827', mb: 2 }}>
+              <Typography variant="h6" sx={{ fontWeight: 600, color: 'text.primary', mb: 2 }}>
                 Upgrade Your Plan
               </Typography>
               <Grid container spacing={3}>
@@ -602,14 +605,14 @@ export default function BillingPage() {
                           </Box>
                           <Box>
                             <Typography variant="h6" sx={{ fontWeight: 700, color: info.color }}>{info.name}</Typography>
-                            <Typography variant="body2" sx={{ color: '#4b5563' }}>{tier === 'pro' ? '$49/month' : '$499/month'}</Typography>
+                            <Typography variant="body2" sx={{ color: 'text.secondary' }}>{tier === 'pro' ? '$49/month' : '$499/month'}</Typography>
                           </Box>
                         </Box>
                         <Box component="ul" sx={{ listStyle: 'none', p: 0, m: 0, mb: 2, display: 'flex', flexDirection: 'column', gap: 1 }}>
                           {info.features.map((feature, idx) => (
                             <Box component="li" key={idx} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                               <Check size={16} color="#16a34a" />
-                              <Typography variant="body2" sx={{ color: '#374151' }}>{feature}</Typography>
+                              <Typography variant="body2" sx={{ color: 'text.primary' }}>{feature}</Typography>
                             </Box>
                           ))}
                         </Box>
@@ -632,15 +635,15 @@ export default function BillingPage() {
           )}
 
           {/* Invoices */}
-          <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3 }}>
+          <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-              <Typography variant="h6" sx={{ fontWeight: 600, color: '#111827' }}>Invoices</Typography>
-              <Calendar size={20} color="#9ca3af" />
+              <Typography variant="h6" sx={{ fontWeight: 600, color: 'text.primary' }}>Invoices</Typography>
+              <Calendar size={20} color="var(--mui-palette-text-disabled)" />
             </Box>
             {invoices.length === 0 ? (
               <Box sx={{ textAlign: 'center', py: 4 }}>
-                <Typography sx={{ color: '#9ca3af' }}>No invoices yet</Typography>
-                <Typography variant="body2" sx={{ color: '#9ca3af', mt: 0.5 }}>
+                <Typography sx={{ color: 'text.disabled' }}>No invoices yet</Typography>
+                <Typography variant="body2" sx={{ color: 'text.disabled', mt: 0.5 }}>
                   Invoices will appear here at the end of each billing cycle
                 </Typography>
               </Box>
@@ -657,20 +660,20 @@ export default function BillingPage() {
                   {invoices.map((invoice) => (
                     <TableRow key={invoice.id} sx={{ '&:last-child td': { borderBottom: 0 } }}>
                       <TableCell>
-                        <Typography variant="body2" sx={{ fontWeight: 500, color: '#111827' }}>
+                        <Typography variant="body2" sx={{ fontWeight: 500, color: 'text.primary' }}>
                           {formatDate(invoice.period_start)} - {formatDate(invoice.period_end)}
                         </Typography>
                       </TableCell>
                       <TableCell>
                         {invoice.status === 'paid' ? (
                           <Chip icon={<Check size={14} />} label={`Paid ${invoice.paid_at ? formatDate(invoice.paid_at) : ''}`} size="small"
-                            sx={{ bgcolor: '#ecfdf5', color: '#16a34a', fontWeight: 500, fontSize: '0.75rem', '& .MuiChip-icon': { color: '#16a34a' } }} />
+                            sx={{ bgcolor: 'rgba(16,185,129,0.1)', color: '#16a34a', fontWeight: 500, fontSize: '0.75rem', '& .MuiChip-icon': { color: '#16a34a' } }} />
                         ) : (
-                          <Chip label="Pending" size="small" sx={{ bgcolor: '#fffbeb', color: '#d97706', fontWeight: 500, fontSize: '0.75rem' }} />
+                          <Chip label="Pending" size="small" sx={{ bgcolor: 'rgba(245,158,11,0.1)', color: '#d97706', fontWeight: 500, fontSize: '0.75rem' }} />
                         )}
                       </TableCell>
                       <TableCell align="right">
-                        <Typography variant="body2" sx={{ fontWeight: 700, color: '#111827' }}>{formatCurrency(invoice.amount)}</Typography>
+                        <Typography variant="body2" sx={{ fontWeight: 700, color: 'text.primary' }}>{formatCurrency(invoice.amount)}</Typography>
                       </TableCell>
                     </TableRow>
                   ))}

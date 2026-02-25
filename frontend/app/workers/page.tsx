@@ -49,7 +49,7 @@ export default function WorkersPage() {
     return (
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
         <CircularProgress size={48} />
-        <Typography sx={{ mt: 2, color: '#6b7280' }}>Loading workers...</Typography>
+        <Typography sx={{ mt: 2, color: 'text.secondary' }}>Loading workers...</Typography>
       </Box>
     );
   }
@@ -124,17 +124,17 @@ export default function WorkersPage() {
       </Grid>
 
       {/* Worker Grid */}
-      <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px' }}>
-        <Box sx={{ px: 3, py: 2, borderBottom: '1px solid #e5e7eb' }}>
-          <Typography variant="h6" sx={{ fontSize: '1.1rem', fontWeight: 600, color: '#111827' }}>
+      <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px' }}>
+        <Box sx={{ px: 3, py: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
+          <Typography variant="h6" sx={{ fontSize: '1.1rem', fontWeight: 600, color: 'text.primary' }}>
             Active Workers
           </Typography>
         </Box>
 
         <Box sx={{ p: 3 }}>
           {workers.length === 0 ? (
-            <Box sx={{ textAlign: 'center', py: 6, color: '#9ca3af' }}>
-              <Server size={48} style={{ margin: '0 auto 16px', display: 'block', color: '#d1d5db' }} />
+            <Box sx={{ textAlign: 'center', py: 6, color: 'text.disabled' }}>
+              <Server size={48} style={{ margin: '0 auto 16px', display: 'block', color: 'text.disabled' }} />
               <Typography>No workers available</Typography>
             </Box>
           ) : (
@@ -157,11 +157,11 @@ function WorkerCard({ worker }: { worker: WorkerStats }) {
   const getStatusChipProps = () => {
     switch (worker.status) {
       case 'idle':
-        return { label: 'idle', sx: { backgroundColor: '#ecfdf5', color: '#059669', fontWeight: 600, fontSize: '0.75rem' } };
+        return { label: 'idle', sx: { backgroundColor: 'rgba(16,185,129,0.1)', color: '#059669', fontWeight: 600, fontSize: '0.75rem' } };
       case 'busy':
-        return { label: 'busy', sx: { backgroundColor: '#eff6ff', color: '#2563eb', fontWeight: 600, fontSize: '0.75rem' } };
+        return { label: 'busy', sx: { backgroundColor: 'rgba(59,130,246,0.1)', color: '#2563eb', fontWeight: 600, fontSize: '0.75rem' } };
       case 'unhealthy':
-        return { label: 'unhealthy', sx: { backgroundColor: '#fef2f2', color: '#dc2626', fontWeight: 600, fontSize: '0.75rem' } };
+        return { label: 'unhealthy', sx: { backgroundColor: 'rgba(239,68,68,0.1)', color: '#dc2626', fontWeight: 600, fontSize: '0.75rem' } };
       default:
         return { label: worker.status, sx: { backgroundColor: '#fefce8', color: '#ca8a04', fontWeight: 600, fontSize: '0.75rem' } };
     }
@@ -198,7 +198,7 @@ function WorkerCard({ worker }: { worker: WorkerStats }) {
     <Paper
       elevation={0}
       sx={{
-        border: '1px solid #e5e7eb',
+        border: '1px solid', borderColor: 'divider',
         borderRadius: '12px',
         p: 3,
         transition: 'box-shadow 0.2s',
@@ -211,7 +211,7 @@ function WorkerCard({ worker }: { worker: WorkerStats }) {
             sx={{
               p: 1,
               borderRadius: '8px',
-              backgroundColor: '#eff6ff',
+              backgroundColor: 'rgba(59,130,246,0.1)',
               color: '#3b82f6',
               display: 'flex',
               alignItems: 'center',
@@ -221,7 +221,7 @@ function WorkerCard({ worker }: { worker: WorkerStats }) {
             <Server size={20} />
           </Box>
           <Box>
-            <Typography sx={{ fontWeight: 600, color: '#111827', fontSize: '0.9rem' }}>{worker.id}</Typography>
+            <Typography sx={{ fontWeight: 600, color: 'text.primary', fontSize: '0.9rem' }}>{worker.id}</Typography>
             <Chip size="small" {...getStatusChipProps()} />
           </Box>
         </Box>
@@ -230,21 +230,21 @@ function WorkerCard({ worker }: { worker: WorkerStats }) {
       {/* Stats */}
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Typography sx={{ fontSize: '0.875rem', color: '#6b7280' }}>Jobs Processed</Typography>
-          <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#111827' }}>
+          <Typography sx={{ fontSize: '0.875rem', color: 'text.secondary' }}>Jobs Processed</Typography>
+          <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: 'text.primary' }}>
             {worker.jobs_processed}
           </Typography>
         </Box>
 
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Typography sx={{ fontSize: '0.875rem', color: '#6b7280' }}>Jobs Failed</Typography>
+          <Typography sx={{ fontSize: '0.875rem', color: 'text.secondary' }}>Jobs Failed</Typography>
           <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#dc2626' }}>
             {worker.jobs_failed}
           </Typography>
         </Box>
 
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Typography sx={{ fontSize: '0.875rem', color: '#6b7280' }}>Health Score</Typography>
+          <Typography sx={{ fontSize: '0.875rem', color: 'text.secondary' }}>Health Score</Typography>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <LinearProgress
               variant="determinate"
@@ -253,29 +253,29 @@ function WorkerCard({ worker }: { worker: WorkerStats }) {
                 width: 64,
                 height: 8,
                 borderRadius: 4,
-                backgroundColor: '#e5e7eb',
+                backgroundColor: 'divider',
                 '& .MuiLinearProgress-bar': {
                   backgroundColor: getHealthColor(),
                   borderRadius: 4,
                 },
               }}
             />
-            <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#111827' }}>
+            <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: 'text.primary' }}>
               {worker.health_score.toFixed(0)}%
             </Typography>
           </Box>
         </Box>
 
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Typography sx={{ fontSize: '0.875rem', color: '#6b7280' }}>Uptime</Typography>
-          <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#111827' }}>
+          <Typography sx={{ fontSize: '0.875rem', color: 'text.secondary' }}>Uptime</Typography>
+          <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: 'text.primary' }}>
             {formatUptime(worker.uptime_seconds)}
           </Typography>
         </Box>
 
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Typography sx={{ fontSize: '0.875rem', color: '#6b7280' }}>Last Heartbeat</Typography>
-          <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#111827' }}>
+          <Typography sx={{ fontSize: '0.875rem', color: 'text.secondary' }}>Last Heartbeat</Typography>
+          <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: 'text.primary' }}>
             {formatDate(worker.last_heartbeat)}
           </Typography>
         </Box>
@@ -283,8 +283,8 @@ function WorkerCard({ worker }: { worker: WorkerStats }) {
 
       {/* Current Job (if any) */}
       {(worker as any).current_job && (
-        <Box sx={{ mt: 2, pt: 2, borderTop: '1px solid #e5e7eb' }}>
-          <Typography sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#374151', mb: 1 }}>
+        <Box sx={{ mt: 2, pt: 2, borderTop: '1px solid', borderColor: 'divider' }}>
+          <Typography sx={{ fontSize: '0.75rem', fontWeight: 600, color: 'text.primary', mb: 1 }}>
             Current Job:
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -293,7 +293,7 @@ function WorkerCard({ worker }: { worker: WorkerStats }) {
                 sx={{
                   fontSize: '0.75rem',
                   fontFamily: 'monospace',
-                  color: '#111827',
+                  color: 'text.primary',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
                   whiteSpace: 'nowrap',
@@ -301,7 +301,7 @@ function WorkerCard({ worker }: { worker: WorkerStats }) {
               >
                 {(worker as any).current_job.id}
               </Typography>
-              <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>
+              <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>
                 {((worker as any).current_job.duration / 1000).toFixed(1)}s
               </Typography>
             </Box>

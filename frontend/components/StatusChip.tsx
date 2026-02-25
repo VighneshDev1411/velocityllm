@@ -11,11 +11,11 @@ interface StatusChipProps {
 }
 
 const statusColors: Record<StatusType, { bg: string; color: string }> = {
-  success: { bg: '#ecfdf5', color: '#059669' },
-  error: { bg: '#fef2f2', color: '#dc2626' },
-  warning: { bg: '#fffbeb', color: '#d97706' },
-  info: { bg: '#eff6ff', color: '#2563eb' },
-  default: { bg: '#f3f4f6', color: '#4b5563' },
+  success: { bg: 'rgba(16,185,129,0.1)', color: '#059669' },
+  error: { bg: 'rgba(239,68,68,0.1)', color: '#dc2626' },
+  warning: { bg: 'rgba(245,158,11,0.1)', color: '#d97706' },
+  info: { bg: 'rgba(59,130,246,0.1)', color: '#2563eb' },
+  default: { bg: 'action.hover', color: 'text.secondary' },
 };
 
 export function StatusChip({ label, status = 'default', size = 'small' }: StatusChipProps) {

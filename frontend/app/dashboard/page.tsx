@@ -19,6 +19,7 @@ import {
   LineChart, Line, AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
+import { useTheme } from '@mui/material/styles';
 import { useDashboardOverview, useTimeSeries, useModelComparison, useCostBreakdown } from '@/hooks/useAnalytics';
 import { StatCard } from '@/components/StatCard';
 import { PageHeader } from '@/components/PageHeader';
@@ -26,6 +27,8 @@ import { PageHeader } from '@/components/PageHeader';
 const COLORS = ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#ec4899'];
 
 export default function Dashboard() {
+  const theme = useTheme();
+  const tooltipStyle = { backgroundColor: theme.palette.background.paper, border: `1px solid ${theme.palette.divider}`, borderRadius: '8px', fontSize: '12px', color: theme.palette.text.primary };
   const [timeRange, setTimeRange] = useState('24h');
 
   const { data: overview, isLoading: overviewLoading, error: overviewError } = useDashboardOverview();
@@ -37,7 +40,7 @@ export default function Dashboard() {
     return (
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
         <CircularProgress size={40} />
-        <Typography sx={{ mt: 2, color: '#6b7280' }}>Loading dashboard...</Typography>
+        <Typography sx={{ mt: 2, color: 'text.secondary' }}>Loading dashboard...</Typography>
       </Box>
     );
   }
@@ -93,7 +96,7 @@ export default function Dashboard() {
           sx={{ mb: 3, borderRadius: '10px' }}
         >
           <strong>No requests yet.</strong> Send prompts via the Playground or run{' '}
-          <code style={{ backgroundColor: '#dbeafe', padding: '2px 6px', borderRadius: '4px', fontSize: '0.8rem' }}>
+          <code style={{ backgroundColor: 'rgba(59,130,246,0.1)', padding: '2px 6px', borderRadius: '4px', fontSize: '0.8rem' }}>
             ./scripts/demo-load.sh --quick
           </code>{' '}
           to populate dashboards with real data.
@@ -117,7 +120,7 @@ export default function Dashboard() {
                   '@keyframes pulse': { '0%, 100%': { opacity: 1 }, '50%': { opacity: 0.5 } },
                 }}
               />
-              <Typography sx={{ fontSize: '0.85rem', fontWeight: 500, color: '#6b7280', textTransform: 'capitalize' }}>
+              <Typography sx={{ fontSize: '0.85rem', fontWeight: 500, color: 'text.secondary', textTransform: 'capitalize' }}>
                 {overview?.status || 'unknown'}
               </Typography>
             </Box>
@@ -129,8 +132,8 @@ export default function Dashboard() {
               sx={{
                 '& .MuiToggleButton-root': {
                   px: 1.5, py: 0.5, fontSize: '0.75rem', fontWeight: 600,
-                  border: '1px solid #e5e7eb', textTransform: 'none',
-                  '&.Mui-selected': { backgroundColor: '#fff', color: '#3b82f6', boxShadow: '0 1px 2px rgb(0 0 0 / 0.05)' },
+                  border: '1px solid', borderColor: 'divider', textTransform: 'none',
+                  '&.Mui-selected': { backgroundColor: 'background.paper', color: '#3b82f6', boxShadow: '0 1px 2px rgb(0 0 0 / 0.05)' },
                 },
               }}
             >
@@ -185,8 +188,8 @@ export default function Dashboard() {
       {/* Charts Row 1 */}
       <Grid container spacing={3} sx={{ mb: 3 }}>
         <Grid size={{ xs: 12, lg: 6 }}>
-          <Paper elevation={0} sx={{ p: 3, border: '1px solid #e5e7eb', borderRadius: '12px' }}>
-            <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: '#111827', mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: '12px' }}>
+            <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: 'text.primary', mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
               <BarChart3 className="w-4 h-4" style={{ color: '#3b82f6' }} />
               Request Volume
             </Typography>
@@ -203,9 +206,9 @@ export default function Dashboard() {
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                    <XAxis dataKey="time" tickFormatter={formatTime} tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
-                    <Tooltip labelFormatter={(label) => new Date(label).toLocaleString()} contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '12px' }} />
+                    <XAxis dataKey="time" tickFormatter={formatTime} tick={{ fontSize: 11, fill: 'var(--mui-palette-text-disabled)' }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 11, fill: 'var(--mui-palette-text-disabled)' }} axisLine={false} tickLine={false} />
+                    <Tooltip labelFormatter={(label) => new Date(label).toLocaleString()} contentStyle={tooltipStyle} />
                     <Area type="monotone" dataKey="requests" stroke="#3b82f6" strokeWidth={2} fill="url(#requestGradient)" />
                   </AreaChart>
                 </ResponsiveContainer>
@@ -215,8 +218,8 @@ export default function Dashboard() {
         </Grid>
 
         <Grid size={{ xs: 12, lg: 6 }}>
-          <Paper elevation={0} sx={{ p: 3, border: '1px solid #e5e7eb', borderRadius: '12px' }}>
-            <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: '#111827', mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: '12px' }}>
+            <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: 'text.primary', mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
               <Clock className="w-4 h-4" style={{ color: '#8b5cf6' }} />
               Latency Distribution
             </Typography>
@@ -227,9 +230,9 @@ export default function Dashboard() {
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={timeSeries?.latency || []}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                    <XAxis dataKey="time" tickFormatter={formatTime} tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} unit="ms" />
-                    <Tooltip labelFormatter={(label) => new Date(label).toLocaleString()} contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '12px' }} />
+                    <XAxis dataKey="time" tickFormatter={formatTime} tick={{ fontSize: 11, fill: 'var(--mui-palette-text-disabled)' }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 11, fill: 'var(--mui-palette-text-disabled)' }} axisLine={false} tickLine={false} unit="ms" />
+                    <Tooltip labelFormatter={(label) => new Date(label).toLocaleString()} contentStyle={tooltipStyle} />
                     <Legend iconType="line" wrapperStyle={{ fontSize: '11px' }} />
                     <Line type="monotone" dataKey="p50_ms" name="P50" stroke="#10b981" strokeWidth={2} dot={false} />
                     <Line type="monotone" dataKey="p90_ms" name="P90" stroke="#f59e0b" strokeWidth={2} dot={false} />
@@ -245,8 +248,8 @@ export default function Dashboard() {
       {/* Charts Row 2 */}
       <Grid container spacing={3} sx={{ mb: 3 }}>
         <Grid size={{ xs: 12, lg: 6 }}>
-          <Paper elevation={0} sx={{ p: 3, border: '1px solid #e5e7eb', borderRadius: '12px' }}>
-            <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: '#111827', mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: '12px' }}>
+            <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: 'text.primary', mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
               <DollarSign className="w-4 h-4" style={{ color: '#10b981' }} />
               Cost by Provider
             </Typography>
@@ -268,7 +271,7 @@ export default function Dashboard() {
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
-                  <Tooltip formatter={(value: number) => [`$${value.toFixed(4)}`, 'Cost']} contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '12px' }} />
+                  <Tooltip formatter={(value: number) => [`$${value.toFixed(4)}`, 'Cost']} contentStyle={tooltipStyle} />
                 </PieChart>
               </ResponsiveContainer>
             </Box>
@@ -276,8 +279,8 @@ export default function Dashboard() {
         </Grid>
 
         <Grid size={{ xs: 12, lg: 6 }}>
-          <Paper elevation={0} sx={{ p: 3, border: '1px solid #e5e7eb', borderRadius: '12px' }}>
-            <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: '#111827', mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: '12px' }}>
+            <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: 'text.primary', mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
               <Server className="w-4 h-4" style={{ color: '#3b82f6' }} />
               Model Performance
             </Typography>
@@ -285,9 +288,9 @@ export default function Dashboard() {
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={modelData?.models || []} layout="vertical">
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                  <XAxis type="number" tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
-                  <YAxis type="category" dataKey="model" tick={{ fontSize: 11, fill: '#6b7280' }} axisLine={false} tickLine={false} width={120} />
-                  <Tooltip contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '12px' }} />
+                  <XAxis type="number" tick={{ fontSize: 11, fill: 'var(--mui-palette-text-disabled)' }} axisLine={false} tickLine={false} />
+                  <YAxis type="category" dataKey="model" tick={{ fontSize: 11, fill: 'var(--mui-palette-text-secondary)' }} axisLine={false} tickLine={false} width={120} />
+                  <Tooltip contentStyle={tooltipStyle} />
                   <Legend wrapperStyle={{ fontSize: '11px' }} />
                   <Bar dataKey="requests" name="Requests" fill="#3b82f6" radius={[0, 4, 4, 0]} />
                 </BarChart>
@@ -300,8 +303,8 @@ export default function Dashboard() {
       {/* Charts Row 3 */}
       <Grid container spacing={3} sx={{ mb: 3 }}>
         <Grid size={{ xs: 12, lg: 6 }}>
-          <Paper elevation={0} sx={{ p: 3, border: '1px solid #e5e7eb', borderRadius: '12px' }}>
-            <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: '#111827', mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: '12px' }}>
+            <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: 'text.primary', mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
               <TrendingUp className="w-4 h-4" style={{ color: '#10b981' }} />
               Cost Trend
             </Typography>
@@ -318,9 +321,9 @@ export default function Dashboard() {
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                    <XAxis dataKey="time" tickFormatter={formatTime} tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} tickFormatter={(v) => `$${v}`} />
-                    <Tooltip labelFormatter={(label) => new Date(label).toLocaleString()} formatter={(value: number) => [`$${value.toFixed(4)}`, 'Cost']} contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '12px' }} />
+                    <XAxis dataKey="time" tickFormatter={formatTime} tick={{ fontSize: 11, fill: 'var(--mui-palette-text-disabled)' }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 11, fill: 'var(--mui-palette-text-disabled)' }} axisLine={false} tickLine={false} tickFormatter={(v) => `$${v}`} />
+                    <Tooltip labelFormatter={(label) => new Date(label).toLocaleString()} formatter={(value: number) => [`$${value.toFixed(4)}`, 'Cost']} contentStyle={tooltipStyle} />
                     <Area type="monotone" dataKey="cost" stroke="#10b981" strokeWidth={2} fill="url(#costGradient)" />
                   </AreaChart>
                 </ResponsiveContainer>
@@ -330,8 +333,8 @@ export default function Dashboard() {
         </Grid>
 
         <Grid size={{ xs: 12, lg: 6 }}>
-          <Paper elevation={0} sx={{ p: 3, border: '1px solid #e5e7eb', borderRadius: '12px' }}>
-            <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: '#111827', mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: '12px' }}>
+            <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: 'text.primary', mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
               <AlertCircle className="w-4 h-4" style={{ color: '#ef4444' }} />
               Error Trend
             </Typography>
@@ -342,9 +345,9 @@ export default function Dashboard() {
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={timeSeries?.errors || []}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                    <XAxis dataKey="time" tickFormatter={formatTime} tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} allowDecimals={false} />
-                    <Tooltip labelFormatter={(label) => new Date(label).toLocaleString()} contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '12px' }} />
+                    <XAxis dataKey="time" tickFormatter={formatTime} tick={{ fontSize: 11, fill: 'var(--mui-palette-text-disabled)' }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 11, fill: 'var(--mui-palette-text-disabled)' }} axisLine={false} tickLine={false} allowDecimals={false} />
+                    <Tooltip labelFormatter={(label) => new Date(label).toLocaleString()} contentStyle={tooltipStyle} />
                     <Bar dataKey="errors" name="Errors" fill="#ef4444" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
@@ -357,8 +360,8 @@ export default function Dashboard() {
       {/* Bottom Row: Workers + Latency Percentiles + Cost by Model */}
       <Grid container spacing={3}>
         <Grid size={{ xs: 12, lg: 4 }}>
-          <Paper elevation={0} sx={{ p: 3, border: '1px solid #e5e7eb', borderRadius: '12px' }}>
-            <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: '#111827', mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: '12px' }}>
+            <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: 'text.primary', mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
               <Server className="w-4 h-4" style={{ color: '#3b82f6' }} />
               Worker Pool
             </Typography>
@@ -366,13 +369,13 @@ export default function Dashboard() {
               <MetricBar label="Idle" value={workers.idle || 0} max={workers.total || 10} color="#10b981" />
               <MetricBar label="Busy" value={workers.busy || 0} max={workers.total || 10} color="#3b82f6" />
               <MetricBar label="Unhealthy" value={workers.unhealthy || 0} max={workers.total || 10} color="#ef4444" />
-              <Box sx={{ pt: 1.5, borderTop: '1px solid #f3f4f6' }}>
+              <Box sx={{ pt: 1.5, borderTop: '1px solid', borderColor: 'divider' }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-                  <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>Queue Utilization</Typography>
+                  <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>Queue Utilization</Typography>
                   <Typography sx={{ fontSize: '0.75rem', fontWeight: 700 }}>{(workers.utilization || 0).toFixed(1)}%</Typography>
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>Queued Jobs</Typography>
+                  <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>Queued Jobs</Typography>
                   <Typography sx={{ fontSize: '0.75rem', fontWeight: 700 }}>{workers.queued_jobs || 0}</Typography>
                 </Box>
               </Box>
@@ -381,8 +384,8 @@ export default function Dashboard() {
         </Grid>
 
         <Grid size={{ xs: 12, lg: 4 }}>
-          <Paper elevation={0} sx={{ p: 3, border: '1px solid #e5e7eb', borderRadius: '12px' }}>
-            <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: '#111827', mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: '12px' }}>
+            <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: 'text.primary', mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
               <Clock className="w-4 h-4" style={{ color: '#8b5cf6' }} />
               Latency Percentiles
             </Typography>
@@ -391,9 +394,9 @@ export default function Dashboard() {
               <MetricBar label="P90" value={latency.p90_ms || 0} max={latency.p99_ms || 100} color="#f59e0b" unit="ms" />
               <MetricBar label="P95" value={latency.p95_ms || 0} max={latency.p99_ms || 100} color="#f97316" unit="ms" />
               <MetricBar label="P99" value={latency.p99_ms || 0} max={latency.p99_ms || 100} color="#ef4444" unit="ms" />
-              <Box sx={{ pt: 1.5, borderTop: '1px solid #f3f4f6' }}>
+              <Box sx={{ pt: 1.5, borderTop: '1px solid', borderColor: 'divider' }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>Min / Max</Typography>
+                  <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>Min / Max</Typography>
                   <Typography sx={{ fontSize: '0.75rem', fontWeight: 700 }}>{latency.min_ms || 0}ms / {latency.max_ms || 0}ms</Typography>
                 </Box>
               </Box>
@@ -402,8 +405,8 @@ export default function Dashboard() {
         </Grid>
 
         <Grid size={{ xs: 12, lg: 4 }}>
-          <Paper elevation={0} sx={{ p: 3, border: '1px solid #e5e7eb', borderRadius: '12px' }}>
-            <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: '#111827', mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: '12px' }}>
+            <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: 'text.primary', mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
               <Zap className="w-4 h-4" style={{ color: '#f59e0b' }} />
               Cost by Model
             </Typography>
@@ -412,17 +415,17 @@ export default function Dashboard() {
                 <Box key={idx} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', py: 1 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <Box sx={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: COLORS[idx % COLORS.length] }} />
-                    <Typography sx={{ fontSize: '0.8rem', fontWeight: 500, color: '#374151', maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <Typography sx={{ fontSize: '0.8rem', fontWeight: 500, color: 'text.primary', maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {item.name}
                     </Typography>
                   </Box>
-                  <Typography sx={{ fontSize: '0.8rem', fontWeight: 700, color: '#111827' }}>
+                  <Typography sx={{ fontSize: '0.8rem', fontWeight: 700, color: 'text.primary' }}>
                     ${item.value?.toFixed(4)}
                   </Typography>
                 </Box>
               ))}
               {(costData?.by_model || []).length === 0 && (
-                <Typography sx={{ fontSize: '0.8rem', color: '#9ca3af', textAlign: 'center', py: 4 }}>No cost data yet</Typography>
+                <Typography sx={{ fontSize: '0.8rem', color: 'text.disabled', textAlign: 'center', py: 4 }}>No cost data yet</Typography>
               )}
             </Box>
           </Paper>
@@ -439,7 +442,7 @@ function MetricBar({ label, value, max, color, unit }: {
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-        <Typography sx={{ fontSize: '0.75rem', fontWeight: 500, color: '#6b7280' }}>{label}</Typography>
+        <Typography sx={{ fontSize: '0.75rem', fontWeight: 500, color: 'text.secondary' }}>{label}</Typography>
         <Typography sx={{ fontSize: '0.75rem', fontWeight: 700 }}>{value}{unit ? unit : `/${max}`}</Typography>
       </Box>
       <LinearProgress
@@ -448,7 +451,7 @@ function MetricBar({ label, value, max, color, unit }: {
         sx={{
           height: 6,
           borderRadius: 3,
-          backgroundColor: '#f3f4f6',
+          backgroundColor: 'action.hover',
           '& .MuiLinearProgress-bar': { backgroundColor: color, borderRadius: 3 },
         }}
       />

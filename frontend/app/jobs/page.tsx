@@ -110,8 +110,8 @@ export default function JobsPage() {
       <Grid container spacing={3}>
         {/* Submit Job Form */}
         <Grid size={{ xs: 12, lg: 6 }}>
-          <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3 }}>
-            <Typography variant="h6" sx={{ fontSize: '1.1rem', fontWeight: 600, color: '#111827', mb: 3 }}>
+          <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3 }}>
+            <Typography variant="h6" sx={{ fontSize: '1.1rem', fontWeight: 600, color: 'text.primary', mb: 3 }}>
               Submit New Job
             </Typography>
 
@@ -205,19 +205,19 @@ export default function JobsPage() {
 
         {/* Job Queue */}
         <Grid size={{ xs: 12, lg: 6 }}>
-          <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3 }}>
+          <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
-              <Typography variant="h6" sx={{ fontSize: '1.1rem', fontWeight: 600, color: '#111827' }}>
+              <Typography variant="h6" sx={{ fontSize: '1.1rem', fontWeight: 600, color: 'text.primary' }}>
                 Job Queue
               </Typography>
-              <Typography sx={{ fontSize: '0.875rem', color: '#6b7280' }}>
+              <Typography sx={{ fontSize: '0.875rem', color: 'text.secondary' }}>
                 {jobs.length} jobs
               </Typography>
             </Box>
 
             <Box sx={{ maxHeight: 600, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 2 }}>
               {jobs.length === 0 ? (
-                <Box sx={{ textAlign: 'center', py: 6, color: '#6b7280' }}>
+                <Box sx={{ textAlign: 'center', py: 6, color: 'text.secondary' }}>
                   <Typography>No jobs submitted yet</Typography>
                   <Typography sx={{ fontSize: '0.875rem', mt: 1 }}>Submit a job to get started</Typography>
                 </Box>
@@ -254,13 +254,13 @@ function JobCard({ job, onCancel }: { job: JobStatus; onCancel: (id: string) => 
   const getStatusChipSx = () => {
     switch (job.status) {
       case 'completed':
-        return { backgroundColor: '#ecfdf5', color: '#059669' };
+        return { backgroundColor: 'rgba(16,185,129,0.1)', color: '#059669' };
       case 'failed':
       case 'timeout':
       case 'cancelled':
-        return { backgroundColor: '#fef2f2', color: '#dc2626' };
+        return { backgroundColor: 'rgba(239,68,68,0.1)', color: '#dc2626' };
       case 'running':
-        return { backgroundColor: '#eff6ff', color: '#2563eb' };
+        return { backgroundColor: 'rgba(59,130,246,0.1)', color: '#2563eb' };
       default:
         return { backgroundColor: '#fefce8', color: '#ca8a04' };
     }
@@ -269,13 +269,13 @@ function JobCard({ job, onCancel }: { job: JobStatus; onCancel: (id: string) => 
   const getPriorityChipSx = () => {
     switch (job.priority) {
       case 'critical':
-        return { backgroundColor: '#fef2f2', color: '#dc2626' };
+        return { backgroundColor: 'rgba(239,68,68,0.1)', color: '#dc2626' };
       case 'high':
-        return { backgroundColor: '#fff7ed', color: '#ea580c' };
+        return { backgroundColor: 'rgba(245,158,11,0.1)', color: '#ea580c' };
       case 'normal':
-        return { backgroundColor: '#eff6ff', color: '#2563eb' };
+        return { backgroundColor: 'rgba(59,130,246,0.1)', color: '#2563eb' };
       default:
-        return { backgroundColor: '#f3f4f6', color: '#6b7280' };
+        return { backgroundColor: 'action.hover', color: 'text.secondary' };
     }
   };
 
@@ -283,7 +283,7 @@ function JobCard({ job, onCancel }: { job: JobStatus; onCancel: (id: string) => 
     <Paper
       elevation={0}
       sx={{
-        border: '1px solid #e5e7eb',
+        border: '1px solid', borderColor: 'divider',
         borderRadius: '12px',
         p: 2,
         transition: 'box-shadow 0.2s',
@@ -294,10 +294,10 @@ function JobCard({ job, onCancel }: { job: JobStatus; onCancel: (id: string) => 
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
           {getStatusIcon()}
           <Box>
-            <Typography sx={{ fontFamily: 'monospace', fontSize: '0.875rem', color: '#111827' }}>
+            <Typography sx={{ fontFamily: 'monospace', fontSize: '0.875rem', color: 'text.primary' }}>
               {job.job_id}
             </Typography>
-            <Typography sx={{ fontSize: '0.75rem', color: '#6b7280' }}>{job.type}</Typography>
+            <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>{job.type}</Typography>
           </Box>
         </Box>
 
@@ -309,7 +309,7 @@ function JobCard({ job, onCancel }: { job: JobStatus; onCancel: (id: string) => 
 
       {/* Timing Info */}
       {job.duration_ms && (
-        <Typography sx={{ fontSize: '0.75rem', color: '#6b7280', mb: 0.5 }}>
+        <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary', mb: 0.5 }}>
           Duration: {job.duration_ms}ms
           {job.wait_time_ms && ` | Wait: ${job.wait_time_ms}ms`}
         </Typography>
@@ -317,7 +317,7 @@ function JobCard({ job, onCancel }: { job: JobStatus; onCancel: (id: string) => 
 
       {/* Worker ID */}
       {job.worker_id && (
-        <Typography sx={{ fontSize: '0.75rem', color: '#6b7280', mb: 0.5 }}>
+        <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary', mb: 0.5 }}>
           Worker: {job.worker_id}
         </Typography>
       )}

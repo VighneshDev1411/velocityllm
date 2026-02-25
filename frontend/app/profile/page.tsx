@@ -63,7 +63,7 @@ export default function ProfilePage() {
       <Box sx={{ p: { xs: 2, sm: 3 }, display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
         <Box sx={{ textAlign: 'center' }}>
           <CircularProgress size={40} />
-          <Typography sx={{ mt: 2, color: '#6b7280' }}>Loading profile...</Typography>
+          <Typography sx={{ mt: 2, color: 'text.secondary' }}>Loading profile...</Typography>
         </Box>
       </Box>
     );
@@ -132,11 +132,11 @@ export default function ProfilePage() {
   const getRoleChipProps = (role: string) => {
     switch (role) {
       case 'admin':
-        return { bg: '#fef2f2', color: '#991b1b' };
+        return { bg: 'rgba(239,68,68,0.1)', color: 'error.dark' };
       case 'developer':
         return { bg: '#f5f3ff', color: '#5b21b6' };
       default:
-        return { bg: '#eff6ff', color: '#1e40af' };
+        return { bg: 'rgba(59,130,246,0.1)', color: 'primary.dark' };
     }
   };
 
@@ -181,9 +181,9 @@ export default function ProfilePage() {
       )}
 
       {/* Profile Information Card */}
-      <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3, mb: 3 }}>
+      <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3, mb: 3 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
-          <Typography sx={{ fontSize: '1.1rem', fontWeight: 600, color: '#111827' }}>
+          <Typography sx={{ fontSize: '1.1rem', fontWeight: 600, color: 'text.primary' }}>
             Profile Information
           </Typography>
           {!isEditing ? (
@@ -226,7 +226,7 @@ export default function ProfilePage() {
         </Box>
 
         {/* Avatar Section */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2.5, pb: 3, mb: 3, borderBottom: '1px solid #e5e7eb' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2.5, pb: 3, mb: 3, borderBottom: '1px solid', borderColor: 'divider' }}>
           <Avatar
             sx={{
               width: 72,
@@ -239,12 +239,12 @@ export default function ProfilePage() {
             {user.first_name?.[0]?.toUpperCase() || user.username?.[0]?.toUpperCase() || 'U'}
           </Avatar>
           <Box>
-            <Typography sx={{ fontSize: '1.1rem', fontWeight: 600, color: '#111827' }}>
+            <Typography sx={{ fontSize: '1.1rem', fontWeight: 600, color: 'text.primary' }}>
               {user.first_name || user.last_name
                 ? `${user.first_name} ${user.last_name}`.trim()
                 : user.username}
             </Typography>
-            <Typography sx={{ fontSize: '0.875rem', color: '#6b7280' }}>{user.email}</Typography>
+            <Typography sx={{ fontSize: '0.875rem', color: 'text.secondary' }}>{user.email}</Typography>
             <Chip
               label={user.role.charAt(0).toUpperCase() + user.role.slice(1)}
               size="small"
@@ -262,7 +262,7 @@ export default function ProfilePage() {
         {/* Editable Fields */}
         <Grid container spacing={2.5}>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Typography sx={{ fontSize: '0.8rem', fontWeight: 500, color: '#374151', mb: 0.75, display: 'flex', alignItems: 'center', gap: 0.5 }}>
+            <Typography sx={{ fontSize: '0.8rem', fontWeight: 500, color: 'text.primary', mb: 0.75, display: 'flex', alignItems: 'center', gap: 0.5 }}>
               <User style={{ width: 14, height: 14 }} />
               First Name
             </Typography>
@@ -276,12 +276,12 @@ export default function ProfilePage() {
                 sx={{ '& .MuiOutlinedInput-root': { borderRadius: '8px' } }}
               />
             ) : (
-              <Typography sx={{ color: '#111827' }}>{user.first_name || 'Not set'}</Typography>
+              <Typography sx={{ color: 'text.primary' }}>{user.first_name || 'Not set'}</Typography>
             )}
           </Grid>
 
           <Grid size={{ xs: 12, md: 6 }}>
-            <Typography sx={{ fontSize: '0.8rem', fontWeight: 500, color: '#374151', mb: 0.75, display: 'flex', alignItems: 'center', gap: 0.5 }}>
+            <Typography sx={{ fontSize: '0.8rem', fontWeight: 500, color: 'text.primary', mb: 0.75, display: 'flex', alignItems: 'center', gap: 0.5 }}>
               <User style={{ width: 14, height: 14 }} />
               Last Name
             </Typography>
@@ -295,38 +295,38 @@ export default function ProfilePage() {
                 sx={{ '& .MuiOutlinedInput-root': { borderRadius: '8px' } }}
               />
             ) : (
-              <Typography sx={{ color: '#111827' }}>{user.last_name || 'Not set'}</Typography>
+              <Typography sx={{ color: 'text.primary' }}>{user.last_name || 'Not set'}</Typography>
             )}
           </Grid>
 
           <Grid size={{ xs: 12, md: 6 }}>
-            <Typography sx={{ fontSize: '0.8rem', fontWeight: 500, color: '#374151', mb: 0.75, display: 'flex', alignItems: 'center', gap: 0.5 }}>
+            <Typography sx={{ fontSize: '0.8rem', fontWeight: 500, color: 'text.primary', mb: 0.75, display: 'flex', alignItems: 'center', gap: 0.5 }}>
               <Mail style={{ width: 14, height: 14 }} />
               Email
             </Typography>
-            <Typography sx={{ color: '#111827' }}>{user.email}</Typography>
-            <Typography sx={{ fontSize: '0.7rem', color: '#9ca3af', mt: 0.25 }}>Email cannot be changed</Typography>
+            <Typography sx={{ color: 'text.primary' }}>{user.email}</Typography>
+            <Typography sx={{ fontSize: '0.7rem', color: 'text.disabled', mt: 0.25 }}>Email cannot be changed</Typography>
           </Grid>
 
           <Grid size={{ xs: 12, md: 6 }}>
-            <Typography sx={{ fontSize: '0.8rem', fontWeight: 500, color: '#374151', mb: 0.75, display: 'flex', alignItems: 'center', gap: 0.5 }}>
+            <Typography sx={{ fontSize: '0.8rem', fontWeight: 500, color: 'text.primary', mb: 0.75, display: 'flex', alignItems: 'center', gap: 0.5 }}>
               <Shield style={{ width: 14, height: 14 }} />
               Username
             </Typography>
-            <Typography sx={{ color: '#111827' }}>{user.username}</Typography>
-            <Typography sx={{ fontSize: '0.7rem', color: '#9ca3af', mt: 0.25 }}>Username cannot be changed</Typography>
+            <Typography sx={{ color: 'text.primary' }}>{user.username}</Typography>
+            <Typography sx={{ fontSize: '0.7rem', color: 'text.disabled', mt: 0.25 }}>Username cannot be changed</Typography>
           </Grid>
 
           <Grid size={{ xs: 12, md: 6 }}>
-            <Typography sx={{ fontSize: '0.8rem', fontWeight: 500, color: '#374151', mb: 0.75, display: 'flex', alignItems: 'center', gap: 0.5 }}>
+            <Typography sx={{ fontSize: '0.8rem', fontWeight: 500, color: 'text.primary', mb: 0.75, display: 'flex', alignItems: 'center', gap: 0.5 }}>
               <Calendar style={{ width: 14, height: 14 }} />
               Member Since
             </Typography>
-            <Typography sx={{ color: '#111827' }}>{formatDate(user.created_at)}</Typography>
+            <Typography sx={{ color: 'text.primary' }}>{formatDate(user.created_at)}</Typography>
           </Grid>
 
           <Grid size={{ xs: 12, md: 6 }}>
-            <Typography sx={{ fontSize: '0.8rem', fontWeight: 500, color: '#374151', mb: 0.75, display: 'flex', alignItems: 'center', gap: 0.5 }}>
+            <Typography sx={{ fontSize: '0.8rem', fontWeight: 500, color: 'text.primary', mb: 0.75, display: 'flex', alignItems: 'center', gap: 0.5 }}>
               <Shield style={{ width: 14, height: 14 }} />
               Account Status
             </Typography>
@@ -334,7 +334,7 @@ export default function ProfilePage() {
               label={user.active ? 'Active' : 'Inactive'}
               size="small"
               sx={{
-                backgroundColor: user.active ? '#ecfdf5' : '#fef2f2',
+                backgroundColor: user.active ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)',
                 color: user.active ? '#15803d' : '#991b1b',
                 fontWeight: 500,
                 fontSize: '0.75rem',
@@ -345,13 +345,13 @@ export default function ProfilePage() {
       </Paper>
 
       {/* Change Password Card */}
-      <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3, mb: 3 }}>
+      <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3, mb: 3 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
           <Box>
-            <Typography sx={{ fontSize: '1.1rem', fontWeight: 600, color: '#111827' }}>
+            <Typography sx={{ fontSize: '1.1rem', fontWeight: 600, color: 'text.primary' }}>
               Change Password
             </Typography>
-            <Typography sx={{ fontSize: '0.8rem', color: '#6b7280', mt: 0.25 }}>
+            <Typography sx={{ fontSize: '0.8rem', color: 'text.secondary', mt: 0.25 }}>
               Update your password to keep your account secure
             </Typography>
           </Box>
@@ -431,24 +431,24 @@ export default function ProfilePage() {
       </Paper>
 
       {/* Account Info Card */}
-      <Paper elevation={0} sx={{ border: '1px solid #e5e7eb', borderRadius: '12px', p: 3 }}>
-        <Typography sx={{ fontSize: '1.1rem', fontWeight: 600, color: '#111827', mb: 2.5 }}>
+      <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3 }}>
+        <Typography sx={{ fontSize: '1.1rem', fontWeight: 600, color: 'text.primary', mb: 2.5 }}>
           Account Information
         </Typography>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Typography sx={{ fontSize: '0.875rem', color: '#6b7280' }}>User ID:</Typography>
-            <Typography sx={{ fontSize: '0.875rem', fontFamily: 'monospace', color: '#111827' }}>{user.id}</Typography>
+            <Typography sx={{ fontSize: '0.875rem', color: 'text.secondary' }}>User ID:</Typography>
+            <Typography sx={{ fontSize: '0.875rem', fontFamily: 'monospace', color: 'text.primary' }}>{user.id}</Typography>
           </Box>
           <Divider />
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Typography sx={{ fontSize: '0.875rem', color: '#6b7280' }}>Role:</Typography>
-            <Typography sx={{ fontSize: '0.875rem', color: '#111827' }}>{user.role}</Typography>
+            <Typography sx={{ fontSize: '0.875rem', color: 'text.secondary' }}>Role:</Typography>
+            <Typography sx={{ fontSize: '0.875rem', color: 'text.primary' }}>{user.role}</Typography>
           </Box>
           <Divider />
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Typography sx={{ fontSize: '0.875rem', color: '#6b7280' }}>Account Created:</Typography>
-            <Typography sx={{ fontSize: '0.875rem', color: '#111827' }}>{formatDate(user.created_at)}</Typography>
+            <Typography sx={{ fontSize: '0.875rem', color: 'text.secondary' }}>Account Created:</Typography>
+            <Typography sx={{ fontSize: '0.875rem', color: 'text.primary' }}>{formatDate(user.created_at)}</Typography>
           </Box>
         </Box>
       </Paper>
