@@ -69,3 +69,35 @@ func (Model) TableName() string {
 func (CacheEntry) TableName() string {
 	return "cache_entries"
 }
+
+// Conversation represents a multi-turn chat conversation
+type Conversation struct {
+	BaseModel
+	Title      string    `gorm:"type:varchar(255);not null;default:'New Chat'" json:"title"`
+	Model      string    `gorm:"type:varchar(100);not null;default:'gpt-3.5-turbo'" json:"model"`
+	UserID     string    `gorm:"type:varchar(100);index" json:"user_id,omitempty"`
+	MessageCnt int       `gorm:"not null;default:0" json:"message_count"`
+	TotalTokens int      `gorm:"not null;default:0" json:"total_tokens"`
+	TotalCost  float64   `gorm:"type:decimal(10,6);not null;default:0" json:"total_cost"`
+	Messages   []Message `gorm:"foreignKey:ConversationID;constraint:OnDelete:CASCADE" json:"messages,omitempty"`
+}
+
+// Message represents a single message in a conversation
+type Message struct {
+	BaseModel
+	ConversationID uuid.UUID `gorm:"type:uuid;not null;index" json:"conversation_id"`
+	Role           string    `gorm:"type:varchar(20);not null" json:"role"` // user, assistant, system
+	Content        string    `gorm:"type:text;not null" json:"content"`
+	TokenCount     int       `gorm:"not null;default:0" json:"token_count"`
+	Cost           float64   `gorm:"type:decimal(10,6);not null;default:0" json:"cost"`
+	Model          string    `gorm:"type:varchar(100)" json:"model,omitempty"`
+	Latency        int       `gorm:"not null;default:0" json:"latency"` // ms
+}
+
+func (Conversation) TableName() string {
+	return "conversations"
+}
+
+func (Message) TableName() string {
+	return "messages"
+}

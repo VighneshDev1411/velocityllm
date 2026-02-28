@@ -77,6 +77,8 @@ func Migrate() error {
 		&types.Request{},
 		&types.Model{},
 		&types.CacheEntry{},
+		&types.Conversation{},
+		&types.Message{},
 	)
 
 	if err != nil {

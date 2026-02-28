@@ -59,6 +59,24 @@ func (p *Provider) AvailableProviders() []string {
 	return providers
 }
 
+// ChatStreamComplete routes a multi-turn streaming request to the appropriate provider
+func (p *Provider) ChatStreamComplete(messages []ChatMessage, model string, temperature float64, maxTokens int, topP float64, onToken func(string) error) (*CompletionResult, error) {
+	if IsAnthropicModel(model) && p.anthropic.IsAvailable() {
+		return p.anthropic.ChatStreamComplete(messages, model, temperature, maxTokens, topP, onToken)
+	}
+
+	if p.openai.IsAvailable() {
+		// Fallback: concatenate messages into a single prompt for OpenAI
+		prompt := ""
+		for _, m := range messages {
+			prompt += fmt.Sprintf("%s: %s\n", m.Role, m.Content)
+		}
+		return p.openai.StreamComplete(prompt, model, temperature, maxTokens, topP, onToken)
+	}
+
+	return nil, fmt.Errorf("no LLM provider available for model: %s", model)
+}
+
 // Global provider
 var globalProvider *Provider
 

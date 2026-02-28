@@ -2,8 +2,10 @@ package api
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/VighneshDev1411/velocityllm/internal/auth"
+	"github.com/VighneshDev1411/velocityllm/pkg/types"
 	"github.com/VighneshDev1411/velocityllm/pkg/utils"
 )
 
@@ -361,6 +363,40 @@ func SetupRoutes() {
 	http.Handle("/api/v1/admin/dashboard/overview", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(AdminDashboardOverviewHandler))))
 	http.Handle("/api/v1/admin/dashboard/events", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(AdminRecentEventsHandler))))
 	http.Handle("/api/v1/admin/dashboard/database", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(AdminDatabaseStatsHandler))))
+
+	// ============================================
+	// CHAT ENDPOINTS (Day 36)
+	// ============================================
+
+	http.HandleFunc("/api/v1/chat/conversations", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			ListConversationsHandler(w, r)
+		case http.MethodPost:
+			CreateConversationHandler(w, r)
+		default:
+			types.WriteError(w, http.StatusMethodNotAllowed, "Method not allowed")
+		}
+	})
+	http.HandleFunc("/api/v1/chat/conversations/", func(w http.ResponseWriter, r *http.Request) {
+		path := r.URL.Path
+		switch {
+		case strings.HasSuffix(path, "/send"):
+			ChatSendHandler(w, r)
+		case strings.HasSuffix(path, "/rename"):
+			RenameConversationHandler(w, r)
+		default:
+			switch r.Method {
+			case http.MethodGet:
+				GetConversationHandler(w, r)
+			case http.MethodDelete:
+				DeleteConversationHandler(w, r)
+			default:
+				types.WriteError(w, http.StatusMethodNotAllowed, "Method not allowed")
+			}
+		}
+	})
+	http.HandleFunc("/api/v1/chat/stats", ChatStatsHandler)
 
 	// ============================================
 	// LOAD BALANCER ENDPOINTS (Day 33)

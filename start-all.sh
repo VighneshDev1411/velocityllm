@@ -1,195 +1,143 @@
 #!/bin/bash
 
-# VelocityLLM - Start All Services in One Command
+# VelocityLLM — Start All Services
 # Usage: ./start-all.sh
+# Stop:  Ctrl+C (cleans up all child processes)
 
-set -e
+ROOT_DIR="$(cd "$(dirname "$0")" && pwd)"
+cd "$ROOT_DIR"
 
-BOLD='\033[1m'
 GREEN='\033[0;32m'
 RED='\033[0;31m'
 YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
+DIM='\033[2m'
 NC='\033[0m'
 
-echo -e "${BOLD}${BLUE}"
-echo "╔═══════════════════════════════════════════════════════╗"
-echo "║         🚀 VelocityLLM - Starting All Services       ║"
-echo "╚═══════════════════════════════════════════════════════╝"
-echo -e "${NC}"
+PIDS=()
 
-# Function to check if port is in use
-check_port() {
-    local port=$1
-    if lsof -ti:$port >/dev/null 2>&1; then
-        return 0
-    else
-        return 1
-    fi
-}
-
-# Function to wait for service
-wait_for_service() {
-    local name=$1
-    local port=$2
-    local max_wait=$3
-
-    echo -n "Waiting for $name to start..."
-    for i in $(seq 1 $max_wait); do
-        if check_port $port; then
-            echo -e " ${GREEN}✓${NC}"
-            return 0
-        fi
-        sleep 1
-        echo -n "."
+# ── Cleanup on Ctrl+C or exit ────────────────────────────────────────────────
+cleanup() {
+    echo ""
+    echo -e "${DIM}Shutting down...${NC}"
+    for pid in "${PIDS[@]}"; do
+        kill "$pid" 2>/dev/null
     done
-    echo -e " ${RED}✗ Timeout${NC}"
+    wait 2>/dev/null
+    echo -e "${GREEN}All services stopped.${NC}"
+    exit 0
+}
+trap cleanup EXIT INT TERM
+
+check_port() { lsof -ti:"$1" >/dev/null 2>&1; }
+
+wait_for_port() {
+    local name=$1 port=$2 max=$3
+    for i in $(seq 1 "$max"); do
+        check_port "$port" && return 0
+        sleep 1
+    done
     return 1
 }
 
-# Check prerequisites
-echo -e "${BOLD}Checking prerequisites...${NC}"
-
-# Check PostgreSQL
-if ! check_port 5432; then
-    echo -e "${RED}✗ PostgreSQL not running on port 5432${NC}"
-    echo -e "${YELLOW}Start it with: brew services start postgresql@14${NC}"
-    exit 1
-fi
-echo -e "${GREEN}✓${NC} PostgreSQL running"
-
-# Check Redis
-if ! check_port 6379; then
-    echo -e "${RED}✗ Redis not running on port 6379${NC}"
-    echo -e "${YELLOW}Start it with: brew services start redis${NC}"
-    exit 1
-fi
-echo -e "${GREEN}✓${NC} Redis running"
-
-# Load environment variables from .env file
+# ── Load .env ────────────────────────────────────────────────────────────────
 if [ -f ".env" ]; then
-    export $(grep -v '^#' .env | xargs)
-    echo -e "${GREEN}✓${NC} Environment loaded from .env"
+    set -a; source .env; set +a
+    echo -e "${GREEN}ok${NC}  .env loaded"
 fi
 
-# Always rebuild backend to pick up latest changes
-echo -e "${YELLOW}! Building backend...${NC}"
-go build -o bin/server cmd/server/main.go
-echo -e "${GREEN}✓${NC} Backend built successfully"
-
-# Kill existing services
+# ── Prerequisites: PostgreSQL & Redis ────────────────────────────────────────
 echo ""
-echo -e "${BOLD}Cleaning up existing services...${NC}"
-pkill -f "bin/server" 2>/dev/null && echo -e "${GREEN}✓${NC} Stopped old backend" || echo "  No old backend"
-pkill -f "test_server.py" 2>/dev/null && echo -e "${GREEN}✓${NC} Stopped old Python worker" || echo "  No old Python worker"
-pkill -f "next-server" 2>/dev/null && echo -e "${GREEN}✓${NC} Stopped old frontend" || echo "  No old frontend"
+echo "Checking services..."
 
-sleep 2
-
-# Start Backend
-echo ""
-echo -e "${BOLD}Starting services...${NC}"
-echo -e "${BLUE}[1/3]${NC} Starting Backend API..."
-
-DB_USER=vigneshmac DB_PASSWORD="" DB_NAME=velocityllm \
-    ./bin/server > /tmp/velocityllm-backend.log 2>&1 &
-BACKEND_PID=$!
-echo "  PID: $BACKEND_PID"
-
-if wait_for_service "Backend" 8080 10; then
-    echo -e "  ${GREEN}✓ Backend API started successfully${NC}"
+if check_port 5432; then
+    echo -e "${GREEN}ok${NC}  PostgreSQL running"
 else
-    echo -e "  ${RED}✗ Backend failed to start${NC}"
-    echo "  Check logs: tail -f /tmp/velocityllm-backend.log"
+    echo -e "${YELLOW}--${NC}  PostgreSQL not on :5432, trying brew..."
+    brew services start postgresql@14 2>/dev/null || brew services start postgresql 2>/dev/null || true
+    sleep 2
+    if check_port 5432; then
+        echo -e "${GREEN}ok${NC}  PostgreSQL started"
+    else
+        echo -e "${RED}!!${NC}  PostgreSQL failed — start manually: brew services start postgresql@14"
+        exit 1
+    fi
+fi
+
+if check_port 6379; then
+    echo -e "${GREEN}ok${NC}  Redis running"
+else
+    echo -e "${YELLOW}--${NC}  Redis not on :6379, trying brew..."
+    brew services start redis 2>/dev/null || true
+    sleep 1
+    if check_port 6379; then
+        echo -e "${GREEN}ok${NC}  Redis started"
+    else
+        echo -e "${RED}!!${NC}  Redis failed — start manually: brew services start redis"
+        exit 1
+    fi
+fi
+
+# ── Kill old instances ───────────────────────────────────────────────────────
+pkill -f "bin/server" 2>/dev/null || true
+pkill -f "next-server" 2>/dev/null || true
+sleep 1
+
+# ── Build Go backend ────────────────────────────────────────────────────────
+echo ""
+echo "Building backend..."
+go build -o bin/server cmd/server/main.go
+echo -e "${GREEN}ok${NC}  Backend built"
+
+# ── Start Backend ────────────────────────────────────────────────────────────
+echo ""
+echo "Starting services..."
+
+./bin/server > /tmp/velocityllm-backend.log 2>&1 &
+PIDS+=($!)
+if wait_for_port "Backend" 8080 10; then
+    echo -e "${GREEN}ok${NC}  Backend        http://localhost:${SERVER_PORT:-8080}  (PID ${PIDS[-1]})"
+else
+    echo -e "${RED}!!${NC}  Backend failed — check /tmp/velocityllm-backend.log"
     exit 1
 fi
 
-# Start Python Worker
-echo ""
-echo -e "${BLUE}[2/3]${NC} Starting Python Worker..."
-
-cd python_worker
-source venv/bin/activate
-python test_server.py > /tmp/python-worker.log 2>&1 &
-WORKER_PID=$!
-cd ..
-echo "  PID: $WORKER_PID"
-
-if wait_for_service "Python Worker" 50051 10; then
-    echo -e "  ${GREEN}✓ Python Worker started successfully${NC}"
+# ── Start Python Worker (optional) ──────────────────────────────────────────
+if [ -d "$ROOT_DIR/python_worker" ] && [ -f "$ROOT_DIR/python_worker/venv/bin/activate" ]; then
+    (
+        cd "$ROOT_DIR/python_worker"
+        source venv/bin/activate
+        python test_server.py > /tmp/python-worker.log 2>&1
+    ) &
+    PIDS+=($!)
+    if wait_for_port "Worker" 50051 8; then
+        echo -e "${GREEN}ok${NC}  Python Worker  localhost:50051          (PID ${PIDS[-1]})"
+    else
+        echo -e "${YELLOW}--${NC}  Python Worker  skipped (failed to start)"
+    fi
 else
-    echo -e "  ${RED}✗ Python Worker failed to start${NC}"
-    echo "  Check logs: tail -f /tmp/python-worker.log"
+    echo -e "${DIM}--  Python Worker  skipped (no venv found)${NC}"
 fi
 
-# Start Frontend
-echo ""
-echo -e "${BLUE}[3/3]${NC} Starting Frontend..."
-
-cd frontend
-npm run dev > /tmp/velocityllm-frontend.log 2>&1 &
-FRONTEND_PID=$!
-cd ..
-echo "  PID: $FRONTEND_PID"
-
-if wait_for_service "Frontend" 3000 15; then
-    echo -e "  ${GREEN}✓ Frontend started successfully${NC}"
+# ── Start Frontend ───────────────────────────────────────────────────────────
+cd "$ROOT_DIR/frontend"
+npx next dev --port 3000 > /tmp/velocityllm-frontend.log 2>&1 &
+PIDS+=($!)
+cd "$ROOT_DIR"
+if wait_for_port "Frontend" 3000 15; then
+    echo -e "${GREEN}ok${NC}  Frontend       http://localhost:3000     (PID ${PIDS[-1]})"
 else
-    echo -e "  ${RED}✗ Frontend failed to start${NC}"
-    echo "  Check logs: tail -f /tmp/velocityllm-frontend.log"
+    echo -e "${RED}!!${NC}  Frontend failed — check /tmp/velocityllm-frontend.log"
 fi
 
-# Final status
+# ── Done ─────────────────────────────────────────────────────────────────────
 echo ""
-echo -e "${BOLD}${GREEN}"
-echo "╔═══════════════════════════════════════════════════════╗"
-echo "║              ✅ All Services Started!                 ║"
-echo "╚═══════════════════════════════════════════════════════╝"
-echo -e "${NC}"
-
-# Service summary
-echo -e "${BOLD}Service Status:${NC}"
-echo -e "  ${GREEN}✓${NC} Backend API       http://localhost:8080"
-echo -e "  ${GREEN}✓${NC} Python Worker     localhost:50051 (gRPC)"
-echo -e "  ${GREEN}✓${NC} Frontend          http://localhost:3000"
+echo -e "${GREEN}VelocityLLM is running.${NC}"
+echo -e "${DIM}Press Ctrl+C to stop all services.${NC}"
+echo ""
+echo "  Logs:"
+echo "    tail -f /tmp/velocityllm-backend.log"
+echo "    tail -f /tmp/velocityllm-frontend.log"
 echo ""
 
-echo -e "${BOLD}Process IDs:${NC}"
-echo "  Backend:  $BACKEND_PID"
-echo "  Worker:   $WORKER_PID"
-echo "  Frontend: $FRONTEND_PID"
-echo ""
-
-echo -e "${BOLD}Quick Access:${NC}"
-echo -e "  ${BLUE}Dashboard:${NC}    open http://localhost:3000"
-echo -e "  ${BLUE}API Docs:${NC}     open http://localhost:8080/health"
-echo -e "  ${BLUE}Test API:${NC}     ./test_all_features.sh"
-echo ""
-
-echo -e "${BOLD}Monitor Logs:${NC}"
-echo "  tail -f /tmp/velocityllm-backend.log      # Backend"
-echo "  tail -f /tmp/python-worker.log            # Python Worker"
-echo "  tail -f /tmp/velocityllm-frontend.log     # Frontend"
-echo ""
-
-echo -e "${BOLD}Stop Services:${NC}"
-cat > /tmp/stop-velocityllm.sh << 'STOPSCRIPT'
-#!/bin/bash
-echo "🛑 Stopping VelocityLLM services..."
-pkill -f "bin/server" && echo "✓ Backend stopped"
-pkill -f "test_server.py" && echo "✓ Python worker stopped"
-pkill -f "next-server" && echo "✓ Frontend stopped"
-echo "✅ All services stopped"
-STOPSCRIPT
-chmod +x /tmp/stop-velocityllm.sh
-
-echo "  /tmp/stop-velocityllm.sh"
-echo ""
-
-echo -e "${GREEN}Ready to test! Open http://localhost:3000 in your browser${NC}"
-echo ""
-
-# Save PIDs to file for later
-echo "$BACKEND_PID" > /tmp/velocityllm.pids
-echo "$WORKER_PID" >> /tmp/velocityllm.pids
-echo "$FRONTEND_PID" >> /tmp/velocityllm.pids
+# Keep script alive — wait for child processes
+wait

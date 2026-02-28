@@ -255,6 +255,106 @@ func (c *AnthropicClient) StreamComplete(prompt string, model string, temperatur
 	}, nil
 }
 
+// ChatStreamComplete sends a multi-turn streaming messages request
+func (c *AnthropicClient) ChatStreamComplete(messages []ChatMessage, model string, temperature float64, maxTokens int, topP float64, onToken func(token string) error) (*CompletionResult, error) {
+	if !c.IsAvailable() {
+		return nil, fmt.Errorf("Anthropic API key not configured")
+	}
+
+	anthropicModel := mapToAnthropicModel(model)
+
+	// Convert ChatMessages to AnthropicMessages
+	anthropicMsgs := make([]AnthropicMessage, 0, len(messages))
+	for _, m := range messages {
+		if m.Role == "system" {
+			continue // Anthropic handles system differently — skip for now
+		}
+		anthropicMsgs = append(anthropicMsgs, AnthropicMessage{
+			Role:    m.Role,
+			Content: m.Content,
+		})
+	}
+	if len(anthropicMsgs) == 0 {
+		return nil, fmt.Errorf("no messages to send")
+	}
+
+	reqBody := AnthropicRequest{
+		Model:       anthropicModel,
+		MaxTokens:   maxTokens,
+		Messages:    anthropicMsgs,
+		Temperature: temperature,
+		TopP:        topP,
+		Stream:      true,
+	}
+
+	jsonBody, err := json.Marshal(reqBody)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal request: %w", err)
+	}
+
+	start := time.Now()
+
+	req, err := http.NewRequest("POST", anthropicBaseURL, bytes.NewBuffer(jsonBody))
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request: %w", err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("x-api-key", c.apiKey)
+	req.Header.Set("anthropic-version", anthropicVersion)
+
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("request failed: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("Anthropic API error (status %d): %s", resp.StatusCode, string(body))
+	}
+
+	scanner := bufio.NewScanner(resp.Body)
+	var fullResponse strings.Builder
+	tokenCount := 0
+
+	for scanner.Scan() {
+		line := scanner.Text()
+		if line == "" || !strings.HasPrefix(line, "data: ") {
+			continue
+		}
+		data := strings.TrimPrefix(line, "data: ")
+
+		var event AnthropicStreamEvent
+		if err := json.Unmarshal([]byte(data), &event); err != nil {
+			continue
+		}
+
+		switch event.Type {
+		case "content_block_delta":
+			if event.Delta != nil && event.Delta.Text != "" {
+				fullResponse.WriteString(event.Delta.Text)
+				tokenCount++
+				if err := onToken(event.Delta.Text); err != nil {
+					return nil, fmt.Errorf("token callback error: %w", err)
+				}
+			}
+		case "message_stop":
+			// done
+		}
+	}
+
+	latency := time.Since(start).Milliseconds()
+
+	return &CompletionResult{
+		Response:         fullResponse.String(),
+		CompletionTokens: tokenCount,
+		TotalTokens:      tokenCount,
+		Model:            anthropicModel,
+		LatencyMs:        latency,
+	}, nil
+}
+
 // mapToAnthropicModel maps our internal model names to Anthropic API model names
 func mapToAnthropicModel(model string) string {
 	switch model {

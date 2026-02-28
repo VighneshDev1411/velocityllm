@@ -407,3 +407,18 @@ export const adminDashboardAPI = {
   recentEvents: () => api.get('/api/v1/admin/dashboard/events'),
   databaseStats: () => api.get('/api/v1/admin/dashboard/database'),
 };
+
+// Chat API (Day 36)
+export const chatAPI = {
+  listConversations: (limit: number = 50, offset: number = 0) =>
+    api.get(`/api/v1/chat/conversations?limit=${limit}&offset=${offset}`),
+  createConversation: (title?: string, model?: string) =>
+    api.post('/api/v1/chat/conversations', { title, model }),
+  getConversation: (id: string) =>
+    api.get(`/api/v1/chat/conversations/${id}`),
+  renameConversation: (id: string, title: string) =>
+    api.put(`/api/v1/chat/conversations/${id}/rename`, { title }),
+  deleteConversation: (id: string) =>
+    api.delete(`/api/v1/chat/conversations/${id}`),
+  getStats: () => api.get('/api/v1/chat/stats'),
+};

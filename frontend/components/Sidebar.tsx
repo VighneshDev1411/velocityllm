@@ -15,7 +15,7 @@ import IconButton from '@mui/material/IconButton';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import {
-  LayoutDashboard, FlaskConical, BarChart3, Activity,
+  LayoutDashboard, FlaskConical, BarChart3, Activity, MessageSquare,
   Cpu, Briefcase, Radio, Coins, Key, CreditCard, Gauge, Zap, Webhook,
   Shield, Users, ChevronLeft, ChevronRight, Settings, ScrollText, UsersRound,
   BookOpen,
@@ -33,6 +33,7 @@ interface NavItem {
 
 const mainLinks: NavItem[] = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/chat', label: 'Chat', icon: MessageSquare },
   { href: '/playground', label: 'Playground', icon: FlaskConical },
   { href: '/analytics', label: 'Analytics', icon: BarChart3 },
   { href: '/monitoring', label: 'Monitoring', icon: Activity },
