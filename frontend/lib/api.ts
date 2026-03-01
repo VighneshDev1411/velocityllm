@@ -421,6 +421,26 @@ export const ragAPI = {
   getStats: () => api.get('/api/v1/rag/stats'),
 };
 
+// Vector DB API (Day 38)
+export const vectorAPI = {
+  search: (query: string, collectionId?: string, limit: number = 10) =>
+    api.post('/api/v1/vectors/search', { query, collection_id: collectionId, limit }),
+  neighbors: (chunkId: string, limit: number = 5) =>
+    api.post('/api/v1/vectors/neighbors', { chunk_id: chunkId, limit }),
+  projection: (collectionId?: string, limit: number = 500) =>
+    api.post('/api/v1/vectors/projection', { collection_id: collectionId, limit }),
+  getStats: () => api.get('/api/v1/vectors/stats'),
+  listCollections: () => api.get('/api/v1/vectors/collections'),
+  createCollection: (name: string, description: string, color: string) =>
+    api.post('/api/v1/vectors/collections', { name, description, color }),
+  deleteCollection: (id: string) =>
+    api.delete(`/api/v1/vectors/collections/${id}`),
+  addDocToCollection: (collectionId: string, documentId: string) =>
+    api.post(`/api/v1/vectors/collections/${collectionId}/documents`, { document_id: documentId }),
+  removeDocFromCollection: (collectionId: string, documentId: string) =>
+    api.delete(`/api/v1/vectors/collections/${collectionId}/documents/${documentId}`),
+};
+
 // Chat API (Day 36)
 export const chatAPI = {
   listConversations: (limit: number = 50, offset: number = 0) =>

@@ -426,6 +426,35 @@ func SetupRoutes() {
 	http.HandleFunc("/api/v1/rag/stats", RAGStatsHandler)
 
 	// ============================================
+	// VECTOR DB ENDPOINTS (Day 38)
+	// ============================================
+
+	http.HandleFunc("/api/v1/vectors/search", VectorSearchHandler)
+	http.HandleFunc("/api/v1/vectors/neighbors", VectorNearestNeighborsHandler)
+	http.HandleFunc("/api/v1/vectors/projection", VectorProjectionHandler)
+	http.HandleFunc("/api/v1/vectors/stats", VectorStatsHandler)
+	http.HandleFunc("/api/v1/vectors/collections", CollectionsHandler)
+	http.HandleFunc("/api/v1/vectors/collections/", func(w http.ResponseWriter, r *http.Request) {
+		path := r.URL.Path
+		switch {
+		case strings.HasSuffix(path, "/documents") || strings.Contains(path, "/documents/"):
+			if r.Method == http.MethodPost {
+				AddDocToCollectionHandler(w, r)
+			} else if r.Method == http.MethodDelete {
+				RemoveDocFromCollectionHandler(w, r)
+			} else {
+				types.WriteError(w, http.StatusMethodNotAllowed, "Method not allowed")
+			}
+		default:
+			if r.Method == http.MethodDelete {
+				DeleteCollectionHandler(w, r)
+			} else {
+				types.WriteError(w, http.StatusMethodNotAllowed, "Method not allowed")
+			}
+		}
+	})
+
+	// ============================================
 	// LOAD BALANCER ENDPOINTS (Day 33)
 	// ============================================
 	http.HandleFunc("/api/v1/lb/stats", GetLBStatsHandler)

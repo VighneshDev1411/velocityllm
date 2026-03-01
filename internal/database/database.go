@@ -81,6 +81,7 @@ func Migrate() error {
 		&types.Message{},
 		&types.Document{},
 		&types.Chunk{},
+		&types.Collection{},
 	)
 
 	if err != nil {

@@ -135,3 +135,18 @@ func (Document) TableName() string {
 func (Chunk) TableName() string {
 	return "chunks"
 }
+
+// ── Vector DB Models (Day 38) ────────────────────────────────────────────────
+
+// Collection groups documents for scoped vector search
+type Collection struct {
+	BaseModel
+	Name        string     `gorm:"type:varchar(255);uniqueIndex;not null" json:"name"`
+	Description string     `gorm:"type:text" json:"description,omitempty"`
+	Color       string     `gorm:"type:varchar(20);not null;default:'#3b82f6'" json:"color"`
+	Documents   []Document `gorm:"many2many:collection_documents;" json:"documents,omitempty"`
+}
+
+func (Collection) TableName() string {
+	return "collections"
+}
