@@ -101,3 +101,37 @@ func (Conversation) TableName() string {
 func (Message) TableName() string {
 	return "messages"
 }
+
+// ── RAG Models (Day 37) ──────────────────────────────────────────────────────
+
+// Document represents an uploaded document for RAG
+type Document struct {
+	BaseModel
+	Name       string  `gorm:"type:varchar(255);not null" json:"name"`
+	Content    string  `gorm:"type:text;not null" json:"content,omitempty"`
+	Type       string  `gorm:"type:varchar(50);not null;default:'text'" json:"type"`         // text, markdown, pdf
+	Size       int64   `gorm:"not null;default:0" json:"size"`                               // bytes
+	ChunkCount int     `gorm:"not null;default:0" json:"chunk_count"`
+	Status     string  `gorm:"type:varchar(50);not null;default:'pending'" json:"status"`     // pending, processing, ready, error
+	Error      string  `gorm:"type:text" json:"error,omitempty"`
+	UserID     string  `gorm:"type:varchar(100);index" json:"user_id,omitempty"`
+	Chunks     []Chunk `gorm:"foreignKey:DocumentID;constraint:OnDelete:CASCADE" json:"chunks,omitempty"`
+}
+
+// Chunk represents a text chunk with its embedding
+type Chunk struct {
+	BaseModel
+	DocumentID uuid.UUID `gorm:"type:uuid;not null;index" json:"document_id"`
+	Content    string    `gorm:"type:text;not null" json:"content"`
+	Index      int       `gorm:"not null;default:0" json:"index"`             // position in document
+	Embedding  string    `gorm:"type:text" json:"embedding,omitempty"`         // JSON float64 array
+	TokenCount int       `gorm:"not null;default:0" json:"token_count"`
+}
+
+func (Document) TableName() string {
+	return "documents"
+}
+
+func (Chunk) TableName() string {
+	return "chunks"
+}

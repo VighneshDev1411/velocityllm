@@ -408,6 +408,19 @@ export const adminDashboardAPI = {
   databaseStats: () => api.get('/api/v1/admin/dashboard/database'),
 };
 
+// RAG / Knowledge Base API (Day 37)
+export const ragAPI = {
+  listDocuments: (limit: number = 50, offset: number = 0) =>
+    api.get(`/api/v1/rag/documents?limit=${limit}&offset=${offset}`),
+  uploadDocument: (data: { name: string; content: string; type?: string }) =>
+    api.post('/api/v1/rag/documents', data),
+  getDocument: (id: string) =>
+    api.get(`/api/v1/rag/documents/${id}`),
+  deleteDocument: (id: string) =>
+    api.delete(`/api/v1/rag/documents/${id}`),
+  getStats: () => api.get('/api/v1/rag/stats'),
+};
+
 // Chat API (Day 36)
 export const chatAPI = {
   listConversations: (limit: number = 50, offset: number = 0) =>

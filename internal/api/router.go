@@ -399,6 +399,33 @@ func SetupRoutes() {
 	http.HandleFunc("/api/v1/chat/stats", ChatStatsHandler)
 
 	// ============================================
+	// RAG ENDPOINTS (Day 37)
+	// ============================================
+
+	http.HandleFunc("/api/v1/rag/documents", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			ListDocumentsHandler(w, r)
+		case http.MethodPost:
+			UploadDocumentHandler(w, r)
+		default:
+			types.WriteError(w, http.StatusMethodNotAllowed, "Method not allowed")
+		}
+	})
+	http.HandleFunc("/api/v1/rag/documents/", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			GetDocumentHandler(w, r)
+		case http.MethodDelete:
+			DeleteDocumentHandler(w, r)
+		default:
+			types.WriteError(w, http.StatusMethodNotAllowed, "Method not allowed")
+		}
+	})
+	http.HandleFunc("/api/v1/rag/query", RAGQueryHandler)
+	http.HandleFunc("/api/v1/rag/stats", RAGStatsHandler)
+
+	// ============================================
 	// LOAD BALANCER ENDPOINTS (Day 33)
 	// ============================================
 	http.HandleFunc("/api/v1/lb/stats", GetLBStatsHandler)
