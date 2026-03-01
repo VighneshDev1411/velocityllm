@@ -441,6 +441,24 @@ export const vectorAPI = {
     api.delete(`/api/v1/vectors/collections/${collectionId}/documents/${documentId}`),
 };
 
+// Prompts / Prompt Library API (Day 9 backend, Day 39 frontend)
+export const promptsAPI = {
+  listTemplates: () => api.get('/api/v1/prompts/templates'),
+  getTemplate: (id: string) => api.get('/api/v1/prompts/template', { params: { id } }),
+  createTemplate: (data: any) => api.post('/api/v1/prompts/create', data),
+  renderTemplate: (id: string, values: Record<string, string>) =>
+    api.post('/api/v1/prompts/render', { template_id: id, values }),
+  getVersions: (id: string) => api.get('/api/v1/prompts/versions', { params: { id } }),
+  searchTemplates: (category?: string, tags?: string) =>
+    api.get('/api/v1/prompts/search', { params: { category, tags } }),
+  getStats: () => api.get('/api/v1/prompts/stats'),
+  createABTest: (data: any) => api.post('/api/v1/prompts/abtest/create', data),
+  getABTestResults: (templateId: string) =>
+    api.get('/api/v1/prompts/abtest/results', { params: { template_id: templateId } }),
+  stopABTest: (templateId: string) =>
+    api.post('/api/v1/prompts/abtest/stop', { template_id: templateId }),
+};
+
 // Chat API (Day 36)
 export const chatAPI = {
   listConversations: (limit: number = 50, offset: number = 0) =>

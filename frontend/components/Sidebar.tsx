@@ -18,7 +18,7 @@ import {
   LayoutDashboard, FlaskConical, BarChart3, Activity, MessageSquare, Library,
   Cpu, Briefcase, Radio, Coins, Key, CreditCard, Gauge, Zap, Webhook,
   Shield, Users, ChevronLeft, ChevronRight, Settings, ScrollText, UsersRound,
-  BookOpen, Waypoints,
+  BookOpen, Waypoints, BookTemplate,
 } from 'lucide-react';
 import { sidebarTheme } from '@/lib/theme';
 
@@ -36,6 +36,7 @@ const mainLinks: NavItem[] = [
   { href: '/chat', label: 'Chat', icon: MessageSquare },
   { href: '/knowledge', label: 'Knowledge Base', icon: Library },
   { href: '/vectors', label: 'Vector DB', icon: Waypoints },
+  { href: '/prompts', label: 'Prompt Library', icon: BookTemplate },
   { href: '/playground', label: 'Playground', icon: FlaskConical },
   { href: '/analytics', label: 'Analytics', icon: BarChart3 },
   { href: '/monitoring', label: 'Monitoring', icon: Activity },
