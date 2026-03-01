@@ -33,6 +33,7 @@ interface AuthContextType {
   register: (data: RegisterData) => Promise<void>;
   logout: () => void;
   refreshToken: () => Promise<void>;
+  setAuthFromTokens: (accessToken: string, refreshToken: string) => Promise<void>;
 }
 
 interface RegisterData {
@@ -147,6 +148,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     router.push('/login');
   };
 
+  const setAuthFromTokens = async (accessToken: string, refreshTokenStr: string) => {
+    localStorage.setItem('access_token', accessToken);
+    localStorage.setItem('refresh_token', refreshTokenStr);
+
+    try {
+      const response = await axios.get(`${API_BASE}/auth/profile`, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+      const userData = response.data.data;
+      localStorage.setItem('user', JSON.stringify(userData));
+      setUser(userData);
+    } catch {
+      // fallback — at least mark as authenticated
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
+      throw new Error('Failed to fetch profile');
+    }
+  };
+
   const refreshToken = async () => {
     const refreshToken = localStorage.getItem('refresh_token');
     if (!refreshToken) {
@@ -171,6 +191,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         register,
         logout,
         refreshToken,
+        setAuthFromTokens,
       }}
     >
       {children}

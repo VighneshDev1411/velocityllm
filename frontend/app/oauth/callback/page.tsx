@@ -3,10 +3,12 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Loader2, CheckCircle, XCircle } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function OAuthCallbackPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { setAuthFromTokens } = useAuth();
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [message, setMessage] = useState('Completing sign in...');
 
@@ -29,23 +31,9 @@ export default function OAuthCallbackPage() {
       return;
     }
 
-    // Store tokens
-    localStorage.setItem('access_token', accessToken);
-    localStorage.setItem('refresh_token', refreshToken);
-
-    // Fetch user profile with the new token
-    const fetchProfile = async () => {
-      try {
-        const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
-        const res = await fetch(`${apiBase}/auth/profile`, {
-          headers: { Authorization: `Bearer ${accessToken}` },
-        });
-
-        if (!res.ok) throw new Error('Failed to fetch profile');
-
-        const data = await res.json();
-        localStorage.setItem('user', JSON.stringify(data.data));
-
+    // Use auth context to store tokens AND update React state
+    setAuthFromTokens(accessToken, refreshToken)
+      .then(() => {
         setStatus('success');
         const providerName = provider === 'github' ? 'GitHub' : 'Google';
         setMessage(
@@ -53,17 +41,13 @@ export default function OAuthCallbackPage() {
             ? `Account created with ${providerName}!`
             : `Signed in with ${providerName}!`
         );
-
-        // Redirect to dashboard after brief delay
-        setTimeout(() => router.push('/dashboard'), 1000);
-      } catch {
+        setTimeout(() => router.push('/dashboard'), 800);
+      })
+      .catch(() => {
         setStatus('error');
         setMessage('Failed to complete authentication');
-      }
-    };
-
-    fetchProfile();
-  }, [searchParams, router]);
+      });
+  }, [searchParams, router, setAuthFromTokens]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
