@@ -459,6 +459,21 @@ export const promptsAPI = {
     api.post('/api/v1/prompts/abtest/stop', { template_id: templateId }),
 };
 
+// Fine-Tuning API (Day 40)
+export const finetuningAPI = {
+  listDatasets: () => api.get('/api/v1/finetuning/datasets'),
+  createDataset: (data: { name: string; description: string; format: string; examples: { input: string; output: string }[] }) =>
+    api.post('/api/v1/finetuning/datasets', data),
+  getDataset: (id: string) => api.get('/api/v1/finetuning/datasets/get', { params: { id } }),
+  deleteDataset: (id: string) => api.delete('/api/v1/finetuning/datasets/delete', { params: { id } }),
+  listJobs: () => api.get('/api/v1/finetuning/jobs'),
+  createJob: (data: { dataset_id: string; base_model: string; epochs: number; learning_rate: number; batch_size: number }) =>
+    api.post('/api/v1/finetuning/jobs', data),
+  cancelJob: (id: string) => api.post('/api/v1/finetuning/jobs/cancel', { id }),
+  listModels: () => api.get('/api/v1/finetuning/models'),
+  getStats: () => api.get('/api/v1/finetuning/stats'),
+};
+
 // Chat API (Day 36)
 export const chatAPI = {
   listConversations: (limit: number = 50, offset: number = 0) =>

@@ -455,6 +455,36 @@ func SetupRoutes() {
 	})
 
 	// ============================================
+	// FINE-TUNING ENDPOINTS (Day 40)
+	// ============================================
+
+	http.HandleFunc("/api/v1/finetuning/datasets", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			ListDatasetsHandler(w, r)
+		case http.MethodPost:
+			CreateDatasetHandler(w, r)
+		default:
+			types.WriteError(w, http.StatusMethodNotAllowed, "Method not allowed")
+		}
+	})
+	http.HandleFunc("/api/v1/finetuning/datasets/get", GetDatasetHandler)
+	http.HandleFunc("/api/v1/finetuning/datasets/delete", DeleteDatasetHandler)
+	http.HandleFunc("/api/v1/finetuning/jobs", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			ListJobsHandler(w, r)
+		case http.MethodPost:
+			CreateJobHandler(w, r)
+		default:
+			types.WriteError(w, http.StatusMethodNotAllowed, "Method not allowed")
+		}
+	})
+	http.HandleFunc("/api/v1/finetuning/jobs/cancel", CancelJobHandler)
+	http.HandleFunc("/api/v1/finetuning/models", ListFineTunedModelsHandler)
+	http.HandleFunc("/api/v1/finetuning/stats", GetFineTuningStatsHandler)
+
+	// ============================================
 	// LOAD BALANCER ENDPOINTS (Day 33)
 	// ============================================
 	http.HandleFunc("/api/v1/lb/stats", GetLBStatsHandler)
