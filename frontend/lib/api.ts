@@ -489,6 +489,22 @@ export const versioningAPI = {
   getStats: () => api.get('/api/v1/versioning/stats'),
 };
 
+// Workflow Builder API (Day 42)
+export const workflowAPI = {
+  listWorkflows: () => api.get('/api/v1/workflows/workflows'),
+  createWorkflow: (data: { name: string; description: string; nodes: any[]; edges: any[] }) =>
+    api.post('/api/v1/workflows/workflows', data),
+  getWorkflow: (id: string) => api.get('/api/v1/workflows/workflows/get', { params: { id } }),
+  updateWorkflow: (data: { id: string; name?: string; description?: string; status?: string; nodes?: any[]; edges?: any[] }) =>
+    api.put('/api/v1/workflows/workflows/update', data),
+  deleteWorkflow: (id: string) =>
+    api.delete('/api/v1/workflows/workflows/delete', { params: { id } }),
+  executeWorkflow: (workflowId: string) =>
+    api.post('/api/v1/workflows/workflows/execute', { workflow_id: workflowId }),
+  listRuns: () => api.get('/api/v1/workflows/runs'),
+  getStats: () => api.get('/api/v1/workflows/stats'),
+};
+
 // Chat API (Day 36)
 export const chatAPI = {
   listConversations: (limit: number = 50, offset: number = 0) =>

@@ -535,5 +535,26 @@ func SetupRoutes() {
 	http.Handle("/api/v1/cluster/drain", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(DrainNodeHandler))))
 	http.Handle("/api/v1/cluster/lock/acquire", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(AcquireLockHandler))))
 
+	// ============================================
+	// WORKFLOW BUILDER ENDPOINTS (Day 42)
+	// ============================================
+
+	http.HandleFunc("/api/v1/workflows/workflows", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			ListWorkflowsHandler(w, r)
+		case http.MethodPost:
+			CreateWorkflowHandler(w, r)
+		default:
+			types.WriteError(w, http.StatusMethodNotAllowed, "Method not allowed")
+		}
+	})
+	http.HandleFunc("/api/v1/workflows/workflows/get", GetWorkflowHandler)
+	http.HandleFunc("/api/v1/workflows/workflows/update", UpdateWorkflowHandler)
+	http.HandleFunc("/api/v1/workflows/workflows/delete", DeleteWorkflowHandler)
+	http.HandleFunc("/api/v1/workflows/workflows/execute", ExecuteWorkflowHandler)
+	http.HandleFunc("/api/v1/workflows/runs", ListWorkflowRunsHandler)
+	http.HandleFunc("/api/v1/workflows/stats", GetWorkflowStatsHandler)
+
 	utils.Info("All routes configured successfully")
 }
