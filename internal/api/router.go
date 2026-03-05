@@ -558,6 +558,27 @@ func SetupRoutes() {
 	http.HandleFunc("/api/v1/workflows/stats", GetWorkflowStatsHandler)
 
 	// ============================================
+	// NOTIFICATION ENDPOINTS (Day 44)
+	// ============================================
+
+	http.HandleFunc("/api/v1/notifications", ListNotificationsHandler)
+	http.HandleFunc("/api/v1/notifications/read", MarkNotificationReadHandler)
+	http.HandleFunc("/api/v1/notifications/read-all", MarkAllReadHandler)
+	http.HandleFunc("/api/v1/notifications/delete", DeleteNotificationHandler)
+	http.HandleFunc("/api/v1/notifications/send", SendNotificationHandler)
+	http.HandleFunc("/api/v1/notifications/preferences", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			GetNotificationPreferencesHandler(w, r)
+		case http.MethodPut:
+			UpdateNotificationPreferencesHandler(w, r)
+		default:
+			types.WriteError(w, http.StatusMethodNotAllowed, "Method not allowed")
+		}
+	})
+	http.HandleFunc("/api/v1/notifications/stats", GetNotificationStatsHandler)
+
+	// ============================================
 	// WEBSOCKET ENDPOINT (Day 43)
 	// ============================================
 

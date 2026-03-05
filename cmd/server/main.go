@@ -26,6 +26,7 @@ import (
 	"github.com/VighneshDev1411/velocityllm/internal/router"
 	"github.com/VighneshDev1411/velocityllm/internal/streaming"
 	"github.com/VighneshDev1411/velocityllm/internal/tokens"
+	"github.com/VighneshDev1411/velocityllm/internal/notifications"
 	webhooksPkg "github.com/VighneshDev1411/velocityllm/internal/webhooks"
 	"github.com/VighneshDev1411/velocityllm/internal/worker"
 	"github.com/VighneshDev1411/velocityllm/pkg/utils"
@@ -417,6 +418,10 @@ func main() {
 		utils.Fatal("Failed to migrate webhook tables", "error", err)
 	}
 	utils.Info("Webhook service initialized (webhook_endpoints, webhook_deliveries, event_logs)")
+
+	// Initialize notification service (Day 44)
+	notifications.GetService()
+	utils.Info("Notification service initialized")
 
 	// Setup API routes
 	api.SetupRoutes()

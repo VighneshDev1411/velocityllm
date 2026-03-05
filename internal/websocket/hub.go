@@ -109,6 +109,11 @@ func (h *Hub) Stop() {
 	close(h.done)
 }
 
+// BroadcastMessage sends a message to all connected clients
+func (h *Hub) BroadcastMessage(data []byte) {
+	h.broadcast <- data
+}
+
 // ClientCount returns current number of connected clients
 func (h *Hub) ClientCount() int {
 	h.mu.RLock()

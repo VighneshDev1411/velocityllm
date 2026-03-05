@@ -21,9 +21,21 @@ export interface RealtimeMetrics {
   timestamp: string;
 }
 
+export interface WSNotification {
+  id: string;
+  user_id: string;
+  title: string;
+  message: string;
+  severity: 'info' | 'success' | 'warning' | 'error';
+  category: string;
+  read: boolean;
+  action_url?: string;
+  created_at: string;
+}
+
 interface WebSocketMessage {
-  type: string;
-  data: RealtimeMetrics;
+  type: 'metrics' | 'notification';
+  data: RealtimeMetrics | WSNotification;
 }
 
 interface UseWebSocketReturn {
@@ -32,6 +44,7 @@ interface UseWebSocketReturn {
   lastUpdate: Date | null;
   reconnectCount: number;
   metricsHistory: RealtimeMetrics[];
+  notifications: WSNotification[];
 }
 
 const MAX_HISTORY = 30; // 60 seconds at 2s intervals
@@ -42,6 +55,7 @@ export function useWebSocket(): UseWebSocketReturn {
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
   const [reconnectCount, setReconnectCount] = useState(0);
   const [metricsHistory, setMetricsHistory] = useState<RealtimeMetrics[]>([]);
+  const [notifications, setNotifications] = useState<WSNotification[]>([]);
 
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -72,12 +86,14 @@ export function useWebSocket(): UseWebSocketReturn {
         try {
           const msg: WebSocketMessage = JSON.parse(event.data);
           if (msg.type === 'metrics' && msg.data) {
-            setMetrics(msg.data);
+            setMetrics(msg.data as RealtimeMetrics);
             setLastUpdate(new Date());
             setMetricsHistory((prev) => {
-              const next = [...prev, msg.data];
+              const next = [...prev, msg.data as RealtimeMetrics];
               return next.length > MAX_HISTORY ? next.slice(-MAX_HISTORY) : next;
             });
+          } else if (msg.type === 'notification' && msg.data) {
+            setNotifications((prev) => [msg.data as WSNotification, ...prev].slice(0, 50));
           }
         } catch {
           // Ignore malformed messages
@@ -124,5 +140,5 @@ export function useWebSocket(): UseWebSocketReturn {
     };
   }, [connect]);
 
-  return { connected, metrics, lastUpdate, reconnectCount, metricsHistory };
+  return { connected, metrics, lastUpdate, reconnectCount, metricsHistory, notifications };
 }

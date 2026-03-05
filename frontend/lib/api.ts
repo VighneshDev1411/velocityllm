@@ -520,6 +520,23 @@ export const chatAPI = {
   getStats: () => api.get('/api/v1/chat/stats'),
 };
 
+// Notification API (Day 44)
+export const notificationAPI = {
+  list: (unreadOnly: boolean = false, limit: number = 50) =>
+    api.get(`/api/v1/notifications?unread_only=${unreadOnly}&limit=${limit}`),
+  markRead: (notificationId: string) =>
+    api.post('/api/v1/notifications/read', { notification_id: notificationId }),
+  markAllRead: () =>
+    api.post('/api/v1/notifications/read-all', {}),
+  delete: (id: string) =>
+    api.delete('/api/v1/notifications/delete', { params: { id } }),
+  send: (data: { title: string; message: string; severity?: string; category?: string; action_url?: string }) =>
+    api.post('/api/v1/notifications/send', data),
+  getPreferences: () => api.get('/api/v1/notifications/preferences'),
+  updatePreferences: (prefs: any) => api.put('/api/v1/notifications/preferences', prefs),
+  getStats: () => api.get('/api/v1/notifications/stats'),
+};
+
 // Real-Time API (Day 43) — fallback REST endpoints
 export const realtimeAPI = {
   getMetrics: () => api.get('/api/v1/metrics'),
