@@ -18,7 +18,7 @@ import {
   LayoutDashboard, FlaskConical, BarChart3, Activity, MessageSquare, Library,
   Cpu, Briefcase, Radio, Coins, Key, CreditCard, Gauge, Zap, Webhook,
   Shield, Users, ChevronLeft, ChevronRight, Settings, ScrollText, UsersRound,
-  BookOpen, Waypoints, BookTemplate, Sparkles,
+  BookOpen, Waypoints, BookTemplate, Sparkles, GitBranch,
 } from 'lucide-react';
 import { sidebarTheme } from '@/lib/theme';
 
@@ -38,6 +38,7 @@ const mainLinks: NavItem[] = [
   { href: '/vectors', label: 'Vector DB', icon: Waypoints },
   { href: '/prompts', label: 'Prompt Library', icon: BookTemplate },
   { href: '/finetuning', label: 'Fine-Tuning', icon: Sparkles },
+  { href: '/versioning', label: 'Versioning', icon: GitBranch },
   { href: '/playground', label: 'Playground', icon: FlaskConical },
   { href: '/analytics', label: 'Analytics', icon: BarChart3 },
   { href: '/monitoring', label: 'Monitoring', icon: Activity },

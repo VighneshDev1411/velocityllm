@@ -237,12 +237,14 @@ export default function KnowledgeBasePage() {
 
           try {
             const evt = JSON.parse(raw);
-            if (evt.type === 'retrieval') {
-              setRetrievalResults(evt.data?.results || []);
-            } else if (evt.type === 'token') {
-              const tokenText = evt.data?.token || evt.data?.text || '';
-              setRagResponse(prev => prev + tokenText);
-            } else if (evt.type === 'complete') {
+            if (evt.results && evt.retrieved !== undefined) {
+              // Retrieval event: {results:[...], query, total, retrieved}
+              setRetrievalResults(evt.results || []);
+            } else if (evt.token !== undefined) {
+              // Token event: {token:"...", index, timestamp}
+              setRagResponse(prev => prev + evt.token);
+            } else if (evt.response_length !== undefined) {
+              // Complete event: {response_length, sources}
               // done
             }
           } catch {

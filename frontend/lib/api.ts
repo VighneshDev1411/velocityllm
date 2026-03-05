@@ -474,6 +474,21 @@ export const finetuningAPI = {
   getStats: () => api.get('/api/v1/finetuning/stats'),
 };
 
+// Model Versioning API (Day 41)
+export const versioningAPI = {
+  listVersions: () => api.get('/api/v1/versioning/versions'),
+  createVersion: (data: { model_name: string; version: string; description: string; base_model: string; config: Record<string, string> }) =>
+    api.post('/api/v1/versioning/versions', data),
+  getVersion: (id: string) => api.get('/api/v1/versioning/versions/get', { params: { id } }),
+  promoteVersion: (id: string) => api.post('/api/v1/versioning/versions/promote', { id }),
+  archiveVersion: (id: string) => api.post('/api/v1/versioning/versions/archive', { id }),
+  listABTests: () => api.get('/api/v1/versioning/abtests'),
+  createABTest: (data: { model_name: string; version_a: string; version_b: string; traffic_split: number }) =>
+    api.post('/api/v1/versioning/abtests', data),
+  stopABTest: (id: string) => api.post('/api/v1/versioning/abtests/stop', { id }),
+  getStats: () => api.get('/api/v1/versioning/stats'),
+};
+
 // Chat API (Day 36)
 export const chatAPI = {
   listConversations: (limit: number = 50, offset: number = 0) =>

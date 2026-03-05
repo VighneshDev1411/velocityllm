@@ -485,6 +485,36 @@ func SetupRoutes() {
 	http.HandleFunc("/api/v1/finetuning/stats", GetFineTuningStatsHandler)
 
 	// ============================================
+	// MODEL VERSIONING ENDPOINTS (Day 41)
+	// ============================================
+
+	http.HandleFunc("/api/v1/versioning/versions", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			ListVersionsHandler2(w, r)
+		case http.MethodPost:
+			CreateVersionHandler2(w, r)
+		default:
+			types.WriteError(w, http.StatusMethodNotAllowed, "Method not allowed")
+		}
+	})
+	http.HandleFunc("/api/v1/versioning/versions/get", GetVersionHandler2)
+	http.HandleFunc("/api/v1/versioning/versions/promote", PromoteVersionHandler)
+	http.HandleFunc("/api/v1/versioning/versions/archive", ArchiveVersionHandler)
+	http.HandleFunc("/api/v1/versioning/abtests", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			ListABTestsHandler2(w, r)
+		case http.MethodPost:
+			CreateABTestHandler2(w, r)
+		default:
+			types.WriteError(w, http.StatusMethodNotAllowed, "Method not allowed")
+		}
+	})
+	http.HandleFunc("/api/v1/versioning/abtests/stop", StopABTestHandler2)
+	http.HandleFunc("/api/v1/versioning/stats", GetVersioningStatsHandler)
+
+	// ============================================
 	// LOAD BALANCER ENDPOINTS (Day 33)
 	// ============================================
 	http.HandleFunc("/api/v1/lb/stats", GetLBStatsHandler)
