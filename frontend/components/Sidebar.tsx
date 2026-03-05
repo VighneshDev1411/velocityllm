@@ -40,6 +40,7 @@ const mainLinks: NavItem[] = [
   { href: '/finetuning', label: 'Fine-Tuning', icon: Sparkles },
   { href: '/versioning', label: 'Versioning', icon: GitBranch },
   { href: '/workflows', label: 'Workflows', icon: GitMerge },
+  { href: '/realtime', label: 'Real-Time', icon: Radio },
   { href: '/playground', label: 'Playground', icon: FlaskConical },
   { href: '/analytics', label: 'Analytics', icon: BarChart3 },
   { href: '/monitoring', label: 'Monitoring', icon: Activity },

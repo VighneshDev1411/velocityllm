@@ -519,3 +519,10 @@ export const chatAPI = {
     api.delete(`/api/v1/chat/conversations/${id}`),
   getStats: () => api.get('/api/v1/chat/stats'),
 };
+
+// Real-Time API (Day 43) — fallback REST endpoints
+export const realtimeAPI = {
+  getMetrics: () => api.get('/api/v1/metrics'),
+  getHealth: () => api.get('/health'),
+  getDashboard: () => api.get('/api/v1/analytics/dashboard/overview'),
+};

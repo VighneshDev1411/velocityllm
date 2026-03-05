@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/VighneshDev1411/velocityllm/internal/auth"
+	"github.com/VighneshDev1411/velocityllm/internal/websocket"
 	"github.com/VighneshDev1411/velocityllm/pkg/types"
 	"github.com/VighneshDev1411/velocityllm/pkg/utils"
 )
@@ -555,6 +556,16 @@ func SetupRoutes() {
 	http.HandleFunc("/api/v1/workflows/workflows/execute", ExecuteWorkflowHandler)
 	http.HandleFunc("/api/v1/workflows/runs", ListWorkflowRunsHandler)
 	http.HandleFunc("/api/v1/workflows/stats", GetWorkflowStatsHandler)
+
+	// ============================================
+	// WEBSOCKET ENDPOINT (Day 43)
+	// ============================================
+
+	// Start WebSocket hub
+	hub := websocket.GetHub()
+	go hub.Run()
+
+	http.HandleFunc("/api/v1/ws", WebSocketHandler)
 
 	utils.Info("All routes configured successfully")
 }
