@@ -95,10 +95,11 @@ func main() {
 	}
 
 	if err := optimization.InitGlobalRedisPool(redisPoolConfig, cfg.GetRedisAddr(), cfg.Redis.Password, cfg.Redis.DB); err != nil {
-		utils.Fatal("Failed to initialize Redis pool", "error", err)
+		utils.Warn("Redis pool unavailable (non-fatal): %v", err)
+	} else {
+		utils.Info("Redis connection pool initialized: %d-%d connections",
+			redisPoolConfig.MinConnections, redisPoolConfig.MaxConnections)
 	}
-	utils.Info("Redis connection pool initialized: %d-%d connections",
-		redisPoolConfig.MinConnections, redisPoolConfig.MaxConnections)
 
 	// HTTP connection pool
 	httpPoolConfig := optimization.PoolConfig{
@@ -213,11 +214,12 @@ func main() {
 	utils.Info("Metrics collector initialized (interval: %s)",
 		metricsConfig.CollectionInterval)
 
-	// Connect to Redis (legacy)
+	// Connect to Redis (legacy) — optional, server runs without it
 	if err := cache.Connect(cfg); err != nil {
-		utils.Fatal("Failed to connect to Redis", "error", err)
+		utils.Warn("Redis unavailable (non-fatal): %v — caching disabled", err)
+	} else {
+		utils.Info("Redis connected successfully")
 	}
-	utils.Info("Redis connected successfully")
 
 	// ============================================
 	// CLUSTER / HORIZONTAL SCALING INIT (Day 32)
@@ -232,22 +234,26 @@ func main() {
 
 	rdb := cache.GetClient()
 
-	// 1. Node registry — registers this instance & starts heartbeat
-	nodeRegistry := cluster.InitGlobalNodeRegistry(rdb, nodeID, cfg.App.Version, cfg.Server.Port)
-	clusterCtx := context.Background()
-	if err := nodeRegistry.Register(clusterCtx); err != nil {
-		utils.Error("Failed to register cluster node (non-fatal): %v", err)
+	if rdb != nil {
+		// 1. Node registry — registers this instance & starts heartbeat
+		nodeRegistry := cluster.InitGlobalNodeRegistry(rdb, nodeID, cfg.App.Version, cfg.Server.Port)
+		clusterCtx := context.Background()
+		if err := nodeRegistry.Register(clusterCtx); err != nil {
+			utils.Error("Failed to register cluster node (non-fatal): %v", err)
+		}
+
+		// 2. Cluster coordinator — leader election
+		coordinator := cluster.InitGlobalCoordinator(nodeRegistry, rdb)
+		coordinator.Start(clusterCtx)
+
+		// 3. Distributed rate limiter — Redis sliding-window, cluster-wide limits
+		middleware.InitGlobalDistributedRateLimiter(rdb, rateLimiterConfig)
+		utils.Info("Distributed rate limiter initialised (Redis sliding-window)")
+
+		utils.Info("Cluster initialised: node=%s", nodeID)
+	} else {
+		utils.Warn("Skipping cluster/rate-limiter init (Redis unavailable)")
 	}
-
-	// 2. Cluster coordinator — leader election
-	coordinator := cluster.InitGlobalCoordinator(nodeRegistry, rdb)
-	coordinator.Start(clusterCtx)
-
-	// 3. Distributed rate limiter — Redis sliding-window, cluster-wide limits
-	middleware.InitGlobalDistributedRateLimiter(rdb, rateLimiterConfig)
-	utils.Info("Distributed rate limiter initialised (Redis sliding-window)")
-
-	utils.Info("Cluster initialised: node=%s", nodeID)
 
 	// ============================================
 	// LOAD BALANCER INIT (Day 33)
