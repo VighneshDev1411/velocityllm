@@ -91,3 +91,9 @@ config/secrets.yaml
 # Documentation (keep docs/ folder tracked in git)
 # Only ignore temporary/local docs if needed
 # docs/temp/
+
+# TypeScript build info (cache)
+frontend/tsconfig.tsbuildinfo
+
+# Design tool exports
+web/stitch/

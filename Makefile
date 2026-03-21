@@ -64,18 +64,18 @@ fmt:
 # Docker commands
 docker-build:
 	@echo "Building Docker images..."
-	docker-compose -f deployments/docker/docker-compose.yml build
+	docker-compose build
 
 docker-up:
 	@echo "Starting services..."
-	docker-compose -f deployments/docker/docker-compose.yml up -d
+	docker-compose up -d
 
 docker-down:
 	@echo "Stopping services..."
-	docker-compose -f deployments/docker/docker-compose.yml down
+	docker-compose down
 
 docker-logs:
-	docker-compose -f deployments/docker/docker-compose.yml logs -f
+	docker-compose logs -f
 
 # Development helpers
 dev:

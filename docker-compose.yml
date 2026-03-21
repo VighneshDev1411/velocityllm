@@ -33,6 +33,20 @@ services:
       timeout: 5s
       retries: 5
 
+  # Python Inference Worker
+  worker:
+    build:
+      context: ./python_worker
+      dockerfile: Dockerfile
+    container_name: velocityllm-worker
+    environment:
+      - GRPC_HOST=0.0.0.0
+      - GRPC_PORT=50051
+      - WORKER_ID=worker-docker-1
+    ports:
+      - "50051:50051"
+    restart: unless-stopped
+
   # Backend API Server
   backend:
     build:
@@ -50,6 +64,10 @@ services:
       # Redis
       REDIS_HOST: redis
       REDIS_PORT: 6379
+
+      # Python Worker (gRPC)
+      WORKER_HOST: worker
+      WORKER_PORT: 50051
 
       # Server
       SERVER_PORT: 8080
@@ -75,6 +93,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      worker:
+        condition: service_started
     restart: unless-stopped
 
   # Frontend Next.js App

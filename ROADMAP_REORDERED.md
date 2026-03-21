@@ -18,6 +18,7 @@ Days 1-31 (core platform + UI) + Day 32 (Horizontal Scaling) + Day 33 (Load Bala
 - [ ] Dynamic model list in Playground (fetch from `/api/v1/models`)
 - [ ] Remove hardcoded billing tier descriptions
 - [ ] Any remaining static fallbacks
+- [ ] **Cloud Deployment** — Live demo on Render/Railway for Resume (Day 34.1)
 
 ---
 
