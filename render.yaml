@@ -47,9 +47,11 @@ services:
     runtime: node
     repo: https://github.com/VighneshDev1411/velocityllm
     rootDir: frontend
-    buildCommand: npm install && npm run build
-    startCommand: npm run start
+    buildCommand: npm install && npm run build && cp -r .next/static .next/standalone/.next/static && cp -r public .next/standalone/public
+    startCommand: node .next/standalone/server.js
     plan: free
     envVars:
       - key: NEXT_PUBLIC_API_URL
         value: https://velocityllm-backend.onrender.com
+      - key: HOSTNAME
+        value: 0.0.0.0
