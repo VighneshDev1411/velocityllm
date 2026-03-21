@@ -45,13 +45,11 @@ services:
   - type: web
     name: velocityllm-frontend
     runtime: node
+    repo: https://github.com/VighneshDev1411/velocityllm
     rootDir: frontend
     buildCommand: npm install && npm run build
     startCommand: npm run start
     plan: free
     envVars:
       - key: NEXT_PUBLIC_API_URL
-        fromService:
-          name: velocityllm-backend
-          type: web
-          envVarKey: RENDER_EXTERNAL_URL
+        value: https://velocityllm-backend.onrender.com
