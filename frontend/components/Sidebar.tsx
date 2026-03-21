@@ -18,7 +18,7 @@ import {
   LayoutDashboard, FlaskConical, BarChart3, Activity, MessageSquare, Library,
   Cpu, Briefcase, Radio, Coins, Key, CreditCard, Gauge, Zap, Webhook,
   Shield, Users, ChevronLeft, ChevronRight, Settings, ScrollText, UsersRound,
-  BookOpen, Waypoints, BookTemplate, Sparkles, GitBranch, GitMerge, Bell,
+  BookOpen, Waypoints, BookTemplate, Sparkles, GitBranch, GitMerge, Bell, BarChart2,
 } from 'lucide-react';
 import { sidebarTheme } from '@/lib/theme';
 
@@ -44,6 +44,7 @@ const mainLinks: NavItem[] = [
   { href: '/notifications', label: 'Notifications', icon: Bell },
   { href: '/playground', label: 'Playground', icon: FlaskConical },
   { href: '/analytics', label: 'Analytics', icon: BarChart3 },
+  { href: '/visualization', label: 'Visualization', icon: BarChart2 },
   { href: '/monitoring', label: 'Monitoring', icon: Activity },
   { href: '/docs', label: 'API Docs', icon: BookOpen },
 ];
