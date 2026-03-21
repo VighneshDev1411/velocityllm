@@ -188,9 +188,13 @@ func (p *WorkerPool) runWorker(worker *Worker) {
 
 	p.logger.Info("Worker started", "worker_id", worker.ID)
 
+	heartbeat := time.NewTicker(10 * time.Second)
+	defer heartbeat.Stop()
+
 	for {
 		// Update worker status
 		worker.SetStatus(WorkerStatusIdle)
+		worker.UpdateHealth(100.0) // Send heartbeat on each loop iteration
 		p.updateIdleWorkers()
 
 		// Get next job (priority-based)
@@ -204,6 +208,10 @@ func (p *WorkerPool) runWorker(worker *Worker) {
 			// Normal priority
 		case job = <-p.lowQueue:
 			// Low priority
+		case <-heartbeat.C:
+			// Periodic heartbeat while idle
+			worker.UpdateHealth(100.0)
+			continue
 		case <-worker.stopChan:
 			// Worker stopped
 			p.logger.Info("Worker stopped", "worker_id", worker.ID)
