@@ -2,14 +2,22 @@ package auth
 
 import (
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 )
 
+func getJWTSecret() []byte {
+	if secret := os.Getenv("JWT_SECRET"); secret != "" {
+		return []byte(secret)
+	}
+	return []byte("velocityllm-secret-key-change-in-production")
+}
+
 var (
-	// JWTSecret should be loaded from environment variable
-	JWTSecret = []byte("velocityllm-secret-key-change-in-production")
+	// JWTSecret is loaded from JWT_SECRET env var, with dev fallback
+	JWTSecret = getJWTSecret()
 
 	// TokenExpiration defines how long tokens are valid
 	TokenExpiration = 24 * time.Hour

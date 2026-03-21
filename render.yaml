@@ -40,6 +40,10 @@ services:
           property: database
       - key: JWT_SECRET
         generateValue: true
+      - key: FRONTEND_URL
+        value: https://velocityllm-frontend.onrender.com
+      - key: OAUTH_REDIRECT_BASE_URL
+        value: https://velocityllm-backend.onrender.com
 
   # 2. Next.js Frontend
   - type: web
