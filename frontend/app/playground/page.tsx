@@ -38,12 +38,14 @@ import {
   TrendingUp,
   StopCircle,
   Radio,
+  GitCompare,
 } from 'lucide-react';
 import LinearProgress from '@mui/material/LinearProgress';
 import Switch from '@mui/material/Switch';
 import api from '@/lib/api';
 import { PageHeader } from '@/components/PageHeader';
 import { useStreaming } from '@/hooks/useStreaming';
+import BatchCompare from './BatchCompare';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -451,6 +453,9 @@ export default function PlaygroundPage() {
   const [streamMode, setStreamMode] = useState(true);
   const streaming = useStreaming();
 
+  // Page-level tabs: Playground vs Compare
+  const [pageTab, setPageTab] = useState(0);
+
   // Refs
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const responseEndRef = useRef<HTMLDivElement>(null);
@@ -637,7 +642,24 @@ export default function PlaygroundPage() {
         }
       />
 
-      <Grid container spacing={3}>
+      {/* Page-level Tabs */}
+      <Tabs
+        value={pageTab}
+        onChange={(_, v) => setPageTab(v)}
+        sx={{
+          mb: 3,
+          '& .MuiTab-root': { textTransform: 'none', fontWeight: 600, fontSize: '0.875rem', minHeight: 40 },
+          '& .Mui-selected': { color: '#06b6d4' },
+          '& .MuiTabs-indicator': { bgcolor: '#06b6d4' },
+        }}
+      >
+        <Tab icon={<Terminal className="w-4 h-4" />} iconPosition="start" label="Playground" />
+        <Tab icon={<GitCompare className="w-4 h-4" />} iconPosition="start" label="Compare" />
+      </Tabs>
+
+      {pageTab === 1 && <BatchCompare availableModels={availableModels} />}
+
+      {pageTab === 0 && <Grid container spacing={3}>
         {/* ============ LEFT COLUMN ============ */}
         <Grid size={{ xs: 12, lg: 8 }}>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
@@ -1263,7 +1285,7 @@ export default function PlaygroundPage() {
             </Paper>
           </Box>
         </Grid>
-      </Grid>
+      </Grid>}
     </Box>
   );
 }

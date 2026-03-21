@@ -558,6 +558,13 @@ func SetupRoutes() {
 	http.HandleFunc("/api/v1/workflows/stats", GetWorkflowStatsHandler)
 
 	// ============================================
+	// BATCH COMPARISON ENDPOINTS (Day 45)
+	// ============================================
+
+	http.HandleFunc("/api/v1/completions/batch", BatchCompletionHandler)
+	http.HandleFunc("/api/v1/completions/batch/history", BatchCompletionHistoryHandler)
+
+	// ============================================
 	// NOTIFICATION ENDPOINTS (Day 44)
 	// ============================================
 

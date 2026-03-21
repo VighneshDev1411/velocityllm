@@ -537,6 +537,14 @@ export const notificationAPI = {
   getStats: () => api.get('/api/v1/notifications/stats'),
 };
 
+// Batch Comparison API (Day 45)
+export const batchAPI = {
+  runBatch: (data: { prompt: string; models: string[]; max_tokens?: number; temperature?: number; top_p?: number }) =>
+    api.post('/api/v1/completions/batch', data),
+  getHistory: (limit: number = 20) =>
+    api.get(`/api/v1/completions/batch/history?limit=${limit}`),
+};
+
 // Real-Time API (Day 43) — fallback REST endpoints
 export const realtimeAPI = {
   getMetrics: () => api.get('/api/v1/metrics'),
