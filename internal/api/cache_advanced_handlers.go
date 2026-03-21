@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/VighneshDev1411/velocityllm/internal/cache"
+	"github.com/VighneshDev1411/velocityllm/internal/middleware"
 	"github.com/VighneshDev1411/velocityllm/pkg/types"
 	"github.com/VighneshDev1411/velocityllm/pkg/utils"
 )
@@ -234,4 +235,61 @@ func GetCacheLatencyHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	types.WriteSuccess(w, "Cache latency metrics retrieved", response)
+}
+
+// InvalidateCacheByTagHandler invalidates cache entries by tag
+func InvalidateCacheByTagHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		types.WriteError(w, http.StatusMethodNotAllowed, "Method not allowed")
+		return
+	}
+
+	var req struct {
+		Tags []string `json:"tags"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		types.WriteError(w, http.StatusBadRequest, "Invalid request body")
+		return
+	}
+
+	if len(req.Tags) == 0 {
+		types.WriteError(w, http.StatusBadRequest, "At least one tag is required")
+		return
+	}
+
+	tc := cache.GetGlobalTaggedCache()
+	if tc == nil {
+		types.WriteError(w, http.StatusServiceUnavailable, "Tagged cache not initialized")
+		return
+	}
+
+	deleted, err := tc.InvalidateByTags(r.Context(), req.Tags)
+	if err != nil {
+		utils.Error("Failed to invalidate by tags", "error", err)
+		types.WriteError(w, http.StatusInternalServerError, "Failed to invalidate cache")
+		return
+	}
+
+	types.WriteSuccess(w, "Cache invalidated by tags", map[string]interface{}{
+		"tags":    req.Tags,
+		"deleted": deleted,
+	})
+}
+
+// GetResponseCacheStatsHandler returns HTTP response cache stats
+func GetResponseCacheStatsHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		types.WriteError(w, http.StatusMethodNotAllowed, "Method not allowed")
+		return
+	}
+
+	statsJSON, err := middleware.GetResponseCacheStatsJSON()
+	if err != nil {
+		types.WriteError(w, http.StatusInternalServerError, "Failed to get response cache stats")
+		return
+	}
+
+	var stats interface{}
+	json.Unmarshal(statsJSON, &stats)
+	types.WriteSuccess(w, "Response cache stats retrieved", stats)
 }

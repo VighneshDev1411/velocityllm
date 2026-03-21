@@ -17,7 +17,7 @@ import {
   LayoutDashboard, FlaskConical, BarChart3, Activity, MessageSquare, Library,
   Cpu, Briefcase, Radio, Coins, Key, CreditCard, Gauge, Zap, Webhook,
   Shield, Users, ChevronLeft, ChevronRight, Settings, ScrollText, UsersRound,
-  BookOpen, Waypoints, BookTemplate, Sparkles, GitBranch, GitMerge, Bell, BarChart2,
+  BookOpen, Waypoints, BookTemplate, Sparkles, GitBranch, GitMerge, Bell, BarChart2, Layers,
 } from 'lucide-react';
 import { sidebarTheme } from '@/lib/theme';
 
@@ -56,6 +56,7 @@ const infraLinks: NavItem[] = [
   { href: '/keys', label: 'API Keys', icon: Key },
   { href: '/billing', label: 'Billing', icon: CreditCard },
   { href: '/quota', label: 'Quota', icon: Gauge },
+  { href: '/caching', label: 'Caching', icon: Layers },
   { href: '/loadtest', label: 'Load Test', icon: Zap },
   { href: '/webhooks', label: 'Webhooks', icon: Webhook },
   { href: '/logs', label: 'Logs', icon: ScrollText },

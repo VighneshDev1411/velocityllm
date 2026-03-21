@@ -296,7 +296,8 @@ func main() {
 	}
 
 	cache.InitGlobalCacheManager(cacheManagerConfig)
-	utils.Info("Advanced cache manager initialized (multi-level + semantic + analytics)")
+	cache.InitGlobalTaggedCache()
+	utils.Info("Advanced cache manager initialized (multi-level + semantic + analytics + tags)")
 
 	// ============================================
 	// ORCHESTRATION INITIALIZATION (Day 8)
@@ -437,7 +438,7 @@ func main() {
 
 	server := &http.Server{
 		Addr:         ":" + port,
-		Handler:      api.HTTPCORSMiddleware(http.DefaultServeMux),
+		Handler:      middleware.NewResponseCacheMiddleware(middleware.DefaultResponseCacheConfig())(api.HTTPCORSMiddleware(http.DefaultServeMux)),
 		ReadTimeout:  15 * time.Second,
 		WriteTimeout: 15 * time.Second,
 		IdleTimeout:  60 * time.Second,

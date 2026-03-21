@@ -21,7 +21,9 @@ const colorMap = {
   yellow: { accent: '#ffb595', bg: 'rgba(255,181,149,0.08)' },
 };
 
-export function StatCard({ icon, label, value, subtext, color = 'blue' }: StatCardProps) {
+import React from 'react';
+
+export const StatCard = React.memo(function StatCard({ icon, label, value, subtext, color = 'blue' }: StatCardProps) {
   const colors = colorMap[color];
   return (
     <Paper
@@ -88,4 +90,4 @@ export function StatCard({ icon, label, value, subtext, color = 'blue' }: StatCa
       )}
     </Paper>
   );
-}
+});

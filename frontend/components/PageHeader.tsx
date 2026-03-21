@@ -9,7 +9,9 @@ interface PageHeaderProps {
   action?: React.ReactNode;
 }
 
-export function PageHeader({ title, subtitle, action }: PageHeaderProps) {
+import React from 'react';
+
+export const PageHeader = React.memo(function PageHeader({ title, subtitle, action }: PageHeaderProps) {
   return (
     <Box
       sx={{
@@ -45,4 +47,4 @@ export function PageHeader({ title, subtitle, action }: PageHeaderProps) {
       {action && <Box>{action}</Box>}
     </Box>
   );
-}
+});
