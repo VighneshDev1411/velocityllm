@@ -94,7 +94,7 @@ function StatCard({ icon: Icon, label, value, color }: {
     <Paper
       sx={{
         p: 2.5, borderRadius: 2,
-        backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+        backgroundColor: 'rgba(255,255,255,0.03)',
         border: `1px solid ${theme.palette.divider}`,
       }}
     >
@@ -396,8 +396,8 @@ export default function VersioningPage() {
                     contentStyle={{ backgroundColor: theme.palette.background.paper, border: `1px solid ${theme.palette.divider}` }}
                   />
                   <Legend />
-                  <Bar dataKey="A" name={`${vA.model_name} v${vA.version}`} fill="#6366f1" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="B" name={`${vB.model_name} v${vB.version}`} fill="#f59e0b" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="A" name={`${vA.model_name} v${vA.version}`} fill="#8b5cf6" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="B" name={`${vB.model_name} v${vB.version}`} fill="#ffb595" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </Box>
@@ -533,18 +533,18 @@ export default function VersioningPage() {
 
   const statusData = stats ? [
     { name: 'Draft', value: stats.versions_draft, color: '#94a3b8' },
-    { name: 'Active', value: stats.versions_active, color: '#6366f1' },
+    { name: 'Active', value: stats.versions_active, color: '#8b5cf6' },
     { name: 'Deployed', value: stats.versions_deployed, color: '#22c55e' },
-    { name: 'Archived', value: stats.versions_archived, color: '#f59e0b' },
+    { name: 'Archived', value: stats.versions_archived, color: '#ffb595' },
   ] : [];
 
   const StatsTab = (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
       <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 2 }}>
-        <StatCard icon={Layers} label="Total Versions" value={stats?.total_versions || 0} color="#6366f1" />
-        <StatCard icon={CheckCircle} label="Active" value={stats?.versions_active || 0} color="#3b82f6" />
+        <StatCard icon={Layers} label="Total Versions" value={stats?.total_versions || 0} color="#8b5cf6" />
+        <StatCard icon={CheckCircle} label="Active" value={stats?.versions_active || 0} color="#adc6ff" />
         <StatCard icon={Rocket} label="Deployed" value={stats?.versions_deployed || 0} color="#22c55e" />
-        <StatCard icon={FlaskConical} label="A/B Tests" value={stats?.total_abtests || 0} color="#f59e0b" />
+        <StatCard icon={FlaskConical} label="A/B Tests" value={stats?.total_abtests || 0} color="#ffb595" />
       </Box>
 
       <Paper sx={{ p: 3, borderRadius: 2, border: `1px solid ${theme.palette.divider}` }}>

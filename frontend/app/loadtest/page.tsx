@@ -248,10 +248,10 @@ export default function LoadTestPage() {
   const getStatusChip = (status: string) => {
     const colorMap: Record<string, { bg: string; fg: string }> = {
       queued: { bg: 'action.hover', fg: 'text.primary' },
-      running: { bg: 'rgba(59,130,246,0.1)', fg: '#1e40af' },
-      completed: { bg: 'rgba(16,185,129,0.1)', fg: '#166534' },
-      failed: { bg: 'rgba(239,68,68,0.1)', fg: '#991b1b' },
-      cancelled: { bg: '#fefce8', fg: '#854d0e' },
+      running: { bg: 'rgba(173,198,255,0.1)', fg: '#adc6ff' },
+      completed: { bg: 'rgba(83,225,111,0.1)', fg: '#53e16f' },
+      failed: { bg: 'rgba(239,68,68,0.1)', fg: '#ef4444' },
+      cancelled: { bg: 'rgba(255,181,149,0.1)', fg: '#ffb595' },
     };
     const colors = colorMap[status] || colorMap.queued;
     return (
@@ -276,7 +276,7 @@ export default function LoadTestPage() {
       {/* Tabs */}
       <Paper
         elevation={0}
-        sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', mb: 3 }}
+        sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', mb: 3 }}
       >
         <Tabs
           value={activeTab}
@@ -296,7 +296,7 @@ export default function LoadTestPage() {
       {activeTab === 0 && (
         <Paper
           elevation={0}
-          sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3 }}
+          sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 3 }}
         >
           <Typography variant="h6" sx={{ fontWeight: 600, color: 'text.primary', mb: 1 }}>
             Quick 30-Second Benchmark
@@ -378,7 +378,7 @@ export default function LoadTestPage() {
               elevation={0}
               sx={{
                 border: '1px solid', borderColor: 'divider',
-                borderRadius: '12px',
+                borderRadius: '8px',
                 p: 6,
                 textAlign: 'center',
               }}
@@ -393,7 +393,7 @@ export default function LoadTestPage() {
                 <Grid size={{ xs: 12, md: 6 }} key={config.id}>
                   <Paper
                     elevation={0}
-                    sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3 }}
+                    sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 3 }}
                   >
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
                       <Box>
@@ -468,7 +468,7 @@ export default function LoadTestPage() {
               elevation={0}
               sx={{
                 border: '1px solid', borderColor: 'divider',
-                borderRadius: '12px',
+                borderRadius: '8px',
                 p: 6,
                 textAlign: 'center',
               }}
@@ -480,7 +480,7 @@ export default function LoadTestPage() {
           ) : (
             <Paper
               elevation={0}
-              sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', overflow: 'hidden' }}
+              sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', overflow: 'hidden' }}
             >
               <TableContainer>
                 <Table size="small">
@@ -554,7 +554,7 @@ export default function LoadTestPage() {
           {selectedRun && (
             <Paper
               elevation={0}
-              sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3, mt: 3 }}
+              sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 3, mt: 3 }}
             >
               <Typography variant="h6" sx={{ fontWeight: 600, color: 'text.primary', mb: 3 }}>
                 Test Run #{selectedRun.id} Details

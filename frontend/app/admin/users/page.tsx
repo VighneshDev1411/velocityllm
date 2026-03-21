@@ -73,10 +73,10 @@ interface UserStats {
 }
 
 const ROLE_CONFIG: Record<string, { label: string; chipColor: string; chipBg: string; icon: any }> = {
-  admin: { label: 'Admin', chipColor: '#b91c1c', chipBg: 'rgba(239,68,68,0.1)', icon: Crown },
-  developer: { label: 'Developer', chipColor: '#1d4ed8', chipBg: 'rgba(59,130,246,0.1)', icon: Code },
+  admin: { label: 'Admin', chipColor: '#ef4444', chipBg: 'rgba(239,68,68,0.1)', icon: Crown },
+  developer: { label: 'Developer', chipColor: '#adc6ff', chipBg: 'rgba(173,198,255,0.1)', icon: Code },
   viewer: { label: 'Viewer', chipColor: 'text.primary', chipBg: 'background.default', icon: Eye },
-  user: { label: 'User', chipColor: '#15803d', chipBg: 'rgba(16,185,129,0.1)', icon: UserIcon },
+  user: { label: 'User', chipColor: '#53e16f', chipBg: 'rgba(83,225,111,0.1)', icon: UserIcon },
 };
 
 export default function AdminUsersPage() {
@@ -223,9 +223,9 @@ export default function AdminUsersPage() {
 
   const getActionChipColor = (action: string): { bg: string; color: string } => {
     if (action.includes('delete')) return { bg: 'rgba(239,68,68,0.1)', color: '#dc2626' };
-    if (action.includes('role')) return { bg: '#f5f3ff', color: '#7c3aed' };
-    if (action.includes('login')) return { bg: 'rgba(16,185,129,0.1)', color: '#16a34a' };
-    if (action.includes('create')) return { bg: 'rgba(59,130,246,0.1)', color: '#2563eb' };
+    if (action.includes('role')) return { bg: 'rgba(139,92,246,0.1)', color: '#8b5cf6' };
+    if (action.includes('login')) return { bg: 'rgba(83,225,111,0.1)', color: '#53e16f' };
+    if (action.includes('create')) return { bg: 'rgba(173,198,255,0.1)', color: '#adc6ff' };
     return { bg: 'background.default', color: 'text.secondary' };
   };
 
@@ -309,7 +309,7 @@ export default function AdminUsersPage() {
       )}
 
       {/* Tabs */}
-      <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', mb: 3 }}>
+      <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', mb: 3 }}>
         <Tabs
           value={activeTab}
           onChange={(_, v) => setActiveTab(v)}
@@ -393,7 +393,7 @@ export default function AdminUsersPage() {
                                 sx={{
                                   width: 36,
                                   height: 36,
-                                  background: 'linear-gradient(135deg, #3b82f6, #9333ea)',
+                                  background: 'linear-gradient(135deg, #adc6ff, #8b5cf6)',
                                   fontSize: '0.875rem',
                                   fontWeight: 700,
                                 }}
@@ -409,7 +409,7 @@ export default function AdminUsersPage() {
                                     <Chip
                                       label="You"
                                       size="small"
-                                      sx={{ height: 20, fontSize: '0.7rem', backgroundColor: 'rgba(59,130,246,0.1)', color: 'primary.dark' }}
+                                      sx={{ height: 20, fontSize: '0.7rem', backgroundColor: 'rgba(173,198,255,0.1)', color: '#adc6ff' }}
                                     />
                                   )}
                                 </Box>
@@ -464,8 +464,8 @@ export default function AdminUsersPage() {
                               onClick={() => !isCurrentUser && handleToggleActive(u.id, u.active)}
                               title={isCurrentUser ? "Can't deactivate yourself" : 'Click to toggle'}
                               sx={{
-                                backgroundColor: u.active ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)',
-                                color: u.active ? '#15803d' : '#b91c1c',
+                                backgroundColor: u.active ? 'rgba(83,225,111,0.1)' : 'rgba(239,68,68,0.1)',
+                                color: u.active ? '#53e16f' : '#ef4444',
                                 border: '1px solid',
                                 borderColor: u.active ? '#bbf7d0' : '#fecaca',
                                 fontWeight: 500,
@@ -618,10 +618,10 @@ export default function AdminUsersPage() {
         onClose={() => setShowCreateModal(false)}
         maxWidth="sm"
         fullWidth
-        PaperProps={{ sx: { borderRadius: '16px' } }}
+        PaperProps={{ sx: { borderRadius: '8px' } }}
       >
         <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <UserPlus style={{ width: 20, height: 20, color: '#2563eb' }} />
+          <UserPlus style={{ width: 20, height: 20, color: '#adc6ff' }} />
           Create New User
         </DialogTitle>
         <form onSubmit={handleCreateUser}>

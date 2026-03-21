@@ -153,7 +153,7 @@ export default function QuotaManagementPage() {
       {/* Current Quota Usage */}
       <Paper
         elevation={0}
-        sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3, mb: 3 }}
+        sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 3, mb: 3 }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
           <BarChartIcon sx={{ color: 'text.secondary' }} />
@@ -209,10 +209,10 @@ export default function QuotaManagementPage() {
                       color={progressColor}
                       sx={{
                         height: 24,
-                        borderRadius: '12px',
+                        borderRadius: '8px',
                         backgroundColor: 'divider',
                         '& .MuiLinearProgress-bar': {
-                          borderRadius: '12px',
+                          borderRadius: '8px',
                           transition: 'transform 0.5s ease',
                         },
                       }}
@@ -248,7 +248,7 @@ export default function QuotaManagementPage() {
       {/* Alert Configuration */}
       <Paper
         elevation={0}
-        sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3, mb: 3 }}
+        sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 3, mb: 3 }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
           <NotificationsIcon sx={{ color: 'text.secondary' }} />
@@ -262,7 +262,7 @@ export default function QuotaManagementPage() {
           <Grid size={{ xs: 12, md: 6 }}>
             <Paper
               elevation={0}
-              sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 2.5 }}
+              sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 2.5 }}
             >
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
                 <Typography sx={{ fontWeight: 500, color: 'text.primary' }}>Email Alerts</Typography>
@@ -284,7 +284,7 @@ export default function QuotaManagementPage() {
           <Grid size={{ xs: 12, md: 6 }}>
             <Paper
               elevation={0}
-              sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 2.5 }}
+              sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 2.5 }}
             >
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
                 <Typography sx={{ fontWeight: 500, color: 'text.primary' }}>Webhook Alerts</Typography>
@@ -314,7 +314,7 @@ export default function QuotaManagementPage() {
           <Grid size={{ xs: 12, md: 6 }}>
             <Paper
               elevation={0}
-              sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 2.5 }}
+              sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 2.5 }}
             >
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
                 <Typography sx={{ fontWeight: 500, color: 'text.primary' }}>Slack Alerts</Typography>
@@ -346,7 +346,7 @@ export default function QuotaManagementPage() {
           <Grid size={{ xs: 12, md: 6 }}>
             <Paper
               elevation={0}
-              sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 2.5 }}
+              sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 2.5 }}
             >
               <Typography sx={{ fontWeight: 500, color: 'text.primary', mb: 2 }}>
                 Alert Thresholds
@@ -364,7 +364,7 @@ export default function QuotaManagementPage() {
                     min={0}
                     max={100}
                     size="small"
-                    sx={{ color: '#eab308' }}
+                    sx={{ color: '#ffb595' }}
                   />
                 </Box>
                 <Box>
@@ -379,7 +379,7 @@ export default function QuotaManagementPage() {
                     min={0}
                     max={100}
                     size="small"
-                    sx={{ color: '#f97316' }}
+                    sx={{ color: '#ffb595' }}
                   />
                 </Box>
                 <Box>
@@ -416,7 +416,7 @@ export default function QuotaManagementPage() {
       {/* Rate Limit Events */}
       <Paper
         elevation={0}
-        sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3 }}
+        sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 3 }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
           <TrafficIcon sx={{ color: 'text.secondary' }} />
@@ -474,8 +474,8 @@ export default function QuotaManagementPage() {
                         sx={{
                           fontWeight: 600,
                           fontSize: '0.75rem',
-                          backgroundColor: event.blocked ? 'rgba(239,68,68,0.1)' : 'rgba(16,185,129,0.1)',
-                          color: event.blocked ? '#991b1b' : '#065f46',
+                          backgroundColor: event.blocked ? 'rgba(239,68,68,0.1)' : 'rgba(83,225,111,0.1)',
+                          color: event.blocked ? '#ef4444' : '#53e16f',
                         }}
                       />
                     </TableCell>

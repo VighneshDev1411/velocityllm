@@ -3,10 +3,7 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { analyticsAPI } from '@/lib/api';
-import {
-  LineChart, Line, AreaChart, Area,
-  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
-} from 'recharts';
+import dynamic from 'next/dynamic';
 import {
   BarChart3, Clock, DollarSign, AlertCircle, Zap, Timer,
   RefreshCw, Download, FileJson, ChevronLeft, ChevronRight,
@@ -24,16 +21,20 @@ import TableHead from '@mui/material/TableHead';
 import TableBody from '@mui/material/TableBody';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
-import LinearProgress from '@mui/material/LinearProgress';
 import Chip from '@mui/material/Chip';
 import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import ToggleButton from '@mui/material/ToggleButton';
 import Grid from '@mui/material/Grid';
-import { useTheme } from '@mui/material/styles';
 import { StatCard } from '@/components/StatCard';
 import { PageHeader } from '@/components/PageHeader';
+import ChartLoadingFallback from '@/components/ChartLoadingFallback';
+
+const AnalyticsCharts = dynamic(() => import('./AnalyticsCharts'), {
+  ssr: false,
+  loading: () => <ChartLoadingFallback />,
+});
 
 // ---------------------------------------------------------------------------
 // Data hooks
@@ -81,12 +82,6 @@ function useRequestLog(params: { model?: string; status?: string; limit: number;
 // Helpers
 // ---------------------------------------------------------------------------
 
-const CHART_BLUE = '#3b82f6';
-const CHART_GREEN = '#10b981';
-const CHART_PURPLE = '#8b5cf6';
-const CHART_YELLOW = '#f59e0b';
-const CHART_RED = '#ef4444';
-
 function formatNumber(num: number): string {
   if (num == null) return '0';
   if (num >= 1_000_000) return `${(num / 1_000_000).toFixed(1)}M`;
@@ -106,11 +101,6 @@ function formatUptime(seconds: number): string {
   return h > 0 ? `${h}h ${m}m` : `${m}m`;
 }
 
-function formatTime(ts: string): string {
-  const d = new Date(ts);
-  return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-}
-
 function formatTimestamp(ts: string): string {
   const d = new Date(ts);
   return d.toLocaleString([], {
@@ -128,38 +118,10 @@ function truncate(str: string, len: number): string {
 // Sub-components
 // ---------------------------------------------------------------------------
 
-function PercentileBar({ label, value, max, color }: {
-  label: string; value: number; max: number; color: string;
-}) {
-  const pct = max > 0 ? Math.min((value / max) * 100, 100) : 0;
-  return (
-    <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
-        <Typography sx={{ fontSize: '0.75rem', fontWeight: 500, color: 'text.secondary' }}>{label}</Typography>
-        <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: 'text.primary' }}>{value}ms</Typography>
-      </Box>
-      <LinearProgress
-        variant="determinate"
-        value={pct}
-        sx={{
-          height: 8,
-          borderRadius: 4,
-          backgroundColor: 'action.hover',
-          '& .MuiLinearProgress-bar': {
-            borderRadius: 4,
-            backgroundColor: color,
-            transition: 'width 0.5s ease',
-          },
-        }}
-      />
-    </Box>
-  );
-}
-
 function StatusBadge({ status }: { status: string }) {
   const map: Record<string, { bg: string; fg: string }> = {
     completed: { bg: 'rgba(16,185,129,0.1)', fg: '#15803d' },
-    cache_hit: { bg: 'rgba(59,130,246,0.1)', fg: '#1d4ed8' },
+    cache_hit: { bg: 'rgba(173,198,255,0.15)', fg: '#adc6ff' },
     error: { bg: 'rgba(239,68,68,0.1)', fg: '#b91c1c' },
   };
   const colors = map[status] || { bg: 'action.hover', fg: 'text.secondary' };
@@ -182,7 +144,7 @@ function ProviderBadge({ provider }: { provider: string }) {
   const map: Record<string, { bg: string; fg: string }> = {
     openai: { bg: 'rgba(16,185,129,0.1)', fg: '#15803d' },
     anthropic: { bg: '#ffedd5', fg: '#c2410c' },
-    google: { bg: 'rgba(59,130,246,0.1)', fg: '#1d4ed8' },
+    google: { bg: 'rgba(173,198,255,0.15)', fg: '#adc6ff' },
     cohere: { bg: '#f3e8ff', fg: '#7e22ce' },
     local: { bg: 'action.hover', fg: 'text.secondary' },
   };
@@ -202,24 +164,11 @@ function ProviderBadge({ provider }: { provider: string }) {
   );
 }
 
-function ChartPlaceholder() {
-  return (
-    <Box sx={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <Box sx={{ textAlign: 'center' }}>
-        <CircularProgress size={24} sx={{ color: '#60a5fa' }} />
-        <Typography sx={{ mt: 1, fontSize: '0.75rem', color: 'text.disabled' }}>Loading chart...</Typography>
-      </Box>
-    </Box>
-  );
-}
-
 // ---------------------------------------------------------------------------
 // Main page
 // ---------------------------------------------------------------------------
 
 export default function AnalyticsPage() {
-  const theme = useTheme();
-  const tooltipStyle = { backgroundColor: theme.palette.background.paper, border: `1px solid ${theme.palette.divider}`, borderRadius: '8px', fontSize: '12px', color: theme.palette.text.primary };
   const [period, setPeriod] = useState('24h');
   const [logModel, setLogModel] = useState('');
   const [logStatus, setLogStatus] = useState('');
@@ -292,7 +241,7 @@ export default function AnalyticsPage() {
         <Alert
           severity="error"
           icon={<AlertCircle style={{ width: 24, height: 24 }} />}
-          sx={{ maxWidth: 400, borderRadius: '12px' }}
+          sx={{ maxWidth: 400, borderRadius: '8px' }}
           action={
             <Button
               color="error"
@@ -315,9 +264,7 @@ export default function AnalyticsPage() {
 
   return (
     <Box sx={{ p: { xs: 2, sm: 3 } }}>
-      {/* ---------------------------------------------------------------- */}
-      {/* Header                                                           */}
-      {/* ---------------------------------------------------------------- */}
+      {/* Header */}
       <PageHeader
         title="Analytics"
         subtitle="Deep-dive into request patterns, latency, costs, and model performance"
@@ -340,7 +287,7 @@ export default function AnalyticsPage() {
                   backgroundColor: 'background.paper',
                   color: '#2563eb',
                   boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
-                  '&:hover': { backgroundColor: '#f0f7ff' },
+                  '&:hover': { backgroundColor: 'rgba(173,198,255,0.08)' },
                 },
                 '&:hover': { backgroundColor: 'background.default' },
               },
@@ -354,9 +301,7 @@ export default function AnalyticsPage() {
       />
 
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-        {/* ---------------------------------------------------------------- */}
-        {/* KPI Summary Row                                                  */}
-        {/* ---------------------------------------------------------------- */}
+        {/* KPI Summary Row */}
         <Grid container spacing={2}>
           <Grid size={{ xs: 6, md: 4, lg: 2 }}>
             <StatCard icon={<BarChart3 style={{ width: 20, height: 20 }} />} label="Total Requests"
@@ -384,167 +329,15 @@ export default function AnalyticsPage() {
           </Grid>
         </Grid>
 
-        {/* ---------------------------------------------------------------- */}
-        {/* Latency Analysis                                                 */}
-        {/* ---------------------------------------------------------------- */}
-        <Grid container spacing={3}>
-          {/* Latency Percentiles Time Series */}
-          <Grid size={{ xs: 12, lg: 6 }}>
-            <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                <Clock style={{ width: 16, height: 16, color: '#7c3aed' }} />
-                <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: 'text.primary' }}>
-                  Latency Percentiles Over Time
-                </Typography>
-              </Box>
-              <Box sx={{ height: 256 }}>
-                {tsLoading ? (
-                  <ChartPlaceholder />
-                ) : (
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={timeSeries?.latency || []}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                      <XAxis dataKey="time" tickFormatter={formatTime}
-                        tick={{ fontSize: 11, fill: 'var(--mui-palette-text-disabled)' }} axisLine={false} tickLine={false} />
-                      <YAxis tick={{ fontSize: 11, fill: 'var(--mui-palette-text-disabled)' }} axisLine={false} tickLine={false} unit="ms" />
-                      <Tooltip labelFormatter={(l) => new Date(l as string).toLocaleString()}
-                        contentStyle={tooltipStyle} />
-                      <Legend iconType="line" wrapperStyle={{ fontSize: '11px' }} />
-                      <Line type="monotone" dataKey="p50_ms" name="P50" stroke={CHART_GREEN} strokeWidth={2} dot={false} />
-                      <Line type="monotone" dataKey="p90_ms" name="P90" stroke={CHART_YELLOW} strokeWidth={2} dot={false} />
-                      <Line type="monotone" dataKey="p95_ms" name="P95" stroke={CHART_PURPLE} strokeWidth={2} dot={false} />
-                      <Line type="monotone" dataKey="p99_ms" name="P99" stroke={CHART_RED} strokeWidth={2} dot={false} />
-                    </LineChart>
-                  </ResponsiveContainer>
-                )}
-              </Box>
-            </Paper>
-          </Grid>
+        {/* Charts (dynamically loaded) */}
+        <AnalyticsCharts
+          timeSeries={timeSeries}
+          tsLoading={tsLoading}
+          latency={latency}
+        />
 
-          {/* Latency Distribution */}
-          <Grid size={{ xs: 12, lg: 6 }}>
-            <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                <BarChart3 style={{ width: 16, height: 16, color: '#7c3aed' }} />
-                <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: 'text.primary' }}>
-                  Latency Distribution
-                </Typography>
-              </Box>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <PercentileBar label="P50 (Median)" value={latency.p50_ms || 0} max={latency.p99_ms || 100} color="#22c55e" />
-                <PercentileBar label="P90" value={latency.p90_ms || 0} max={latency.p99_ms || 100} color="#eab308" />
-                <PercentileBar label="P95" value={latency.p95_ms || 0} max={latency.p99_ms || 100} color="#8b5cf6" />
-                <PercentileBar label="P99" value={latency.p99_ms || 0} max={latency.p99_ms || 100} color="#ef4444" />
-              </Box>
-              <Box sx={{ mt: 3, pt: 2, borderTop: '1px solid', borderColor: 'divider' }}>
-                <Grid container spacing={2}>
-                  <Grid size={4}>
-                    <Box sx={{ textAlign: 'center' }}>
-                      <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>Min</Typography>
-                      <Typography sx={{ fontSize: '0.875rem', fontWeight: 700, color: 'text.primary' }}>{latency.min_ms ?? 0}ms</Typography>
-                    </Box>
-                  </Grid>
-                  <Grid size={4}>
-                    <Box sx={{ textAlign: 'center' }}>
-                      <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>Mean</Typography>
-                      <Typography sx={{ fontSize: '0.875rem', fontWeight: 700, color: 'text.primary' }}>{latency.mean_ms ?? 0}ms</Typography>
-                    </Box>
-                  </Grid>
-                  <Grid size={4}>
-                    <Box sx={{ textAlign: 'center' }}>
-                      <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>Max</Typography>
-                      <Typography sx={{ fontSize: '0.875rem', fontWeight: 700, color: 'text.primary' }}>{latency.max_ms ?? 0}ms</Typography>
-                    </Box>
-                  </Grid>
-                </Grid>
-              </Box>
-            </Paper>
-          </Grid>
-        </Grid>
-
-        {/* ---------------------------------------------------------------- */}
-        {/* Throughput & Cost Analysis                                        */}
-        {/* ---------------------------------------------------------------- */}
-        <Grid container spacing={3}>
-          {/* Request Throughput */}
-          <Grid size={{ xs: 12, lg: 6 }}>
-            <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                <Zap style={{ width: 16, height: 16, color: '#2563eb' }} />
-                <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: 'text.primary' }}>
-                  Request Throughput
-                </Typography>
-              </Box>
-              <Box sx={{ height: 256 }}>
-                {tsLoading ? (
-                  <ChartPlaceholder />
-                ) : (
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={timeSeries?.requests || []}>
-                      <defs>
-                        <linearGradient id="throughputGradient" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor={CHART_BLUE} stopOpacity={0.3} />
-                          <stop offset="95%" stopColor={CHART_BLUE} stopOpacity={0} />
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                      <XAxis dataKey="time" tickFormatter={formatTime}
-                        tick={{ fontSize: 11, fill: 'var(--mui-palette-text-disabled)' }} axisLine={false} tickLine={false} />
-                      <YAxis tick={{ fontSize: 11, fill: 'var(--mui-palette-text-disabled)' }} axisLine={false} tickLine={false} />
-                      <Tooltip labelFormatter={(l) => new Date(l as string).toLocaleString()}
-                        contentStyle={tooltipStyle} />
-                      <Area type="monotone" dataKey="requests" stroke={CHART_BLUE}
-                        strokeWidth={2} fill="url(#throughputGradient)" />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                )}
-              </Box>
-            </Paper>
-          </Grid>
-
-          {/* Cumulative Cost */}
-          <Grid size={{ xs: 12, lg: 6 }}>
-            <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                <DollarSign style={{ width: 16, height: 16, color: '#059669' }} />
-                <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: 'text.primary' }}>
-                  Cumulative Cost
-                </Typography>
-              </Box>
-              <Box sx={{ height: 256 }}>
-                {tsLoading ? (
-                  <ChartPlaceholder />
-                ) : (
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={timeSeries?.cost || []}>
-                      <defs>
-                        <linearGradient id="costGradientAnalytics" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor={CHART_GREEN} stopOpacity={0.3} />
-                          <stop offset="95%" stopColor={CHART_GREEN} stopOpacity={0} />
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                      <XAxis dataKey="time" tickFormatter={formatTime}
-                        tick={{ fontSize: 11, fill: 'var(--mui-palette-text-disabled)' }} axisLine={false} tickLine={false} />
-                      <YAxis tick={{ fontSize: 11, fill: 'var(--mui-palette-text-disabled)' }} axisLine={false} tickLine={false}
-                        tickFormatter={(v) => `$${v}`} />
-                      <Tooltip labelFormatter={(l) => new Date(l as string).toLocaleString()}
-                        formatter={(value: number) => [`$${value.toFixed(4)}`, 'Cost']}
-                        contentStyle={tooltipStyle} />
-                      <Area type="monotone" dataKey="cost" stroke={CHART_GREEN}
-                        strokeWidth={2} fill="url(#costGradientAnalytics)" />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                )}
-              </Box>
-            </Paper>
-          </Grid>
-        </Grid>
-
-        {/* ---------------------------------------------------------------- */}
-        {/* Model Comparison Table                                           */}
-        {/* ---------------------------------------------------------------- */}
-        <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3 }}>
+        {/* Model Comparison Table */}
+        <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 3 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
             <BarChart3 style={{ width: 16, height: 16, color: '#2563eb' }} />
             <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: 'text.primary' }}>
@@ -580,7 +373,7 @@ export default function AnalyticsPage() {
                       key={i}
                       sx={{
                         backgroundColor: i % 2 === 1 ? 'background.default' : 'transparent',
-                        '&:hover': { backgroundColor: 'rgba(59,130,246,0.04)' },
+                        '&:hover': { backgroundColor: 'rgba(173,198,255,0.06)' },
                         '& td': { borderBottom: '1px solid', borderColor: 'divider' },
                       }}
                     >
@@ -613,10 +406,8 @@ export default function AnalyticsPage() {
           </Box>
         </Paper>
 
-        {/* ---------------------------------------------------------------- */}
-        {/* Request History Table                                             */}
-        {/* ---------------------------------------------------------------- */}
-        <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3 }}>
+        {/* Request History Table */}
+        <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 3 }}>
           <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, alignItems: { sm: 'center' }, justifyContent: 'space-between', gap: 1.5, mb: 2 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <Filter style={{ width: 16, height: 16, color: 'text.secondary' }} />
@@ -695,8 +486,8 @@ export default function AnalyticsPage() {
                   <TableRow
                     key={i}
                     sx={{
-                      backgroundColor: i % 2 === 1 ? 'rgba(249,250,251,0.5)' : 'transparent',
-                      '&:hover': { backgroundColor: 'rgba(59,130,246,0.03)' },
+                      backgroundColor: i % 2 === 1 ? 'rgba(255,255,255,0.03)' : 'transparent',
+                      '&:hover': { backgroundColor: 'rgba(173,198,255,0.05)' },
                       '& td': { borderBottom: '1px solid var(--mui-palette-divider)' },
                     }}
                   >
@@ -739,14 +530,8 @@ export default function AnalyticsPage() {
                 onClick={() => setLogOffset(Math.max(0, logOffset - logLimit))}
                 disabled={logOffset === 0}
                 sx={{
-                  fontSize: '0.75rem',
-                  fontWeight: 500,
-                  textTransform: 'none',
-                  borderColor: 'divider',
-                  color: 'text.secondary',
-                  borderRadius: '8px',
-                  px: 1.5,
-                  py: 0.5,
+                  fontSize: '0.75rem', fontWeight: 500, textTransform: 'none',
+                  borderColor: 'divider', color: 'text.secondary', borderRadius: '8px', px: 1.5, py: 0.5,
                   '&:hover': { backgroundColor: 'background.default', borderColor: 'divider' },
                   '&.Mui-disabled': { opacity: 0.4 },
                 }}
@@ -760,14 +545,8 @@ export default function AnalyticsPage() {
                 onClick={() => setLogOffset(logOffset + logLimit)}
                 disabled={logOffset + logLimit >= pagination.total}
                 sx={{
-                  fontSize: '0.75rem',
-                  fontWeight: 500,
-                  textTransform: 'none',
-                  borderColor: 'divider',
-                  color: 'text.secondary',
-                  borderRadius: '8px',
-                  px: 1.5,
-                  py: 0.5,
+                  fontSize: '0.75rem', fontWeight: 500, textTransform: 'none',
+                  borderColor: 'divider', color: 'text.secondary', borderRadius: '8px', px: 1.5, py: 0.5,
                   '&:hover': { backgroundColor: 'background.default', borderColor: 'divider' },
                   '&.Mui-disabled': { opacity: 0.4 },
                 }}
@@ -778,10 +557,8 @@ export default function AnalyticsPage() {
           </Box>
         </Paper>
 
-        {/* ---------------------------------------------------------------- */}
-        {/* Export Section                                                    */}
-        {/* ---------------------------------------------------------------- */}
-        <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3 }}>
+        {/* Export Section */}
+        <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 3 }}>
           <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: 'text.primary', mb: 0.5 }}>Export Analytics</Typography>
           <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary', mb: 2 }}>
             Download analytics data for offline analysis or reporting.
@@ -792,12 +569,8 @@ export default function AnalyticsPage() {
               startIcon={<Download style={{ width: 16, height: 16 }} />}
               onClick={exportCSV}
               sx={{
-                fontSize: '0.875rem',
-                fontWeight: 500,
-                textTransform: 'none',
-                borderRadius: '8px',
-                backgroundColor: '#2563eb',
-                '&:hover': { backgroundColor: '#1d4ed8' },
+                fontSize: '0.875rem', fontWeight: 500, textTransform: 'none', borderRadius: '8px',
+                backgroundColor: '#2563eb', '&:hover': { backgroundColor: '#1d4ed8' },
               }}
             >
               Export as CSV
@@ -807,12 +580,8 @@ export default function AnalyticsPage() {
               startIcon={<FileJson style={{ width: 16, height: 16 }} />}
               onClick={exportSummary}
               sx={{
-                fontSize: '0.875rem',
-                fontWeight: 500,
-                textTransform: 'none',
-                borderRadius: '8px',
-                borderColor: 'divider',
-                color: 'text.primary',
+                fontSize: '0.875rem', fontWeight: 500, textTransform: 'none', borderRadius: '8px',
+                borderColor: 'divider', color: 'text.primary',
                 '&:hover': { backgroundColor: 'background.default', borderColor: 'divider' },
               }}
             >

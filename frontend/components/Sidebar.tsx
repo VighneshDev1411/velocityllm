@@ -10,7 +10,6 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
@@ -89,19 +88,19 @@ export function Sidebar({ mobileOpen, onMobileClose, collapsed, onToggleCollapse
   const isActive = (href: string) => pathname === href;
 
   const renderNavSection = (title: string, links: NavItem[]) => (
-    <Box sx={{ mb: 1 }}>
-      {!collapsed && (
+    <Box sx={{ mb: 0.5 }}>
+      {!collapsed && title && (
         <Typography
           sx={{
             px: 2.5,
             pt: 2,
             pb: 0.5,
-            fontSize: '0.65rem',
+            fontSize: '0.625rem',
             fontWeight: 700,
             textTransform: 'uppercase',
-            letterSpacing: '0.08em',
-            color: sidebarTheme.text,
-            opacity: 0.5,
+            letterSpacing: '0.2em',
+            fontFamily: 'var(--font-mono), "JetBrains Mono", monospace',
+            color: 'rgba(229,226,225,0.3)',
           }}
         >
           {title}
@@ -120,19 +119,21 @@ export function Sidebar({ mobileOpen, onMobileClose, collapsed, onToggleCollapse
               sx={{
                 mx: 1,
                 mb: 0.3,
-                borderRadius: '8px',
-                minHeight: 40,
+                borderRadius: '6px',
+                minHeight: 38,
                 justifyContent: collapsed && !isMobile ? 'center' : 'flex-start',
                 px: collapsed && !isMobile ? 1.5 : 2,
                 backgroundColor: active ? sidebarTheme.bgActive : 'transparent',
+                boxShadow: active ? `inset 3px 0 0 0 ${sidebarTheme.accent}` : 'none',
                 '&:hover': {
                   backgroundColor: active ? sidebarTheme.bgActive : sidebarTheme.bgHover,
                 },
+                transition: 'all 0.15s ease',
               }}
             >
               <ListItemIcon
                 sx={{
-                  minWidth: collapsed && !isMobile ? 0 : 36,
+                  minWidth: collapsed && !isMobile ? 0 : 34,
                   color: active ? sidebarTheme.textActive : sidebarTheme.text,
                   justifyContent: 'center',
                 }}
@@ -143,7 +144,7 @@ export function Sidebar({ mobileOpen, onMobileClose, collapsed, onToggleCollapse
                 <ListItemText
                   primary={link.label}
                   primaryTypographyProps={{
-                    fontSize: '0.835rem',
+                    fontSize: '0.8125rem',
                     fontWeight: active ? 600 : 400,
                     color: active ? sidebarTheme.textActive : sidebarTheme.text,
                   }}
@@ -163,6 +164,7 @@ export function Sidebar({ mobileOpen, onMobileClose, collapsed, onToggleCollapse
         display: 'flex',
         flexDirection: 'column',
         backgroundColor: sidebarTheme.bg,
+        borderRight: `1px solid ${sidebarTheme.border}`,
         overflow: 'hidden',
       }}
     >
@@ -180,33 +182,45 @@ export function Sidebar({ mobileOpen, onMobileClose, collapsed, onToggleCollapse
       >
         <Box
           sx={{
-            width: 32,
-            height: 32,
-            borderRadius: '8px',
-            background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)',
+            width: 28,
+            height: 28,
+            borderRadius: '4px',
+            background: `linear-gradient(135deg, #adc6ff, #4b8eff)`,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             flexShrink: 0,
           }}
         >
-          <Typography sx={{ color: '#fff', fontWeight: 700, fontSize: '0.875rem' }}>V</Typography>
+          <Typography sx={{ color: '#131313', fontWeight: 800, fontSize: '0.75rem', fontFamily: 'var(--font-mono)' }}>V</Typography>
         </Box>
         {(!collapsed || isMobile) && (
-          <Typography
-            sx={{
-              fontSize: '1.1rem',
-              fontWeight: 700,
-              color: '#e0e0e0',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            VelocityLLM
-          </Typography>
+          <Box>
+            <Typography
+              sx={{
+                fontSize: '0.9rem',
+                fontWeight: 700,
+                color: '#e5e2e1',
+                whiteSpace: 'nowrap',
+                letterSpacing: '0.05em',
+                textTransform: 'uppercase',
+              }}
+            >
+              VelocityLLM
+            </Typography>
+            <Typography
+              sx={{
+                fontSize: '0.5625rem',
+                fontFamily: 'var(--font-mono), monospace',
+                color: 'rgba(229,226,225,0.3)',
+                letterSpacing: '0.1em',
+              }}
+            >
+              v1.0.0
+            </Typography>
+          </Box>
         )}
       </Box>
-
-      <Divider sx={{ borderColor: sidebarTheme.border, mx: 1 }} />
 
       {/* Navigation */}
       <Box sx={{ flex: 1, overflow: 'auto', py: 1, '&::-webkit-scrollbar': { width: 0 } }}>
@@ -217,7 +231,6 @@ export function Sidebar({ mobileOpen, onMobileClose, collapsed, onToggleCollapse
 
       {/* Bottom */}
       <Box>
-        <Divider sx={{ borderColor: sidebarTheme.border, mx: 1 }} />
         {renderNavSection('', bottomLinks)}
 
         {/* Collapse button - desktop only */}
@@ -250,6 +263,7 @@ export function Sidebar({ mobileOpen, onMobileClose, collapsed, onToggleCollapse
             '& .MuiDrawer-paper': {
               width: SIDEBAR_WIDTH,
               border: 'none',
+              backgroundColor: sidebarTheme.bg,
             },
           }}
         >
@@ -267,6 +281,7 @@ export function Sidebar({ mobileOpen, onMobileClose, collapsed, onToggleCollapse
             '& .MuiDrawer-paper': {
               width: width,
               border: 'none',
+              backgroundColor: sidebarTheme.bg,
               transition: 'width 0.2s ease-in-out',
               overflowX: 'hidden',
             },

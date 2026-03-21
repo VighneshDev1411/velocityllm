@@ -70,7 +70,7 @@ const paperSx = {
   elevation: 0,
   border: '1px solid',
   borderColor: 'divider',
-  borderRadius: '12px',
+  borderRadius: '8px',
   overflow: 'hidden',
 };
 
@@ -79,7 +79,7 @@ const sectionHeaderSx = {
   py: 1.5,
   borderBottom: '1px solid',
   borderColor: 'divider',
-  bgcolor: 'rgba(249,250,251,0.5)',
+  bgcolor: 'rgba(28,27,27,0.5)',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
@@ -472,7 +472,7 @@ export default function BatchCompare({ availableModels }: Props) {
               <Grid key={idx} size={{ xs: 12, md: 6 }}>
                 <Paper sx={{ ...paperSx, height: '100%', display: 'flex', flexDirection: 'column' }}>
                   {/* Card header */}
-                  <Box sx={{ px: 2, py: 1.5, borderBottom: '1px solid', borderColor: 'divider', bgcolor: 'rgba(249,250,251,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <Box sx={{ px: 2, py: 1.5, borderBottom: '1px solid', borderColor: 'divider', bgcolor: 'rgba(28,27,27,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                       <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.85rem' }}>{item.model}</Typography>
                       <Chip
@@ -489,7 +489,7 @@ export default function BatchCompare({ availableModels }: Props) {
                       )}
                       {item.success && item.cost === minCost && (
                         <Tooltip title="Cheapest">
-                          <Chip label="Cheapest" size="small" sx={{ height: 20, fontSize: '0.6rem', bgcolor: 'rgba(59,130,246,0.1)', color: '#2563eb', fontWeight: 700 }} />
+                          <Chip label="Cheapest" size="small" sx={{ height: 20, fontSize: '0.6rem', bgcolor: 'rgba(173,198,255,0.1)', color: '#adc6ff', fontWeight: 700 }} />
                         </Tooltip>
                       )}
                     </Box>

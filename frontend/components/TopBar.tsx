@@ -12,10 +12,8 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Divider from '@mui/material/Divider';
-import Tooltip from '@mui/material/Tooltip';
-import { Menu as MenuIcon, User, LogOut, Settings, Sun, Moon } from 'lucide-react';
+import { Menu as MenuIcon, User, LogOut, Settings } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useColorMode } from '@/contexts/ColorModeContext';
 
 const pageTitles: Record<string, string> = {
   '/dashboard': 'Dashboard',
@@ -36,6 +34,18 @@ const pageTitles: Record<string, string> = {
   '/docs': 'API Docs',
   '/admin/dashboard': 'Admin Dashboard',
   '/admin/users': 'User Management',
+  '/chat': 'Chat',
+  '/knowledge': 'Knowledge Base',
+  '/vectors': 'Vector DB',
+  '/prompts': 'Prompt Library',
+  '/finetuning': 'Fine-Tuning',
+  '/versioning': 'Versioning',
+  '/workflows': 'Workflows',
+  '/realtime': 'Real-Time',
+  '/notifications': 'Notifications',
+  '/visualization': 'Visualization',
+  '/logs': 'Logs',
+  '/teams': 'Teams',
 };
 
 interface TopBarProps {
@@ -47,7 +57,6 @@ export function TopBar({ onMenuClick, sidebarWidth }: TopBarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const { user, logout } = useAuth();
-  const { mode, toggleColorMode } = useColorMode();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const pageTitle = pageTitles[pathname] || 'VelocityLLM';
@@ -81,26 +90,23 @@ export function TopBar({ onMenuClick, sidebarWidth }: TopBarProps) {
         {/* Mobile menu button */}
         <IconButton
           onClick={onMenuClick}
-          sx={{ mr: 1.5, display: { md: 'none' } }}
-          color="inherit"
+          sx={{ mr: 1.5, display: { md: 'none' }, color: '#e5e2e1' }}
         >
           <MenuIcon className="w-5 h-5" />
         </IconButton>
 
         {/* Page title */}
         <Typography
-          variant="h6"
-          sx={{ fontWeight: 700, fontSize: '1.1rem', flexGrow: 1 }}
+          sx={{
+            fontWeight: 600,
+            fontSize: '0.875rem',
+            flexGrow: 1,
+            color: '#e5e2e1',
+            letterSpacing: '0.02em',
+          }}
         >
           {pageTitle}
         </Typography>
-
-        {/* Dark / Light toggle */}
-        <Tooltip title={mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}>
-          <IconButton onClick={toggleColorMode} color="inherit" sx={{ mr: 1 }}>
-            {mode === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-          </IconButton>
-        </Tooltip>
 
         {/* User menu trigger */}
         <Box
@@ -112,25 +118,28 @@ export function TopBar({ onMenuClick, sidebarWidth }: TopBarProps) {
             cursor: 'pointer',
             px: 1.5,
             py: 0.75,
-            borderRadius: '8px',
-            '&:hover': { backgroundColor: 'action.hover' },
+            borderRadius: '6px',
+            transition: 'background-color 0.15s ease',
+            '&:hover': { backgroundColor: 'rgba(229,226,225,0.05)' },
           }}
         >
           <Avatar
             sx={{
-              width: 32,
-              height: 32,
-              background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)',
-              fontSize: '0.85rem',
-              fontWeight: 600,
+              width: 28,
+              height: 28,
+              background: 'linear-gradient(135deg, #adc6ff, #4b8eff)',
+              fontSize: '0.75rem',
+              fontWeight: 700,
+              color: '#131313',
             }}
           >
             {initials}
           </Avatar>
           <Typography
             sx={{
-              fontSize: '0.875rem',
+              fontSize: '0.8125rem',
               fontWeight: 500,
+              color: '#c1c6d7',
               display: { xs: 'none', sm: 'block' },
             }}
           >
@@ -146,19 +155,15 @@ export function TopBar({ onMenuClick, sidebarWidth }: TopBarProps) {
           transformOrigin={{ vertical: 'top', horizontal: 'right' }}
           slotProps={{
             paper: {
-              sx: {
-                mt: 1,
-                minWidth: 200,
-                borderRadius: '10px',
-              },
+              sx: { mt: 1, minWidth: 200 },
             },
           }}
         >
           <Box sx={{ px: 2, py: 1.5 }}>
-            <Typography sx={{ fontSize: '0.875rem', fontWeight: 600 }}>
+            <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#e5e2e1' }}>
               {user?.username}
             </Typography>
-            <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>
+            <Typography sx={{ fontSize: '0.75rem', color: '#c1c6d7' }}>
               {user?.email}
             </Typography>
           </Box>
@@ -180,9 +185,9 @@ export function TopBar({ onMenuClick, sidebarWidth }: TopBarProps) {
           <Divider />
           <MenuItem
             onClick={handleLogout}
-            sx={{ fontSize: '0.875rem', py: 1, color: 'error.main' }}
+            sx={{ fontSize: '0.875rem', py: 1, color: '#ef4444' }}
           >
-            <ListItemIcon><LogOut className="w-4 h-4" style={{ color: 'inherit' }} /></ListItemIcon>
+            <ListItemIcon><LogOut className="w-4 h-4" style={{ color: '#ef4444' }} /></ListItemIcon>
             Logout
           </MenuItem>
         </Menu>

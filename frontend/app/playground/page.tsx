@@ -203,7 +203,7 @@ func main() {
 const paperSx = {
   elevation: 0,
   border: '1px solid', borderColor: 'divider',
-  borderRadius: '12px',
+  borderRadius: '8px',
   overflow: 'hidden',
 };
 
@@ -211,7 +211,7 @@ const sectionHeaderSx = {
   px: 2.5,
   py: 1.5,
   borderBottom: '1px solid', borderColor: 'divider',
-  bgcolor: 'rgba(249,250,251,0.5)',
+  bgcolor: 'rgba(37,37,37,0.5)',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
@@ -288,7 +288,7 @@ function ParameterSlider({
         step={step}
         onChange={(_, v) => onChange(v as number)}
         sx={{
-          color: '#2563eb',
+          color: '#adc6ff',
           height: 6,
           '& .MuiSlider-thumb': { width: 16, height: 16 },
         }}
@@ -335,7 +335,7 @@ function HistoryItem({
             {entry.prompt}
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mt: 0.5 }}>
-            <Chip label={entry.model} size="small" sx={{ height: 22, fontSize: '0.75rem', fontWeight: 500, bgcolor: 'rgba(59,130,246,0.1)', color: 'primary.dark' }} />
+            <Chip label={entry.model} size="small" sx={{ height: 22, fontSize: '0.75rem', fontWeight: 500, bgcolor: 'rgba(173,198,255,0.1)', color: 'primary.dark' }} />
             <Typography variant="caption" sx={{ color: 'text.secondary', display: 'flex', alignItems: 'center', gap: 0.5 }}>
               <Clock className="w-3 h-3" />
               {entry.latencyMs}ms
@@ -631,13 +631,13 @@ export default function PlaygroundPage() {
             label="API Connected"
             size="small"
             sx={{
-              bgcolor: '#f0fdf4',
-              color: 'success.dark',
-              border: '1px solid #bbf7d0',
+              bgcolor: 'rgba(83,225,111,0.1)',
+              color: '#53e16f',
+              border: '1px solid rgba(83,225,111,0.3)',
               fontWeight: 500,
-              '& .MuiChip-icon': { color: '#22c55e' },
+              '& .MuiChip-icon': { color: '#53e16f' },
             }}
-            icon={<Box component="span" sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#22c55e', animation: 'pulse 2s infinite', '@keyframes pulse': { '0%, 100%': { opacity: 1 }, '50%': { opacity: 0.5 } } }} />}
+            icon={<Box component="span" sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#53e16f', animation: 'pulse 2s infinite', '@keyframes pulse': { '0%, 100%': { opacity: 1 }, '50%': { opacity: 0.5 } } }} />}
           />
         }
       />
@@ -693,7 +693,7 @@ export default function PlaygroundPage() {
                 }}
               />
 
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', px: 2.5, py: 1.5, borderTop: '1px solid', borderColor: 'divider', bgcolor: 'rgba(249,250,251,0.5)' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', px: 2.5, py: 1.5, borderTop: '1px solid', borderColor: 'divider', bgcolor: 'rgba(37,37,37,0.5)' }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Typography
                     variant="caption"
@@ -708,7 +708,7 @@ export default function PlaygroundPage() {
                 <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
                   {/* Stream Mode Toggle */}
                   <Box sx={{ display: 'flex', alignItems: 'center', mr: 1 }}>
-                    <Radio className="w-3.5 h-3.5" style={{ color: streamMode ? '#22c55e' : undefined, opacity: streamMode ? 1 : 0.4 }} />
+                    <Radio className="w-3.5 h-3.5" style={{ color: streamMode ? '#53e16f' : undefined, opacity: streamMode ? 1 : 0.4 }} />
                     <Typography variant="caption" sx={{ color: streamMode ? 'success.main' : 'text.disabled', fontWeight: 500, mx: 0.5, userSelect: 'none' }}>
                       Stream
                     </Typography>
@@ -716,7 +716,7 @@ export default function PlaygroundPage() {
                       size="small"
                       checked={streamMode}
                       onChange={(e) => setStreamMode(e.target.checked)}
-                      sx={{ '& .MuiSwitch-switchBase.Mui-checked': { color: '#22c55e' }, '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': { bgcolor: '#86efac' } }}
+                      sx={{ '& .MuiSwitch-switchBase.Mui-checked': { color: '#53e16f' }, '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': { bgcolor: 'rgba(83,225,111,0.4)' } }}
                     />
                   </Box>
                   <Button
@@ -768,11 +768,12 @@ export default function PlaygroundPage() {
                       }
                       sx={{
                         textTransform: 'none',
-                        bgcolor: '#2563eb',
+                        bgcolor: '#adc6ff',
+                        color: '#131313',
                         borderRadius: '8px',
                         boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
-                        '&:hover': { bgcolor: 'primary.dark' },
-                        '&.Mui-disabled': { bgcolor: '#93c5fd', color: '#fff' },
+                        '&:hover': { bgcolor: 'primary.dark', color: '#131313' },
+                        '&.Mui-disabled': { bgcolor: 'rgba(173,198,255,0.4)', color: 'rgba(19,19,19,0.5)' },
                       }}
                     >
                       {isBusy ? 'Sending...' : 'Send'}
@@ -846,7 +847,7 @@ export default function PlaygroundPage() {
                   sx={{
                     height: 2,
                     bgcolor: 'transparent',
-                    '& .MuiLinearProgress-bar': { bgcolor: '#22c55e' },
+                    '& .MuiLinearProgress-bar': { bgcolor: '#53e16f' },
                   }}
                 />
               )}
@@ -862,7 +863,7 @@ export default function PlaygroundPage() {
                         whiteSpace: 'pre-wrap',
                         lineHeight: 1.7,
                         fontFamily: 'monospace',
-                        bgcolor: 'background.default',
+                        bgcolor: '#0e0e0e',
                         borderRadius: '8px',
                         p: 2,
                         border: '1px solid', borderColor: 'divider',
@@ -877,7 +878,7 @@ export default function PlaygroundPage() {
                           display: 'inline-block',
                           width: '2px',
                           height: '1.1em',
-                          bgcolor: '#22c55e',
+                          bgcolor: '#53e16f',
                           ml: '1px',
                           verticalAlign: 'text-bottom',
                           animation: 'blink 0.8s step-end infinite',
@@ -893,7 +894,7 @@ export default function PlaygroundPage() {
                 {!streaming.isStreaming && isLoading && (
                   <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', py: 6 }}>
                     <Box sx={{ textAlign: 'center' }}>
-                      <CircularProgress size={32} sx={{ color: '#3b82f6' }} />
+                      <CircularProgress size={32} sx={{ color: '#adc6ff' }} />
                       <Typography variant="body2" sx={{ mt: 1.5, color: 'text.secondary' }}>
                         Generating response...
                       </Typography>
@@ -929,7 +930,7 @@ export default function PlaygroundPage() {
                         whiteSpace: 'pre-wrap',
                         lineHeight: 1.7,
                         fontFamily: 'monospace',
-                        bgcolor: 'background.default',
+                        bgcolor: '#0e0e0e',
                         borderRadius: '8px',
                         p: 2,
                         border: '1px solid', borderColor: 'divider',
@@ -954,7 +955,7 @@ export default function PlaygroundPage() {
 
               {/* Footer stats */}
               {responseMeta && !streaming.isStreaming && (
-                <Box sx={{ px: 2.5, py: 1.5, borderTop: '1px solid', borderColor: 'divider', bgcolor: 'rgba(249,250,251,0.5)' }}>
+                <Box sx={{ px: 2.5, py: 1.5, borderTop: '1px solid', borderColor: 'divider', bgcolor: 'rgba(37,37,37,0.5)' }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
                     <Typography variant="caption" sx={{ color: 'text.secondary' }}>
                       Model: <Box component="span" sx={{ fontWeight: 500, color: 'text.primary' }}>{responseMeta.model}</Box>
@@ -995,7 +996,7 @@ export default function PlaygroundPage() {
                 sx={{
                   ...sectionHeaderSx,
                   cursor: 'pointer',
-                  '&:hover': { bgcolor: 'rgba(243,244,246,0.5)' },
+                  '&:hover': { bgcolor: 'rgba(37,37,37,0.5)' },
                   transition: 'background-color 0.15s',
                 }}
               >
@@ -1006,7 +1007,7 @@ export default function PlaygroundPage() {
                     <Chip
                       label={history.length}
                       size="small"
-                      sx={{ ml: 0.5, height: 20, fontSize: '0.7rem', fontWeight: 500, bgcolor: '#ede9fe', color: '#6d28d9' }}
+                      sx={{ ml: 0.5, height: 20, fontSize: '0.7rem', fontWeight: 500, bgcolor: 'rgba(139,92,246,0.1)', color: '#8b5cf6' }}
                     />
                   )}
                 </Typography>
@@ -1100,7 +1101,7 @@ export default function PlaygroundPage() {
                     <Chip
                       label={selectedModel.provider}
                       size="small"
-                      sx={{ height: 24, fontSize: '0.75rem', fontWeight: 500, bgcolor: 'rgba(59,130,246,0.1)', color: '#2563eb', border: '1px solid #bfdbfe' }}
+                      sx={{ height: 24, fontSize: '0.75rem', fontWeight: 500, bgcolor: 'rgba(173,198,255,0.1)', color: '#adc6ff', border: '1px solid rgba(173,198,255,0.3)' }}
                     />
                     <Typography variant="caption" sx={{ color: 'text.secondary' }}>{selectedModel.id}</Typography>
                   </Box>
@@ -1193,9 +1194,9 @@ export default function PlaygroundPage() {
                     fontWeight: 500,
                     minHeight: 40,
                     color: 'text.secondary',
-                    '&.Mui-selected': { color: '#2563eb' },
+                    '&.Mui-selected': { color: '#adc6ff' },
                   },
-                  '& .MuiTabs-indicator': { bgcolor: '#2563eb' },
+                  '& .MuiTabs-indicator': { bgcolor: '#adc6ff' },
                 }}
               >
                 {CODE_TABS.map((tab) => (
@@ -1227,7 +1228,7 @@ export default function PlaygroundPage() {
                 </Box>
               </Box>
 
-              <Box sx={{ px: 2.5, py: 1.5, borderTop: '1px solid', borderColor: 'divider', bgcolor: 'rgba(249,250,251,0.5)' }}>
+              <Box sx={{ px: 2.5, py: 1.5, borderTop: '1px solid', borderColor: 'divider', bgcolor: 'rgba(37,37,37,0.5)' }}>
                 <Typography variant="caption" sx={{ color: 'text.disabled' }}>
                   Code updates dynamically based on your current settings
                 </Typography>
@@ -1247,7 +1248,7 @@ export default function PlaygroundPage() {
                   <Typography variant="caption" sx={{ fontWeight: 500, color: 'text.secondary' }}>Completions</Typography>
                   <Box
                     component="code"
-                    sx={{ display: 'block', mt: 0.5, fontSize: '0.75rem', color: '#2563eb', bgcolor: 'rgba(59,130,246,0.1)', px: 1, py: 0.5, borderRadius: '4px' }}
+                    sx={{ display: 'block', mt: 0.5, fontSize: '0.75rem', color: '#adc6ff', bgcolor: 'rgba(173,198,255,0.1)', px: 1, py: 0.5, borderRadius: '4px' }}
                   >
                     POST /api/v1/completions
                   </Box>
@@ -1256,7 +1257,7 @@ export default function PlaygroundPage() {
                   <Typography variant="caption" sx={{ fontWeight: 500, color: 'text.secondary' }}>Streaming</Typography>
                   <Box
                     component="code"
-                    sx={{ display: 'block', mt: 0.5, fontSize: '0.75rem', color: '#2563eb', bgcolor: 'rgba(59,130,246,0.1)', px: 1, py: 0.5, borderRadius: '4px' }}
+                    sx={{ display: 'block', mt: 0.5, fontSize: '0.75rem', color: '#adc6ff', bgcolor: 'rgba(173,198,255,0.1)', px: 1, py: 0.5, borderRadius: '4px' }}
                   >
                     POST /api/v1/completions/stream
                   </Box>
@@ -1265,7 +1266,7 @@ export default function PlaygroundPage() {
                   <Typography variant="caption" sx={{ fontWeight: 500, color: 'text.secondary' }}>List Models</Typography>
                   <Box
                     component="code"
-                    sx={{ display: 'block', mt: 0.5, fontSize: '0.75rem', color: '#2563eb', bgcolor: 'rgba(59,130,246,0.1)', px: 1, py: 0.5, borderRadius: '4px' }}
+                    sx={{ display: 'block', mt: 0.5, fontSize: '0.75rem', color: '#adc6ff', bgcolor: 'rgba(173,198,255,0.1)', px: 1, py: 0.5, borderRadius: '4px' }}
                   >
                     GET /api/v1/models
                   </Box>

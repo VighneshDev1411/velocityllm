@@ -82,8 +82,8 @@ interface Document {
 // ─── Color palette for documents ─────────────────────────────────────────────
 
 const DOC_COLORS = [
-  '#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6',
-  '#ec4899', '#06b6d4', '#f97316', '#14b8a6', '#6366f1',
+  '#adc6ff', '#ef4444', '#53e16f', '#ffb595', '#8b5cf6',
+  '#ec4899', '#06b6d4', '#f97316', '#14b8a6', '#8b5cf6',
 ];
 
 function getDocColor(docId: string, docColorMap: Record<string, string>): string {
@@ -117,7 +117,7 @@ export default function VectorDBPage() {
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [newCollectionName, setNewCollectionName] = useState('');
   const [newCollectionDesc, setNewCollectionDesc] = useState('');
-  const [newCollectionColor, setNewCollectionColor] = useState('#3b82f6');
+  const [newCollectionColor, setNewCollectionColor] = useState('#adc6ff');
   const [allDocuments, setAllDocuments] = useState<Document[]>([]);
   const [addDocDialogOpen, setAddDocDialogOpen] = useState(false);
   const [selectedCollectionForDoc, setSelectedCollectionForDoc] = useState<string>('');
@@ -211,7 +211,7 @@ export default function VectorDBPage() {
       setCreateDialogOpen(false);
       setNewCollectionName('');
       setNewCollectionDesc('');
-      setNewCollectionColor('#3b82f6');
+      setNewCollectionColor('#adc6ff');
       loadCollections();
     } catch { /* ignore */ }
   };
@@ -304,7 +304,7 @@ export default function VectorDBPage() {
           <Paper key={i} sx={{ p: 2, backgroundColor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
               <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-                <Chip label={r.document_name} size="small" sx={{ backgroundColor: 'rgba(59,130,246,0.15)', color: '#60a5fa' }} />
+                <Chip label={r.document_name} size="small" sx={{ backgroundColor: 'rgba(173,198,255,0.15)', color: '#adc6ff' }} />
                 <Typography variant="caption" sx={{ color: 'text.secondary' }}>
                   Chunk #{r.chunk_index}
                 </Typography>
@@ -313,8 +313,8 @@ export default function VectorDBPage() {
                 label={`${(r.similarity * 100).toFixed(1)}%`}
                 size="small"
                 sx={{
-                  backgroundColor: r.similarity > 0.8 ? 'rgba(16,185,129,0.15)' : r.similarity > 0.5 ? 'rgba(245,158,11,0.15)' : 'rgba(239,68,68,0.15)',
-                  color: r.similarity > 0.8 ? '#34d399' : r.similarity > 0.5 ? '#fbbf24' : '#f87171',
+                  backgroundColor: r.similarity > 0.8 ? 'rgba(83,225,111,0.15)' : r.similarity > 0.5 ? 'rgba(255,181,149,0.15)' : 'rgba(239,68,68,0.15)',
+                  color: r.similarity > 0.8 ? '#53e16f' : r.similarity > 0.5 ? '#ffb595' : '#f87171',
                   fontWeight: 600,
                 }}
               />
@@ -330,8 +330,8 @@ export default function VectorDBPage() {
                 backgroundColor: 'rgba(255,255,255,0.05)',
                 '& .MuiLinearProgress-bar': {
                   borderRadius: 2,
-                  background: r.similarity > 0.8 ? 'linear-gradient(90deg, #10b981, #34d399)' :
-                    r.similarity > 0.5 ? 'linear-gradient(90deg, #f59e0b, #fbbf24)' :
+                  background: r.similarity > 0.8 ? 'linear-gradient(90deg, #53e16f, #6ee882)' :
+                    r.similarity > 0.5 ? 'linear-gradient(90deg, #ffb595, #ffc7ab)' :
                     'linear-gradient(90deg, #ef4444, #f87171)',
                 },
               }}
@@ -639,10 +639,10 @@ export default function VectorDBPage() {
       ) : stats ? (
         <>
           <Box sx={{ display: 'flex', gap: 2, mb: 4, flexWrap: 'wrap' }}>
-            <StatCard label="Total Vectors" value={stats.total_vectors.toLocaleString()} icon={Database} color="#3b82f6" />
-            <StatCard label="Documents" value={stats.total_documents} icon={FileText} color="#10b981" />
+            <StatCard label="Total Vectors" value={stats.total_vectors.toLocaleString()} icon={Database} color="#adc6ff" />
+            <StatCard label="Documents" value={stats.total_documents} icon={FileText} color="#53e16f" />
             <StatCard label="Collections" value={stats.total_collections} icon={Layers} color="#8b5cf6" />
-            <StatCard label="Embedding Dim" value={stats.embedding_dim} icon={Sparkles} color="#f59e0b" />
+            <StatCard label="Embedding Dim" value={stats.embedding_dim} icon={Sparkles} color="#ffb595" />
             <StatCard label="Avg Tokens/Chunk" value={Math.round(stats.avg_token_count)} icon={BarChart3} color="#ec4899" />
           </Box>
 
@@ -664,7 +664,7 @@ export default function VectorDBPage() {
                     labelStyle={{ color: '#ccc' }}
                     itemStyle={{ color: '#60a5fa' }}
                   />
-                  <Bar dataKey="count" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="count" fill="#adc6ff" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </Paper>
@@ -687,8 +687,8 @@ export default function VectorDBPage() {
       {/* Header */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
         <Box sx={{
-          p: 1.5, borderRadius: '12px',
-          background: 'linear-gradient(135deg, #8b5cf6, #3b82f6)',
+          p: 1.5, borderRadius: '8px',
+          background: 'linear-gradient(135deg, #8b5cf6, #adc6ff)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
           <Waypoints className="w-6 h-6" style={{ color: '#fff' }} />
@@ -708,7 +708,7 @@ export default function VectorDBPage() {
         sx={{
           mb: 3,
           '& .MuiTab-root': { textTransform: 'none', fontWeight: 500, minHeight: 42 },
-          '& .MuiTabs-indicator': { backgroundColor: '#3b82f6' },
+          '& .MuiTabs-indicator': { backgroundColor: '#adc6ff' },
         }}
       >
         <Tab icon={<Search className="w-4 h-4" />} iconPosition="start" label="Semantic Search" />

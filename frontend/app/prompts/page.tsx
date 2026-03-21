@@ -18,7 +18,7 @@ import InputLabel from '@mui/material/InputLabel';
 import Tooltip from '@mui/material/Tooltip';
 import Alert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
-import { useTheme } from '@mui/material/styles';
+
 import {
   BookTemplate, Search, Plus, Copy, Play, BarChart3, Tag,
   FileText, Clock, CheckCircle, XCircle, Eye, X, Layers,
@@ -77,21 +77,19 @@ function StatCard({ icon: Icon, label, value, color }: {
   value: string | number;
   color: string;
 }) {
-  const theme = useTheme();
-  const isDark = theme.palette.mode === 'dark';
   return (
     <Paper
       elevation={0}
       sx={{
         p: 2.5,
         borderRadius: 2,
-        border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`,
-        backgroundColor: isDark ? 'rgba(255,255,255,0.02)' : '#fff',
+        border: '1px solid rgba(255,255,255,0.08)',
+        backgroundColor: 'rgba(255,255,255,0.02)',
       }}
     >
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1 }}>
         <Box sx={{
-          width: 36, height: 36, borderRadius: '10px',
+          width: 36, height: 36, borderRadius: '8px',
           backgroundColor: `${color}18`, display: 'flex',
           alignItems: 'center', justifyContent: 'center', color,
         }}>
@@ -109,10 +107,10 @@ function StatCard({ icon: Icon, label, value, color }: {
 // ─── Category Colors ─────────────────────────────────────────────────────────
 
 const categoryColors: Record<string, string> = {
-  development: '#3b82f6',
+  development: '#adc6ff',
   'text-processing': '#8b5cf6',
-  translation: '#10b981',
-  general: '#f59e0b',
+  translation: '#53e16f',
+  general: '#ffb595',
   analysis: '#ef4444',
   creative: '#ec4899',
 };
@@ -124,9 +122,6 @@ function getCategoryColor(category: string): string {
 // ─── Main Component ──────────────────────────────────────────────────────────
 
 export default function PromptLibraryPage() {
-  const theme = useTheme();
-  const isDark = theme.palette.mode === 'dark';
-
   const [tab, setTab] = useState(0);
   const [loading, setLoading] = useState(true);
   const [templates, setTemplates] = useState<Template[]>([]);
@@ -300,8 +295,8 @@ export default function PromptLibraryPage() {
       {/* Header */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
         <Box sx={{
-          width: 44, height: 44, borderRadius: '12px',
-          background: 'linear-gradient(135deg, #8b5cf6, #6366f1)',
+          width: 44, height: 44, borderRadius: '8px',
+          background: 'linear-gradient(135deg, #8b5cf6, #8b5cf6)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
           <BookTemplate className="w-6 h-6" style={{ color: '#fff' }} />
@@ -359,7 +354,7 @@ export default function PromptLibraryPage() {
               elevation={0}
               sx={{
                 p: 6, textAlign: 'center', borderRadius: 2,
-                border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`,
+                border: `1px solid rgba(255,255,255,0.08)`,
               }}
             >
               <BookTemplate className="w-12 h-12 mx-auto mb-2" style={{ color: '#888' }} />
@@ -383,14 +378,14 @@ export default function PromptLibraryPage() {
                   elevation={0}
                   sx={{
                     p: 2.5, borderRadius: 2, cursor: 'pointer',
-                    border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`,
+                    border: `1px solid rgba(255,255,255,0.08)`,
                     backgroundColor: selectedTemplate?.ID === t.ID
-                      ? (isDark ? 'rgba(139,92,246,0.08)' : 'rgba(139,92,246,0.04)')
-                      : (isDark ? 'rgba(255,255,255,0.02)' : '#fff'),
+                      ? 'rgba(139,92,246,0.08)'
+                      : ('rgba(255,255,255,0.02)'),
                     transition: 'all 0.15s',
                     '&:hover': {
                       borderColor: '#8b5cf6',
-                      backgroundColor: isDark ? 'rgba(139,92,246,0.06)' : 'rgba(139,92,246,0.03)',
+                      backgroundColor: 'rgba(139,92,246,0.06)',
                     },
                   }}
                   onClick={() => setSelectedTemplate(selectedTemplate?.ID === t.ID ? null : t)}
@@ -440,8 +435,8 @@ export default function PromptLibraryPage() {
               elevation={0}
               sx={{
                 mt: 3, p: 3, borderRadius: 2,
-                border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`,
-                backgroundColor: isDark ? 'rgba(255,255,255,0.02)' : '#fff',
+                border: `1px solid rgba(255,255,255,0.08)`,
+                backgroundColor: 'rgba(255,255,255,0.02)',
               }}
             >
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
@@ -478,7 +473,7 @@ export default function PromptLibraryPage() {
                 elevation={0}
                 sx={{
                   p: 2, mb: 2, borderRadius: 1.5,
-                  backgroundColor: isDark ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.03)',
+                  backgroundColor: 'rgba(0,0,0,0.3)',
                   fontFamily: 'monospace', fontSize: '0.85rem',
                   whiteSpace: 'pre-wrap', lineHeight: 1.6,
                 }}
@@ -496,7 +491,7 @@ export default function PromptLibraryPage() {
                         sx={{
                           display: 'flex', alignItems: 'center', gap: 2,
                           p: 1.5, borderRadius: 1,
-                          backgroundColor: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+                          backgroundColor: 'rgba(255,255,255,0.03)',
                         }}
                       >
                         <Chip label={`{{${v.Name}}}`} size="small" sx={{ fontFamily: 'monospace', fontWeight: 600 }} />
@@ -530,8 +525,8 @@ export default function PromptLibraryPage() {
             elevation={0}
             sx={{
               p: 3, borderRadius: 2,
-              border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`,
-              backgroundColor: isDark ? 'rgba(255,255,255,0.02)' : '#fff',
+              border: `1px solid rgba(255,255,255,0.08)`,
+              backgroundColor: 'rgba(255,255,255,0.02)',
             }}
           >
             <Typography variant="h6" sx={{ fontWeight: 600, mb: 2.5 }}>Create New Template</Typography>
@@ -675,7 +670,7 @@ export default function PromptLibraryPage() {
                     elevation={0}
                     sx={{
                       p: 2, borderRadius: 1.5,
-                      backgroundColor: isDark ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.03)',
+                      backgroundColor: 'rgba(0,0,0,0.3)',
                       fontFamily: 'monospace', fontSize: '0.85rem',
                       whiteSpace: 'pre-wrap', lineHeight: 1.6,
                     }}
@@ -708,8 +703,8 @@ export default function PromptLibraryPage() {
               elevation={0}
               sx={{
                 p: 3, flex: 1, borderRadius: 2,
-                border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`,
-                backgroundColor: isDark ? 'rgba(255,255,255,0.02)' : '#fff',
+                border: `1px solid rgba(255,255,255,0.08)`,
+                backgroundColor: 'rgba(255,255,255,0.02)',
               }}
             >
               <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>Template Playground</Typography>
@@ -763,8 +758,8 @@ export default function PromptLibraryPage() {
               elevation={0}
               sx={{
                 p: 3, flex: 1, borderRadius: 2,
-                border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`,
-                backgroundColor: isDark ? 'rgba(255,255,255,0.02)' : '#fff',
+                border: `1px solid rgba(255,255,255,0.08)`,
+                backgroundColor: 'rgba(255,255,255,0.02)',
               }}
             >
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
@@ -783,7 +778,7 @@ export default function PromptLibraryPage() {
                   elevation={0}
                   sx={{
                     p: 2, borderRadius: 1.5,
-                    backgroundColor: isDark ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.03)',
+                    backgroundColor: 'rgba(0,0,0,0.3)',
                     fontFamily: 'monospace', fontSize: '0.85rem',
                     whiteSpace: 'pre-wrap', lineHeight: 1.6,
                     minHeight: 200,
@@ -810,14 +805,14 @@ export default function PromptLibraryPage() {
           {/* Stat Cards */}
           <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr 1fr', md: '1fr 1fr 1fr 1fr' }, gap: 2, mb: 3 }}>
             <StatCard icon={FileText} label="Total Templates" value={stats?.total_templates || templates.length} color="#8b5cf6" />
-            <StatCard icon={BarChart3} label="Total Usage" value={stats?.total_usage || 0} color="#3b82f6" />
+            <StatCard icon={BarChart3} label="Total Usage" value={stats?.total_usage || 0} color="#adc6ff" />
             <StatCard
               icon={CheckCircle}
               label="Avg Success Rate"
               value={stats?.avg_success_rate != null ? `${(stats.avg_success_rate * 100).toFixed(0)}%` : 'N/A'}
-              color="#10b981"
+              color="#53e16f"
             />
-            <StatCard icon={Layers} label="Categories" value={stats?.categories?.length || categories.length} color="#f59e0b" />
+            <StatCard icon={Layers} label="Categories" value={stats?.categories?.length || categories.length} color="#ffb595" />
           </Box>
 
           {/* Usage Chart */}
@@ -825,8 +820,8 @@ export default function PromptLibraryPage() {
             elevation={0}
             sx={{
               p: 3, borderRadius: 2,
-              border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`,
-              backgroundColor: isDark ? 'rgba(255,255,255,0.02)' : '#fff',
+              border: `1px solid rgba(255,255,255,0.08)`,
+              backgroundColor: 'rgba(255,255,255,0.02)',
             }}
           >
             <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>Usage by Template</Typography>
@@ -840,18 +835,18 @@ export default function PromptLibraryPage() {
                     failure: t.Stats?.FailureCount || 0,
                   }))}
                 >
-                  <CartesianGrid strokeDasharray="3 3" stroke={isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
                   <XAxis dataKey="name" tick={{ fontSize: 12 }} />
                   <YAxis tick={{ fontSize: 12 }} />
                   <RechartsTooltip
                     contentStyle={{
-                      backgroundColor: isDark ? '#1e1e2e' : '#fff',
-                      border: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`,
+                      backgroundColor: '#252525',
+                      border: '1px solid rgba(255,255,255,0.1)',
                       borderRadius: 8,
                     }}
                   />
                   <Bar dataKey="usage" fill="#8b5cf6" name="Total Usage" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="success" fill="#10b981" name="Success" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="success" fill="#53e16f" name="Success" radius={[4, 4, 0, 0]} />
                   <Bar dataKey="failure" fill="#ef4444" name="Failure" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
@@ -868,8 +863,8 @@ export default function PromptLibraryPage() {
             elevation={0}
             sx={{
               mt: 2, p: 3, borderRadius: 2,
-              border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`,
-              backgroundColor: isDark ? 'rgba(255,255,255,0.02)' : '#fff',
+              border: `1px solid rgba(255,255,255,0.08)`,
+              backgroundColor: 'rgba(255,255,255,0.02)',
             }}
           >
             <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>Template Details</Typography>
@@ -880,7 +875,7 @@ export default function PromptLibraryPage() {
                   sx={{
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                     p: 2, borderRadius: 1.5,
-                    backgroundColor: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+                    backgroundColor: 'rgba(255,255,255,0.03)',
                   }}
                 >
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -903,7 +898,7 @@ export default function PromptLibraryPage() {
                     </Box>
                     <Box sx={{ textAlign: 'center' }}>
                       <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block' }}>Success</Typography>
-                      <Typography variant="body2" sx={{ fontWeight: 600, color: '#10b981' }}>
+                      <Typography variant="body2" sx={{ fontWeight: 600, color: '#53e16f' }}>
                         {t.Stats?.SuccessCount || 0}
                       </Typography>
                     </Box>

@@ -26,7 +26,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const sidebarWidth = collapsed ? sidebarTheme.collapsedWidth : sidebarTheme.width;
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh' }}>
+    <Box sx={{ display: 'flex', minHeight: '100vh', backgroundColor: '#131313' }}>
       <Sidebar
         mobileOpen={mobileOpen}
         onMobileClose={() => setMobileOpen(false)}
@@ -44,7 +44,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           width: { md: `calc(100% - ${sidebarWidth}px)` },
           ml: { md: 0 },
           mt: '56px',
-          backgroundColor: 'background.default',
+          backgroundColor: '#131313',
           minHeight: 'calc(100vh - 56px)',
           transition: 'width 0.2s ease-in-out',
         }}

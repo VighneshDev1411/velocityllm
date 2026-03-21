@@ -124,7 +124,7 @@ export default function WorkersPage() {
       </Grid>
 
       {/* Worker Grid */}
-      <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px' }}>
+      <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px' }}>
         <Box sx={{ px: 3, py: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
           <Typography variant="h6" sx={{ fontSize: '1.1rem', fontWeight: 600, color: 'text.primary' }}>
             Active Workers
@@ -157,19 +157,19 @@ function WorkerCard({ worker }: { worker: WorkerStats }) {
   const getStatusChipProps = () => {
     switch (worker.status) {
       case 'idle':
-        return { label: 'idle', sx: { backgroundColor: 'rgba(16,185,129,0.1)', color: '#059669', fontWeight: 600, fontSize: '0.75rem' } };
+        return { label: 'Idle', sx: { backgroundColor: 'rgba(83,225,111,0.1)', color: '#53e16f', fontWeight: 600, fontSize: '0.75rem', textTransform: 'capitalize' as const } };
       case 'busy':
-        return { label: 'busy', sx: { backgroundColor: 'rgba(59,130,246,0.1)', color: '#2563eb', fontWeight: 600, fontSize: '0.75rem' } };
+        return { label: 'Busy', sx: { backgroundColor: 'rgba(173,198,255,0.1)', color: '#adc6ff', fontWeight: 600, fontSize: '0.75rem', textTransform: 'capitalize' as const } };
       case 'unhealthy':
-        return { label: 'unhealthy', sx: { backgroundColor: 'rgba(239,68,68,0.1)', color: '#dc2626', fontWeight: 600, fontSize: '0.75rem' } };
+        return { label: 'Unhealthy', sx: { backgroundColor: 'rgba(239,68,68,0.1)', color: '#dc2626', fontWeight: 600, fontSize: '0.75rem', textTransform: 'capitalize' as const } };
       default:
-        return { label: worker.status, sx: { backgroundColor: '#fefce8', color: '#ca8a04', fontWeight: 600, fontSize: '0.75rem' } };
+        return { label: worker.status, sx: { backgroundColor: 'rgba(255,181,149,0.1)', color: '#ffb595', fontWeight: 600, fontSize: '0.75rem' } };
     }
   };
 
   const getHealthColor = () => {
     if (worker.health_score >= 80) return '#22c55e';
-    if (worker.health_score >= 50) return '#eab308';
+    if (worker.health_score >= 50) return '#ffb595';
     return '#ef4444';
   };
 
@@ -199,7 +199,7 @@ function WorkerCard({ worker }: { worker: WorkerStats }) {
       elevation={0}
       sx={{
         border: '1px solid', borderColor: 'divider',
-        borderRadius: '12px',
+        borderRadius: '8px',
         p: 3,
         transition: 'box-shadow 0.2s',
         '&:hover': { boxShadow: '0 4px 12px rgba(0,0,0,0.1)' },
@@ -211,8 +211,8 @@ function WorkerCard({ worker }: { worker: WorkerStats }) {
             sx={{
               p: 1,
               borderRadius: '8px',
-              backgroundColor: 'rgba(59,130,246,0.1)',
-              color: '#3b82f6',
+              backgroundColor: 'rgba(173,198,255,0.1)',
+              color: '#adc6ff',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',

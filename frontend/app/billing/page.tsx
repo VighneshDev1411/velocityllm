@@ -96,9 +96,9 @@ function buildTierFeatures(tierLimits: TierLimits | null): string[] {
   ];
 }
 
-const PIE_COLORS = ['#2563eb', '#7c3aed', '#059669', '#d97706', '#dc2626', '#0891b2', '#4f46e5', '#be185d'];
+const PIE_COLORS = ['#adc6ff', '#8b5cf6', '#53e16f', '#ffb595', '#ef4444', '#67e8f9', '#a78bfa', '#f472b6'];
 
-const headerSx = { fontWeight: 600, color: 'text.secondary', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' } as const;
+const headerSx = { fontWeight: 700, color: 'text.secondary', fontSize: '0.625rem', textTransform: 'uppercase', letterSpacing: '0.2em', fontFamily: 'var(--font-mono), "JetBrains Mono", monospace' } as const;
 
 export default function BillingPage() {
   const theme = useTheme();
@@ -251,7 +251,7 @@ export default function BillingPage() {
       ))}
 
       {loading ? (
-        <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 4, textAlign: 'center' }}>
+        <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 4, textAlign: 'center' }}>
           <CircularProgress size={28} />
           <Typography sx={{ mt: 1, color: 'text.disabled' }}>Loading billing data...</Typography>
         </Paper>
@@ -260,11 +260,11 @@ export default function BillingPage() {
           {/* Current Plan Banner */}
           <Paper
             elevation={0}
-            sx={{ mb: 3, p: 3, borderRadius: '12px', border: `2px solid ${tierStyle.border}`, bgcolor: tierStyle.bg }}
+            sx={{ mb: 3, p: 3, borderRadius: '8px', border: `2px solid ${tierStyle.border}`, bgcolor: tierStyle.bg }}
           >
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                <Box sx={{ width: 48, height: 48, borderRadius: '12px', bgcolor: tierStyle.bg, border: `1px solid ${tierStyle.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Box sx={{ width: 48, height: 48, borderRadius: '8px', bgcolor: tierStyle.bg, border: `1px solid ${tierStyle.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <TierIcon size={24} color={tierStyle.color} />
                 </Box>
                 <Box>
@@ -335,7 +335,7 @@ export default function BillingPage() {
             <Grid container spacing={2.5} sx={{ mb: 3 }}>
               {limits.requests_per_month > 0 && (
                 <Grid size={{ xs: 12, md: 6 }}>
-                  <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3 }}>
+                  <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 3 }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                       <Typography variant="body2" sx={{ fontWeight: 600, color: 'text.primary' }}>Request Usage</Typography>
                       <Typography variant="body2" sx={{ color: 'text.secondary' }}>
@@ -358,7 +358,7 @@ export default function BillingPage() {
               )}
               {limits.tokens_per_month > 0 && (
                 <Grid size={{ xs: 12, md: 6 }}>
-                  <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3 }}>
+                  <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 3 }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                       <Typography variant="body2" sx={{ fontWeight: 600, color: 'text.primary' }}>Token Usage</Typography>
                       <Typography variant="body2" sx={{ color: 'text.secondary' }}>
@@ -383,7 +383,7 @@ export default function BillingPage() {
           )}
 
           {/* Charts Section */}
-          <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3, mb: 3 }}>
+          <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 3, mb: 3 }}>
             <Tabs
               value={activeTab}
               onChange={(_, v) => setActiveTab(v)}
@@ -505,7 +505,7 @@ export default function BillingPage() {
           <Grid container spacing={3} sx={{ mb: 3 }}>
             {/* Usage by Model */}
             <Grid size={{ xs: 12, md: 8 }}>
-              <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3, height: '100%' }}>
+              <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 3, height: '100%' }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
                   <Typography variant="h6" sx={{ fontWeight: 600, color: 'text.primary' }}>
                     Usage by Model
@@ -559,13 +559,13 @@ export default function BillingPage() {
 
             {/* Payment Method */}
             <Grid size={{ xs: 12, md: 4 }}>
-              <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3, height: '100%' }}>
+              <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 3, height: '100%' }}>
                 <Typography variant="h6" sx={{ fontWeight: 600, color: 'text.primary', mb: 2 }}>
                   Payment Method
                 </Typography>
                 <Box
                   sx={{
-                    p: 2.5, borderRadius: '12px',
+                    p: 2.5, borderRadius: '8px',
                     background: 'linear-gradient(135deg, #1e3a5f 0%, #0a0f1e 100%)', color: 'white', mb: 2,
                     display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
                     minHeight: 120, gap: 1,
@@ -597,7 +597,7 @@ export default function BillingPage() {
                       <Paper
                         elevation={0}
                         sx={{
-                          p: 3, borderRadius: '12px', border: `2px solid ${style.border}`,
+                          p: 3, borderRadius: '8px', border: `2px solid ${style.border}`,
                           transition: 'box-shadow 0.2s', '&:hover': { boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' },
                         }}
                       >
@@ -633,7 +633,7 @@ export default function BillingPage() {
           )}
 
           {/* Invoices */}
-          <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3 }}>
+          <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
               <Typography variant="h6" sx={{ fontWeight: 600, color: 'text.primary' }}>Invoices</Typography>
               <Calendar size={20} color="var(--mui-palette-text-disabled)" />

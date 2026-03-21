@@ -59,7 +59,7 @@ interface RAGStats {
 
 export default function KnowledgeBasePage() {
   const theme = useTheme();
-  const isDark = theme.palette.mode === 'dark';
+  const isDark = true; // Kinetic Console: always dark
 
   // State
   const [documents, setDocuments] = useState<Document[]>([]);
@@ -571,7 +571,7 @@ export default function KnowledgeBasePage() {
                   variant="outlined"
                   sx={{
                     p: 2,
-                    bgcolor: isDark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.01)',
+                    bgcolor: 'rgba(255,255,255,0.02)',
                   }}
                 >
                   {querying && !ragResponse && (
@@ -662,7 +662,7 @@ export default function KnowledgeBasePage() {
           {pendingFile ? (
             <Paper
               variant="outlined"
-              sx={{ p: 3, textAlign: 'center', bgcolor: isDark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.01)' }}
+              sx={{ p: 3, textAlign: 'center', bgcolor: 'rgba(255,255,255,0.02)' }}
             >
               <FileText className="w-10 h-10" style={{ margin: '0 auto 12px', color: theme.palette.primary.main }} />
               <Typography variant="body1" sx={{ fontWeight: 600 }}>{pendingFile.name}</Typography>

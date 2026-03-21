@@ -317,9 +317,9 @@ const bestPractices = [
 ];
 
 const METHOD_COLORS: Record<HttpMethod, string> = {
-  GET: '#10b981',
-  POST: '#3b82f6',
-  PUT: '#f59e0b',
+  GET: '#53e16f',
+  POST: '#adc6ff',
+  PUT: '#ffb595',
   PATCH: '#8b5cf6',
   DELETE: '#ef4444',
 };
@@ -525,7 +525,7 @@ export default function DocsPage() {
       {/* Header */}
       <Box sx={{ mb: 3 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 0.5 }}>
-          <BookOpen className="w-6 h-6" style={{ color: '#3b82f6' }} />
+          <BookOpen className="w-6 h-6" style={{ color: '#adc6ff' }} />
           <Typography variant="h4">API Documentation</Typography>
         </Box>
         <Typography color="text.secondary">

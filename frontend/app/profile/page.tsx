@@ -134,9 +134,9 @@ export default function ProfilePage() {
       case 'admin':
         return { bg: 'rgba(239,68,68,0.1)', color: 'error.dark' };
       case 'developer':
-        return { bg: '#f5f3ff', color: '#5b21b6' };
+        return { bg: 'rgba(139,92,246,0.1)', color: '#8b5cf6' };
       default:
-        return { bg: 'rgba(59,130,246,0.1)', color: 'primary.dark' };
+        return { bg: 'rgba(173,198,255,0.1)', color: '#adc6ff' };
     }
   };
 
@@ -181,9 +181,9 @@ export default function ProfilePage() {
       )}
 
       {/* Profile Information Card */}
-      <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3, mb: 3 }}>
+      <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 3, mb: 3 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
-          <Typography sx={{ fontSize: '1.1rem', fontWeight: 600, color: 'text.primary' }}>
+          <Typography sx={{ fontSize: '0.625rem', fontWeight: 600, color: 'text.secondary', textTransform: 'uppercase', letterSpacing: '0.2em', fontFamily: 'var(--font-mono)' }}>
             Profile Information
           </Typography>
           {!isEditing ? (
@@ -231,7 +231,7 @@ export default function ProfilePage() {
             sx={{
               width: 72,
               height: 72,
-              background: 'linear-gradient(135deg, #3b82f6, #9333ea)',
+              background: 'linear-gradient(135deg, #adc6ff, #8b5cf6)',
               fontSize: '1.75rem',
               fontWeight: 700,
             }}
@@ -239,7 +239,7 @@ export default function ProfilePage() {
             {user.first_name?.[0]?.toUpperCase() || user.username?.[0]?.toUpperCase() || 'U'}
           </Avatar>
           <Box>
-            <Typography sx={{ fontSize: '1.1rem', fontWeight: 600, color: 'text.primary' }}>
+            <Typography sx={{ fontSize: '0.625rem', fontWeight: 600, color: 'text.secondary', textTransform: 'uppercase', letterSpacing: '0.2em', fontFamily: 'var(--font-mono)' }}>
               {user.first_name || user.last_name
                 ? `${user.first_name} ${user.last_name}`.trim()
                 : user.username}
@@ -334,8 +334,8 @@ export default function ProfilePage() {
               label={user.active ? 'Active' : 'Inactive'}
               size="small"
               sx={{
-                backgroundColor: user.active ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)',
-                color: user.active ? '#15803d' : '#991b1b',
+                backgroundColor: user.active ? 'rgba(83,225,111,0.1)' : 'rgba(239,68,68,0.1)',
+                color: user.active ? '#53e16f' : '#ef4444',
                 fontWeight: 500,
                 fontSize: '0.75rem',
               }}
@@ -345,10 +345,10 @@ export default function ProfilePage() {
       </Paper>
 
       {/* Change Password Card */}
-      <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3, mb: 3 }}>
+      <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 3, mb: 3 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
           <Box>
-            <Typography sx={{ fontSize: '1.1rem', fontWeight: 600, color: 'text.primary' }}>
+            <Typography sx={{ fontSize: '0.625rem', fontWeight: 600, color: 'text.secondary', textTransform: 'uppercase', letterSpacing: '0.2em', fontFamily: 'var(--font-mono)' }}>
               Change Password
             </Typography>
             <Typography sx={{ fontSize: '0.8rem', color: 'text.secondary', mt: 0.25 }}>
@@ -431,8 +431,8 @@ export default function ProfilePage() {
       </Paper>
 
       {/* Account Info Card */}
-      <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3 }}>
-        <Typography sx={{ fontSize: '1.1rem', fontWeight: 600, color: 'text.primary', mb: 2.5 }}>
+      <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 3 }}>
+        <Typography sx={{ fontSize: '0.625rem', fontWeight: 600, color: 'text.secondary', textTransform: 'uppercase', letterSpacing: '0.2em', fontFamily: 'var(--font-mono)', mb: 2.5 }}>
           Account Information
         </Typography>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>

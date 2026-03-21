@@ -81,7 +81,7 @@ function FeatureBadge({ label, enabled }: { label: string; enabled?: boolean }) 
       label={label}
       size="small"
       sx={{
-        backgroundColor: enabled ? 'rgba(16,185,129,0.1)' : 'action.hover',
+        backgroundColor: enabled ? 'rgba(83,225,111,0.1)' : 'action.hover',
         color: enabled ? 'success.dark' : 'text.secondary',
         fontWeight: 500,
         fontSize: '0.75rem',
@@ -114,7 +114,7 @@ function ProviderCard({ name, provider, providerKey, testing, testResult, onTest
           }} />
           <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: 'text.primary' }}>{name}</Typography>
         </Box>
-        <Typography sx={{ fontSize: '0.75rem', fontWeight: 500, color: configured ? '#16a34a' : '#ef4444' }}>
+        <Typography sx={{ fontSize: '0.75rem', fontWeight: 500, color: configured ? '#53e16f' : '#ef4444' }}>
           {configured ? 'Configured' : 'Not Configured'}
         </Typography>
       </Box>
@@ -282,7 +282,7 @@ export default function SettingsPage() {
       <Box sx={{ p: { xs: 2, sm: 3 }, display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
         <Alert
           severity="error"
-          sx={{ maxWidth: 400, borderRadius: '12px' }}
+          sx={{ maxWidth: 400, borderRadius: '8px' }}
           action={
             <Button
               size="small"
@@ -319,9 +319,9 @@ export default function SettingsPage() {
       <PageHeader title="Settings" subtitle="System configuration and preferences" />
 
       {/* System Information */}
-      <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3, mb: 3 }}>
+      <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 3, mb: 3 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2.5 }}>
-          <Server style={{ width: 16, height: 16, color: '#2563eb' }} />
+          <Server style={{ width: 16, height: 16, color: '#adc6ff' }} />
           <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: 'text.primary' }}>
             System Information
           </Typography>
@@ -335,8 +335,8 @@ export default function SettingsPage() {
                 label={sys.environment || 'development'}
                 size="small"
                 sx={{
-                  backgroundColor: sys.environment === 'production' ? 'rgba(16,185,129,0.1)' : '#fefce8',
-                  color: sys.environment === 'production' ? '#15803d' : '#a16207',
+                  backgroundColor: sys.environment === 'production' ? 'rgba(83,225,111,0.1)' : 'rgba(255,181,149,0.1)',
+                  color: sys.environment === 'production' ? '#53e16f' : '#ffb595',
                   fontWeight: 500,
                   fontSize: '0.75rem',
                 }}
@@ -354,7 +354,7 @@ export default function SettingsPage() {
       </Paper>
 
       {/* LLM Providers */}
-      <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3, mb: 3 }}>
+      <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 3, mb: 3 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2.5 }}>
           <Cpu style={{ width: 16, height: 16, color: '#7c3aed' }} />
           <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: 'text.primary' }}>
@@ -386,7 +386,7 @@ export default function SettingsPage() {
       </Paper>
 
       {/* Routing Configuration */}
-      <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3, mb: 3 }}>
+      <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 3, mb: 3 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2.5 }}>
           <Route style={{ width: 16, height: 16, color: '#4f46e5' }} />
           <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: 'text.primary' }}>
@@ -416,7 +416,7 @@ export default function SettingsPage() {
             Apply
           </Button>
           {strategyMsg && (
-            <Typography sx={{ fontSize: '0.8rem', fontWeight: 500, color: strategyMsg.includes('success') ? '#16a34a' : '#dc2626' }}>
+            <Typography sx={{ fontSize: '0.8rem', fontWeight: 500, color: strategyMsg.includes('success') ? '#53e16f' : '#dc2626' }}>
               {strategyMsg}
             </Typography>
           )}
@@ -431,7 +431,7 @@ export default function SettingsPage() {
       </Paper>
 
       {/* Worker Pool */}
-      <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3, mb: 3 }}>
+      <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 3, mb: 3 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2.5 }}>
           <Activity style={{ width: 16, height: 16, color: '#ea580c' }} />
           <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: 'text.primary' }}>
@@ -479,7 +479,7 @@ export default function SettingsPage() {
                           borderRadius: '4px',
                           backgroundColor:
                             (workerPool.status?.queue_utilization ?? 0) > 80 ? '#ef4444' :
-                            (workerPool.status?.queue_utilization ?? 0) > 50 ? '#eab308' : '#22c55e',
+                            (workerPool.status?.queue_utilization ?? 0) > 50 ? '#ffb595' : '#22c55e',
                         },
                       }}
                     />
@@ -495,7 +495,7 @@ export default function SettingsPage() {
       </Paper>
 
       {/* Cache Configuration */}
-      <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3, mb: 3 }}>
+      <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 3, mb: 3 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2.5 }}>
           <Layers style={{ width: 16, height: 16, color: '#0d9488' }} />
           <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: 'text.primary' }}>
@@ -526,9 +526,9 @@ export default function SettingsPage() {
       </Paper>
 
       {/* Rate Limiting */}
-      <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3, mb: 3 }}>
+      <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 3, mb: 3 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2.5 }}>
-          <Gauge style={{ width: 16, height: 16, color: '#d97706' }} />
+          <Gauge style={{ width: 16, height: 16, color: '#ffb595' }} />
           <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: 'text.primary' }}>
             Rate Limiting
           </Typography>
@@ -570,7 +570,7 @@ export default function SettingsPage() {
       </Paper>
 
       {/* Backpressure & Load Shedding */}
-      <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3, mb: 3 }}>
+      <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 3, mb: 3 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2.5 }}>
           <Shield style={{ width: 16, height: 16, color: '#dc2626' }} />
           <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: 'text.primary' }}>
@@ -587,8 +587,8 @@ export default function SettingsPage() {
                 label={backpressure.active ? 'Active' : 'Inactive'}
                 size="small"
                 sx={{
-                  backgroundColor: backpressure.active ? 'rgba(239,68,68,0.1)' : 'rgba(16,185,129,0.1)',
-                  color: backpressure.active ? '#b91c1c' : '#15803d',
+                  backgroundColor: backpressure.active ? 'rgba(239,68,68,0.1)' : 'rgba(83,225,111,0.1)',
+                  color: backpressure.active ? '#ef4444' : '#53e16f',
                   fontWeight: 500,
                   fontSize: '0.75rem',
                 }}
@@ -628,9 +628,9 @@ export default function SettingsPage() {
       {/* Database & Redis */}
       <Grid container spacing={3}>
         <Grid size={{ xs: 12, md: 6 }}>
-          <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3 }}>
+          <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2.5 }}>
-              <Database style={{ width: 16, height: 16, color: '#2563eb' }} />
+              <Database style={{ width: 16, height: 16, color: '#adc6ff' }} />
               <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: 'text.primary' }}>Database</Typography>
             </Box>
             <Grid container spacing={2.5}>
@@ -643,7 +643,7 @@ export default function SettingsPage() {
         </Grid>
 
         <Grid size={{ xs: 12, md: 6 }}>
-          <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3 }}>
+          <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2.5 }}>
               <HardDrive style={{ width: 16, height: 16, color: '#dc2626' }} />
               <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: 'text.primary' }}>Redis</Typography>

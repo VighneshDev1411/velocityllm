@@ -111,7 +111,7 @@ export default function StreamsPage() {
       {/* Performance Metrics */}
       <Grid container spacing={3} sx={{ mb: 3 }}>
         <Grid size={{ xs: 12, md: 4 }}>
-          <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3 }}>
+          <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 3 }}>
             <Typography sx={{ fontSize: '0.875rem', color: 'text.secondary', mb: 1 }}>Avg Duration</Typography>
             <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, color: 'text.primary' }}>
               {(metrics?.avg_duration_ms || 0).toFixed(0)}ms
@@ -119,7 +119,7 @@ export default function StreamsPage() {
           </Paper>
         </Grid>
         <Grid size={{ xs: 12, md: 4 }}>
-          <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3 }}>
+          <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 3 }}>
             <Typography sx={{ fontSize: '0.875rem', color: 'text.secondary', mb: 1 }}>Avg Chunks/Stream</Typography>
             <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, color: 'text.primary' }}>
               {(metrics?.avg_chunks_per_stream || 0).toFixed(1)}
@@ -127,7 +127,7 @@ export default function StreamsPage() {
           </Paper>
         </Grid>
         <Grid size={{ xs: 12, md: 4 }}>
-          <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3 }}>
+          <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 3 }}>
             <Typography sx={{ fontSize: '0.875rem', color: 'text.secondary', mb: 1 }}>Data Streamed</Typography>
             <Typography sx={{ fontSize: '1.75rem', fontWeight: 700, color: 'text.primary' }}>
               {formatBytes(metrics?.bytes_streamed || 0)}
@@ -137,7 +137,7 @@ export default function StreamsPage() {
       </Grid>
 
       {/* Active Streams */}
-      <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px' }}>
+      <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px' }}>
         <Box sx={{ px: 3, py: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
           <Typography variant="h6" sx={{ fontSize: '1.1rem', fontWeight: 600, color: 'text.primary' }}>
             Active Streams
@@ -158,7 +158,7 @@ export default function StreamsPage() {
                   elevation={0}
                   sx={{
                     border: '1px solid', borderColor: 'divider',
-                    borderRadius: '12px',
+                    borderRadius: '8px',
                     p: 2,
                     transition: 'box-shadow 0.2s',
                     '&:hover': { boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' },
@@ -171,7 +171,7 @@ export default function StreamsPage() {
                           width: 12,
                           height: 12,
                           borderRadius: '50%',
-                          backgroundColor: '#22c55e',
+                          backgroundColor: '#53e16f',
                           animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                           '@keyframes pulse': {
                             '0%, 100%': { opacity: 1 },
@@ -192,8 +192,8 @@ export default function StreamsPage() {
                       size="small"
                       label="Active"
                       sx={{
-                        backgroundColor: 'rgba(59,130,246,0.1)',
-                        color: '#2563eb',
+                        backgroundColor: 'rgba(173,198,255,0.1)',
+                        color: '#adc6ff',
                         fontWeight: 600,
                         fontSize: '0.7rem',
                       }}

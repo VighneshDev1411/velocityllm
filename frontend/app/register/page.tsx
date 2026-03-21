@@ -66,7 +66,7 @@ export default function RegisterPage() {
     <Box
       sx={{
         minHeight: '100vh',
-        background: 'linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%)',
+        background: 'linear-gradient(135deg, #131313 0%, #1c1b1b 100%)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -80,8 +80,8 @@ export default function RegisterPage() {
             sx={{
               width: 48,
               height: 48,
-              borderRadius: '12px',
-              background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)',
+              borderRadius: '8px',
+              background: 'linear-gradient(135deg, #adc6ff, #8b5cf6)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -104,7 +104,7 @@ export default function RegisterPage() {
           elevation={0}
           sx={{
             p: 4,
-            borderRadius: '16px',
+            borderRadius: '8px',
             border: '1px solid', borderColor: 'divider',
             boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
           }}
@@ -251,7 +251,7 @@ export default function RegisterPage() {
 
           <Typography sx={{ textAlign: 'center', mt: 3, fontSize: '0.875rem', color: 'text.secondary' }}>
             Already have an account?{' '}
-            <Link href="/login" style={{ color: '#3b82f6', fontWeight: 600, textDecoration: 'none' }}>
+            <Link href="/login" style={{ color: '#adc6ff', fontWeight: 600, textDecoration: 'none' }}>
               Sign in
             </Link>
           </Typography>

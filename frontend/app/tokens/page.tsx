@@ -30,11 +30,11 @@ export default function TokensPage() {
         <Grid container spacing={3} sx={{ mb: 3 }}>
           {[...Array(4)].map((_, i) => (
             <Grid size={{ xs: 12, md: 3 }} key={i}>
-              <Skeleton variant="rounded" height={128} sx={{ borderRadius: '12px' }} />
+              <Skeleton variant="rounded" height={128} sx={{ borderRadius: '8px' }} />
             </Grid>
           ))}
         </Grid>
-        <Skeleton variant="rounded" height={384} sx={{ borderRadius: '12px' }} />
+        <Skeleton variant="rounded" height={384} sx={{ borderRadius: '8px' }} />
       </Box>
     );
   }
@@ -89,8 +89,8 @@ export default function TokensPage() {
       {/* Context Statistics & Token Processing */}
       <Grid container spacing={3} sx={{ mb: 3 }}>
         <Grid size={{ xs: 12, lg: 6 }}>
-          <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3 }}>
-            <Typography variant="h6" sx={{ fontSize: '1.1rem', fontWeight: 600, color: 'text.primary', mb: 2.5 }}>
+          <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 3 }}>
+            <Typography variant="h6" sx={{ fontSize: '0.625rem', fontWeight: 600, color: 'text.secondary', mb: 2.5, textTransform: 'uppercase', letterSpacing: '0.2em', fontFamily: 'var(--font-mono)' }}>
               Context Statistics
             </Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
@@ -116,8 +116,8 @@ export default function TokensPage() {
         </Grid>
 
         <Grid size={{ xs: 12, lg: 6 }}>
-          <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3 }}>
-            <Typography variant="h6" sx={{ fontSize: '1.1rem', fontWeight: 600, color: 'text.primary', mb: 2.5 }}>
+          <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 3 }}>
+            <Typography variant="h6" sx={{ fontSize: '0.625rem', fontWeight: 600, color: 'text.secondary', mb: 2.5, textTransform: 'uppercase', letterSpacing: '0.2em', fontFamily: 'var(--font-mono)' }}>
               Token Processing
             </Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
@@ -151,15 +151,15 @@ export default function TokensPage() {
       </Grid>
 
       {/* Active Contexts */}
-      <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3 }}>
+      <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 3 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2.5 }}>
-          <Typography variant="h6" sx={{ fontSize: '1.1rem', fontWeight: 600, color: 'text.primary' }}>
+          <Typography variant="h6" sx={{ fontSize: '0.625rem', fontWeight: 600, color: 'text.secondary', textTransform: 'uppercase', letterSpacing: '0.2em', fontFamily: 'var(--font-mono)' }}>
             Active Contexts
           </Typography>
           <Chip
             label={`${contexts.length} contexts`}
             size="small"
-            sx={{ backgroundColor: 'rgba(59,130,246,0.1)', color: '#2563eb', fontWeight: 600, fontSize: '0.75rem' }}
+            sx={{ backgroundColor: 'rgba(173,198,255,0.15)', color: '#adc6ff', fontWeight: 600, fontSize: '0.75rem' }}
           />
         </Box>
 
@@ -187,7 +187,7 @@ export default function TokensPage() {
                 }}
               >
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                  <Database size={20} style={{ color: '#3b82f6' }} />
+                  <Database size={20} style={{ color: '#adc6ff' }} />
                   <Box>
                     <Typography sx={{ fontWeight: 500, color: 'text.primary', fontSize: '0.9rem' }}>
                       {contextId}
@@ -218,8 +218,8 @@ function MetricRow({ label, value, max, color = 'blue' }: any) {
   const percentage = max ? (value / max) * 100 : 0;
 
   const colorMap: Record<string, string> = {
-    blue: '#3b82f6',
-    green: '#10b981',
+    blue: '#adc6ff',
+    green: '#53e16f',
     yellow: '#eab308',
     red: '#ef4444',
   };

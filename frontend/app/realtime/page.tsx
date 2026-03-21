@@ -15,10 +15,13 @@ import {
   Activity, Zap, Clock, AlertTriangle, Cpu, HardDrive,
   Radio, Users, BarChart3, GitBranch,
 } from 'lucide-react';
-import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, AreaChart, Area,
-} from 'recharts';
+import dynamic from 'next/dynamic';
+import ChartLoadingFallback from '@/components/ChartLoadingFallback';
+
+const RealtimeCharts = dynamic(() => import('./RealtimeCharts'), {
+  ssr: false,
+  loading: () => <ChartLoadingFallback />,
+});
 import { useWebSocket, RealtimeMetrics } from '@/hooks/useWebSocket';
 
 function formatUptime(seconds: number): string {
@@ -224,40 +227,8 @@ export default function RealtimeDashboard() {
             />
           </Grid>
 
-          {/* Live Requests/sec Chart */}
-          <Grid size={{ xs: 12, lg: 8 }}>
-            <Paper sx={{ p: 2.5 }}>
-              <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2 }}>
-                Live Throughput (rolling 60s)
-              </Typography>
-              <ResponsiveContainer width="100%" height={280}>
-                <AreaChart data={chartData}>
-                  <defs>
-                    <linearGradient id="rpsGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#6C63FF" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#6C63FF" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-                  <XAxis dataKey="time" stroke="#888" fontSize={11} />
-                  <YAxis stroke="#888" fontSize={11} />
-                  <Tooltip
-                    contentStyle={{ backgroundColor: '#1e1e2e', border: '1px solid #333', borderRadius: 8 }}
-                    labelStyle={{ color: '#ccc' }}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="rps"
-                    stroke="#6C63FF"
-                    strokeWidth={2}
-                    fill="url(#rpsGradient)"
-                    name="Req/s"
-                    isAnimationActive={false}
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </Paper>
-          </Grid>
+          {/* Charts (dynamically loaded) */}
+          <RealtimeCharts chartData={chartData} />
 
           {/* System Gauges */}
           <Grid size={{ xs: 12, lg: 4 }}>
@@ -280,68 +251,6 @@ export default function RealtimeDashboard() {
                   color={metrics.memory_usage_pct > 80 ? '#f44336' : metrics.memory_usage_pct > 50 ? '#FF9800' : '#4CAF50'}
                 />
               </Box>
-            </Paper>
-          </Grid>
-
-          {/* Latency Chart */}
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Paper sx={{ p: 2.5 }}>
-              <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2 }}>
-                Latency Trend
-              </Typography>
-              <ResponsiveContainer width="100%" height={220}>
-                <LineChart data={chartData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-                  <XAxis dataKey="time" stroke="#888" fontSize={11} />
-                  <YAxis stroke="#888" fontSize={11} unit="ms" />
-                  <Tooltip
-                    contentStyle={{ backgroundColor: '#1e1e2e', border: '1px solid #333', borderRadius: 8 }}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="latency"
-                    stroke="#FF9800"
-                    strokeWidth={2}
-                    dot={false}
-                    name="Avg Latency (ms)"
-                    isAnimationActive={false}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </Paper>
-          </Grid>
-
-          {/* Goroutines Chart */}
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Paper sx={{ p: 2.5 }}>
-              <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2 }}>
-                Goroutines
-              </Typography>
-              <ResponsiveContainer width="100%" height={220}>
-                <AreaChart data={chartData}>
-                  <defs>
-                    <linearGradient id="goGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#9C27B0" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#9C27B0" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-                  <XAxis dataKey="time" stroke="#888" fontSize={11} />
-                  <YAxis stroke="#888" fontSize={11} />
-                  <Tooltip
-                    contentStyle={{ backgroundColor: '#1e1e2e', border: '1px solid #333', borderRadius: 8 }}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="goroutines"
-                    stroke="#9C27B0"
-                    strokeWidth={2}
-                    fill="url(#goGradient)"
-                    name="Goroutines"
-                    isAnimationActive={false}
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
             </Paper>
           </Grid>
 

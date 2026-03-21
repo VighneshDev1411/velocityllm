@@ -110,7 +110,7 @@ export default function JobsPage() {
       <Grid container spacing={3}>
         {/* Submit Job Form */}
         <Grid size={{ xs: 12, lg: 6 }}>
-          <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3 }}>
+          <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 3 }}>
             <Typography variant="h6" sx={{ fontSize: '1.1rem', fontWeight: 600, color: 'text.primary', mb: 3 }}>
               Submit New Job
             </Typography>
@@ -205,7 +205,7 @@ export default function JobsPage() {
 
         {/* Job Queue */}
         <Grid size={{ xs: 12, lg: 6 }}>
-          <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', p: 3 }}>
+          <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
               <Typography variant="h6" sx={{ fontSize: '1.1rem', fontWeight: 600, color: 'text.primary' }}>
                 Job Queue
@@ -284,7 +284,7 @@ function JobCard({ job, onCancel }: { job: JobStatus; onCancel: (id: string) => 
       elevation={0}
       sx={{
         border: '1px solid', borderColor: 'divider',
-        borderRadius: '12px',
+        borderRadius: '8px',
         p: 2,
         transition: 'box-shadow 0.2s',
         '&:hover': { boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' },
@@ -302,8 +302,8 @@ function JobCard({ job, onCancel }: { job: JobStatus; onCancel: (id: string) => 
         </Box>
 
         <Box sx={{ display: 'flex', gap: 0.75 }}>
-          <Chip size="small" label={job.status} sx={{ fontWeight: 600, fontSize: '0.7rem', ...getStatusChipSx() }} />
-          <Chip size="small" label={job.priority} sx={{ fontWeight: 600, fontSize: '0.7rem', ...getPriorityChipSx() }} />
+          <Chip size="small" label={job.status} sx={{ fontWeight: 600, fontSize: '0.7rem', textTransform: 'capitalize', ...getStatusChipSx() }} />
+          <Chip size="small" label={job.priority} sx={{ fontWeight: 600, fontSize: '0.7rem', textTransform: 'capitalize', ...getPriorityChipSx() }} />
         </Box>
       </Box>
 

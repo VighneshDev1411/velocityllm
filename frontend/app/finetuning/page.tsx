@@ -99,7 +99,7 @@ function StatCard({ icon: Icon, label, value, color }: {
       sx={{
         p: 2.5,
         borderRadius: 2,
-        backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+        backgroundColor: 'rgba(255,255,255,0.03)',
         border: `1px solid ${theme.palette.divider}`,
       }}
     >
@@ -333,7 +333,7 @@ export default function FineTuningPage() {
               </IconButton>
             </Box>
             {ds.examples && ds.examples.length > 0 && (
-              <Box sx={{ mt: 2, p: 1.5, borderRadius: 1, backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)' }}>
+              <Box sx={{ mt: 2, p: 1.5, borderRadius: 1, backgroundColor: 'rgba(255,255,255,0.03)' }}>
                 <Typography variant="caption" sx={{ fontWeight: 600, color: 'text.secondary' }}>Sample:</Typography>
                 <Typography variant="body2" sx={{ fontFamily: 'monospace', fontSize: '0.8rem', mt: 0.5 }}>
                   Input: {ds.examples[0].input.slice(0, 120)}{ds.examples[0].input.length > 120 ? '...' : ''}
@@ -490,10 +490,10 @@ export default function FineTuningPage() {
   const StatsTab = (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
       <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 2 }}>
-        <StatCard icon={Database} label="Total Datasets" value={stats?.total_datasets ?? 0} color="#3b82f6" />
+        <StatCard icon={Database} label="Total Datasets" value={stats?.total_datasets ?? 0} color="#adc6ff" />
         <StatCard icon={Cpu} label="Total Jobs" value={stats?.total_jobs ?? 0} color="#8b5cf6" />
         <StatCard icon={CheckCircle} label="Completed" value={stats?.jobs_completed ?? 0} color="#4caf50" />
-        <StatCard icon={Sparkles} label="Fine-Tuned Models" value={stats?.total_models ?? 0} color="#f59e0b" />
+        <StatCard icon={Sparkles} label="Fine-Tuned Models" value={stats?.total_models ?? 0} color="#ffb595" />
       </Box>
 
       {statusBreakdown.length > 0 && (
@@ -533,7 +533,7 @@ export default function FineTuningPage() {
       <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1.5 }}>
         <Box sx={{
           width: 40, height: 40, borderRadius: '10px',
-          background: 'linear-gradient(135deg, #f59e0b, #f97316)',
+          background: 'linear-gradient(135deg, #ffb595, #f97316)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
           <Sparkles className="w-5 h-5" style={{ color: '#fff' }} />

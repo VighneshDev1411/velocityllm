@@ -369,7 +369,7 @@ export default function ChatPage() {
                           }}
                           sx={{ '& input': { fontSize: '0.8rem', py: 0.25, px: 0.5, color: '#e2e8f0' } }}
                         />
-                        <IconButton size="small" onClick={() => handleRename(conv.id)} sx={{ color: '#10b981' }}>
+                        <IconButton size="small" onClick={() => handleRename(conv.id)} sx={{ color: '#53e16f' }}>
                           <Check className="w-3 h-3" />
                         </IconButton>
                         <IconButton size="small" onClick={() => setRenamingId(null)} sx={{ color: '#64748b' }}>
@@ -470,11 +470,11 @@ export default function ChatPage() {
               alignItems: 'center', justifyContent: 'center', gap: 2, px: 2,
             }}>
               <Box sx={{
-                width: 48, height: 48, borderRadius: '12px',
-                bgcolor: 'rgba(59,130,246,0.1)',
+                width: 48, height: 48, borderRadius: '8px',
+                bgcolor: 'rgba(173,198,255,0.1)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
-                <MessageSquare className="w-6 h-6" style={{ color: '#3b82f6' }} />
+                <MessageSquare className="w-6 h-6" style={{ color: '#adc6ff' }} />
               </Box>
               <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, color: 'text.primary' }}>
                 What can I help with?
@@ -555,13 +555,13 @@ export default function ChatPage() {
         </Box>
 
         {/* Input Area */}
-        <Box sx={{ px: 3, pb: 2, pt: 1 }}>
+        <Box sx={{ px: 3, pb: 2, pt: 1, position: 'sticky', bottom: 0, background: 'rgba(57,57,57,0.6)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', borderTop: '1px solid rgba(65,71,85,0.15)' }}>
           <Box sx={{ maxWidth: 720, mx: 'auto' }}>
             <Box sx={{
               display: 'flex', alignItems: 'flex-end', gap: 1,
               p: 1, borderRadius: 3,
               border: '1px solid', borderColor: 'divider',
-              bgcolor: 'background.paper',
+              bgcolor: 'rgba(32,31,31,0.7)',
               transition: 'border-color 0.15s',
               '&:focus-within': { borderColor: 'primary.main' },
             }}>
@@ -591,10 +591,10 @@ export default function ChatPage() {
                 </IconButton>
               ) : (
                 <IconButton onClick={() => sendMessage()} disabled={!input.trim()} size="small" sx={{
-                  bgcolor: input.trim() ? '#3b82f6' : 'action.disabledBackground',
-                  color: input.trim() ? '#fff' : 'text.disabled',
+                  bgcolor: input.trim() ? '#adc6ff' : 'action.disabledBackground',
+                  color: input.trim() ? '#131313' : 'text.disabled',
                   borderRadius: 2, width: 32, height: 32,
-                  '&:hover': { bgcolor: input.trim() ? '#2563eb' : 'action.disabledBackground' },
+                  '&:hover': { bgcolor: input.trim() ? '#8baee6' : 'action.disabledBackground' },
                 }}>
                   <ArrowUp className="w-4 h-4" />
                 </IconButton>
@@ -634,7 +634,7 @@ function ChatAvatar({ role }: { role: string }) {
   return (
     <Box sx={{
       width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
-      bgcolor: isUser ? '#10b981' : '#8b5cf6',
+      bgcolor: isUser ? '#53e16f' : '#8b5cf6',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
     }}>
       {isUser
@@ -681,7 +681,7 @@ function MessageRow({
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
             <Typography sx={{
               fontWeight: 600, fontSize: '0.85rem',
-              color: isUser ? '#10b981' : '#a78bfa',
+              color: isUser ? '#53e16f' : '#a78bfa',
             }}>
               {isUser ? 'You' : 'VelocityLLM'}
             </Typography>
@@ -730,8 +730,8 @@ function MessageRow({
             <Tooltip title={copied ? 'Copied!' : 'Copy'} placement="top">
               <IconButton size="small" onClick={onCopy} sx={{
                 width: 28, height: 28, borderRadius: 1.5,
-                color: copied ? '#10b981' : '#64748b',
-                bgcolor: copied ? 'rgba(16,185,129,0.08)' : 'transparent',
+                color: copied ? '#53e16f' : '#64748b',
+                bgcolor: copied ? 'rgba(83,225,111,0.08)' : 'transparent',
                 '&:hover': { bgcolor: 'rgba(148,163,184,0.08)', color: 'text.primary' },
               }}>
                 {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}

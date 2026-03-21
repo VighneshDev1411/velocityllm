@@ -216,10 +216,10 @@ export default function WebhooksPage() {
       {/* Endpoints List */}
       <Paper
         elevation={0}
-        sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', mb: 3 }}
+        sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', mb: 3 }}
       >
         <Box sx={{ p: 3, borderBottom: '1px solid', borderColor: 'divider' }}>
-          <Typography variant="h6" sx={{ fontWeight: 600, color: 'text.primary' }}>
+          <Typography variant="h6" sx={{ fontSize: '0.625rem', fontWeight: 600, color: 'text.secondary', textTransform: 'uppercase', letterSpacing: '0.2em', fontFamily: 'var(--font-mono)' }}>
             Webhook Endpoints
           </Typography>
         </Box>
@@ -273,7 +273,7 @@ export default function WebhooksPage() {
                           sx={{
                             fontSize: '0.7rem',
                             height: 22,
-                            backgroundColor: 'rgba(59,130,246,0.1)',
+                            backgroundColor: 'rgba(173,198,255,0.15)',
                             color: 'primary.dark',
                           }}
                         />
@@ -317,7 +317,7 @@ export default function WebhooksPage() {
       {selectedEndpoint && (
         <Paper
           elevation={0}
-          sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', mb: 3 }}
+          sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', mb: 3 }}
         >
           <Box
             sx={{
@@ -328,7 +328,7 @@ export default function WebhooksPage() {
               alignItems: 'center',
             }}
           >
-            <Typography variant="h6" sx={{ fontWeight: 600, color: 'text.primary' }}>
+            <Typography variant="h6" sx={{ fontSize: '0.625rem', fontWeight: 600, color: 'text.secondary', textTransform: 'uppercase', letterSpacing: '0.2em', fontFamily: 'var(--font-mono)' }}>
               Recent Deliveries (Endpoint #{selectedEndpoint})
             </Typography>
             <IconButton onClick={() => setSelectedEndpoint(null)} size="small">

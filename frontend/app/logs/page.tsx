@@ -87,11 +87,12 @@ interface WebhookDelivery {
 
 /* ─────────────────── Helpers ─────────────────── */
 const thSx = {
-  fontWeight: 600,
+  fontWeight: 700,
   color: 'text.secondary',
-  fontSize: '0.72rem',
+  fontSize: '0.625rem',
   textTransform: 'uppercase',
-  letterSpacing: '0.05em',
+  letterSpacing: '0.2em',
+  fontFamily: 'var(--font-mono), "JetBrains Mono", monospace',
   py: 1.5,
 } as const;
 
@@ -103,12 +104,12 @@ const fmtMs = (ms: number) => (ms >= 1000 ? `${(ms / 1000).toFixed(2)}s` : `${ms
 function StatusChip({ status }: { status: string }) {
   const s = status?.toLowerCase();
   const map: Record<string, { bg: string; color: string; label: string }> = {
-    success: { bg: 'rgba(16,185,129,0.1)', color: '#059669', label: 'Success' },
-    completed: { bg: 'rgba(16,185,129,0.1)', color: '#059669', label: 'Completed' },
+    success: { bg: 'rgba(83,225,111,0.1)', color: '#53e16f', label: 'Success' },
+    completed: { bg: 'rgba(83,225,111,0.1)', color: '#53e16f', label: 'Completed' },
     failed: { bg: 'rgba(239,68,68,0.1)', color: '#dc2626', label: 'Failed' },
     error: { bg: 'rgba(239,68,68,0.1)', color: '#dc2626', label: 'Error' },
-    pending: { bg: 'rgba(245,158,11,0.1)', color: '#d97706', label: 'Pending' },
-    warning: { bg: 'rgba(245,158,11,0.1)', color: '#d97706', label: 'Warning' },
+    pending: { bg: 'rgba(255,181,149,0.1)', color: '#ffb595', label: 'Pending' },
+    warning: { bg: 'rgba(255,181,149,0.1)', color: '#ffb595', label: 'Warning' },
   };
   const style = map[s] ?? { bg: 'action.hover', color: 'text.secondary', label: status };
   return (
@@ -313,7 +314,7 @@ export default function LogsPage() {
         </Alert>
       )}
 
-      <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '12px', overflow: 'hidden' }}>
+      <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', overflow: 'hidden' }}>
         {/* Toolbar */}
         <Box sx={{ px: 2, pt: 1.5, pb: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 1 }}>
           <Tabs
@@ -433,7 +434,7 @@ export default function LogsPage() {
                         </TableCell>
                         <TableCell><StatusChip status={r.status} /></TableCell>
                         <TableCell align="right">
-                          <Typography variant="body2" sx={{ fontFamily: 'monospace', fontSize: '0.8rem', color: r.latency > 2000 ? '#d97706' : 'text.primary' }}>
+                          <Typography variant="body2" sx={{ fontFamily: 'monospace', fontSize: '0.8rem', color: r.latency > 2000 ? '#ffb595' : 'text.primary' }}>
                             {r.latency ? fmtMs(r.latency) : '—'}
                           </Typography>
                         </TableCell>
@@ -445,7 +446,7 @@ export default function LogsPage() {
                         </TableCell>
                         <TableCell>
                           {r.cache_hit ? (
-                            <Chip label="HIT" size="small" sx={{ bgcolor: 'rgba(16,185,129,0.1)', color: '#059669', fontWeight: 700, fontSize: '0.65rem', height: 18 }} />
+                            <Chip label="HIT" size="small" sx={{ bgcolor: 'rgba(83,225,111,0.1)', color: '#53e16f', fontWeight: 700, fontSize: '0.65rem', height: 18 }} />
                           ) : (
                             <Chip label="MISS" size="small" sx={{ bgcolor: 'action.hover', color: 'text.disabled', fontWeight: 600, fontSize: '0.65rem', height: 18 }} />
                           )}
@@ -519,8 +520,8 @@ export default function LogsPage() {
                             label={a.action}
                             size="small"
                             sx={{
-                              bgcolor: a.action?.includes('delete') || a.action?.includes('revoke') ? 'rgba(239,68,68,0.1)' : 'rgba(59,130,246,0.1)',
-                              color: a.action?.includes('delete') || a.action?.includes('revoke') ? '#dc2626' : '#2563eb',
+                              bgcolor: a.action?.includes('delete') || a.action?.includes('revoke') ? 'rgba(239,68,68,0.1)' : 'rgba(173,198,255,0.1)',
+                              color: a.action?.includes('delete') || a.action?.includes('revoke') ? '#dc2626' : '#adc6ff',
                               fontWeight: 600,
                               fontSize: '0.7rem',
                               height: 22,
@@ -600,8 +601,8 @@ export default function LogsPage() {
                           <TableCell sx={{ color: 'text.secondary', fontSize: '0.8rem' }}>{fmtTime(e.created_at)}</TableCell>
                           <TableCell>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-                              {isAlert ? <AlertCircle size={14} color="#dc2626" /> : isWarning ? <AlertCircle size={14} color="#d97706" /> : <CheckCircle size={14} color="#059669" />}
-                              <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.82rem', color: isAlert ? '#dc2626' : isWarning ? '#d97706' : 'text.primary' }}>
+                              {isAlert ? <AlertCircle size={14} color="#dc2626" /> : isWarning ? <AlertCircle size={14} color="#ffb595" /> : <CheckCircle size={14} color="#53e16f" />}
+                              <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.82rem', color: isAlert ? '#dc2626' : isWarning ? '#ffb595' : 'text.primary' }}>
                                 {e.event_type}
                               </Typography>
                             </Box>
@@ -691,8 +692,8 @@ export default function LogsPage() {
                         <TableCell>
                           {d.success ? (
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                              <CheckCircle size={14} color="#059669" />
-                              <Typography variant="caption" sx={{ color: '#059669', fontWeight: 600 }}>Delivered</Typography>
+                              <CheckCircle size={14} color="#53e16f" />
+                              <Typography variant="caption" sx={{ color: '#53e16f', fontWeight: 600 }}>Delivered</Typography>
                             </Box>
                           ) : (
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
@@ -706,8 +707,8 @@ export default function LogsPage() {
                             label={d.status_code || '—'}
                             size="small"
                             sx={{
-                              bgcolor: d.status_code >= 200 && d.status_code < 300 ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)',
-                              color: d.status_code >= 200 && d.status_code < 300 ? '#059669' : '#dc2626',
+                              bgcolor: d.status_code >= 200 && d.status_code < 300 ? 'rgba(83,225,111,0.1)' : 'rgba(239,68,68,0.1)',
+                              color: d.status_code >= 200 && d.status_code < 300 ? '#53e16f' : '#dc2626',
                               fontWeight: 700,
                               fontSize: '0.7rem',
                               height: 22,
@@ -717,7 +718,7 @@ export default function LogsPage() {
                         <TableCell align="right" sx={{ fontFamily: 'monospace', fontSize: '0.8rem', color: 'text.primary' }}>
                           {d.latency_ms ? fmtMs(d.latency_ms) : '—'}
                         </TableCell>
-                        <TableCell align="right" sx={{ color: d.attempt > 1 ? '#d97706' : 'text.disabled', fontSize: '0.82rem', fontWeight: d.attempt > 1 ? 600 : 400 }}>
+                        <TableCell align="right" sx={{ color: d.attempt > 1 ? '#ffb595' : 'text.disabled', fontSize: '0.82rem', fontWeight: d.attempt > 1 ? 600 : 400 }}>
                           #{d.attempt}
                         </TableCell>
                       </ExpandableRow>

@@ -14,7 +14,7 @@ export default function LandingPage() {
   const { isAuthenticated } = useAuth();
 
   return (
-    <Box sx={{ minHeight: '100vh', background: 'linear-gradient(135deg, #eff6ff 0%, #ffffff 50%, #f5f3ff 100%)' }}>
+    <Box sx={{ minHeight: '100vh', background: 'linear-gradient(135deg, #0e0e0e 0%, #131313 50%, #131313 100%)' }}>
       {/* Navbar */}
       <Box
         component="nav"
@@ -22,9 +22,9 @@ export default function LandingPage() {
           position: 'sticky',
           top: 0,
           zIndex: 50,
-          backgroundColor: 'rgba(255,255,255,0.8)',
+          backgroundColor: 'rgba(28,27,27,0.8)',
           backdropFilter: 'blur(12px)',
-          borderBottom: '1px solid rgba(229,231,235,0.6)',
+          borderBottom: '1px solid rgba(65,71,85,0.3)',
         }}
       >
         <Container maxWidth="lg">
@@ -35,7 +35,7 @@ export default function LandingPage() {
                   width: 32,
                   height: 32,
                   borderRadius: '8px',
-                  background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)',
+                  background: 'linear-gradient(135deg, #adc6ff, #8b5cf6)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -121,7 +121,7 @@ export default function LandingPage() {
                 href="/dashboard"
                 variant="contained"
                 size="large"
-                sx={{ px: 5, py: 1.75, fontSize: '1rem', boxShadow: '0 4px 14px 0 rgb(59 130 246 / 0.4)' }}
+                sx={{ px: 5, py: 1.75, fontSize: '1rem', boxShadow: '0 4px 14px 0 rgb(173 198 255 / 0.3)' }}
               >
                 Go to Dashboard
               </Button>
@@ -132,7 +132,7 @@ export default function LandingPage() {
                   href="/register"
                   variant="contained"
                   size="large"
-                  sx={{ px: 5, py: 1.75, fontSize: '1rem', boxShadow: '0 4px 14px 0 rgb(59 130 246 / 0.4)' }}
+                  sx={{ px: 5, py: 1.75, fontSize: '1rem', boxShadow: '0 4px 14px 0 rgb(173 198 255 / 0.3)' }}
                 >
                   Get Started Free
                 </Button>
@@ -175,10 +175,10 @@ export default function LandingPage() {
 
         <Grid container spacing={3}>
           {[
-            { icon: <Zap className="w-7 h-7" style={{ color: '#3b82f6' }} />, title: 'Lightning Fast', description: 'Optimized inference engine with advanced caching and multi-level optimization strategies.' },
+            { icon: <Zap className="w-7 h-7" style={{ color: '#adc6ff' }} />, title: 'Lightning Fast', description: 'Optimized inference engine with advanced caching and multi-level optimization strategies.' },
             { icon: <Shield className="w-7 h-7" style={{ color: '#8b5cf6' }} />, title: 'Enterprise Security', description: 'JWT authentication, role-based access control, and comprehensive audit logging.' },
-            { icon: <BarChart3 className="w-7 h-7" style={{ color: '#10b981' }} />, title: 'Real-time Monitoring', description: 'Live dashboards with worker metrics, streaming stats, and performance analytics.' },
-            { icon: <Rocket className="w-7 h-7" style={{ color: '#f97316' }} />, title: 'Production Ready', description: 'Built for scale with worker pools, request batching, and intelligent load balancing.' },
+            { icon: <BarChart3 className="w-7 h-7" style={{ color: '#53e16f' }} />, title: 'Real-time Monitoring', description: 'Live dashboards with worker metrics, streaming stats, and performance analytics.' },
+            { icon: <Rocket className="w-7 h-7" style={{ color: '#ffb595' }} />, title: 'Production Ready', description: 'Built for scale with worker pools, request batching, and intelligent load balancing.' },
           ].map((feature, idx) => (
             <Grid size={{ xs: 12, sm: 6, lg: 3 }} key={idx}>
               <Paper
@@ -187,7 +187,7 @@ export default function LandingPage() {
                   p: 4,
                   height: '100%',
                   border: '1px solid', borderColor: 'divider',
-                  borderRadius: '16px',
+                  borderRadius: '8px',
                   transition: 'all 0.2s',
                   '&:hover': { boxShadow: '0 10px 25px -5px rgb(0 0 0 / 0.1)', transform: 'translateY(-2px)' },
                 }}
@@ -223,7 +223,7 @@ export default function LandingPage() {
                   'Real-time streaming with SSE',
                 ].map((text, idx) => (
                   <Box component="li" key={idx} sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5 }}>
-                    <CheckCircle className="w-5 h-5" style={{ color: '#10b981', flexShrink: 0, marginTop: 2 }} />
+                    <CheckCircle className="w-5 h-5" style={{ color: '#53e16f', flexShrink: 0, marginTop: 2 }} />
                     <Typography sx={{ color: 'text.primary', fontSize: '0.95rem' }}>{text}</Typography>
                   </Box>
                 ))}
@@ -243,7 +243,7 @@ export default function LandingPage() {
                   'Modern React dashboard',
                 ].map((text, idx) => (
                   <Box component="li" key={idx} sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5 }}>
-                    <CheckCircle className="w-5 h-5" style={{ color: '#10b981', flexShrink: 0, marginTop: 2 }} />
+                    <CheckCircle className="w-5 h-5" style={{ color: '#53e16f', flexShrink: 0, marginTop: 2 }} />
                     <Typography sx={{ color: 'text.primary', fontSize: '0.95rem' }}>{text}</Typography>
                   </Box>
                 ))}
@@ -256,12 +256,12 @@ export default function LandingPage() {
       {/* CTA Section */}
       <Box
         sx={{
-          background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)',
+          background: 'linear-gradient(135deg, #adc6ff, #8b5cf6)',
           py: { xs: 8, md: 10 },
         }}
       >
         <Container maxWidth="sm" sx={{ textAlign: 'center' }}>
-          <Typography sx={{ fontSize: { xs: '1.75rem', md: '2.25rem' }, fontWeight: 700, color: '#ffffff', mb: 2 }}>
+          <Typography sx={{ fontSize: { xs: '1.75rem', md: '2.25rem' }, fontWeight: 700, color: '#e5e2e1', mb: 2 }}>
             Ready to Get Started?
           </Typography>
           <Typography sx={{ fontSize: '1.15rem', color: 'rgba(219,234,254,0.9)', mb: 4 }}>
@@ -278,7 +278,7 @@ export default function LandingPage() {
                 py: 1.75,
                 fontSize: '1rem',
                 backgroundColor: 'background.paper',
-                color: '#3b82f6',
+                color: '#adc6ff',
                 '&:hover': { backgroundColor: 'action.hover' },
                 boxShadow: '0 4px 14px 0 rgb(0 0 0 / 0.15)',
               }}

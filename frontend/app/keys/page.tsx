@@ -210,7 +210,7 @@ export default function APIKeysPage() {
           severity="warning"
           icon={<AlertTriangle size={20} />}
           onClose={() => setNewKeyRevealed(null)}
-          sx={{ mb: 3, borderRadius: '12px' }}
+          sx={{ mb: 3, borderRadius: '8px' }}
         >
           <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 0.5 }}>
             Save your API key now
@@ -224,7 +224,7 @@ export default function APIKeysPage() {
               sx={{
                 flex: 1,
                 bgcolor: 'background.paper',
-                border: '1px solid #f59e0b',
+                border: '1px solid #ffb595',
                 px: 2,
                 py: 1.25,
                 borderRadius: '8px',
@@ -240,9 +240,9 @@ export default function APIKeysPage() {
               onClick={() => copyToClipboard(newKeyRevealed)}
               size="small"
               sx={{
-                bgcolor: copiedKey ? 'rgba(16,185,129,0.1)' : 'rgba(245,158,11,0.1)',
-                color: copiedKey ? '#15803d' : '#b45309',
-                '&:hover': { bgcolor: copiedKey ? '#bbf7d0' : '#fde68a' },
+                bgcolor: copiedKey ? 'rgba(83,225,111,0.1)' : 'rgba(255,181,149,0.1)',
+                color: copiedKey ? '#53e16f' : '#ffb595',
+                '&:hover': { bgcolor: copiedKey ? '#bbf7d0' : 'rgba(255,181,149,0.2)' },
               }}
             >
               {copiedKey ? <Check size={16} /> : <Copy size={16} />}
@@ -258,7 +258,7 @@ export default function APIKeysPage() {
           mb: 3,
           p: 2,
           border: '1px solid', borderColor: 'divider',
-          borderRadius: '12px',
+          borderRadius: '8px',
           bgcolor: 'background.default',
         }}
       >
@@ -303,7 +303,7 @@ export default function APIKeysPage() {
       <Box sx={{ mb: 4 }}>
         <Typography
           variant="overline"
-          sx={{ fontWeight: 600, color: 'text.secondary', letterSpacing: '0.1em', mb: 1.5, display: 'block' }}
+          sx={{ fontWeight: 600, color: 'text.secondary', letterSpacing: '0.2em', fontFamily: 'var(--font-mono)', mb: 1.5, display: 'block' }}
         >
           Active Keys ({activeKeys.length})
         </Typography>
@@ -313,7 +313,7 @@ export default function APIKeysPage() {
             elevation={0}
             sx={{
               border: '1px solid', borderColor: 'divider',
-              borderRadius: '12px',
+              borderRadius: '8px',
               p: 4,
               textAlign: 'center',
             }}
@@ -326,7 +326,7 @@ export default function APIKeysPage() {
             elevation={0}
             sx={{
               border: '1px solid', borderColor: 'divider',
-              borderRadius: '12px',
+              borderRadius: '8px',
               p: 4,
               textAlign: 'center',
             }}
@@ -345,7 +345,7 @@ export default function APIKeysPage() {
                 elevation={0}
                 sx={{
                   border: '1px solid', borderColor: 'divider',
-                  borderRadius: '12px',
+                  borderRadius: '8px',
                   p: 2,
                   transition: 'box-shadow 0.2s',
                   '&:hover': { boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.1)' },
@@ -358,13 +358,13 @@ export default function APIKeysPage() {
                         width: 40,
                         height: 40,
                         borderRadius: '10px',
-                        bgcolor: 'rgba(59,130,246,0.1)',
+                        bgcolor: 'rgba(173,198,255,0.1)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                       }}
                     >
-                      <Key size={20} color="#2563eb" />
+                      <Key size={20} color="#adc6ff" />
                     </Box>
                     <Box>
                       <Typography sx={{ fontWeight: 500, color: 'text.primary' }}>{k.name}</Typography>
@@ -377,8 +377,8 @@ export default function APIKeysPage() {
                     {/* Rotate */}
                     {confirmAction?.type === 'rotate' && confirmAction.keyId === k.id ? (
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                        <Typography variant="caption" sx={{ color: '#d97706' }}>Rotate?</Typography>
-                        <IconButton size="small" onClick={() => handleRotate(k.id)} sx={{ color: '#d97706' }}>
+                        <Typography variant="caption" sx={{ color: '#ffb595' }}>Rotate?</Typography>
+                        <IconButton size="small" onClick={() => handleRotate(k.id)} sx={{ color: '#ffb595' }}>
                           <Check size={16} />
                         </IconButton>
                         <IconButton size="small" onClick={() => setConfirmAction(null)} sx={{ color: 'text.disabled' }}>
@@ -392,7 +392,7 @@ export default function APIKeysPage() {
                         title="Rotate key"
                         sx={{
                           color: 'text.disabled',
-                          '&:hover': { color: '#d97706', bgcolor: 'rgba(245,158,11,0.1)' },
+                          '&:hover': { color: '#ffb595', bgcolor: 'rgba(255,181,149,0.1)' },
                         }}
                       >
                         <RefreshCw size={16} />
@@ -476,7 +476,7 @@ export default function APIKeysPage() {
         <Box>
           <Typography
             variant="overline"
-            sx={{ fontWeight: 600, color: 'text.secondary', letterSpacing: '0.1em', mb: 1.5, display: 'block' }}
+            sx={{ fontWeight: 600, color: 'text.secondary', letterSpacing: '0.2em', fontFamily: 'var(--font-mono)', mb: 1.5, display: 'block' }}
           >
             Revoked / Expired ({inactiveKeys.length})
           </Typography>
@@ -487,7 +487,7 @@ export default function APIKeysPage() {
                 elevation={0}
                 sx={{
                   border: '1px solid', borderColor: 'divider',
-                  borderRadius: '12px',
+                  borderRadius: '8px',
                   p: 2,
                   opacity: 0.6,
                 }}
@@ -521,8 +521,8 @@ export default function APIKeysPage() {
                       label={isExpired(k.expires_at) ? 'Expired' : 'Revoked'}
                       size="small"
                       sx={{
-                        bgcolor: isExpired(k.expires_at) ? 'rgba(245,158,11,0.1)' : 'rgba(239,68,68,0.1)',
-                        color: isExpired(k.expires_at) ? '#d97706' : '#dc2626',
+                        bgcolor: isExpired(k.expires_at) ? 'rgba(255,181,149,0.1)' : 'rgba(239,68,68,0.1)',
+                        color: isExpired(k.expires_at) ? '#ffb595' : '#dc2626',
                         fontWeight: 500,
                         fontSize: '0.7rem',
                         height: 24,
@@ -573,10 +573,10 @@ export default function APIKeysPage() {
         onClose={() => setShowCreateModal(false)}
         maxWidth="sm"
         fullWidth
-        PaperProps={{ sx: { borderRadius: '16px' } }}
+        PaperProps={{ sx: { borderRadius: '8px' } }}
       >
         <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1, pb: 1 }}>
-          <Key size={20} color="#2563eb" />
+          <Key size={20} color="#adc6ff" />
           <Typography variant="h6" component="span">Create API Key</Typography>
         </DialogTitle>
         <form onSubmit={handleCreate}>
