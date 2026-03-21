@@ -1,40 +1,23 @@
-services:
-  # 1. PostgreSQL Database
-  - type: database
-    name: velocityllm-db
+databases:
+  - name: velocityllm-db
     databaseName: velocityllm
     user: velocityllm
     plan: free
 
-  # 2. Redis Cache
-  - type: redis
-    name: velocityllm-redis
-    plan: free
-    ipAllowList: [] # Only allow internal connections
-
-  # 3. Python Inference Worker (Private Service - no public URL)
-  - type: pserv
-    name: velocityllm-worker
-    env: python
-    buildCommand: pip install -r python_worker/requirements-lite.txt
-    startCommand: cd python_worker && python test_server.py
-    envVars:
-      - key: GRPC_HOST
-        value: 0.0.0.0
-      - key: GRPC_PORT
-        value: 50051
-      - key: WORKER_ID
-        value: worker-render-1
-
-  # 4. Go Backend API
+services:
+  # 1. Go Backend API
   - type: web
     name: velocityllm-backend
-    env: go
+    runtime: go
     buildCommand: go build -o server cmd/server/main.go
     startCommand: ./server
+    healthCheckPath: /health
+    plan: free
     envVars:
-      - key: SERVER_PORT
-        value: 8080
+      - key: DATABASE_URL
+        fromDatabase:
+          name: velocityllm-db
+          property: connectionString
       - key: DB_HOST
         fromDatabase:
           name: velocityllm-db
@@ -55,28 +38,20 @@ services:
         fromDatabase:
           name: velocityllm-db
           property: database
-      - key: REDIS_URL
-        fromRedis:
-          name: velocityllm-redis
-          property: connectionString
-      - key: WORKER_HOST
-        value: velocityllm-worker # Render internal hostname
-      - key: WORKER_PORT
-        value: 50051
       - key: JWT_SECRET
         generateValue: true
 
-  # 5. Next.js Frontend
+  # 2. Next.js Frontend
   - type: web
     name: velocityllm-frontend
-    env: node
+    runtime: node
     rootDir: frontend
     buildCommand: npm install && npm run build
     startCommand: npm run start
+    plan: free
     envVars:
       - key: NEXT_PUBLIC_API_URL
         fromService:
           name: velocityllm-backend
           type: web
-          property: host
-        # Note: Render provides the base host, we append /api/v1 in code or here
+          envVarKey: RENDER_EXTERNAL_URL
