@@ -140,6 +140,73 @@ func SetupRoutes() {
 	http.HandleFunc("/api/v1/hosting/delete", DeleteHostedModelHandler)
 
 	// ============================================
+	// KUBERNETES ENDPOINTS (Day 55)
+	// ============================================
+	http.HandleFunc("/api/v1/k8s/stats", GetK8sStatsHandler)
+	http.HandleFunc("/api/v1/k8s/nodes", GetK8sNodesHandler)
+	http.HandleFunc("/api/v1/k8s/namespaces", GetK8sNamespacesHandler)
+	http.HandleFunc("/api/v1/k8s/deployments", GetK8sDeploymentsHandler)
+	http.HandleFunc("/api/v1/k8s/pods", GetK8sPodsHandler)
+	http.HandleFunc("/api/v1/k8s/services", GetK8sServicesHandler)
+	http.HandleFunc("/api/v1/k8s/hpas", GetK8sHPAsHandler)
+	http.HandleFunc("/api/v1/k8s/events", GetK8sEventsHandler)
+	http.HandleFunc("/api/v1/k8s/scale", ScaleK8sDeploymentHandler)
+	http.HandleFunc("/api/v1/k8s/restart", RestartK8sDeploymentHandler)
+
+	// ============================================
+	// CI/CD PIPELINE ENDPOINTS (Day 56)
+	// ============================================
+	http.HandleFunc("/api/v1/cicd/stats", GetCICDStatsHandler)
+	http.HandleFunc("/api/v1/cicd/pipelines", GetPipelinesHandler)
+	http.HandleFunc("/api/v1/cicd/runs", GetPipelineRunsHandler)
+	http.HandleFunc("/api/v1/cicd/run", GetPipelineRunHandler)
+	http.HandleFunc("/api/v1/cicd/deployments", GetCICDDeploymentsHandler)
+	http.HandleFunc("/api/v1/cicd/trigger", TriggerPipelineHandler)
+
+	// ============================================
+	// MONITORING & OBSERVABILITY ENDPOINTS (Day 57)
+	// ============================================
+	http.HandleFunc("/api/v1/monitoring/stats", GetMonitoringStatsHandler)
+	http.HandleFunc("/api/v1/monitoring/metrics", GetMonitoringMetricsHandler)
+	http.HandleFunc("/api/v1/monitoring/alerts", GetMonitoringAlertsHandler)
+	http.HandleFunc("/api/v1/monitoring/alerts/resolve", ResolveAlertHandler)
+	http.HandleFunc("/api/v1/monitoring/alerts/toggle", ToggleAlertRuleHandler)
+	http.HandleFunc("/api/v1/monitoring/logs", GetMonitoringLogsHandler)
+	http.HandleFunc("/api/v1/monitoring/traces", GetMonitoringTracesHandler)
+	http.HandleFunc("/api/v1/monitoring/slos", GetMonitoringSLOsHandler)
+
+	// ============================================
+	// SECURITY HARDENING ENDPOINTS (Day 58)
+	// ============================================
+	http.HandleFunc("/api/v1/security/stats", GetSecurityStatsHandler)
+	http.HandleFunc("/api/v1/security/scans", GetSecurityScansHandler)
+	http.HandleFunc("/api/v1/security/scans/run", RunSecurityScanHandler)
+	http.HandleFunc("/api/v1/security/vulnerabilities", GetVulnerabilitiesHandler)
+	http.HandleFunc("/api/v1/security/secrets", GetSecretFindingsHandler)
+	http.HandleFunc("/api/v1/security/compliance", GetComplianceChecksHandler)
+	http.HandleFunc("/api/v1/security/waf", GetWAFEventsHandler)
+	http.HandleFunc("/api/v1/security/policies", GetSecurityPoliciesHandler)
+	http.HandleFunc("/api/v1/security/policies/toggle", ToggleSecurityPolicyHandler)
+
+	// ============================================
+	// HELP CENTER ENDPOINTS (Day 59)
+	// ============================================
+	http.HandleFunc("/api/v1/help/stats", GetHelpCenterStatsHandler)
+	http.HandleFunc("/api/v1/help/guides", GetGuidesHandler)
+	http.HandleFunc("/api/v1/help/faqs", GetFAQsHandler)
+	http.HandleFunc("/api/v1/help/tutorials", GetTutorialsHandler)
+	http.HandleFunc("/api/v1/help/search", SearchHelpCenterHandler)
+	http.HandleFunc("/api/v1/help/faqs/vote", VoteFAQHandler)
+
+	// ============================================
+	// SYSTEM STATUS & LAUNCH ENDPOINTS (Day 60)
+	// ============================================
+	http.HandleFunc("/api/v1/status/stats", GetStatusStatsHandler)
+	http.HandleFunc("/api/v1/status/components", GetStatusComponentsHandler)
+	http.HandleFunc("/api/v1/status/incidents", GetStatusIncidentsHandler)
+	http.HandleFunc("/api/v1/status/launch", GetLaunchChecksHandler)
+
+	// ============================================
 	// ORCHESTRATION ENDPOINTS (Day 8)
 	// ============================================
 	http.HandleFunc("/api/v1/orchestration/chain", ExecuteChainHandler)

@@ -17,7 +17,7 @@ import {
   LayoutDashboard, FlaskConical, BarChart3, Activity, MessageSquare, Library,
   Cpu, Briefcase, Radio, Coins, Key, CreditCard, Gauge, Zap, Webhook,
   Shield, Users, ChevronLeft, ChevronRight, Settings, ScrollText, UsersRound,
-  BookOpen, Waypoints, BookTemplate, Sparkles, GitBranch, GitMerge, Bell, BarChart2, Layers, Inbox, Globe, Server, UserCog,
+  BookOpen, Waypoints, BookTemplate, Sparkles, GitBranch, GitMerge, Bell, BarChart2, Layers, Inbox, Globe, Server, UserCog, Container, Rocket, HelpCircle, Signal,
 } from 'lucide-react';
 import { sidebarTheme } from '@/lib/theme';
 
@@ -45,7 +45,11 @@ const mainLinks: NavItem[] = [
   { href: '/analytics', label: 'Analytics', icon: BarChart3 },
   { href: '/visualization', label: 'Visualization', icon: BarChart2 },
   { href: '/monitoring', label: 'Monitoring', icon: Activity },
+  { href: '/observability', label: 'Observability', icon: Activity },
+  { href: '/security', label: 'Security', icon: Shield },
   { href: '/docs', label: 'API Docs', icon: BookOpen },
+  { href: '/help', label: 'Help Center', icon: HelpCircle },
+  { href: '/status', label: 'System Status', icon: Signal },
 ];
 
 const infraLinks: NavItem[] = [
@@ -63,6 +67,8 @@ const infraLinks: NavItem[] = [
   { href: '/cdn', label: 'CDN', icon: Zap },
   { href: '/collaboration', label: 'Collaboration', icon: UserCog },
   { href: '/hosting', label: 'Model Hosting', icon: Server },
+  { href: '/kubernetes', label: 'Kubernetes', icon: Container },
+  { href: '/pipelines', label: 'CI/CD', icon: Rocket },
   { href: '/loadtest', label: 'Load Test', icon: Zap },
   { href: '/webhooks', label: 'Webhooks', icon: Webhook },
   { href: '/logs', label: 'Logs', icon: ScrollText },

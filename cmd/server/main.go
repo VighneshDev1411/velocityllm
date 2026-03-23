@@ -32,6 +32,12 @@ import (
 	cdnPkg "github.com/VighneshDev1411/velocityllm/internal/cdn"
 	collabPkg "github.com/VighneshDev1411/velocityllm/internal/collab"
 	hostingPkg "github.com/VighneshDev1411/velocityllm/internal/hosting"
+	k8sPkg "github.com/VighneshDev1411/velocityllm/internal/k8s"
+	cicdPkg "github.com/VighneshDev1411/velocityllm/internal/cicd"
+	monitoringPkg "github.com/VighneshDev1411/velocityllm/internal/monitoring"
+	securityPkg "github.com/VighneshDev1411/velocityllm/internal/security"
+	"github.com/VighneshDev1411/velocityllm/internal/helpcenter"
+	statusPkg "github.com/VighneshDev1411/velocityllm/internal/status"
 	"github.com/VighneshDev1411/velocityllm/internal/queue"
 	"github.com/VighneshDev1411/velocityllm/internal/worker"
 	"github.com/VighneshDev1411/velocityllm/pkg/utils"
@@ -380,6 +386,46 @@ func main() {
 	hostingMgr := hostingPkg.InitGlobalHosting()
 	defer hostingMgr.Stop()
 	utils.Info("Model hosting manager initialized")
+
+	// ============================================
+	// KUBERNETES DEPLOYMENT (Day 55)
+	// ============================================
+	k8sMgr := k8sPkg.InitGlobalK8s()
+	defer k8sMgr.Stop()
+	utils.Info("Kubernetes manager initialized")
+
+	// ============================================
+	// CI/CD PIPELINES (Day 56)
+	// ============================================
+	cicdMgr := cicdPkg.InitGlobalCICD()
+	defer cicdMgr.Stop()
+	utils.Info("CI/CD pipeline manager initialized")
+
+	// ============================================
+	// MONITORING & OBSERVABILITY (Day 57)
+	// ============================================
+	monMgr := monitoringPkg.InitGlobalMonitoring()
+	defer monMgr.Stop()
+	utils.Info("Monitoring manager initialized")
+
+	// ============================================
+	// SECURITY HARDENING (Day 58)
+	// ============================================
+	secMgr := securityPkg.InitGlobalSecurity()
+	defer secMgr.Stop()
+	utils.Info("Security manager initialized")
+
+	// ============================================
+	// HELP CENTER (Day 59)
+	// ============================================
+	helpcenter.InitGlobalHelpCenter()
+	utils.Info("Help center initialized")
+
+	// ============================================
+	// SYSTEM STATUS & LAUNCH (Day 60)
+	// ============================================
+	statusPkg.InitGlobalStatus()
+	utils.Info("System status manager initialized")
 
 	// ============================================
 	// ORCHESTRATION INITIALIZATION (Day 8)
