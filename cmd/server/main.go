@@ -28,6 +28,11 @@ import (
 	"github.com/VighneshDev1411/velocityllm/internal/tokens"
 	"github.com/VighneshDev1411/velocityllm/internal/notifications"
 	webhooksPkg "github.com/VighneshDev1411/velocityllm/internal/webhooks"
+	"github.com/VighneshDev1411/velocityllm/internal/mesh"
+	cdnPkg "github.com/VighneshDev1411/velocityllm/internal/cdn"
+	collabPkg "github.com/VighneshDev1411/velocityllm/internal/collab"
+	hostingPkg "github.com/VighneshDev1411/velocityllm/internal/hosting"
+	"github.com/VighneshDev1411/velocityllm/internal/queue"
 	"github.com/VighneshDev1411/velocityllm/internal/worker"
 	"github.com/VighneshDev1411/velocityllm/pkg/utils"
 )
@@ -304,6 +309,77 @@ func main() {
 	cache.InitGlobalCacheManager(cacheManagerConfig)
 	cache.InitGlobalTaggedCache()
 	utils.Info("Advanced cache manager initialized (multi-level + semantic + analytics + tags)")
+
+	// ============================================
+	// DISTRIBUTED CACHING (Day 48)
+	// ============================================
+	distCacheConfig := cache.DefaultDistributedCacheConfig()
+	distCacheConfig.NodeID = nodeID
+	distCacheConfig.EnablePubSub = (cache.GetClient() != nil)
+	distCache := cache.InitDistributedCache(distCacheConfig, cache.GetGlobalCacheManager())
+	defer distCache.Stop()
+	utils.Info("Distributed cache initialized: node=%s pubsub=%v", nodeID, distCacheConfig.EnablePubSub)
+
+	// ============================================
+	// MESSAGE QUEUE BROKER (Day 49)
+	// ============================================
+	if rdb != nil {
+		brokerConfig := queue.DefaultBrokerConfig()
+		brokerConfig.ConsumerName = nodeID
+		broker := queue.InitGlobalBroker(rdb, brokerConfig)
+		broker.Start(context.Background())
+		defer broker.Stop()
+		utils.Info("Message broker initialized: group=%s consumer=%s", brokerConfig.ConsumerGroup, brokerConfig.ConsumerName)
+	} else {
+		utils.Warn("Message broker skipped: Redis not available")
+	}
+
+	// ============================================
+	// SERVICE MESH (Day 50)
+	// ============================================
+	hostname, _ := os.Hostname()
+	meshConfig := mesh.MeshConfig{
+		ServiceName:    "velocityllm",
+		NodeID:         nodeID,
+		Host:           hostname,
+		Port:           cfg.Server.Port,
+		Version:        cfg.App.Version,
+		Region:         os.Getenv("VELOCITYLLM_REGION"),
+		Zone:           os.Getenv("VELOCITYLLM_ZONE"),
+		HealthCheckURL: fmt.Sprintf("http://%s:%d/health/ready", hostname, cfg.Server.Port),
+	}
+	if meshConfig.Region == "" {
+		meshConfig.Region = "us-east-1"
+	}
+	if meshConfig.Zone == "" {
+		meshConfig.Zone = "us-east-1a"
+	}
+	serviceMesh := mesh.InitServiceMesh(rdb, meshConfig)
+	defer serviceMesh.Stop()
+	utils.Info("Service mesh initialized: service=%s node=%s region=%s", meshConfig.ServiceName, nodeID, meshConfig.Region)
+
+	// ============================================
+	// CDN INTEGRATION (Day 52)
+	// ============================================
+	cdnConfig := cdnPkg.DefaultCDNConfig()
+	cdnConfig.NodeID = nodeID
+	cdnManager := cdnPkg.InitGlobalCDN(cdnConfig)
+	defer cdnManager.Stop()
+	utils.Info("CDN manager initialized: provider=%s edges=%d", cdnConfig.Provider, len(cdnConfig.EdgeLocations))
+
+	// ============================================
+	// COLLABORATION FEATURES (Day 53)
+	// ============================================
+	collabMgr := collabPkg.InitGlobalCollab()
+	defer collabMgr.Stop()
+	utils.Info("Collaboration manager initialized")
+
+	// ============================================
+	// CUSTOM MODEL HOSTING (Day 54)
+	// ============================================
+	hostingMgr := hostingPkg.InitGlobalHosting()
+	defer hostingMgr.Stop()
+	utils.Info("Model hosting manager initialized")
 
 	// ============================================
 	// ORCHESTRATION INITIALIZATION (Day 8)

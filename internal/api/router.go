@@ -60,6 +60,85 @@ func SetupRoutes() {
 	http.HandleFunc("/api/v1/cache/invalidate", InvalidateCacheByTagHandler)
 	http.HandleFunc("/api/v1/cache/response/stats", GetResponseCacheStatsHandler)
 
+	// Distributed caching endpoints (Day 48)
+	http.HandleFunc("/api/v1/cache/distributed/stats", GetDistributedCacheStatsHandler)
+	http.HandleFunc("/api/v1/cache/distributed/ring", GetHashRingHandler)
+	http.HandleFunc("/api/v1/cache/distributed/routing", GetKeyRoutingHandler)
+	http.HandleFunc("/api/v1/cache/distributed/invalidate", DistributedInvalidateHandler)
+	http.HandleFunc("/api/v1/cache/distributed/clear", DistributedClearHandler)
+	http.HandleFunc("/api/v1/cache/distributed/nodes/add", AddCacheNodeHandler)
+	http.HandleFunc("/api/v1/cache/distributed/nodes/remove", RemoveCacheNodeHandler)
+
+	// ============================================
+	// MESSAGE QUEUE ENDPOINTS (Day 49)
+	// ============================================
+	http.HandleFunc("/api/v1/queues", ListQueuesHandler)
+	http.HandleFunc("/api/v1/queues/stats", GetQueueStatsHandler)
+	http.HandleFunc("/api/v1/queues/info", GetQueueInfoHandler)
+	http.HandleFunc("/api/v1/queues/publish", PublishMessageHandler)
+	http.HandleFunc("/api/v1/queues/dlq", GetDeadLetterHandler)
+	http.HandleFunc("/api/v1/queues/dlq/replay", ReplayDeadLetterHandler)
+
+	// ============================================
+	// SERVICE MESH ENDPOINTS (Day 50)
+	// ============================================
+	http.HandleFunc("/api/v1/mesh/stats", GetMeshStatsHandler)
+	http.HandleFunc("/api/v1/mesh/topology", GetMeshTopologyHandler)
+	http.HandleFunc("/api/v1/mesh/discover", DiscoverServiceHandler)
+	http.HandleFunc("/api/v1/mesh/route", RouteServiceHandler)
+	http.HandleFunc("/api/v1/mesh/policy", GetTrafficPolicyHandler)
+	http.HandleFunc("/api/v1/mesh/policy/update", SetTrafficPolicyHandler)
+	http.HandleFunc("/api/v1/mesh/health/update", UpdateInstanceHealthHandler)
+
+	// ============================================
+	// GEO-ROUTING / MULTI-REGION ENDPOINTS (Day 51)
+	// ============================================
+	http.HandleFunc("/api/v1/geo/regions", GetRegionStatusesHandler)
+	http.HandleFunc("/api/v1/geo/stats", GetGeoStatsHandler)
+	http.HandleFunc("/api/v1/geo/route", GeoRouteHandler)
+	http.HandleFunc("/api/v1/geo/config", GetGeoConfigHandler)
+	http.HandleFunc("/api/v1/geo/latency", RecordRegionLatencyHandler)
+	http.HandleFunc("/api/v1/geo/error", RecordRegionErrorHandler)
+
+	// ============================================
+	// CDN ENDPOINTS (Day 52)
+	// ============================================
+	http.HandleFunc("/api/v1/cdn/stats", GetCDNStatsHandler)
+	http.HandleFunc("/api/v1/cdn/status", GetCDNStatusHandler)
+	http.HandleFunc("/api/v1/cdn/edges", GetCDNEdgesHandler)
+	http.HandleFunc("/api/v1/cdn/edges/status", SetEdgeStatusHandler)
+	http.HandleFunc("/api/v1/cdn/invalidate", InvalidateCDNCacheHandler)
+	http.HandleFunc("/api/v1/cdn/invalidations", GetCDNInvalidationsHandler)
+	http.HandleFunc("/api/v1/cdn/origins", GetCDNOriginsHandler)
+	http.HandleFunc("/api/v1/cdn/origins/health", SetOriginHealthHandler)
+	http.HandleFunc("/api/v1/cdn/rules", GetCDNCacheRulesHandler)
+	http.HandleFunc("/api/v1/cdn/rules/add", AddCDNCacheRuleHandler)
+
+	// ============================================
+	// COLLABORATION ENDPOINTS (Day 53)
+	// ============================================
+	http.HandleFunc("/api/v1/collab/stats", GetCollabStatsHandler)
+	http.HandleFunc("/api/v1/collab/workspaces", GetWorkspacesHandler)
+	http.HandleFunc("/api/v1/collab/workspace", GetWorkspaceHandler)
+	http.HandleFunc("/api/v1/collab/resources", GetSharedResourcesHandler)
+	http.HandleFunc("/api/v1/collab/resources/share", ShareResourceHandler)
+	http.HandleFunc("/api/v1/collab/audit", GetAuditLogHandler)
+	http.HandleFunc("/api/v1/collab/members/add", AddCollabMemberHandler)
+	http.HandleFunc("/api/v1/collab/members/role", UpdateMemberRoleHandler)
+	http.HandleFunc("/api/v1/collab/comments", GetCollabCommentsHandler)
+
+	// ============================================
+	// CUSTOM MODEL HOSTING ENDPOINTS (Day 54)
+	// ============================================
+	http.HandleFunc("/api/v1/hosting/stats", GetHostingStatsHandler)
+	http.HandleFunc("/api/v1/hosting/models", GetHostedModelsHandler)
+	http.HandleFunc("/api/v1/hosting/model", GetHostedModelHandler)
+	http.HandleFunc("/api/v1/hosting/deploy", DeployModelHandler)
+	http.HandleFunc("/api/v1/hosting/scale", ScaleModelHandler)
+	http.HandleFunc("/api/v1/hosting/stop", StopHostedModelHandler)
+	http.HandleFunc("/api/v1/hosting/start", StartHostedModelHandler)
+	http.HandleFunc("/api/v1/hosting/delete", DeleteHostedModelHandler)
+
 	// ============================================
 	// ORCHESTRATION ENDPOINTS (Day 8)
 	// ============================================
@@ -117,7 +196,7 @@ func SetupRoutes() {
 	http.HandleFunc("/api/v1/workers", GetWorkersHandler)
 
 	// Queue management
-	http.HandleFunc("/api/v1/workers/queue", GetQueueInfoHandler)
+	http.HandleFunc("/api/v1/workers/queue", GetWorkerQueueInfoHandler)
 
 	// Dynamic scaling
 	http.HandleFunc("/api/v1/workers/resize", ResizeWorkerPoolHandler)

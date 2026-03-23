@@ -73,7 +73,7 @@ send_request() {
     2>/dev/null)
 
   http_code=$(echo "$response" | tail -n 1)
-  body=$(echo "$response" | head -n -1)
+  body=$(echo "$response" | sed '$d')
 
   if [ "$http_code" = "200" ]; then
     latency=$(echo "$body" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('data',{}).get('latency',0))" 2>/dev/null || echo "?")

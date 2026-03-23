@@ -5,7 +5,7 @@ import api from '@/lib/api';
 import { PageHeader } from '@/components/PageHeader';
 import {
   Layers, Database, HardDrive, Activity, Zap, Trash2, Flame,
-  Tag, CheckCircle, AlertTriangle, RefreshCw,
+  Tag, CheckCircle, AlertTriangle, RefreshCw, Globe, GitBranch, Radio,
 } from 'lucide-react';
 import { useState } from 'react';
 import Box from '@mui/material/Box';
@@ -90,12 +90,36 @@ function useResponseCacheStats() {
   });
 }
 
+function useDistributedCacheStats() {
+  return useQuery({
+    queryKey: ['cache-distributed-stats'],
+    queryFn: async () => {
+      const res = await api.get('/api/v1/cache/distributed/stats');
+      return res.data?.data;
+    },
+    refetchInterval: 5000,
+  });
+}
+
+function useHashRing() {
+  return useQuery({
+    queryKey: ['cache-hash-ring'],
+    queryFn: async () => {
+      const res = await api.get('/api/v1/cache/distributed/ring');
+      return res.data?.data;
+    },
+    refetchInterval: 10000,
+  });
+}
+
 export default function CachingPage() {
   const { data: analytics, isLoading } = useCacheAnalytics();
   const { data: redisStats } = useCacheStats();
   const { data: hitRate } = useCacheHitRate();
   const { data: latency } = useCacheLatency();
   const { data: responseStats } = useResponseCacheStats();
+  const { data: distStats } = useDistributedCacheStats();
+  const { data: ringData } = useHashRing();
   const queryClient = useQueryClient();
 
   const [invalidateTags, setInvalidateTags] = useState('');
@@ -173,6 +197,96 @@ export default function CachingPage() {
             <KpiCard label="Total Requests" value={totalReqs.toLocaleString()} color="#ffb595" />
           </Grid>
         </Grid>
+
+        {/* ── DISTRIBUTED CACHE CLUSTER ── */}
+        {distStats && (
+          <>
+            <Typography sx={sectionLabelSx}>Distributed Cache Cluster</Typography>
+
+            <Grid container spacing={2}>
+              <Grid size={{ xs: 6, md: 2 }}>
+                <KpiCard label="Cluster Nodes" value={distStats.cluster_nodes || 1} color="#06b6d4" />
+              </Grid>
+              <Grid size={{ xs: 6, md: 2 }}>
+                <KpiCard label="Cache Epoch" value={distStats.current_epoch || 0} color="#8b5cf6" />
+              </Grid>
+              <Grid size={{ xs: 6, md: 2 }}>
+                <KpiCard label="Local Hits" value={(distStats.local_hits || 0).toLocaleString()} color="#53e16f" />
+              </Grid>
+              <Grid size={{ xs: 6, md: 2 }}>
+                <KpiCard label="Remote Hits" value={(distStats.remote_hits || 0).toLocaleString()} color="#adc6ff" />
+              </Grid>
+              <Grid size={{ xs: 6, md: 2 }}>
+                <KpiCard label="Invalidations Sent" value={(distStats.invalidations_sent || 0).toLocaleString()} color="#ffb595" />
+              </Grid>
+              <Grid size={{ xs: 6, md: 2 }}>
+                <KpiCard label="Invalidations Recv" value={(distStats.invalidations_received || 0).toLocaleString()} color="#f472b6" />
+              </Grid>
+            </Grid>
+
+            <Grid container spacing={3}>
+              {/* Hash Ring */}
+              <Grid size={{ xs: 12, md: 6 }}>
+                <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 3, boxShadow: 'inset 3px 0 0 0 #06b6d4' }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                    <GitBranch className="w-4 h-4" style={{ color: '#06b6d4' }} />
+                    <Typography sx={sectionLabelSx}>Consistent Hash Ring</Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                    <MetricRow label="Replication Factor" value={distStats.replication_factor || 2} />
+                    <MetricRow label="Pub/Sub" value={distStats.pubsub_enabled ? 'Enabled' : 'Disabled'} color={distStats.pubsub_enabled ? '#53e16f' : '#ef4444'} />
+                    <MetricRow label="Pub/Sub Errors" value={(distStats.pubsub_errors || 0).toLocaleString()} color={distStats.pubsub_errors > 0 ? '#ef4444' : '#53e16f'} />
+                    <MetricRow label="Replication Writes" value={(distStats.replication_writes || 0).toLocaleString()} />
+                    <MetricRow label="Hit Rate" value={distStats.overall_hit_rate || '0.00%'} color="#53e16f" />
+                  </Box>
+                  {distStats.node_list && distStats.node_list.length > 0 && (
+                    <Box sx={{ mt: 2, display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                      {distStats.node_list.map((node: string) => (
+                        <Chip
+                          key={node}
+                          label={node}
+                          size="small"
+                          icon={<Radio className="w-3 h-3" />}
+                          sx={{
+                            fontFamily: MONO,
+                            fontSize: '0.625rem',
+                            backgroundColor: node === distStats.node_id ? 'rgba(6,182,212,0.15)' : 'rgba(255,255,255,0.05)',
+                            borderColor: node === distStats.node_id ? '#06b6d4' : 'divider',
+                            border: '1px solid',
+                          }}
+                        />
+                      ))}
+                    </Box>
+                  )}
+                </Paper>
+              </Grid>
+
+              {/* Node Sync */}
+              <Grid size={{ xs: 12, md: 6 }}>
+                <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 3, boxShadow: 'inset 3px 0 0 0 #f472b6' }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                    <Globe className="w-4 h-4" style={{ color: '#f472b6' }} />
+                    <Typography sx={sectionLabelSx}>Cross-Node Sync</Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                    <MetricRow label="Current Node" value={distStats.node_id || 'unknown'} color="#06b6d4" />
+                    <MetricRow label="Local Misses" value={(distStats.local_misses || 0).toLocaleString()} color="#ef4444" />
+                    <MetricRow label="Remote Misses" value={(distStats.remote_misses || 0).toLocaleString()} color="#ef4444" />
+                    <MetricRow label="Last Sync" value={distStats.last_sync ? new Date(distStats.last_sync).toLocaleTimeString() : 'Never'} />
+                  </Box>
+                  {distStats.node_event_counts && Object.keys(distStats.node_event_counts).length > 0 && (
+                    <Box sx={{ mt: 2 }}>
+                      <Typography sx={{ ...sectionLabelSx, mb: 1 }}>Events by Node</Typography>
+                      {Object.entries(distStats.node_event_counts).map(([node, count]: [string, any]) => (
+                        <MetricRow key={node} label={node} value={count} color="#adc6ff" />
+                      ))}
+                    </Box>
+                  )}
+                </Paper>
+              </Grid>
+            </Grid>
+          </>
+        )}
 
         {/* ── CACHE LAYERS ── */}
         <Typography sx={sectionLabelSx}>Cache Layers</Typography>

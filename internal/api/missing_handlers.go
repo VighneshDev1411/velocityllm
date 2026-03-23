@@ -223,8 +223,8 @@ func GetWorkersHandler(w http.ResponseWriter, r *http.Request) {
 	types.WriteSuccess(w, "Workers retrieved", workerStats)
 }
 
-// GetQueueInfoHandler returns queue information
-func GetQueueInfoHandler(w http.ResponseWriter, r *http.Request) {
+// GetWorkerQueueInfoHandler returns worker pool queue information
+func GetWorkerQueueInfoHandler(w http.ResponseWriter, r *http.Request) {
 	pool := worker.GetGlobalPool()
 	if pool == nil {
 		types.WriteError(w, http.StatusServiceUnavailable, "Worker pool not available")
