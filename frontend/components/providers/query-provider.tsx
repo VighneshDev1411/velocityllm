@@ -9,8 +9,9 @@ export function QueryProvider({ children }: { children: React.ReactNode }) {
       new QueryClient({
         defaultOptions: {
           queries: {
-            staleTime: 5 * 1000, // 5 seconds
-            refetchInterval: 5 * 1000, // Auto-refetch every 5 seconds
+            staleTime: 15 * 1000, // 15 seconds
+            refetchInterval: 20 * 1000, // Auto-refetch every 20 seconds
+            refetchIntervalInBackground: false, // Don't poll when the tab is hidden
             retry: 1,
             refetchOnWindowFocus: false,
           },

@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"bytes"
+	"context"
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
@@ -241,7 +242,12 @@ func NewResponseCacheMiddleware(config ResponseCacheConfig) func(http.Handler) h
 					CachedAt:   time.Now(),
 				}
 				go func() {
-					if err := cacheService.Set(r.Context(), cacheKey, resp, ttl); err != nil {
+					// Use a detached context: r.Context() is canceled once the
+					// handler returns, which would abort this async write and
+					// leave the cache permanently empty (every request a MISS).
+					ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+					defer cancel()
+					if err := cacheService.Set(ctx, cacheKey, resp, ttl); err != nil {
 						utils.Debug("Failed to cache response: %v", err)
 					}
 				}()

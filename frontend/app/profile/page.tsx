@@ -17,8 +17,7 @@ import Alert from '@mui/material/Alert';
 import Grid from '@mui/material/Grid';
 import CircularProgress from '@mui/material/CircularProgress';
 import Divider from '@mui/material/Divider';
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
+import { API_BASE } from '@/lib/config';
 
 export default function ProfilePage() {
   const { user, isAuthenticated, isLoading: authLoading, logout } = useAuth();
