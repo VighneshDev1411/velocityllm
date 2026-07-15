@@ -12,6 +12,7 @@ import Alert from '@mui/material/Alert';
 import Divider from '@mui/material/Divider';
 import CircularProgress from '@mui/material/CircularProgress';
 import { Github } from 'lucide-react';
+import { API_ORIGIN } from '@/lib/config';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -129,7 +130,9 @@ export default function LoginPage() {
             </Button>
           </form>
 
-          {/* Divider */}
+          {/* Social login (Google/GitHub) temporarily disabled — flip false → true to re-enable */}
+          {false && (
+          <>
           <Divider sx={{ my: 3, fontSize: '0.8rem', color: 'text.disabled' }}>
             or continue with
           </Divider>
@@ -138,7 +141,7 @@ export default function LoginPage() {
           <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.5 }}>
             <Button
               variant="outlined"
-              href={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1'}/auth/oauth/redirect?provider=github`}
+              href={`${API_ORIGIN}/api/v1/auth/oauth/redirect?provider=github`}
               component="a"
               sx={{
                 color: 'text.primary',
@@ -153,7 +156,7 @@ export default function LoginPage() {
             </Button>
             <Button
               variant="outlined"
-              href={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1'}/auth/oauth/redirect?provider=google`}
+              href={`${API_ORIGIN}/api/v1/auth/oauth/redirect?provider=google`}
               component="a"
               sx={{
                 color: 'text.primary',
@@ -174,6 +177,8 @@ export default function LoginPage() {
               Google
             </Button>
           </Box>
+          </>
+          )}
 
           {/* Sign up link */}
           <Typography sx={{ textAlign: 'center', mt: 3, fontSize: '0.875rem', color: 'text.secondary' }}>

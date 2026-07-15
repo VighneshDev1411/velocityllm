@@ -1,6 +1,8 @@
 package api
 
 import (
+	"crypto/rand"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -14,6 +16,19 @@ import (
 	"github.com/VighneshDev1411/velocityllm/pkg/types"
 	"github.com/VighneshDev1411/velocityllm/pkg/utils"
 )
+
+// oauthStateCookie holds the CSRF state (format "<provider>:<nonce>") between the
+// redirect and callback steps of the OAuth flow.
+const oauthStateCookie = "vlm_oauth_state"
+
+// generateOAuthNonce returns a random hex string used for CSRF protection.
+func generateOAuthNonce() string {
+	b := make([]byte, 16)
+	if _, err := rand.Read(b); err != nil {
+		return fmt.Sprintf("%d", time.Now().UnixNano())
+	}
+	return hex.EncodeToString(b)
+}
 
 // OAuth2 configuration loaded from environment
 func getOAuthConfig() map[string]map[string]string {
@@ -92,14 +107,29 @@ func OAuthRedirectHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	redirectURI := getRedirectBase() + "/api/v1/auth/oauth/callback?provider=" + provider
+	// Clean, query-less redirect URI so it matches the Google/GitHub console entry
+	// exactly. The provider is carried in `state` instead of the URI query.
+	redirectURI := getRedirectBase() + "/api/v1/auth/oauth/callback"
+
+	// state = "<provider>:<nonce>". The nonce is echoed back by the provider and
+	// validated against an HttpOnly cookie on callback (real CSRF protection).
+	state := provider + ":" + generateOAuthNonce()
+	http.SetCookie(w, &http.Cookie{
+		Name:     oauthStateCookie,
+		Value:    state,
+		Path:     "/",
+		MaxAge:   600, // 10 minutes to complete the flow
+		HttpOnly: true,
+		Secure:   strings.HasPrefix(getRedirectBase(), "https://"),
+		SameSite: http.SameSiteLaxMode,
+	})
 
 	params := url.Values{}
 	params.Set("client_id", cfg["client_id"])
 	params.Set("redirect_uri", redirectURI)
 	params.Set("scope", cfg["scope"])
 	params.Set("response_type", "code")
-	params.Set("state", fmt.Sprintf("%d", time.Now().UnixNano())) // Simple CSRF protection
+	params.Set("state", state)
 
 	authURL := cfg["auth_url"] + "?" + params.Encode()
 
@@ -114,7 +144,7 @@ func OAuthCallbackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	provider := r.URL.Query().Get("provider")
+	stateParam := r.URL.Query().Get("state")
 	code := r.URL.Query().Get("code")
 	errParam := r.URL.Query().Get("error")
 
@@ -126,6 +156,22 @@ func OAuthCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	if errParam != "" {
 		http.Redirect(w, r, frontendURL+"/login?error="+url.QueryEscape("OAuth failed: "+errParam), http.StatusTemporaryRedirect)
 		return
+	}
+
+	// CSRF: the state echoed back by the provider must match the nonce cookie set
+	// during the redirect step.
+	stateCookie, cookieErr := r.Cookie(oauthStateCookie)
+	if cookieErr != nil || stateParam == "" || stateCookie.Value != stateParam {
+		http.Redirect(w, r, frontendURL+"/login?error="+url.QueryEscape("Invalid OAuth state"), http.StatusTemporaryRedirect)
+		return
+	}
+	// Consume the state cookie now that it's validated.
+	http.SetCookie(w, &http.Cookie{Name: oauthStateCookie, Value: "", Path: "/", MaxAge: -1})
+
+	// Provider is encoded in state as "<provider>:<nonce>".
+	provider := stateParam
+	if i := strings.IndexByte(stateParam, ':'); i > 0 {
+		provider = stateParam[:i]
 	}
 
 	if code == "" {
@@ -140,8 +186,8 @@ func OAuthCallbackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Exchange code for token
-	redirectURI := getRedirectBase() + "/api/v1/auth/oauth/callback?provider=" + provider
+	// Exchange code for token — redirect_uri must match the (clean) one used at redirect.
+	redirectURI := getRedirectBase() + "/api/v1/auth/oauth/callback"
 	accessToken, err := exchangeCodeForToken(cfg, code, redirectURI)
 	if err != nil {
 		utils.Error("OAuth token exchange failed: %v", err)
