@@ -327,20 +327,85 @@ export default function LandingPage() {
       </Box>
 
       {/* ─── Footer ─── */}
-      <Box component="footer" sx={{ bgcolor: '#0e0e0e', borderTop: '1px solid', borderColor: 'divider', py: 4 }}>
-        <Container maxWidth="lg">
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, alignItems: 'center', justifyContent: 'space-between' }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Box sx={{ width: 22, height: 22, borderRadius: '5px', background: 'linear-gradient(135deg, #adc6ff, #4b8eff)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Typography sx={{ color: '#131313', fontWeight: 800, fontSize: '0.65rem', fontFamily: MONO }}>V</Typography>
+      <Box component="footer" sx={{ bgcolor: '#0e0e0e', borderTop: '1px solid', borderColor: 'divider' }}>
+        <Container maxWidth="lg" sx={{ py: { xs: 6, md: 8 } }}>
+          <Grid container spacing={{ xs: 5, md: 6 }}>
+            {/* Brand */}
+            <Grid size={{ xs: 12, md: 4 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25, mb: 2 }}>
+                <Box sx={{ width: 30, height: 30, borderRadius: '6px', background: 'linear-gradient(135deg, #adc6ff, #4b8eff)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Typography sx={{ color: '#131313', fontWeight: 800, fontSize: '0.8rem', fontFamily: MONO }}>V</Typography>
+                </Box>
+                <Typography sx={{ fontSize: '1.05rem', fontWeight: 700, color: 'text.primary', letterSpacing: '-0.01em' }}>VelocityLLM</Typography>
               </Box>
-              <Typography sx={{ fontSize: '0.85rem', color: 'text.secondary' }}>VelocityLLM</Typography>
-            </Box>
-            <Typography sx={{ fontFamily: MONO, color: 'text.disabled', fontSize: '0.75rem' }}>
-              © 2026 VelocityLLM · Production-grade LLM inference
-            </Typography>
-          </Box>
+              <Typography sx={{ fontSize: '0.85rem', color: 'text.secondary', lineHeight: 1.7, maxWidth: 300, mb: 2.5 }}>
+                Production-grade LLM inference — caching, routing, streaming, and full observability in one engine.
+              </Typography>
+              <Box sx={{
+                display: 'inline-flex', alignItems: 'center', gap: 1, px: 1.25, py: 0.5,
+                borderRadius: '2px', bgcolor: 'rgba(83,225,111,0.1)', border: '1px solid rgba(83,225,111,0.2)',
+              }}>
+                <Box sx={{ width: 7, height: 7, borderRadius: '50%', bgcolor: '#53e16f',
+                  animation: 'fpulse 2s infinite', '@keyframes fpulse': { '0%,100%': { opacity: 1 }, '50%': { opacity: 0.4 } } }} />
+                <Typography sx={{ fontFamily: MONO, fontSize: '0.625rem', letterSpacing: '0.15em', color: '#53e16f', textTransform: 'uppercase' }}>
+                  All systems operational
+                </Typography>
+              </Box>
+            </Grid>
+
+            {/* Link columns */}
+            <Grid size={{ xs: 12, md: 8 }}>
+              <Grid container spacing={4}>
+                {[
+                  { title: 'Product', links: [['Dashboard', '/dashboard'], ['Playground', '/playground'], ['Chat', '/chat'], ['API Keys', '/keys']] },
+                  { title: 'Developers', links: [['API Docs', '/docs'], ['System Status', '/status'], ['Help Center', '/help']] },
+                  { title: 'Account', links: [['Sign in', '/login'], ['Create account', '/register']] },
+                ].map((col) => (
+                  <Grid size={{ xs: 6, sm: 4 }} key={col.title}>
+                    <Typography sx={{
+                      fontFamily: MONO, fontSize: '0.625rem', letterSpacing: '0.2em', textTransform: 'uppercase',
+                      color: 'text.disabled', mb: 2,
+                    }}>
+                      {col.title}
+                    </Typography>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.25 }}>
+                      {col.links.map(([label, href]) => (
+                        <Link key={href} href={href} style={{ textDecoration: 'none' }}>
+                          <Typography sx={{
+                            fontSize: '0.85rem', color: 'text.secondary', transition: 'color 0.15s',
+                            '&:hover': { color: 'primary.main' },
+                          }}>
+                            {label}
+                          </Typography>
+                        </Link>
+                      ))}
+                    </Box>
+                  </Grid>
+                ))}
+              </Grid>
+            </Grid>
+          </Grid>
         </Container>
+
+        {/* Bottom bar */}
+        <Box sx={{ borderTop: '1px solid', borderColor: 'divider' }}>
+          <Container maxWidth="lg" sx={{ py: 2.5 }}>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5, alignItems: 'center', justifyContent: 'space-between' }}>
+              <Typography sx={{ fontFamily: MONO, color: 'text.disabled', fontSize: '0.75rem' }}>
+                © 2026 VelocityLLM · Production-grade LLM inference
+              </Typography>
+              <Box sx={{ display: 'flex', gap: 3 }}>
+                {[['Status', '/status'], ['Docs', '/docs'], ['Help', '/help']].map(([label, href]) => (
+                  <Link key={href} href={href} style={{ textDecoration: 'none' }}>
+                    <Typography sx={{ fontSize: '0.75rem', color: 'text.disabled', '&:hover': { color: 'text.secondary' } }}>
+                      {label}
+                    </Typography>
+                  </Link>
+                ))}
+              </Box>
+            </Box>
+          </Container>
+        </Box>
       </Box>
     </Box>
   );
