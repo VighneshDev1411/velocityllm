@@ -738,7 +738,7 @@ function FormattedContent({ content }: { content: string }) {
         const inlineParts = part.split(/(`[^`]+`)/g);
         return (
           <Typography key={i} component="span" sx={{
-            fontSize: 'inherit', lineHeight: 'inherit',
+            fontSize: 'inherit', lineHeight: 'inherit', color: 'inherit',
             whiteSpace: 'pre-wrap', wordBreak: 'break-word',
           }}>
             {inlineParts.map((p, j) => {
