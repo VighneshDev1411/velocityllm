@@ -66,7 +66,7 @@ function KpiCard({ icon: Icon, label, value, sub, accent = '#4b8eff' }: {
         <Box>
           <Typography sx={{ ...sectionLabelSx, mb: 0.5 }}>{label}</Typography>
           <Typography sx={{ fontSize: '1.5rem', fontWeight: 700, fontFamily: MONO, color: '#e5e2e1' }}>{value}</Typography>
-          {sub && <Typography sx={{ fontSize: '0.65rem', fontFamily: MONO, color: '#8b949e' }}>{sub}</Typography>}
+          {sub && <Typography sx={{ fontSize: '0.65rem', fontFamily: MONO, color: '#c1c6d7' }}>{sub}</Typography>}
         </Box>
       </Box>
     </Paper>
@@ -101,10 +101,10 @@ function ModelCard({ model }: { model: any }) {
   });
 
   const statusColors: Record<string, string> = {
-    running: '#53e16f', stopped: '#4b5563', deploying: '#ffb595', failed: '#ef4444', scaling: '#4b8eff',
+    running: '#53e16f', stopped: '#414755', deploying: '#ffb595', failed: '#ef4444', scaling: '#4b8eff',
   };
   const frameworkColors: Record<string, string> = {
-    pytorch: '#ee4c2c', tensorflow: '#ff6f00', onnx: '#005CED', triton: '#76b900',
+    pytorch: '#ef6719', tensorflow: '#ef6719', onnx: '#005CED', triton: '#76b900',
   };
   const isRunning = model.status === 'running';
 
@@ -114,11 +114,11 @@ function ModelCard({ model }: { model: any }) {
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
         <Box>
           <Typography sx={{ fontSize: '1rem', fontFamily: MONO, color: '#e5e2e1', fontWeight: 700 }}>{model.name}</Typography>
-          <Typography sx={{ fontSize: '0.65rem', fontFamily: MONO, color: '#8b949e', mt: 0.3 }}>{model.model_path}</Typography>
+          <Typography sx={{ fontSize: '0.65rem', fontFamily: MONO, color: '#c1c6d7', mt: 0.3 }}>{model.model_path}</Typography>
         </Box>
         <Box sx={{ display: 'flex', gap: 0.5 }}>
           <Chip label={model.status.toUpperCase()} size="small" sx={{ fontFamily: MONO, fontSize: '0.6rem', height: 22, backgroundColor: statusColors[model.status] + '20', color: statusColors[model.status] }} />
-          <Chip label={model.framework} size="small" sx={{ fontFamily: MONO, fontSize: '0.6rem', height: 22, backgroundColor: (frameworkColors[model.framework] || '#8b949e') + '20', color: frameworkColors[model.framework] || '#8b949e' }} />
+          <Chip label={model.framework} size="small" sx={{ fontFamily: MONO, fontSize: '0.6rem', height: 22, backgroundColor: (frameworkColors[model.framework] || '#c1c6d7') + '20', color: frameworkColors[model.framework] || '#c1c6d7' }} />
         </Box>
       </Box>
 
@@ -136,7 +136,7 @@ function ModelCard({ model }: { model: any }) {
           <Grid container spacing={1}>
             <Grid size={{ xs: 6 }}>
               <Box sx={{ p: 1, backgroundColor: '#0e0e0e', borderRadius: '4px', border: '1px solid #2a2a2a' }}>
-                <Typography sx={{ fontSize: '0.55rem', fontFamily: MONO, color: '#8b949e' }}>GPU UTIL</Typography>
+                <Typography sx={{ fontSize: '0.55rem', fontFamily: MONO, color: '#c1c6d7' }}>GPU UTIL</Typography>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <LinearProgress variant="determinate" value={model.metrics.gpu_utilization} sx={{ flex: 1, height: 4, borderRadius: 2, backgroundColor: '#2a2a2a', '& .MuiLinearProgress-bar': { backgroundColor: model.metrics.gpu_utilization > 80 ? '#ef4444' : model.metrics.gpu_utilization > 60 ? '#ffb595' : '#53e16f' } }} />
                   <Typography sx={{ fontSize: '0.7rem', fontFamily: MONO, color: '#e5e2e1' }}>{model.metrics.gpu_utilization.toFixed(0)}%</Typography>
@@ -145,7 +145,7 @@ function ModelCard({ model }: { model: any }) {
             </Grid>
             <Grid size={{ xs: 6 }}>
               <Box sx={{ p: 1, backgroundColor: '#0e0e0e', borderRadius: '4px', border: '1px solid #2a2a2a' }}>
-                <Typography sx={{ fontSize: '0.55rem', fontFamily: MONO, color: '#8b949e' }}>MEMORY</Typography>
+                <Typography sx={{ fontSize: '0.55rem', fontFamily: MONO, color: '#c1c6d7' }}>MEMORY</Typography>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <LinearProgress variant="determinate" value={(model.metrics.memory_used_gb / model.metrics.memory_total_gb) * 100} sx={{ flex: 1, height: 4, borderRadius: 2, backgroundColor: '#2a2a2a', '& .MuiLinearProgress-bar': { backgroundColor: '#4b8eff' } }} />
                   <Typography sx={{ fontSize: '0.7rem', fontFamily: MONO, color: '#e5e2e1' }}>{model.metrics.memory_used_gb.toFixed(1)}G</Typography>
@@ -154,19 +154,19 @@ function ModelCard({ model }: { model: any }) {
             </Grid>
             <Grid size={{ xs: 4 }}>
               <Box sx={{ p: 1, backgroundColor: '#0e0e0e', borderRadius: '4px', border: '1px solid #2a2a2a', textAlign: 'center' }}>
-                <Typography sx={{ fontSize: '0.55rem', fontFamily: MONO, color: '#8b949e' }}>LATENCY</Typography>
+                <Typography sx={{ fontSize: '0.55rem', fontFamily: MONO, color: '#c1c6d7' }}>LATENCY</Typography>
                 <Typography sx={{ fontSize: '0.85rem', fontFamily: MONO, color: '#e5e2e1', fontWeight: 600 }}>{model.metrics.avg_latency_ms.toFixed(0)}ms</Typography>
               </Box>
             </Grid>
             <Grid size={{ xs: 4 }}>
               <Box sx={{ p: 1, backgroundColor: '#0e0e0e', borderRadius: '4px', border: '1px solid #2a2a2a', textAlign: 'center' }}>
-                <Typography sx={{ fontSize: '0.55rem', fontFamily: MONO, color: '#8b949e' }}>THROUGHPUT</Typography>
+                <Typography sx={{ fontSize: '0.55rem', fontFamily: MONO, color: '#c1c6d7' }}>THROUGHPUT</Typography>
                 <Typography sx={{ fontSize: '0.85rem', fontFamily: MONO, color: '#e5e2e1', fontWeight: 600 }}>{model.metrics.tokens_per_second.toFixed(0)} t/s</Typography>
               </Box>
             </Grid>
             <Grid size={{ xs: 4 }}>
               <Box sx={{ p: 1, backgroundColor: '#0e0e0e', borderRadius: '4px', border: '1px solid #2a2a2a', textAlign: 'center' }}>
-                <Typography sx={{ fontSize: '0.55rem', fontFamily: MONO, color: '#8b949e' }}>UPTIME</Typography>
+                <Typography sx={{ fontSize: '0.55rem', fontFamily: MONO, color: '#c1c6d7' }}>UPTIME</Typography>
                 <Typography sx={{ fontSize: '0.85rem', fontFamily: MONO, color: '#53e16f', fontWeight: 600 }}>{model.metrics.uptime}</Typography>
               </Box>
             </Grid>
@@ -228,11 +228,11 @@ function DeployDialog({ open, onClose }: { open: boolean; onClose: () => void })
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth PaperProps={{ sx: { backgroundColor: '#201f1f', border: '1px solid #2a2a2a', borderRadius: '12px' } }}>
       <DialogTitle sx={{ fontFamily: MONO, color: '#e5e2e1', fontSize: '1rem' }}>Deploy Custom Model</DialogTitle>
       <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: '16px !important' }}>
-        <TextField label="Model Name" size="small" fullWidth value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} sx={inputSx} InputLabelProps={{ sx: { color: '#8b949e', fontFamily: MONO, fontSize: '0.75rem' } }} />
-        <TextField label="Model Path (HuggingFace)" size="small" fullWidth placeholder="meta-llama/Llama-3-8B" value={form.model_path} onChange={(e) => setForm({ ...form, model_path: e.target.value })} sx={inputSx} InputLabelProps={{ sx: { color: '#8b949e', fontFamily: MONO, fontSize: '0.75rem' } }} />
+        <TextField label="Model Name" size="small" fullWidth value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} sx={inputSx} InputLabelProps={{ sx: { color: '#c1c6d7', fontFamily: MONO, fontSize: '0.75rem' } }} />
+        <TextField label="Model Path (HuggingFace)" size="small" fullWidth placeholder="meta-llama/Llama-3-8B" value={form.model_path} onChange={(e) => setForm({ ...form, model_path: e.target.value })} sx={inputSx} InputLabelProps={{ sx: { color: '#c1c6d7', fontFamily: MONO, fontSize: '0.75rem' } }} />
         <Box sx={{ display: 'flex', gap: 2 }}>
           <Box sx={{ flex: 1 }}>
-            <Typography sx={{ fontSize: '0.65rem', fontFamily: MONO, color: '#8b949e', mb: 0.5 }}>Framework</Typography>
+            <Typography sx={{ fontSize: '0.65rem', fontFamily: MONO, color: '#c1c6d7', mb: 0.5 }}>Framework</Typography>
             <select value={form.framework} onChange={(e) => setForm({ ...form, framework: e.target.value })} style={selectStyle}>
               <option value="pytorch">PyTorch</option>
               <option value="onnx">ONNX</option>
@@ -241,7 +241,7 @@ function DeployDialog({ open, onClose }: { open: boolean; onClose: () => void })
             </select>
           </Box>
           <Box sx={{ flex: 1 }}>
-            <Typography sx={{ fontSize: '0.65rem', fontFamily: MONO, color: '#8b949e', mb: 0.5 }}>GPU</Typography>
+            <Typography sx={{ fontSize: '0.65rem', fontFamily: MONO, color: '#c1c6d7', mb: 0.5 }}>GPU</Typography>
             <select value={form.gpu} onChange={(e) => setForm({ ...form, gpu: e.target.value })} style={selectStyle}>
               <option value="H100-80GB">H100 (80GB)</option>
               <option value="A100-80GB">A100 (80GB)</option>
@@ -254,7 +254,7 @@ function DeployDialog({ open, onClose }: { open: boolean; onClose: () => void })
         </Box>
         <Box sx={{ display: 'flex', gap: 2 }}>
           <Box sx={{ flex: 1 }}>
-            <Typography sx={{ fontSize: '0.65rem', fontFamily: MONO, color: '#8b949e', mb: 0.5 }}>Quantization</Typography>
+            <Typography sx={{ fontSize: '0.65rem', fontFamily: MONO, color: '#c1c6d7', mb: 0.5 }}>Quantization</Typography>
             <select value={form.quantization} onChange={(e) => setForm({ ...form, quantization: e.target.value })} style={selectStyle}>
               <option value="none">None (FP16)</option>
               <option value="int8">INT8</option>
@@ -264,13 +264,13 @@ function DeployDialog({ open, onClose }: { open: boolean; onClose: () => void })
             </select>
           </Box>
           <Box sx={{ flex: 1 }}>
-            <Typography sx={{ fontSize: '0.65rem', fontFamily: MONO, color: '#8b949e', mb: 0.5 }}>Replicas</Typography>
+            <Typography sx={{ fontSize: '0.65rem', fontFamily: MONO, color: '#c1c6d7', mb: 0.5 }}>Replicas</Typography>
             <TextField size="small" fullWidth type="number" value={form.replicas} onChange={(e) => setForm({ ...form, replicas: parseInt(e.target.value) || 1 })} sx={inputSx} inputProps={{ min: 1, max: 8 }} />
           </Box>
         </Box>
       </DialogContent>
       <DialogActions sx={{ px: 3, pb: 2 }}>
-        <Button onClick={onClose} sx={{ fontFamily: MONO, fontSize: '0.75rem', color: '#8b949e', textTransform: 'none' }}>Cancel</Button>
+        <Button onClick={onClose} sx={{ fontFamily: MONO, fontSize: '0.75rem', color: '#c1c6d7', textTransform: 'none' }}>Cancel</Button>
         <Button
           onClick={() => deploy.mutate()}
           disabled={deploy.isPending || !form.name || !form.model_path}

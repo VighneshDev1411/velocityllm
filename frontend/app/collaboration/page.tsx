@@ -85,9 +85,9 @@ function KpiCard({ icon: Icon, label, value, accent = '#4b8eff' }: {
 /* ── Members Panel ────────────────────────────────────── */
 function MembersPanel({ members }: { members: any[] }) {
   const queryClient = useQueryClient();
-  const roleColors: Record<string, string> = { owner: '#ffb595', admin: '#adc6ff', editor: '#4b8eff', viewer: '#8b949e' };
+  const roleColors: Record<string, string> = { owner: '#ffb595', admin: '#adc6ff', editor: '#4b8eff', viewer: '#c1c6d7' };
   const roleIcons: Record<string, React.ComponentType<{ className?: string }>> = { owner: Crown, admin: Shield, editor: Edit3, viewer: Eye };
-  const statusColors: Record<string, string> = { online: '#53e16f', away: '#ffb595', offline: '#4b5563' };
+  const statusColors: Record<string, string> = { online: '#53e16f', away: '#ffb595', offline: '#414755' };
 
   const updateRole = useMutation({
     mutationFn: async ({ user_id, role }: { user_id: string; role: string }) => {
@@ -108,11 +108,11 @@ function MembersPanel({ members }: { members: any[] }) {
                 <Avatar sx={{ width: 32, height: 32, fontSize: '0.7rem', fontFamily: MONO, backgroundColor: roleColors[m.role] + '30', color: roleColors[m.role] }}>
                   {m.avatar}
                 </Avatar>
-                <Box sx={{ position: 'absolute', bottom: -1, right: -1, width: 10, height: 10, borderRadius: '50%', backgroundColor: statusColors[m.status] || '#4b5563', border: '2px solid #0e0e0e' }} />
+                <Box sx={{ position: 'absolute', bottom: -1, right: -1, width: 10, height: 10, borderRadius: '50%', backgroundColor: statusColors[m.status] || '#414755', border: '2px solid #0e0e0e' }} />
               </Box>
               <Box>
                 <Typography sx={{ fontSize: '0.8rem', fontFamily: MONO, color: '#e5e2e1', fontWeight: 600 }}>{m.name}</Typography>
-                <Typography sx={{ fontSize: '0.65rem', fontFamily: MONO, color: '#8b949e' }}>{m.email}</Typography>
+                <Typography sx={{ fontSize: '0.65rem', fontFamily: MONO, color: '#c1c6d7' }}>{m.email}</Typography>
               </Box>
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -126,7 +126,7 @@ function MembersPanel({ members }: { members: any[] }) {
                 <select
                   value={m.role}
                   onChange={(e) => updateRole.mutate({ user_id: m.user_id, role: e.target.value })}
-                  style={{ padding: '2px 6px', backgroundColor: '#201f1f', border: '1px solid #2a2a2a', borderRadius: '4px', color: '#8b949e', fontFamily: MONO, fontSize: '0.6rem' }}
+                  style={{ padding: '2px 6px', backgroundColor: '#201f1f', border: '1px solid #2a2a2a', borderRadius: '4px', color: '#c1c6d7', fontFamily: MONO, fontSize: '0.6rem' }}
                 >
                   <option value="admin">Admin</option>
                   <option value="editor">Editor</option>
@@ -155,7 +155,7 @@ function SharedResourcesPanel({ resources }: { resources: any[] }) {
         <TableHead>
           <TableRow>
             {['Resource', 'Type', 'Shared By', 'Permission', 'Version', 'Updated'].map(h => (
-              <TableCell key={h} sx={{ color: '#8b949e', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#2a2a2a' }}>{h}</TableCell>
+              <TableCell key={h} sx={{ color: '#c1c6d7', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#2a2a2a' }}>{h}</TableCell>
             ))}
           </TableRow>
         </TableHead>
@@ -163,7 +163,7 @@ function SharedResourcesPanel({ resources }: { resources: any[] }) {
           {resources.map((r: any) => {
             const Icon = typeIcons[r.type] || FileText;
             return (
-              <TableRow key={r.id} sx={{ '&:hover': { backgroundColor: '#1a2332' } }}>
+              <TableRow key={r.id} sx={{ '&:hover': { backgroundColor: '#201f1f' } }}>
                 <TableCell sx={{ color: '#e5e2e1', fontFamily: MONO, fontSize: '0.8rem', borderColor: '#2a2a2a' }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <Box sx={{ color: typeColors[r.type], display: 'flex' }}><Icon className="w-3 h-3" /></Box>
@@ -173,12 +173,12 @@ function SharedResourcesPanel({ resources }: { resources: any[] }) {
                 <TableCell sx={{ borderColor: '#2a2a2a' }}>
                   <Chip label={r.type} size="small" sx={{ fontFamily: MONO, fontSize: '0.6rem', height: 20, backgroundColor: typeColors[r.type] + '20', color: typeColors[r.type] }} />
                 </TableCell>
-                <TableCell sx={{ color: '#8b949e', fontFamily: MONO, fontSize: '0.75rem', borderColor: '#2a2a2a' }}>{r.shared_by}</TableCell>
+                <TableCell sx={{ color: '#c1c6d7', fontFamily: MONO, fontSize: '0.75rem', borderColor: '#2a2a2a' }}>{r.shared_by}</TableCell>
                 <TableCell sx={{ borderColor: '#2a2a2a' }}>
                   <Chip label={r.permission} size="small" sx={{ fontFamily: MONO, fontSize: '0.6rem', height: 20, backgroundColor: '#2a2a2a', color: '#c1c6d7' }} />
                 </TableCell>
                 <TableCell sx={{ color: '#e5e2e1', fontFamily: MONO, fontSize: '0.75rem', borderColor: '#2a2a2a' }}>v{r.version}</TableCell>
-                <TableCell sx={{ color: '#8b949e', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>
+                <TableCell sx={{ color: '#c1c6d7', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>
                   {new Date(r.updated_at).toLocaleDateString()}
                 </TableCell>
               </TableRow>
@@ -202,16 +202,16 @@ function AuditLogPanel({ entries }: { entries: any[] }) {
       <Typography sx={{ ...sectionLabelSx, mb: 2 }}>Activity Log</Typography>
       {(entries || []).map((e: any) => (
         <Box key={e.id} sx={{ p: 1.5, mb: 0.5, backgroundColor: '#0e0e0e', borderRadius: '4px', border: '1px solid #2a2a2a', display: 'flex', alignItems: 'center', gap: 1.5 }}>
-          <Box sx={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: actionColors[e.action] || '#8b949e', flexShrink: 0 }} />
+          <Box sx={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: actionColors[e.action] || '#c1c6d7', flexShrink: 0 }} />
           <Box sx={{ flex: 1 }}>
             <Typography sx={{ fontSize: '0.75rem', fontFamily: MONO, color: '#e5e2e1' }}>
               <span style={{ fontWeight: 600 }}>{e.user_name}</span>{' '}
-              <span style={{ color: actionColors[e.action] || '#8b949e' }}>{e.action}</span>{' '}
+              <span style={{ color: actionColors[e.action] || '#c1c6d7' }}>{e.action}</span>{' '}
               {e.resource}
             </Typography>
-            <Typography sx={{ fontSize: '0.6rem', fontFamily: MONO, color: '#8b949e' }}>{e.details}</Typography>
+            <Typography sx={{ fontSize: '0.6rem', fontFamily: MONO, color: '#c1c6d7' }}>{e.details}</Typography>
           </Box>
-          <Typography sx={{ fontSize: '0.6rem', fontFamily: MONO, color: '#4b5563', whiteSpace: 'nowrap' }}>
+          <Typography sx={{ fontSize: '0.6rem', fontFamily: MONO, color: '#414755', whiteSpace: 'nowrap' }}>
             {new Date(e.timestamp).toLocaleTimeString()}
           </Typography>
         </Box>

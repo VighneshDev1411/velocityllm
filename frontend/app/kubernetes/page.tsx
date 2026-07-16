@@ -57,18 +57,18 @@ function NodesPanel({ nodes }: { nodes: any[] }) {
         <TableHead>
           <TableRow>
             {['Node', 'Status', 'Role', 'CPU', 'Memory', 'Pods', 'Version', 'IP'].map(h => (
-              <TableCell key={h} sx={{ color: '#8b949e', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#2a2a2a' }}>{h}</TableCell>
+              <TableCell key={h} sx={{ color: '#c1c6d7', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#2a2a2a' }}>{h}</TableCell>
             ))}
           </TableRow>
         </TableHead>
         <TableBody>
           {nodes.map((n: any) => (
-            <TableRow key={n.name} sx={{ '&:hover': { backgroundColor: '#1a2332' } }}>
+            <TableRow key={n.name} sx={{ '&:hover': { backgroundColor: '#201f1f' } }}>
               <TableCell sx={{ color: '#e5e2e1', fontFamily: MONO, fontSize: '0.8rem', borderColor: '#2a2a2a', fontWeight: 600 }}>{n.name}</TableCell>
               <TableCell sx={{ borderColor: '#2a2a2a' }}>
                 <Chip label={n.status} size="small" sx={{ fontFamily: MONO, fontSize: '0.6rem', height: 20, backgroundColor: n.status === 'Ready' ? '#53e16f20' : '#ef444420', color: n.status === 'Ready' ? '#53e16f' : '#ef4444' }} />
               </TableCell>
-              <TableCell sx={{ color: '#8b949e', fontFamily: MONO, fontSize: '0.75rem', borderColor: '#2a2a2a' }}>{n.role}</TableCell>
+              <TableCell sx={{ color: '#c1c6d7', fontFamily: MONO, fontSize: '0.75rem', borderColor: '#2a2a2a' }}>{n.role}</TableCell>
               <TableCell sx={{ borderColor: '#2a2a2a' }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <LinearProgress variant="determinate" value={n.cpu_percent} sx={{ width: 50, height: 4, borderRadius: 2, backgroundColor: '#2a2a2a', '& .MuiLinearProgress-bar': { backgroundColor: n.cpu_percent > 80 ? '#ef4444' : n.cpu_percent > 60 ? '#ffb595' : '#53e16f' } }} />
@@ -82,8 +82,8 @@ function NodesPanel({ nodes }: { nodes: any[] }) {
                 </Box>
               </TableCell>
               <TableCell sx={{ color: '#e5e2e1', fontFamily: MONO, fontSize: '0.75rem', borderColor: '#2a2a2a' }}>{n.pods}/{n.max_pods}</TableCell>
-              <TableCell sx={{ color: '#8b949e', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>{n.version}</TableCell>
-              <TableCell sx={{ color: '#8b949e', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>{n.internal_ip}</TableCell>
+              <TableCell sx={{ color: '#c1c6d7', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>{n.version}</TableCell>
+              <TableCell sx={{ color: '#c1c6d7', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>{n.internal_ip}</TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -104,19 +104,19 @@ function DeploymentsPanel({ deployments, ns }: { deployments: any[]; ns: string 
         <TableHead>
           <TableRow>
             {['Name', 'Status', 'Ready', 'Image', 'Strategy', 'Actions'].map(h => (
-              <TableCell key={h} sx={{ color: '#8b949e', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#2a2a2a' }}>{h}</TableCell>
+              <TableCell key={h} sx={{ color: '#c1c6d7', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#2a2a2a' }}>{h}</TableCell>
             ))}
           </TableRow>
         </TableHead>
         <TableBody>
           {deployments.map((d: any) => (
-            <TableRow key={d.name} sx={{ '&:hover': { backgroundColor: '#1a2332' } }}>
+            <TableRow key={d.name} sx={{ '&:hover': { backgroundColor: '#201f1f' } }}>
               <TableCell sx={{ color: '#e5e2e1', fontFamily: MONO, fontSize: '0.8rem', borderColor: '#2a2a2a', fontWeight: 600 }}>{d.name}</TableCell>
               <TableCell sx={{ borderColor: '#2a2a2a' }}>
                 <Chip label={d.status} size="small" sx={{ fontFamily: MONO, fontSize: '0.6rem', height: 20, backgroundColor: d.status === 'Available' ? '#53e16f20' : '#ffb59520', color: d.status === 'Available' ? '#53e16f' : '#ffb595' }} />
               </TableCell>
               <TableCell sx={{ color: '#e5e2e1', fontFamily: MONO, fontSize: '0.75rem', borderColor: '#2a2a2a' }}>{d.ready_replicas}/{d.replicas}</TableCell>
-              <TableCell sx={{ color: '#8b949e', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>{d.image}</TableCell>
+              <TableCell sx={{ color: '#c1c6d7', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>{d.image}</TableCell>
               <TableCell sx={{ borderColor: '#2a2a2a' }}>
                 <Chip label={d.strategy} size="small" sx={{ fontFamily: MONO, fontSize: '0.55rem', height: 18, backgroundColor: '#2a2a2a', color: '#c1c6d7' }} />
               </TableCell>
@@ -143,24 +143,24 @@ function PodsPanel({ pods }: { pods: any[] }) {
         <TableHead>
           <TableRow>
             {['Pod', 'Phase', 'Ready', 'Node', 'IP', 'CPU', 'Memory', 'Restarts', 'Age'].map(h => (
-              <TableCell key={h} sx={{ color: '#8b949e', fontFamily: MONO, fontSize: '0.6rem', borderColor: '#2a2a2a' }}>{h}</TableCell>
+              <TableCell key={h} sx={{ color: '#c1c6d7', fontFamily: MONO, fontSize: '0.6rem', borderColor: '#2a2a2a' }}>{h}</TableCell>
             ))}
           </TableRow>
         </TableHead>
         <TableBody>
           {pods.map((p: any) => (
-            <TableRow key={p.name} sx={{ '&:hover': { backgroundColor: '#1a2332' } }}>
+            <TableRow key={p.name} sx={{ '&:hover': { backgroundColor: '#201f1f' } }}>
               <TableCell sx={{ color: '#e5e2e1', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.name}</TableCell>
               <TableCell sx={{ borderColor: '#2a2a2a' }}>
                 <Chip label={p.phase} size="small" sx={{ fontFamily: MONO, fontSize: '0.55rem', height: 18, backgroundColor: p.phase === 'Running' ? '#53e16f20' : '#ffb59520', color: p.phase === 'Running' ? '#53e16f' : '#ffb595' }} />
               </TableCell>
               <TableCell sx={{ color: '#e5e2e1', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>{p.ready}</TableCell>
-              <TableCell sx={{ color: '#8b949e', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>{p.node}</TableCell>
-              <TableCell sx={{ color: '#8b949e', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>{p.ip}</TableCell>
+              <TableCell sx={{ color: '#c1c6d7', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>{p.node}</TableCell>
+              <TableCell sx={{ color: '#c1c6d7', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>{p.ip}</TableCell>
               <TableCell sx={{ color: '#e5e2e1', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>{p.cpu_usage}</TableCell>
               <TableCell sx={{ color: '#e5e2e1', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>{p.mem_usage}</TableCell>
-              <TableCell sx={{ color: p.restarts > 0 ? '#ffb595' : '#8b949e', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>{p.restarts}</TableCell>
-              <TableCell sx={{ color: '#8b949e', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>{p.age}</TableCell>
+              <TableCell sx={{ color: p.restarts > 0 ? '#ffb595' : '#c1c6d7', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>{p.restarts}</TableCell>
+              <TableCell sx={{ color: '#c1c6d7', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>{p.age}</TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -177,20 +177,20 @@ function ServicesPanel({ services }: { services: any[] }) {
         <TableHead>
           <TableRow>
             {['Name', 'Type', 'Cluster IP', 'External IP', 'Ports'].map(h => (
-              <TableCell key={h} sx={{ color: '#8b949e', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#2a2a2a' }}>{h}</TableCell>
+              <TableCell key={h} sx={{ color: '#c1c6d7', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#2a2a2a' }}>{h}</TableCell>
             ))}
           </TableRow>
         </TableHead>
         <TableBody>
           {services.map((s: any) => (
-            <TableRow key={s.name} sx={{ '&:hover': { backgroundColor: '#1a2332' } }}>
+            <TableRow key={s.name} sx={{ '&:hover': { backgroundColor: '#201f1f' } }}>
               <TableCell sx={{ color: '#e5e2e1', fontFamily: MONO, fontSize: '0.8rem', borderColor: '#2a2a2a', fontWeight: 600 }}>{s.name}</TableCell>
               <TableCell sx={{ borderColor: '#2a2a2a' }}>
                 <Chip label={s.type} size="small" sx={{ fontFamily: MONO, fontSize: '0.6rem', height: 20, backgroundColor: s.type === 'LoadBalancer' ? '#4b8eff20' : '#2a2a2a', color: s.type === 'LoadBalancer' ? '#4b8eff' : '#c1c6d7' }} />
               </TableCell>
-              <TableCell sx={{ color: '#8b949e', fontFamily: MONO, fontSize: '0.75rem', borderColor: '#2a2a2a' }}>{s.cluster_ip}</TableCell>
-              <TableCell sx={{ color: s.external_ip ? '#53e16f' : '#4b5563', fontFamily: MONO, fontSize: '0.75rem', borderColor: '#2a2a2a' }}>{s.external_ip || '—'}</TableCell>
-              <TableCell sx={{ color: '#8b949e', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>
+              <TableCell sx={{ color: '#c1c6d7', fontFamily: MONO, fontSize: '0.75rem', borderColor: '#2a2a2a' }}>{s.cluster_ip}</TableCell>
+              <TableCell sx={{ color: s.external_ip ? '#53e16f' : '#414755', fontFamily: MONO, fontSize: '0.75rem', borderColor: '#2a2a2a' }}>{s.external_ip || '—'}</TableCell>
+              <TableCell sx={{ color: '#c1c6d7', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>
                 {(s.ports || []).map((p: any) => `${p.port}→${p.target_port}`).join(', ')}
               </TableCell>
             </TableRow>
@@ -213,11 +213,11 @@ function EventsPanel({ events }: { events: any[] }) {
           <Box sx={{ flex: 1 }}>
             <Box sx={{ display: 'flex', gap: 1, mb: 0.3, alignItems: 'center' }}>
               <Chip label={e.reason} size="small" sx={{ fontFamily: MONO, fontSize: '0.55rem', height: 16, backgroundColor: e.type === 'Warning' ? '#ffb59520' : '#53e16f20', color: e.type === 'Warning' ? '#ffb595' : '#53e16f' }} />
-              <Typography sx={{ fontSize: '0.6rem', fontFamily: MONO, color: '#4b5563' }}>{e.object}</Typography>
+              <Typography sx={{ fontSize: '0.6rem', fontFamily: MONO, color: '#414755' }}>{e.object}</Typography>
             </Box>
             <Typography sx={{ fontSize: '0.7rem', fontFamily: MONO, color: '#e5e2e1' }}>{e.message}</Typography>
           </Box>
-          {e.count > 1 && <Chip label={`x${e.count}`} size="small" sx={{ fontFamily: MONO, fontSize: '0.55rem', height: 16, backgroundColor: '#2a2a2a', color: '#8b949e' }} />}
+          {e.count > 1 && <Chip label={`x${e.count}`} size="small" sx={{ fontFamily: MONO, fontSize: '0.55rem', height: 16, backgroundColor: '#2a2a2a', color: '#c1c6d7' }} />}
         </Box>
       ))}
     </Paper>
@@ -249,7 +249,7 @@ export default function KubernetesPage() {
       </Grid>
 
       <Paper elevation={0} sx={{ backgroundColor: '#201f1f', border: '1px solid #2a2a2a', borderRadius: '8px', mb: 2 }}>
-        <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ px: 2, '& .MuiTab-root': { fontFamily: MONO, fontSize: '0.75rem', textTransform: 'none', color: '#8b949e', minHeight: 42 }, '& .Mui-selected': { color: '#4b8eff' }, '& .MuiTabs-indicator': { backgroundColor: '#4b8eff' } }}>
+        <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ px: 2, '& .MuiTab-root': { fontFamily: MONO, fontSize: '0.75rem', textTransform: 'none', color: '#c1c6d7', minHeight: 42 }, '& .Mui-selected': { color: '#4b8eff' }, '& .MuiTabs-indicator': { backgroundColor: '#4b8eff' } }}>
           <Tab label="Nodes" />
           <Tab label="Deployments" />
           <Tab label="Pods" />

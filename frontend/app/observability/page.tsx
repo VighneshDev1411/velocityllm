@@ -57,7 +57,7 @@ export default function ObservabilityPage() {
 
   const kpis = stats ? [
     { label: 'Active Metrics', value: stats.active_metrics || 0, color: '#4b8eff', icon: Activity },
-    { label: 'Active Alerts', value: stats.active_alerts || 0, color: stats.active_alerts > 0 ? '#f97316' : '#53e16f', icon: AlertTriangle },
+    { label: 'Active Alerts', value: stats.active_alerts || 0, color: stats.active_alerts > 0 ? '#ef6719' : '#53e16f', icon: AlertTriangle },
     { label: 'Log Entries', value: stats.log_entries || 0, color: '#adc6ff', icon: ScrollText },
     { label: 'Active Traces', value: stats.active_traces || 0, color: '#adc6ff', icon: GitBranch },
     { label: 'SLOs Tracked', value: stats.slo_count || 0, color: '#53e16f', icon: Target },
@@ -65,11 +65,11 @@ export default function ObservabilityPage() {
   ] : [];
 
   const severityColor = (s: string) => {
-    switch (s) { case 'critical': return '#ef4444'; case 'warning': return '#f97316'; case 'info': return '#4b8eff'; default: return '#6b7280'; }
+    switch (s) { case 'critical': return '#ef4444'; case 'warning': return '#ef6719'; case 'info': return '#4b8eff'; default: return '#c1c6d7'; }
   };
 
   const levelColor = (l: string) => {
-    switch (l) { case 'ERROR': return '#ef4444'; case 'WARN': return '#f97316'; case 'INFO': return '#4b8eff'; case 'DEBUG': return '#6b7280'; default: return '#9ca3af'; }
+    switch (l) { case 'ERROR': return '#ef4444'; case 'WARN': return '#ef6719'; case 'INFO': return '#4b8eff'; case 'DEBUG': return '#c1c6d7'; default: return '#9ca3af'; }
   };
 
   return (
@@ -158,7 +158,7 @@ export default function ObservabilityPage() {
                         <TableCell sx={{ borderColor: '#2a2a2a' }}><Chip label={a.severity} size="small" sx={{ height: 20, fontSize: '0.6rem', fontFamily: MONO, backgroundColor: `${severityColor(a.severity)}20`, color: severityColor(a.severity) }} /></TableCell>
                         <TableCell sx={{ color: '#e5e2e1', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>{a.message}</TableCell>
                         <TableCell sx={{ color: 'rgba(255,255,255,0.6)', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>{a.metric}</TableCell>
-                        <TableCell sx={{ color: '#f97316', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>{typeof a.value === 'number' ? a.value.toFixed(2) : a.value}</TableCell>
+                        <TableCell sx={{ color: '#ef6719', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>{typeof a.value === 'number' ? a.value.toFixed(2) : a.value}</TableCell>
                         <TableCell sx={{ borderColor: '#2a2a2a' }}><Chip label={a.resolved ? 'Resolved' : 'Active'} size="small" sx={{ height: 20, fontSize: '0.6rem', fontFamily: MONO, backgroundColor: a.resolved ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)', color: a.resolved ? '#53e16f' : '#ef4444' }} /></TableCell>
                         <TableCell sx={{ borderColor: '#2a2a2a' }}>{!a.resolved && <Button size="small" onClick={() => resolveMut.mutate(a.id)} sx={{ fontSize: '0.6rem', fontFamily: MONO, textTransform: 'none', color: '#53e16f' }}>Resolve</Button>}</TableCell>
                       </TableRow>
@@ -229,7 +229,7 @@ export default function ObservabilityPage() {
                     <Box key={i} sx={{ ml: i * 2, pl: 1.5, borderLeft: '2px solid #2a2a2a', py: 0.5 }}>
                       <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                         <Typography sx={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.6)', fontFamily: MONO }}>{s.name} <span style={{ color: 'rgba(255,255,255,0.3)' }}>({s.service})</span></Typography>
-                        <Typography sx={{ fontSize: '0.65rem', color: '#f97316', fontFamily: MONO }}>{s.duration}</Typography>
+                        <Typography sx={{ fontSize: '0.65rem', color: '#ef6719', fontFamily: MONO }}>{s.duration}</Typography>
                       </Box>
                     </Box>
                   ))}

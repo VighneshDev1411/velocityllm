@@ -480,10 +480,10 @@ export default function FineTuningPage() {
   // ── Tab: Stats ────────────────────────────────────────────────────────────
 
   const statusBreakdown = stats ? [
-    { name: 'Completed', value: stats.jobs_completed, color: '#4caf50' },
-    { name: 'Training', value: stats.jobs_training, color: '#ff9800' },
-    { name: 'Pending', value: stats.jobs_pending, color: '#9e9e9e' },
-    { name: 'Failed', value: stats.jobs_failed, color: '#f44336' },
+    { name: 'Completed', value: stats.jobs_completed, color: '#53e16f' },
+    { name: 'Training', value: stats.jobs_training, color: '#ffb595' },
+    { name: 'Pending', value: stats.jobs_pending, color: '#c1c6d7' },
+    { name: 'Failed', value: stats.jobs_failed, color: '#ef4444' },
     { name: 'Cancelled', value: stats.jobs_cancelled, color: '#607d8b' },
   ].filter(s => s.value > 0) : [];
 
@@ -492,7 +492,7 @@ export default function FineTuningPage() {
       <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 2 }}>
         <StatCard icon={Database} label="Total Datasets" value={stats?.total_datasets ?? 0} color="#adc6ff" />
         <StatCard icon={Cpu} label="Total Jobs" value={stats?.total_jobs ?? 0} color="#4b8eff" />
-        <StatCard icon={CheckCircle} label="Completed" value={stats?.jobs_completed ?? 0} color="#4caf50" />
+        <StatCard icon={CheckCircle} label="Completed" value={stats?.jobs_completed ?? 0} color="#53e16f" />
         <StatCard icon={Sparkles} label="Fine-Tuned Models" value={stats?.total_models ?? 0} color="#ffb595" />
       </Box>
 
@@ -533,7 +533,7 @@ export default function FineTuningPage() {
       <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1.5 }}>
         <Box sx={{
           width: 40, height: 40, borderRadius: '10px',
-          background: 'linear-gradient(135deg, #ffb595, #f97316)',
+          background: 'linear-gradient(135deg, #ffb595, #ef6719)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
           <Sparkles className="w-5 h-5" style={{ color: '#fff' }} />

@@ -38,14 +38,14 @@ function KpiCard({ icon: Icon, label, value, sub, accent = '#4b8eff' }: { icon: 
         <Box>
           <Typography sx={{ ...sectionLabelSx, mb: 0.5 }}>{label}</Typography>
           <Typography sx={{ fontSize: '1.5rem', fontWeight: 700, fontFamily: MONO, color: '#e5e2e1' }}>{value}</Typography>
-          {sub && <Typography sx={{ fontSize: '0.65rem', fontFamily: MONO, color: '#8b949e' }}>{sub}</Typography>}
+          {sub && <Typography sx={{ fontSize: '0.65rem', fontFamily: MONO, color: '#c1c6d7' }}>{sub}</Typography>}
         </Box>
       </Box>
     </Paper>
   );
 }
 
-const statusColors: Record<string, string> = { success: '#53e16f', failed: '#ef4444', running: '#4b8eff', pending: '#ffb595', cancelled: '#4b5563', skipped: '#4b5563' };
+const statusColors: Record<string, string> = { success: '#53e16f', failed: '#ef4444', running: '#4b8eff', pending: '#ffb595', cancelled: '#414755', skipped: '#414755' };
 const statusIcons: Record<string, React.ComponentType<{ className?: string }>> = { success: CheckCircle, failed: XCircle, running: RefreshCw, pending: Clock };
 
 function PipelineCard({ pipeline }: { pipeline: any }) {
@@ -65,8 +65,8 @@ function PipelineCard({ pipeline }: { pipeline: any }) {
           <Typography sx={{ fontSize: '0.9rem', fontFamily: MONO, color: '#e5e2e1', fontWeight: 700 }}>{pipeline.name}</Typography>
           <Box sx={{ display: 'flex', gap: 0.5, mt: 0.5 }}>
             <Chip label={pipeline.branch} size="small" icon={<GitBranch className="w-3 h-3" />} sx={{ fontFamily: MONO, fontSize: '0.6rem', height: 20, backgroundColor: '#2a2a2a', color: '#c1c6d7', '& .MuiChip-icon': { color: '#c1c6d7' } }} />
-            <Chip label={pipeline.trigger} size="small" sx={{ fontFamily: MONO, fontSize: '0.6rem', height: 20, backgroundColor: (triggerColors[pipeline.trigger] || '#8b949e') + '20', color: triggerColors[pipeline.trigger] || '#8b949e' }} />
-            <Chip label={pipeline.environment} size="small" sx={{ fontFamily: MONO, fontSize: '0.6rem', height: 20, backgroundColor: (envColors[pipeline.environment] || '#8b949e') + '20', color: envColors[pipeline.environment] || '#8b949e' }} />
+            <Chip label={pipeline.trigger} size="small" sx={{ fontFamily: MONO, fontSize: '0.6rem', height: 20, backgroundColor: (triggerColors[pipeline.trigger] || '#c1c6d7') + '20', color: triggerColors[pipeline.trigger] || '#c1c6d7' }} />
+            <Chip label={pipeline.environment} size="small" sx={{ fontFamily: MONO, fontSize: '0.6rem', height: 20, backgroundColor: (envColors[pipeline.environment] || '#c1c6d7') + '20', color: envColors[pipeline.environment] || '#c1c6d7' }} />
           </Box>
         </Box>
         <Button
@@ -83,7 +83,7 @@ function PipelineCard({ pipeline }: { pipeline: any }) {
         {(pipeline.stages || []).map((s: any, i: number) => (
           <Box key={i} sx={{ flex: 1, textAlign: 'center' }}>
             <Box sx={{ height: 4, borderRadius: 2, backgroundColor: '#53e16f40', mb: 0.5 }} />
-            <Typography sx={{ fontSize: '0.5rem', fontFamily: MONO, color: '#8b949e' }}>{s.name}</Typography>
+            <Typography sx={{ fontSize: '0.5rem', fontFamily: MONO, color: '#c1c6d7' }}>{s.name}</Typography>
           </Box>
         ))}
       </Box>
@@ -101,7 +101,7 @@ function RunsTable({ runs }: { runs: any[] }) {
         <TableHead>
           <TableRow>
             {['Status', 'Pipeline', 'Branch', 'Commit', 'Author', 'Duration', 'Trigger', 'Stages'].map(h => (
-              <TableCell key={h} sx={{ color: '#8b949e', fontFamily: MONO, fontSize: '0.6rem', borderColor: '#2a2a2a' }}>{h}</TableCell>
+              <TableCell key={h} sx={{ color: '#c1c6d7', fontFamily: MONO, fontSize: '0.6rem', borderColor: '#2a2a2a' }}>{h}</TableCell>
             ))}
           </TableRow>
         </TableHead>
@@ -110,7 +110,7 @@ function RunsTable({ runs }: { runs: any[] }) {
             const StatusIcon = statusIcons[run.status] || Clock;
             return (
               <>
-                <TableRow key={run.id} sx={{ '&:hover': { backgroundColor: '#1a2332' }, cursor: 'pointer' }} onClick={() => setExpanded(expanded === run.id ? null : run.id)}>
+                <TableRow key={run.id} sx={{ '&:hover': { backgroundColor: '#201f1f' }, cursor: 'pointer' }} onClick={() => setExpanded(expanded === run.id ? null : run.id)}>
                   <TableCell sx={{ borderColor: '#2a2a2a' }}>
                     <Chip
                       icon={<StatusIcon className="w-3 h-3" />}
@@ -120,14 +120,14 @@ function RunsTable({ runs }: { runs: any[] }) {
                     />
                   </TableCell>
                   <TableCell sx={{ color: '#e5e2e1', fontFamily: MONO, fontSize: '0.75rem', borderColor: '#2a2a2a', fontWeight: 600 }}>{run.pipeline_name}</TableCell>
-                  <TableCell sx={{ color: '#8b949e', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>{run.branch}</TableCell>
+                  <TableCell sx={{ color: '#c1c6d7', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>{run.branch}</TableCell>
                   <TableCell sx={{ borderColor: '#2a2a2a' }}>
                     <Box>
                       <Typography sx={{ fontSize: '0.7rem', fontFamily: MONO, color: '#4b8eff' }}>{run.commit}</Typography>
-                      <Typography sx={{ fontSize: '0.6rem', fontFamily: MONO, color: '#8b949e', maxWidth: 150, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{run.commit_message}</Typography>
+                      <Typography sx={{ fontSize: '0.6rem', fontFamily: MONO, color: '#c1c6d7', maxWidth: 150, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{run.commit_message}</Typography>
                     </Box>
                   </TableCell>
-                  <TableCell sx={{ color: '#8b949e', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>{run.author}</TableCell>
+                  <TableCell sx={{ color: '#c1c6d7', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>{run.author}</TableCell>
                   <TableCell sx={{ color: '#e5e2e1', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>{run.duration}</TableCell>
                   <TableCell sx={{ borderColor: '#2a2a2a' }}>
                     <Chip label={run.trigger} size="small" sx={{ fontFamily: MONO, fontSize: '0.55rem', height: 18, backgroundColor: '#2a2a2a', color: '#c1c6d7' }} />
@@ -135,7 +135,7 @@ function RunsTable({ runs }: { runs: any[] }) {
                   <TableCell sx={{ borderColor: '#2a2a2a' }}>
                     <Box sx={{ display: 'flex', gap: 0.3 }}>
                       {(run.stages || []).map((s: any, i: number) => (
-                        <Box key={i} sx={{ width: 12, height: 12, borderRadius: '2px', backgroundColor: statusColors[s.status] || '#4b5563', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title={`${s.name}: ${s.status}`} />
+                        <Box key={i} sx={{ width: 12, height: 12, borderRadius: '2px', backgroundColor: statusColors[s.status] || '#414755', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title={`${s.name}: ${s.status}`} />
                       ))}
                     </Box>
                   </TableCell>
@@ -148,15 +148,15 @@ function RunsTable({ runs }: { runs: any[] }) {
                           {(run.stages || []).map((stage: any, si: number) => (
                             <Box key={si} sx={{ flex: 1, p: 1.5, backgroundColor: '#201f1f', borderRadius: '6px', border: '1px solid #2a2a2a' }}>
                               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 1 }}>
-                                <Box sx={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: statusColors[stage.status] || '#4b5563' }} />
+                                <Box sx={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: statusColors[stage.status] || '#414755' }} />
                                 <Typography sx={{ fontSize: '0.7rem', fontFamily: MONO, color: '#e5e2e1', fontWeight: 600 }}>{stage.name}</Typography>
-                                <Typography sx={{ fontSize: '0.6rem', fontFamily: MONO, color: '#8b949e', ml: 'auto' }}>{stage.duration}</Typography>
+                                <Typography sx={{ fontSize: '0.6rem', fontFamily: MONO, color: '#c1c6d7', ml: 'auto' }}>{stage.duration}</Typography>
                               </Box>
                               {(stage.steps || []).map((step: any, ki: number) => (
                                 <Box key={ki} sx={{ display: 'flex', alignItems: 'center', gap: 0.5, py: 0.3 }}>
-                                  <Box sx={{ width: 5, height: 5, borderRadius: '50%', backgroundColor: statusColors[step.status] || '#4b5563' }} />
+                                  <Box sx={{ width: 5, height: 5, borderRadius: '50%', backgroundColor: statusColors[step.status] || '#414755' }} />
                                   <Typography sx={{ fontSize: '0.6rem', fontFamily: MONO, color: '#c1c6d7' }}>{step.name}</Typography>
-                                  <Typography sx={{ fontSize: '0.55rem', fontFamily: MONO, color: '#4b5563', ml: 'auto' }}>{step.duration}</Typography>
+                                  <Typography sx={{ fontSize: '0.55rem', fontFamily: MONO, color: '#414755', ml: 'auto' }}>{step.duration}</Typography>
                                 </Box>
                               ))}
                             </Box>
@@ -183,13 +183,13 @@ function DeploymentsPanel({ deployments }: { deployments: any[] }) {
         <TableHead>
           <TableRow>
             {['Version', 'Environment', 'Status', 'Deployed By', 'Time'].map(h => (
-              <TableCell key={h} sx={{ color: '#8b949e', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#2a2a2a' }}>{h}</TableCell>
+              <TableCell key={h} sx={{ color: '#c1c6d7', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#2a2a2a' }}>{h}</TableCell>
             ))}
           </TableRow>
         </TableHead>
         <TableBody>
           {(deployments || []).map((d: any) => (
-            <TableRow key={d.id} sx={{ '&:hover': { backgroundColor: '#1a2332' } }}>
+            <TableRow key={d.id} sx={{ '&:hover': { backgroundColor: '#201f1f' } }}>
               <TableCell sx={{ color: '#4b8eff', fontFamily: MONO, fontSize: '0.8rem', borderColor: '#2a2a2a', fontWeight: 600 }}>{d.version}</TableCell>
               <TableCell sx={{ borderColor: '#2a2a2a' }}>
                 <Chip label={d.environment} size="small" sx={{ fontFamily: MONO, fontSize: '0.6rem', height: 20, backgroundColor: d.environment === 'production' ? '#ef444420' : '#ffb59520', color: d.environment === 'production' ? '#ef4444' : '#ffb595' }} />
@@ -197,8 +197,8 @@ function DeploymentsPanel({ deployments }: { deployments: any[] }) {
               <TableCell sx={{ borderColor: '#2a2a2a' }}>
                 <Chip label={d.status} size="small" sx={{ fontFamily: MONO, fontSize: '0.6rem', height: 20, backgroundColor: d.status === 'deployed' ? '#53e16f20' : '#ef444420', color: d.status === 'deployed' ? '#53e16f' : '#ef4444' }} />
               </TableCell>
-              <TableCell sx={{ color: '#8b949e', fontFamily: MONO, fontSize: '0.75rem', borderColor: '#2a2a2a' }}>{d.deployed_by}</TableCell>
-              <TableCell sx={{ color: '#8b949e', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>{new Date(d.deployed_at).toLocaleString()}</TableCell>
+              <TableCell sx={{ color: '#c1c6d7', fontFamily: MONO, fontSize: '0.75rem', borderColor: '#2a2a2a' }}>{d.deployed_by}</TableCell>
+              <TableCell sx={{ color: '#c1c6d7', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>{new Date(d.deployed_at).toLocaleString()}</TableCell>
             </TableRow>
           ))}
         </TableBody>

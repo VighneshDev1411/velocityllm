@@ -115,7 +115,7 @@ function KpiCard({ icon: Icon, label, value, sub, accent = '#4b8eff' }: {
           <Typography sx={{ fontSize: '1.5rem', fontWeight: 700, fontFamily: MONO, color: '#e5e2e1' }}>
             {value}
           </Typography>
-          {sub && <Typography sx={{ fontSize: '0.65rem', fontFamily: MONO, color: '#8b949e' }}>{sub}</Typography>}
+          {sub && <Typography sx={{ fontSize: '0.65rem', fontFamily: MONO, color: '#c1c6d7' }}>{sub}</Typography>}
         </Box>
       </Box>
     </Paper>
@@ -179,7 +179,7 @@ function EdgeLocationsPanel({ edges }: { edges: Record<string, any> }) {
               }}>
                 <Globe className="w-3 h-3" style={{ color }} />
               </Box>
-              <Typography sx={{ fontSize: '0.55rem', fontFamily: MONO, color: '#8b949e', mt: 0.3, whiteSpace: 'nowrap' }}>
+              <Typography sx={{ fontSize: '0.55rem', fontFamily: MONO, color: '#c1c6d7', mt: 0.3, whiteSpace: 'nowrap' }}>
                 {pos.label}
               </Typography>
               <Typography sx={{ fontSize: '0.5rem', fontFamily: MONO, color }}>
@@ -212,13 +212,13 @@ function EdgeDetailsTable({ edges }: { edges: Record<string, any> }) {
         <TableHead>
           <TableRow>
             {['Location', 'Status', 'Hit Rate', 'Cache Size', 'Items', 'Bandwidth', 'Connections', 'Latency', 'Actions'].map(h => (
-              <TableCell key={h} sx={{ color: '#8b949e', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#2a2a2a' }}>{h}</TableCell>
+              <TableCell key={h} sx={{ color: '#c1c6d7', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#2a2a2a' }}>{h}</TableCell>
             ))}
           </TableRow>
         </TableHead>
         <TableBody>
           {edgeList.map((edge: any) => (
-            <TableRow key={edge.location} sx={{ '&:hover': { backgroundColor: '#1a2332' } }}>
+            <TableRow key={edge.location} sx={{ '&:hover': { backgroundColor: '#201f1f' } }}>
               <TableCell sx={{ color: '#e5e2e1', fontFamily: MONO, fontSize: '0.8rem', borderColor: '#2a2a2a' }}>
                 {edge.location}
               </TableCell>
@@ -303,7 +303,7 @@ function OriginServers({ origins }: { origins: any[] }) {
               <Typography sx={{ fontSize: '0.85rem', fontFamily: MONO, color: '#e5e2e1', fontWeight: 600 }}>
                 {origin.id}
               </Typography>
-              <Typography sx={{ fontSize: '0.7rem', fontFamily: MONO, color: '#8b949e' }}>
+              <Typography sx={{ fontSize: '0.7rem', fontFamily: MONO, color: '#c1c6d7' }}>
                 {origin.protocol}://{origin.host}:{origin.port}
               </Typography>
             </Box>
@@ -345,7 +345,7 @@ function CacheRulesPanel({ rules }: { rules: any[] }) {
         <TableHead>
           <TableRow>
             {['Path Pattern', 'TTL', 'Cache-Control', 'Compress', 'Bypass'].map(h => (
-              <TableCell key={h} sx={{ color: '#8b949e', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#2a2a2a' }}>{h}</TableCell>
+              <TableCell key={h} sx={{ color: '#c1c6d7', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#2a2a2a' }}>{h}</TableCell>
             ))}
           </TableRow>
         </TableHead>
@@ -354,7 +354,7 @@ function CacheRulesPanel({ rules }: { rules: any[] }) {
             const ttlSec = rule.ttl / 1000000000; // nanoseconds to seconds
             const ttlStr = ttlSec === 0 ? 'NO CACHE' : ttlSec >= 86400 ? `${Math.round(ttlSec / 86400)}d` : ttlSec >= 3600 ? `${Math.round(ttlSec / 3600)}h` : `${Math.round(ttlSec / 60)}m`;
             return (
-              <TableRow key={i} sx={{ '&:hover': { backgroundColor: '#1a2332' } }}>
+              <TableRow key={i} sx={{ '&:hover': { backgroundColor: '#201f1f' } }}>
                 <TableCell sx={{ color: '#e5e2e1', fontFamily: MONO, fontSize: '0.8rem', borderColor: '#2a2a2a' }}>
                   <code style={{ color: '#4b8eff' }}>{rule.path_pattern}</code>
                 </TableCell>
@@ -369,13 +369,13 @@ function CacheRulesPanel({ rules }: { rules: any[] }) {
                     }}
                   />
                 </TableCell>
-                <TableCell sx={{ color: '#8b949e', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>
+                <TableCell sx={{ color: '#c1c6d7', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>
                   {rule.cache_control || '—'}
                 </TableCell>
                 <TableCell sx={{ borderColor: '#2a2a2a' }}>
-                  {rule.compress ? <CheckCircle className="w-3 h-3" style={{ color: '#53e16f' }} /> : <XCircle className="w-3 h-3" style={{ color: '#4b5563' }} />}
+                  {rule.compress ? <CheckCircle className="w-3 h-3" style={{ color: '#53e16f' }} /> : <XCircle className="w-3 h-3" style={{ color: '#414755' }} />}
                 </TableCell>
-                <TableCell sx={{ color: '#8b949e', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>
+                <TableCell sx={{ color: '#c1c6d7', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>
                   {rule.bypass_cookie || '—'}
                 </TableCell>
               </TableRow>
@@ -445,7 +445,7 @@ function InvalidationPanel({ invalidations }: { invalidations: any[] }) {
       {/* Recent invalidations */}
       {(invalidations || []).length > 0 && (
         <>
-          <Typography sx={{ fontSize: '0.6rem', fontFamily: MONO, color: '#8b949e', mb: 1 }}>RECENT INVALIDATIONS</Typography>
+          <Typography sx={{ fontSize: '0.6rem', fontFamily: MONO, color: '#c1c6d7', mb: 1 }}>RECENT INVALIDATIONS</Typography>
           {(invalidations || []).slice(-5).reverse().map((inv: any) => (
             <Box key={inv.id} sx={{ p: 1.5, mb: 0.5, backgroundColor: '#0e0e0e', borderRadius: '4px', border: '1px solid #2a2a2a', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -462,7 +462,7 @@ function InvalidationPanel({ invalidations }: { invalidations: any[] }) {
                   {inv.paths?.join(', ')}
                 </Typography>
               </Box>
-              <Typography sx={{ fontSize: '0.6rem', fontFamily: MONO, color: '#8b949e' }}>
+              <Typography sx={{ fontSize: '0.6rem', fontFamily: MONO, color: '#c1c6d7' }}>
                 {inv.edge_nodes} edges
               </Typography>
             </Box>
@@ -497,7 +497,7 @@ function CDNFeatures({ stats }: { stats: any }) {
               sx={{
                 fontFamily: MONO, fontSize: '0.65rem', height: 28,
                 backgroundColor: f.enabled ? '#53e16f15' : '#2a2a2a',
-                color: f.enabled ? '#53e16f' : '#4b5563',
+                color: f.enabled ? '#53e16f' : '#414755',
                 border: `1px solid ${f.enabled ? '#53e16f30' : '#2a2a2a'}`,
                 '& .MuiChip-icon': { color: 'inherit' },
               }}
@@ -506,13 +506,13 @@ function CDNFeatures({ stats }: { stats: any }) {
         })}
       </Box>
       <Box sx={{ mt: 2, display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-        <Typography sx={{ fontSize: '0.65rem', fontFamily: MONO, color: '#8b949e' }}>
+        <Typography sx={{ fontSize: '0.65rem', fontFamily: MONO, color: '#c1c6d7' }}>
           Provider: <span style={{ color: '#4b8eff' }}>{stats?.provider}</span>
         </Typography>
-        <Typography sx={{ fontSize: '0.65rem', fontFamily: MONO, color: '#8b949e' }}>
+        <Typography sx={{ fontSize: '0.65rem', fontFamily: MONO, color: '#c1c6d7' }}>
           Default TTL: <span style={{ color: '#e5e2e1' }}>{stats?.default_ttl}</span>
         </Typography>
-        <Typography sx={{ fontSize: '0.65rem', fontFamily: MONO, color: '#8b949e' }}>
+        <Typography sx={{ fontSize: '0.65rem', fontFamily: MONO, color: '#c1c6d7' }}>
           Max TTL: <span style={{ color: '#e5e2e1' }}>{stats?.max_ttl}</span>
         </Typography>
       </Box>

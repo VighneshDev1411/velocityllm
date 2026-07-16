@@ -96,7 +96,7 @@ function buildTierFeatures(tierLimits: TierLimits | null): string[] {
   ];
 }
 
-const PIE_COLORS = ['#adc6ff', '#4b8eff', '#53e16f', '#ffb595', '#ef4444', '#67e8f9', '#adc6ff', '#f472b6'];
+const PIE_COLORS = ['#adc6ff', '#4b8eff', '#53e16f', '#ffb595', '#ef4444', '#67e8f9', '#adc6ff', '#adc6ff'];
 
 const headerSx = { fontWeight: 700, color: 'text.secondary', fontSize: '0.625rem', textTransform: 'uppercase', letterSpacing: '0.2em', fontFamily: 'var(--font-mono), "JetBrains Mono", monospace' } as const;
 
@@ -619,7 +619,7 @@ export default function BillingPage() {
                           sx={{
                             textTransform: 'none', borderRadius: '8px', py: 1.25, fontWeight: 600,
                             bgcolor: tier === 'pro' ? '#4b8eff' : '#4b8eff',
-                            '&:hover': { bgcolor: tier === 'pro' ? '#1d4ed8' : '#6d28d9' },
+                            '&:hover': { bgcolor: tier === 'pro' ? '#4b8eff' : '#6d28d9' },
                           }}
                         >
                           Upgrade to {style.name}

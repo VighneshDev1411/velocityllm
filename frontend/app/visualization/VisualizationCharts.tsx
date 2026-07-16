@@ -23,7 +23,7 @@ const PROVIDER_COLORS: Record<string, string> = {
   anthropic: '#ffb595',
   google: '#adc6ff',
   cohere: '#4b8eff',
-  local: '#6b7280',
+  local: '#c1c6d7',
 };
 
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -200,7 +200,7 @@ function CustomTreemapContent(props: any) {
   if (width < 40 || height < 30) return null;
   return (
     <g>
-      <rect x={x} y={y} width={width} height={height} rx={4} fill={PROVIDER_COLORS[provider?.toLowerCase()] || '#6b7280'} fillOpacity={0.85} stroke="#fff" strokeWidth={2} />
+      <rect x={x} y={y} width={width} height={height} rx={4} fill={PROVIDER_COLORS[provider?.toLowerCase()] || '#c1c6d7'} fillOpacity={0.85} stroke="#fff" strokeWidth={2} />
       <text x={x + width / 2} y={y + height / 2 - 6} textAnchor="middle" fill="#fff" fontSize={11} fontWeight={600}>
         {name?.length > width / 7 ? name.slice(0, Math.floor(width / 7)) + '...' : name}
       </text>

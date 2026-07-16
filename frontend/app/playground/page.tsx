@@ -746,7 +746,7 @@ export default function PlaygroundPage() {
                         textTransform: 'none',
                         bgcolor: '#dc2626',
                         borderRadius: '8px',
-                        '&:hover': { bgcolor: '#b91c1c' },
+                        '&:hover': { bgcolor: '#dc2626' },
                       }}
                     >
                       Stop

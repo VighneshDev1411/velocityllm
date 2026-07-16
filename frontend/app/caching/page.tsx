@@ -220,7 +220,7 @@ export default function CachingPage() {
                 <KpiCard label="Invalidations Sent" value={(distStats.invalidations_sent || 0).toLocaleString()} color="#ffb595" />
               </Grid>
               <Grid size={{ xs: 6, md: 2 }}>
-                <KpiCard label="Invalidations Recv" value={(distStats.invalidations_received || 0).toLocaleString()} color="#f472b6" />
+                <KpiCard label="Invalidations Recv" value={(distStats.invalidations_received || 0).toLocaleString()} color="#adc6ff" />
               </Grid>
             </Grid>
 
@@ -263,9 +263,9 @@ export default function CachingPage() {
 
               {/* Node Sync */}
               <Grid size={{ xs: 12, md: 6 }}>
-                <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 3, boxShadow: 'inset 3px 0 0 0 #f472b6' }}>
+                <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 3, boxShadow: 'inset 3px 0 0 0 #adc6ff' }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                    <Globe className="w-4 h-4" style={{ color: '#f472b6' }} />
+                    <Globe className="w-4 h-4" style={{ color: '#adc6ff' }} />
                     <Typography sx={sectionLabelSx}>Cross-Node Sync</Typography>
                   </Box>
                   <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>

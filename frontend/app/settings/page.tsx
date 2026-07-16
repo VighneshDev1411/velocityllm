@@ -433,7 +433,7 @@ export default function SettingsPage() {
       {/* Worker Pool */}
       <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 3, mb: 3 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2.5 }}>
-          <Activity style={{ width: 16, height: 16, color: '#ea580c' }} />
+          <Activity style={{ width: 16, height: 16, color: '#ef6719' }} />
           <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: 'text.primary' }}>
             Worker Pool
           </Typography>
@@ -604,13 +604,13 @@ export default function SettingsPage() {
             <Grid container spacing={1}>
               <Grid size={{ xs: 12, sm: 4 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Box sx={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#facc15' }} />
+                  <Box sx={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#ffb595' }} />
                   <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>Warning: Shed low-priority traffic</Typography>
                 </Box>
               </Grid>
               <Grid size={{ xs: 12, sm: 4 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Box sx={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#f97316' }} />
+                  <Box sx={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#ef6719' }} />
                   <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>Critical: Shed medium-priority traffic</Typography>
                 </Box>
               </Grid>

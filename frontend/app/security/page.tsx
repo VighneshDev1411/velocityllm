@@ -57,23 +57,23 @@ export default function SecurityPage() {
 
   const kpis = stats ? [
     { label: 'Total Scans', value: stats.total_scans, color: '#4b8eff', icon: Shield },
-    { label: 'Vulnerabilities', value: stats.vulnerabilities, color: stats.critical_vulns > 0 ? '#ef4444' : '#f97316', icon: Bug },
+    { label: 'Vulnerabilities', value: stats.vulnerabilities, color: stats.critical_vulns > 0 ? '#ef4444' : '#ef6719', icon: Bug },
     { label: 'Critical', value: stats.critical_vulns, color: stats.critical_vulns > 0 ? '#ef4444' : '#53e16f', icon: AlertTriangle },
     { label: 'Secrets Found', value: stats.secrets_detected, color: '#adc6ff', icon: Eye },
-    { label: 'Compliance', value: `${stats.compliance_score?.toFixed(0)}%`, color: stats.compliance_score >= 80 ? '#53e16f' : '#f97316', icon: CheckCircle },
-    { label: 'WAF Blocked', value: stats.waf_events_blocked, color: '#f97316', icon: Flame },
+    { label: 'Compliance', value: `${stats.compliance_score?.toFixed(0)}%`, color: stats.compliance_score >= 80 ? '#53e16f' : '#ef6719', icon: CheckCircle },
+    { label: 'WAF Blocked', value: stats.waf_events_blocked, color: '#ef6719', icon: Flame },
   ] : [];
 
   const severityColor = (s: string) => {
-    switch (s) { case 'critical': return '#ef4444'; case 'high': return '#f97316'; case 'medium': return '#ffb595'; case 'low': return '#53e16f'; default: return '#6b7280'; }
+    switch (s) { case 'critical': return '#ef4444'; case 'high': return '#ef6719'; case 'medium': return '#ffb595'; case 'low': return '#53e16f'; default: return '#c1c6d7'; }
   };
 
   const scanStatusColor = (s: string) => {
-    switch (s) { case 'passed': return '#53e16f'; case 'failed': return '#ef4444'; case 'warning': return '#f97316'; default: return '#6b7280'; }
+    switch (s) { case 'passed': return '#53e16f'; case 'failed': return '#ef4444'; case 'warning': return '#ef6719'; default: return '#c1c6d7'; }
   };
 
   const complianceColor = (s: string) => {
-    switch (s) { case 'compliant': return '#53e16f'; case 'non_compliant': return '#ef4444'; case 'partial': return '#ffb595'; default: return '#6b7280'; }
+    switch (s) { case 'compliant': return '#53e16f'; case 'non_compliant': return '#ef4444'; case 'partial': return '#ffb595'; default: return '#c1c6d7'; }
   };
 
   return (
@@ -135,7 +135,7 @@ export default function SecurityPage() {
                         <TableCell sx={{ borderColor: '#2a2a2a' }}><Chip label={s.status} size="small" sx={{ height: 20, fontSize: '0.6rem', fontFamily: MONO, backgroundColor: `${scanStatusColor(s.status)}20`, color: scanStatusColor(s.status) }} /></TableCell>
                         <TableCell sx={{ color: '#e5e2e1', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a', fontWeight: 600 }}>{s.findings}</TableCell>
                         <TableCell sx={{ color: s.critical > 0 ? '#ef4444' : 'rgba(255,255,255,0.3)', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>{s.critical}</TableCell>
-                        <TableCell sx={{ color: s.high > 0 ? '#f97316' : 'rgba(255,255,255,0.3)', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>{s.high}</TableCell>
+                        <TableCell sx={{ color: s.high > 0 ? '#ef6719' : 'rgba(255,255,255,0.3)', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>{s.high}</TableCell>
                         <TableCell sx={{ color: s.medium > 0 ? '#ffb595' : 'rgba(255,255,255,0.3)', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>{s.medium}</TableCell>
                         <TableCell sx={{ color: 'rgba(255,255,255,0.3)', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>{s.low}</TableCell>
                         <TableCell sx={{ color: 'rgba(255,255,255,0.5)', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>{s.duration}</TableCell>
@@ -226,7 +226,7 @@ export default function SecurityPage() {
                     <TableRow key={e.id}>
                       <TableCell sx={{ color: 'rgba(255,255,255,0.4)', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#2a2a2a', whiteSpace: 'nowrap' }}>{new Date(e.timestamp).toLocaleTimeString()}</TableCell>
                       <TableCell sx={{ color: '#4b8eff', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#2a2a2a' }}>{e.rule}</TableCell>
-                      <TableCell sx={{ borderColor: '#2a2a2a' }}><Chip label={e.category} size="small" sx={{ height: 20, fontSize: '0.55rem', fontFamily: MONO, backgroundColor: e.category === 'sqli' || e.category === 'rce' ? 'rgba(239,68,68,0.15)' : 'rgba(249,115,22,0.15)', color: e.category === 'sqli' || e.category === 'rce' ? '#ef4444' : '#f97316' }} /></TableCell>
+                      <TableCell sx={{ borderColor: '#2a2a2a' }}><Chip label={e.category} size="small" sx={{ height: 20, fontSize: '0.55rem', fontFamily: MONO, backgroundColor: e.category === 'sqli' || e.category === 'rce' ? 'rgba(239,68,68,0.15)' : 'rgba(249,115,22,0.15)', color: e.category === 'sqli' || e.category === 'rce' ? '#ef4444' : '#ef6719' }} /></TableCell>
                       <TableCell sx={{ borderColor: '#2a2a2a' }}><Chip label={e.action} size="small" sx={{ height: 20, fontSize: '0.55rem', fontFamily: MONO, backgroundColor: 'rgba(239,68,68,0.15)', color: '#ef4444' }} /></TableCell>
                       <TableCell sx={{ color: 'rgba(255,255,255,0.5)', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#2a2a2a' }}>{e.source_ip}</TableCell>
                       <TableCell sx={{ color: 'rgba(255,255,255,0.5)', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#2a2a2a' }}>{e.method}</TableCell>

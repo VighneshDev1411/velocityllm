@@ -25,11 +25,11 @@ const MONO = '"JetBrains Mono", monospace';
 const fetcher = (url: string) => fetch(url).then(r => r.json());
 
 const difficultyColor = (d: string) => {
-  switch (d) { case 'beginner': return '#53e16f'; case 'intermediate': return '#ffb595'; case 'advanced': return '#ef4444'; default: return '#6b7280'; }
+  switch (d) { case 'beginner': return '#53e16f'; case 'intermediate': return '#ffb595'; case 'advanced': return '#ef4444'; default: return '#c1c6d7'; }
 };
 
 const categoryColor = (c: string) => {
-  switch (c) { case 'getting-started': return '#53e16f'; case 'api': return '#4b8eff'; case 'platform': return '#adc6ff'; case 'deployment': return '#f97316'; case 'security': return '#ef4444'; default: return '#6b7280'; }
+  switch (c) { case 'getting-started': return '#53e16f'; case 'api': return '#4b8eff'; case 'platform': return '#adc6ff'; case 'deployment': return '#ef6719'; case 'security': return '#ef4444'; default: return '#c1c6d7'; }
 };
 
 export default function HelpPage() {

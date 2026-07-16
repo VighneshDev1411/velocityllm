@@ -247,7 +247,7 @@ function JobCard({ job, onCancel }: { job: JobStatus; onCancel: (id: string) => 
       case 'running':
         return <CircularProgress size={18} sx={{ color: '#4b8eff' }} />;
       default:
-        return <Clock size={18} style={{ color: '#ca8a04' }} />;
+        return <Clock size={18} style={{ color: '#ffb595' }} />;
     }
   };
 
@@ -262,7 +262,7 @@ function JobCard({ job, onCancel }: { job: JobStatus; onCancel: (id: string) => 
       case 'running':
         return { backgroundColor: 'rgba(59,130,246,0.1)', color: '#4b8eff' };
       default:
-        return { backgroundColor: '#fefce8', color: '#ca8a04' };
+        return { backgroundColor: '#fefce8', color: '#ffb595' };
     }
   };
 
@@ -271,7 +271,7 @@ function JobCard({ job, onCancel }: { job: JobStatus; onCancel: (id: string) => 
       case 'critical':
         return { backgroundColor: 'rgba(239,68,68,0.1)', color: '#dc2626' };
       case 'high':
-        return { backgroundColor: 'rgba(245,158,11,0.1)', color: '#ea580c' };
+        return { backgroundColor: 'rgba(245,158,11,0.1)', color: '#ef6719' };
       case 'normal':
         return { backgroundColor: 'rgba(59,130,246,0.1)', color: '#4b8eff' };
       default:

@@ -83,7 +83,7 @@ interface Document {
 
 const DOC_COLORS = [
   '#adc6ff', '#ef4444', '#53e16f', '#ffb595', '#4b8eff',
-  '#ec4899', '#adc6ff', '#f97316', '#14b8a6', '#4b8eff',
+  '#adc6ff', '#adc6ff', '#ef6719', '#14b8a6', '#4b8eff',
 ];
 
 function getDocColor(docId: string, docColorMap: Record<string, string>): string {
@@ -438,8 +438,8 @@ export default function VectorDBPage() {
                     if (active && payload && payload.length) {
                       const d = payload[0].payload as ProjectionPoint;
                       return (
-                        <Paper sx={{ p: 1.5, maxWidth: 300, backgroundColor: '#1e1e2e', border: '1px solid rgba(255,255,255,0.1)' }}>
-                          <Typography variant="caption" sx={{ fontWeight: 600, color: '#60a5fa' }}>{d.document_name}</Typography>
+                        <Paper sx={{ p: 1.5, maxWidth: 300, backgroundColor: '#201f1f', border: '1px solid rgba(255,255,255,0.1)' }}>
+                          <Typography variant="caption" sx={{ fontWeight: 600, color: '#adc6ff' }}>{d.document_name}</Typography>
                           <Typography variant="caption" sx={{ display: 'block', color: '#888', mb: 0.5 }}>Chunk #{d.chunk_index}</Typography>
                           <Typography variant="caption" sx={{ color: '#ccc', lineHeight: 1.4 }}>{d.content}</Typography>
                         </Paper>
@@ -505,7 +505,7 @@ export default function VectorDBPage() {
                     <IconButton
                       size="small"
                       onClick={() => { setSelectedCollectionForDoc(col.id); setAddDocDialogOpen(true); }}
-                      sx={{ color: '#60a5fa' }}
+                      sx={{ color: '#adc6ff' }}
                     >
                       <Plus className="w-4 h-4" />
                     </IconButton>
@@ -614,7 +614,7 @@ export default function VectorDBPage() {
                     onClick={() => handleAddDocToCollection(doc.id)}
                   >
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <FileText className="w-4 h-4" style={{ color: '#60a5fa' }} />
+                      <FileText className="w-4 h-4" style={{ color: '#adc6ff' }} />
                       <Typography variant="body2">{doc.name}</Typography>
                     </Box>
                     <Chip label={`${doc.chunk_count} chunks`} size="small" sx={{ backgroundColor: 'rgba(255,255,255,0.06)' }} />
@@ -643,7 +643,7 @@ export default function VectorDBPage() {
             <StatCard label="Documents" value={stats.total_documents} icon={FileText} color="#53e16f" />
             <StatCard label="Collections" value={stats.total_collections} icon={Layers} color="#4b8eff" />
             <StatCard label="Embedding Dim" value={stats.embedding_dim} icon={Sparkles} color="#ffb595" />
-            <StatCard label="Avg Tokens/Chunk" value={Math.round(stats.avg_token_count)} icon={BarChart3} color="#ec4899" />
+            <StatCard label="Avg Tokens/Chunk" value={Math.round(stats.avg_token_count)} icon={BarChart3} color="#adc6ff" />
           </Box>
 
           {stats.similarity_histogram && stats.similarity_histogram.length > 0 && (
@@ -660,9 +660,9 @@ export default function VectorDBPage() {
                   <XAxis dataKey="label" tick={{ fontSize: 11, fill: '#888' }} />
                   <YAxis tick={{ fontSize: 11, fill: '#888' }} />
                   <RechartsTooltip
-                    contentStyle={{ backgroundColor: '#1e1e2e', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8 }}
+                    contentStyle={{ backgroundColor: '#201f1f', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8 }}
                     labelStyle={{ color: '#ccc' }}
-                    itemStyle={{ color: '#60a5fa' }}
+                    itemStyle={{ color: '#adc6ff' }}
                   />
                   <Bar dataKey="count" fill="#adc6ff" radius={[4, 4, 0, 0]} />
                 </BarChart>

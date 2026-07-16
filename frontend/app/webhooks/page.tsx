@@ -254,7 +254,7 @@ export default function WebhooksPage() {
                           fontWeight: 600,
                           fontSize: '0.7rem',
                           backgroundColor: ep.active ? 'rgba(16,185,129,0.1)' : 'action.hover',
-                          color: ep.active ? '#166534' : 'text.secondary',
+                          color: ep.active ? '#05b046' : 'text.secondary',
                         }}
                       />
                     </Box>
@@ -368,7 +368,7 @@ export default function WebhooksPage() {
                             fontWeight: 600,
                             fontSize: '0.7rem',
                             backgroundColor: d.success ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)',
-                            color: d.success ? '#166534' : '#991b1b',
+                            color: d.success ? '#05b046' : '#991b1b',
                           }}
                         />
                       </TableCell>

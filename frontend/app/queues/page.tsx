@@ -148,7 +148,7 @@ export default function QueuesPage() {
             <KpiCard label="Retried" value={(stats?.retried || 0).toLocaleString()} color="#ffb595" icon={<RotateCcw className="w-3.5 h-3.5" />} />
           </Grid>
           <Grid size={{ xs: 6, md: 2 }}>
-            <KpiCard label="Dead Lettered" value={(stats?.dead_lettered || 0).toLocaleString()} color="#f472b6" icon={<Skull className="w-3.5 h-3.5" />} />
+            <KpiCard label="Dead Lettered" value={(stats?.dead_lettered || 0).toLocaleString()} color="#adc6ff" icon={<Skull className="w-3.5 h-3.5" />} />
           </Grid>
           <Grid size={{ xs: 6, md: 2 }}>
             <KpiCard label="Avg Latency" value={`${(stats?.avg_latency_ms || 0).toFixed(1)}ms`} color="#adc6ff" icon={<Clock className="w-3.5 h-3.5" />} />
@@ -163,14 +163,14 @@ export default function QueuesPage() {
             <Grid key={q.name} size={{ xs: 6, md: 4 }}>
               <Paper elevation={0} sx={{
                 p: 2, borderRadius: '8px',
-                boxShadow: q.label === 'Dead Letter' ? 'inset 3px 0 0 0 #f472b6' : 'inset 3px 0 0 0 #4b8eff',
+                boxShadow: q.label === 'Dead Letter' ? 'inset 3px 0 0 0 #adc6ff' : 'inset 3px 0 0 0 #4b8eff',
                 transition: 'background-color 0.15s',
                 '&:hover': { backgroundColor: '#2a2a2a' },
               }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     {q.label === 'Dead Letter' ? (
-                      <Skull className="w-4 h-4" style={{ color: '#f472b6' }} />
+                      <Skull className="w-4 h-4" style={{ color: '#adc6ff' }} />
                     ) : (
                       <Inbox className="w-4 h-4" style={{ color: '#4b8eff' }} />
                     )}

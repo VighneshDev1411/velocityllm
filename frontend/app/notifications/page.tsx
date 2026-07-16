@@ -54,10 +54,10 @@ interface Stats {
 }
 
 const severityConfig = {
-  info:    { icon: Info,           color: '#2196F3', bg: '#2196F318' },
-  success: { icon: CheckCircle2,  color: '#4CAF50', bg: '#4CAF5018' },
-  warning: { icon: AlertTriangle, color: '#FF9800', bg: '#FF980018' },
-  error:   { icon: XCircle,       color: '#f44336', bg: '#f4433618' },
+  info:    { icon: Info,           color: '#4b8eff', bg: '#4b8eff18' },
+  success: { icon: CheckCircle2,  color: '#53e16f', bg: '#53e16f18' },
+  warning: { icon: AlertTriangle, color: '#ffb595', bg: '#ffb59518' },
+  error:   { icon: XCircle,       color: '#ef4444', bg: '#ef444418' },
 };
 
 const categoryIcons: Record<string, React.ComponentType<any>> = {
@@ -214,16 +214,16 @@ export default function NotificationsPage() {
       {stats && (
         <Grid container spacing={2} sx={{ mb: 3 }}>
           <Grid size={{ xs: 6, sm: 3 }}>
-            <StatCard icon={Bell} label="Total" value={stats.total} color="#6C63FF" />
+            <StatCard icon={Bell} label="Total" value={stats.total} color="#4b8eff" />
           </Grid>
           <Grid size={{ xs: 6, sm: 3 }}>
-            <StatCard icon={Mail} label="Unread" value={stats.unread} color="#2196F3" />
+            <StatCard icon={Mail} label="Unread" value={stats.unread} color="#4b8eff" />
           </Grid>
           <Grid size={{ xs: 6, sm: 3 }}>
-            <StatCard icon={AlertTriangle} label="Warnings" value={stats.by_severity?.warning || 0} color="#FF9800" />
+            <StatCard icon={AlertTriangle} label="Warnings" value={stats.by_severity?.warning || 0} color="#ffb595" />
           </Grid>
           <Grid size={{ xs: 6, sm: 3 }}>
-            <StatCard icon={XCircle} label="Errors" value={stats.by_severity?.error || 0} color="#f44336" />
+            <StatCard icon={XCircle} label="Errors" value={stats.by_severity?.error || 0} color="#ef4444" />
           </Grid>
         </Grid>
       )}
@@ -305,7 +305,7 @@ export default function NotificationsPage() {
                               </Typography>
                               <Chip label={n.category} size="small" sx={{ height: 18, fontSize: '0.65rem' }} />
                               {!n.read && (
-                                <Box sx={{ width: 6, height: 6, borderRadius: '50%', bgcolor: '#6C63FF' }} />
+                                <Box sx={{ width: 6, height: 6, borderRadius: '50%', bgcolor: '#4b8eff' }} />
                               )}
                             </Box>
                           }

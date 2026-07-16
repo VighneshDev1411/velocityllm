@@ -34,7 +34,7 @@ function formatUptime(seconds: number): string {
 }
 
 function StatCard({
-  icon: Icon, label, value, subtitle, color = '#6C63FF',
+  icon: Icon, label, value, subtitle, color = '#4b8eff',
 }: {
   icon: React.ComponentType<any>;
   label: string;
@@ -123,7 +123,7 @@ export default function RealtimeDashboard() {
           <Chip
             icon={<Box sx={{
               width: 8, height: 8, borderRadius: '50%',
-              bgcolor: connected ? '#4CAF50' : '#f44336',
+              bgcolor: connected ? '#53e16f' : '#ef4444',
               animation: connected ? 'pulse 2s infinite' : 'none',
               '@keyframes pulse': {
                 '0%': { opacity: 1 },
@@ -164,7 +164,7 @@ export default function RealtimeDashboard() {
               icon={Zap}
               label="Requests/sec"
               value={metrics.requests_per_sec.toFixed(2)}
-              color="#6C63FF"
+              color="#4b8eff"
             />
           </Grid>
           <Grid size={{ xs: 6, md: 3 }}>
@@ -180,7 +180,7 @@ export default function RealtimeDashboard() {
               icon={Clock}
               label="Avg Latency"
               value={`${metrics.avg_latency_ms}ms`}
-              color="#FF9800"
+              color="#ffb595"
             />
           </Grid>
           <Grid size={{ xs: 6, md: 3 }}>
@@ -189,7 +189,7 @@ export default function RealtimeDashboard() {
               label="Error Rate"
               value={`${metrics.error_rate.toFixed(2)}%`}
               subtitle={`${metrics.total_errors} total errors`}
-              color="#f44336"
+              color="#ef4444"
             />
           </Grid>
 
@@ -199,7 +199,7 @@ export default function RealtimeDashboard() {
               icon={BarChart3}
               label="Total Requests"
               value={metrics.total_requests.toLocaleString()}
-              color="#4CAF50"
+              color="#53e16f"
             />
           </Grid>
           <Grid size={{ xs: 6, md: 3 }}>
@@ -215,7 +215,7 @@ export default function RealtimeDashboard() {
               icon={Activity}
               label="Uptime"
               value={formatUptime(metrics.uptime_seconds)}
-              color="#2196F3"
+              color="#4b8eff"
             />
           </Grid>
           <Grid size={{ xs: 6, md: 3 }}>
@@ -223,7 +223,7 @@ export default function RealtimeDashboard() {
               icon={HardDrive}
               label="Memory"
               value={`${metrics.memory_usage_mb.toFixed(1)} MB`}
-              color="#FF5722"
+              color="#ef6719"
             />
           </Grid>
 
@@ -243,12 +243,12 @@ export default function RealtimeDashboard() {
                 <GaugeCircle
                   value={metrics.cpu_usage}
                   label="CPU"
-                  color={metrics.cpu_usage > 80 ? '#f44336' : metrics.cpu_usage > 50 ? '#FF9800' : '#4CAF50'}
+                  color={metrics.cpu_usage > 80 ? '#ef4444' : metrics.cpu_usage > 50 ? '#ffb595' : '#53e16f'}
                 />
                 <GaugeCircle
                   value={metrics.memory_usage_pct}
                   label="Memory"
-                  color={metrics.memory_usage_pct > 80 ? '#f44336' : metrics.memory_usage_pct > 50 ? '#FF9800' : '#4CAF50'}
+                  color={metrics.memory_usage_pct > 80 ? '#ef4444' : metrics.memory_usage_pct > 50 ? '#ffb595' : '#53e16f'}
                 />
               </Box>
             </Paper>
@@ -275,7 +275,7 @@ export default function RealtimeDashboard() {
                       <Chip
                         label={`${model.request_count} req`}
                         size="small"
-                        sx={{ bgcolor: '#6C63FF22', color: '#6C63FF' }}
+                        sx={{ bgcolor: '#4b8eff22', color: '#4b8eff' }}
                       />
                     </ListItem>
                   ))}

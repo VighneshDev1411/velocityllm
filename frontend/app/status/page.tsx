@@ -23,7 +23,7 @@ const MONO = '"JetBrains Mono", monospace';
 const fetcher = (url: string) => fetch(url).then(r => r.json());
 
 const statusColor = (s: string) => {
-  switch (s) { case 'operational': return '#53e16f'; case 'degraded': return '#ffb595'; case 'outage': return '#ef4444'; case 'maintenance': return '#4b8eff'; default: return '#6b7280'; }
+  switch (s) { case 'operational': return '#53e16f'; case 'degraded': return '#ffb595'; case 'outage': return '#ef4444'; case 'maintenance': return '#4b8eff'; default: return '#c1c6d7'; }
 };
 
 const checkStatusIcon = (s: string) => {
@@ -36,7 +36,7 @@ const checkStatusIcon = (s: string) => {
 };
 
 const checkStatusColor = (s: string) => {
-  switch (s) { case 'passed': return '#53e16f'; case 'failed': return '#ef4444'; case 'warning': return '#ffb595'; case 'skipped': return '#6b7280'; default: return '#6b7280'; }
+  switch (s) { case 'passed': return '#53e16f'; case 'failed': return '#ef4444'; case 'warning': return '#ffb595'; case 'skipped': return '#c1c6d7'; default: return '#c1c6d7'; }
 };
 
 const categoryIcon = (c: string) => {
@@ -44,7 +44,7 @@ const categoryIcon = (c: string) => {
 };
 
 const incidentSeverityColor = (s: string) => {
-  switch (s) { case 'critical': return '#ef4444'; case 'major': return '#f97316'; case 'minor': return '#ffb595'; default: return '#6b7280'; }
+  switch (s) { case 'critical': return '#ef4444'; case 'major': return '#ef6719'; case 'minor': return '#ffb595'; default: return '#c1c6d7'; }
 };
 
 export default function StatusPage() {

@@ -126,7 +126,7 @@ function RegionHealthMap({ regions }: { regions: any[] }) {
           const pos = regionPositions[region.region] || { top: '50%', left: '50%', label: region.region };
           const isHealthy = region.healthy > 0 && region.unhealthy === 0;
           const isDegraded = region.degraded > 0;
-          const color = isHealthy ? '#53e16f' : isDegraded ? '#ffb595' : region.instances > 0 ? '#ef4444' : '#4b5563';
+          const color = isHealthy ? '#53e16f' : isDegraded ? '#ffb595' : region.instances > 0 ? '#ef4444' : '#414755';
 
           return (
             <Box
@@ -162,11 +162,11 @@ function RegionHealthMap({ regions }: { regions: any[] }) {
                   {region.instances}
                 </Typography>
               </Box>
-              <Typography sx={{ fontSize: '0.6rem', fontFamily: MONO, color: '#8b949e', mt: 0.5, whiteSpace: 'nowrap' }}>
+              <Typography sx={{ fontSize: '0.6rem', fontFamily: MONO, color: '#c1c6d7', mt: 0.5, whiteSpace: 'nowrap' }}>
                 {pos.label}
               </Typography>
               {region.is_failover && (
-                <Chip label="FAILOVER" size="small" sx={{ mt: 0.3, height: 14, fontSize: '0.5rem', backgroundColor: '#2a2a2a', color: '#8b949e' }} />
+                <Chip label="FAILOVER" size="small" sx={{ mt: 0.3, height: 14, fontSize: '0.5rem', backgroundColor: '#2a2a2a', color: '#c1c6d7' }} />
               )}
             </Box>
           );
@@ -185,7 +185,7 @@ function RegionDetailsTable({ regions }: { regions: any[] }) {
         <TableHead>
           <TableRow>
             {['Region', 'Status', 'Instances', 'Health', 'Avg Latency', 'P99 Latency', 'Requests', 'Error Rate'].map(h => (
-              <TableCell key={h} sx={{ color: '#8b949e', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>{h}</TableCell>
+              <TableCell key={h} sx={{ color: '#c1c6d7', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>{h}</TableCell>
             ))}
           </TableRow>
         </TableHead>
@@ -193,7 +193,7 @@ function RegionDetailsTable({ regions }: { regions: any[] }) {
           {regions.map((r) => {
             const healthPct = r.instances > 0 ? Math.round((r.healthy / r.instances) * 100) : 0;
             return (
-              <TableRow key={r.region} sx={{ '&:hover': { backgroundColor: '#1a2332' } }}>
+              <TableRow key={r.region} sx={{ '&:hover': { backgroundColor: '#201f1f' } }}>
                 <TableCell sx={{ color: '#e5e2e1', fontFamily: MONO, fontSize: '0.8rem', borderColor: '#2a2a2a' }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <MapPin className="w-3 h-3" />
@@ -209,8 +209,8 @@ function RegionDetailsTable({ regions }: { regions: any[] }) {
                       height: 20,
                       fontSize: '0.65rem',
                       fontFamily: MONO,
-                      backgroundColor: r.unhealthy > 0 ? '#ffb59520' : r.instances > 0 ? '#53e16f20' : '#4b556320',
-                      color: r.unhealthy > 0 ? '#ffb595' : r.instances > 0 ? '#53e16f' : '#4b5563',
+                      backgroundColor: r.unhealthy > 0 ? '#ffb59520' : r.instances > 0 ? '#53e16f20' : '#41475520',
+                      color: r.unhealthy > 0 ? '#ffb595' : r.instances > 0 ? '#53e16f' : '#414755',
                     }}
                   />
                 </TableCell>
@@ -230,7 +230,7 @@ function RegionDetailsTable({ regions }: { regions: any[] }) {
                         '& .MuiLinearProgress-bar': { backgroundColor: healthPct > 80 ? '#53e16f' : healthPct > 50 ? '#ffb595' : '#ef4444' },
                       }}
                     />
-                    <Typography sx={{ fontSize: '0.7rem', fontFamily: MONO, color: '#8b949e' }}>{healthPct}%</Typography>
+                    <Typography sx={{ fontSize: '0.7rem', fontFamily: MONO, color: '#c1c6d7' }}>{healthPct}%</Typography>
                   </Box>
                 </TableCell>
                 <TableCell sx={{ color: '#e5e2e1', fontFamily: MONO, fontSize: '0.8rem', borderColor: '#2a2a2a' }}>
@@ -300,7 +300,7 @@ function LatencySimulator() {
 
       <Grid container spacing={2}>
         <Grid size={{ xs: 12, sm: 4 }}>
-          <Typography sx={{ fontSize: '0.7rem', color: '#8b949e', fontFamily: MONO, mb: 0.5 }}>Region</Typography>
+          <Typography sx={{ fontSize: '0.7rem', color: '#c1c6d7', fontFamily: MONO, mb: 0.5 }}>Region</Typography>
           <select
             value={region}
             onChange={(e) => setRegion(e.target.value)}
@@ -319,7 +319,7 @@ function LatencySimulator() {
           </select>
         </Grid>
         <Grid size={{ xs: 12, sm: 4 }}>
-          <Typography sx={{ fontSize: '0.7rem', color: '#8b949e', fontFamily: MONO, mb: 0.5 }}>Latency (ms)</Typography>
+          <Typography sx={{ fontSize: '0.7rem', color: '#c1c6d7', fontFamily: MONO, mb: 0.5 }}>Latency (ms)</Typography>
           <TextField
             size="small"
             fullWidth
@@ -400,7 +400,7 @@ function GeoRoutingStats({ stats }: { stats: any }) {
         {items.map((item) => (
           <Grid size={{ xs: 6, sm: 4 }} key={item.label}>
             <Box sx={{ p: 1.5, backgroundColor: '#0e0e0e', borderRadius: '6px', border: '1px solid #2a2a2a' }}>
-              <Typography sx={{ fontSize: '0.6rem', fontFamily: MONO, color: '#8b949e', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+              <Typography sx={{ fontSize: '0.6rem', fontFamily: MONO, color: '#c1c6d7', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                 {item.label}
               </Typography>
               <Typography sx={{ fontSize: '1.1rem', fontWeight: 700, fontFamily: MONO, color: item.color }}>
@@ -414,7 +414,7 @@ function GeoRoutingStats({ stats }: { stats: any }) {
       {/* Failover regions */}
       {stats.failover_regions && (
         <Box sx={{ mt: 2 }}>
-          <Typography sx={{ fontSize: '0.6rem', fontFamily: MONO, color: '#8b949e', mb: 1 }}>FAILOVER ORDER</Typography>
+          <Typography sx={{ fontSize: '0.6rem', fontFamily: MONO, color: '#c1c6d7', mb: 1 }}>FAILOVER ORDER</Typography>
           <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
             {stats.failover_regions.map((r: string, i: number) => (
               <Chip
@@ -430,14 +430,14 @@ function GeoRoutingStats({ stats }: { stats: any }) {
 
       {/* Config details */}
       <Box sx={{ mt: 2, display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-        <Typography sx={{ fontSize: '0.65rem', fontFamily: MONO, color: '#8b949e' }}>
+        <Typography sx={{ fontSize: '0.65rem', fontFamily: MONO, color: '#c1c6d7' }}>
           Latency Threshold: <span style={{ color: '#e5e2e1' }}>{stats.latency_threshold}</span>
         </Typography>
-        <Typography sx={{ fontSize: '0.65rem', fontFamily: MONO, color: '#8b949e' }}>
+        <Typography sx={{ fontSize: '0.65rem', fontFamily: MONO, color: '#c1c6d7' }}>
           Healthy Threshold: <span style={{ color: '#e5e2e1' }}>{stats.healthy_threshold}</span>
         </Typography>
-        <Typography sx={{ fontSize: '0.65rem', fontFamily: MONO, color: '#8b949e' }}>
-          Zone Preference: <span style={{ color: stats.prefer_local_zone ? '#53e16f' : '#8b949e' }}>{stats.prefer_local_zone ? 'ON' : 'OFF'}</span>
+        <Typography sx={{ fontSize: '0.65rem', fontFamily: MONO, color: '#c1c6d7' }}>
+          Zone Preference: <span style={{ color: stats.prefer_local_zone ? '#53e16f' : '#c1c6d7' }}>{stats.prefer_local_zone ? 'ON' : 'OFF'}</span>
         </Typography>
       </Box>
     </Paper>

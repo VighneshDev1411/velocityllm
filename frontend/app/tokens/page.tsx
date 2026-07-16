@@ -220,7 +220,7 @@ function MetricRow({ label, value, max, color = 'blue' }: any) {
   const colorMap: Record<string, string> = {
     blue: '#adc6ff',
     green: '#53e16f',
-    yellow: '#eab308',
+    yellow: '#ffb595',
     red: '#ef4444',
   };
 

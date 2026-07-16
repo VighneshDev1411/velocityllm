@@ -51,7 +51,7 @@ function ChartPlaceholder() {
   return (
     <Box sx={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <Box sx={{ textAlign: 'center' }}>
-        <CircularProgress size={24} sx={{ color: '#60a5fa' }} />
+        <CircularProgress size={24} sx={{ color: '#adc6ff' }} />
         <Typography sx={{ mt: 1, fontSize: '0.75rem', color: 'text.disabled' }}>Loading chart...</Typography>
       </Box>
     </Box>

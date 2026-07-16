@@ -1139,7 +1139,7 @@ export default function WorkflowsPage() {
                 <YAxis tick={{ fill: theme.palette.text.secondary, fontSize: 12 }} />
                 <RechartsTooltip
                   contentStyle={{
-                    backgroundColor: '#252525',
+                    backgroundColor: '#2a2a2a',
                     border: `1px solid ${theme.palette.divider}`,
                     borderRadius: 8,
                   }}

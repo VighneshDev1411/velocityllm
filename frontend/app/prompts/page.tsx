@@ -112,11 +112,11 @@ const categoryColors: Record<string, string> = {
   translation: '#53e16f',
   general: '#ffb595',
   analysis: '#ef4444',
-  creative: '#ec4899',
+  creative: '#adc6ff',
 };
 
 function getCategoryColor(category: string): string {
-  return categoryColors[category] || '#6b7280';
+  return categoryColors[category] || '#c1c6d7';
 }
 
 // ─── Main Component ──────────────────────────────────────────────────────────
@@ -840,7 +840,7 @@ export default function PromptLibraryPage() {
                   <YAxis tick={{ fontSize: 12 }} />
                   <RechartsTooltip
                     contentStyle={{
-                      backgroundColor: '#252525',
+                      backgroundColor: '#2a2a2a',
                       border: '1px solid rgba(255,255,255,0.1)',
                       borderRadius: 8,
                     }}

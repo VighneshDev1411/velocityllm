@@ -95,7 +95,7 @@ function latencyColor(latency: number, min: number, max: number): string {
   if (max === min) return '#53e16f';
   const ratio = (latency - min) / (max - min);
   if (ratio < 0.33) return '#53e16f';
-  if (ratio < 0.66) return '#eab308';
+  if (ratio < 0.66) return '#ffb595';
   return '#ef4444';
 }
 
@@ -105,7 +105,7 @@ function providerColor(provider: string): string {
   if (p.includes('anthropic')) return '#ffb595';
   if (p.includes('google')) return '#4285f4';
   if (p.includes('cohere')) return '#4b8eff';
-  return '#6b7280';
+  return '#c1c6d7';
 }
 
 // ---------------------------------------------------------------------------
@@ -345,13 +345,13 @@ export default function BatchCompare({ availableModels }: Props) {
           <Paper sx={{ ...paperSx, bgcolor: 'rgba(6,182,212,0.03)' }}>
             <Box sx={{ px: 2.5, py: 2, display: 'flex', gap: 3, flexWrap: 'wrap', alignItems: 'center' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Clock className="w-4 h-4" style={{ color: '#6b7280' }} />
+                <Clock className="w-4 h-4" style={{ color: '#c1c6d7' }} />
                 <Typography variant="body2" sx={{ fontSize: '0.8rem' }}>
                   Total: <strong>{result.total_time_ms}ms</strong>
                 </Typography>
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Hash className="w-4 h-4" style={{ color: '#6b7280' }} />
+                <Hash className="w-4 h-4" style={{ color: '#c1c6d7' }} />
                 <Typography variant="body2" sx={{ fontSize: '0.8rem' }}>
                   Models: <strong>{result.results.length}</strong>
                 </Typography>
@@ -403,7 +403,7 @@ export default function BatchCompare({ availableModels }: Props) {
                     {item.latency_ms}ms
                   </Typography>
                   {item.latency_ms === minLatency && (
-                    <Trophy className="w-3 h-3" style={{ color: '#eab308', flexShrink: 0 }} />
+                    <Trophy className="w-3 h-3" style={{ color: '#ffb595', flexShrink: 0 }} />
                   )}
                 </Box>
               ))}

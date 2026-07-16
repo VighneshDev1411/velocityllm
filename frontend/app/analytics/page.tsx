@@ -120,9 +120,9 @@ function truncate(str: string, len: number): string {
 
 function StatusBadge({ status }: { status: string }) {
   const map: Record<string, { bg: string; fg: string }> = {
-    completed: { bg: 'rgba(16,185,129,0.1)', fg: '#15803d' },
+    completed: { bg: 'rgba(16,185,129,0.1)', fg: '#05b046' },
     cache_hit: { bg: 'rgba(173,198,255,0.15)', fg: '#adc6ff' },
-    error: { bg: 'rgba(239,68,68,0.1)', fg: '#b91c1c' },
+    error: { bg: 'rgba(239,68,68,0.1)', fg: '#dc2626' },
   };
   const colors = map[status] || { bg: 'action.hover', fg: 'text.secondary' };
   return (
@@ -142,8 +142,8 @@ function StatusBadge({ status }: { status: string }) {
 
 function ProviderBadge({ provider }: { provider: string }) {
   const map: Record<string, { bg: string; fg: string }> = {
-    openai: { bg: 'rgba(16,185,129,0.1)', fg: '#15803d' },
-    anthropic: { bg: '#ffedd5', fg: '#c2410c' },
+    openai: { bg: 'rgba(16,185,129,0.1)', fg: '#05b046' },
+    anthropic: { bg: '#ffedd5', fg: '#ef6719' },
     google: { bg: 'rgba(173,198,255,0.15)', fg: '#adc6ff' },
     cohere: { bg: '#f3e8ff', fg: '#7e22ce' },
     local: { bg: 'action.hover', fg: 'text.secondary' },
@@ -367,7 +367,7 @@ export default function AnalyticsPage() {
                 )}
                 {models.map((m: any, i: number) => {
                   const rate = parseFloat(m.success_rate || '0');
-                  const rateColor = rate >= 99 ? { bg: 'rgba(16,185,129,0.1)', fg: '#15803d' } : rate >= 95 ? { bg: '#fef9c3', fg: '#a16207' } : { bg: 'rgba(239,68,68,0.1)', fg: '#b91c1c' };
+                  const rateColor = rate >= 99 ? { bg: 'rgba(16,185,129,0.1)', fg: '#05b046' } : rate >= 95 ? { bg: '#fef9c3', fg: '#ef6719' } : { bg: 'rgba(239,68,68,0.1)', fg: '#dc2626' };
                   return (
                     <TableRow
                       key={i}
@@ -570,7 +570,7 @@ export default function AnalyticsPage() {
               onClick={exportCSV}
               sx={{
                 fontSize: '0.875rem', fontWeight: 500, textTransform: 'none', borderRadius: '8px',
-                backgroundColor: '#4b8eff', '&:hover': { backgroundColor: '#1d4ed8' },
+                backgroundColor: '#4b8eff', '&:hover': { backgroundColor: '#4b8eff' },
               }}
             >
               Export as CSV
