@@ -82,7 +82,7 @@ export default function RegisterPage() {
               width: 48,
               height: 48,
               borderRadius: '8px',
-              background: 'linear-gradient(135deg, #adc6ff, #8b5cf6)',
+              background: 'linear-gradient(135deg, #adc6ff, #4b8eff)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',

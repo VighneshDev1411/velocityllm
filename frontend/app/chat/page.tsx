@@ -22,6 +22,7 @@ import {
   MessageSquare, Bot, User, Copy, ArrowUp,
 } from 'lucide-react';
 import api, { chatAPI } from '@/lib/api';
+import { ConfirmDialog } from '@/components/ConfirmDialog';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -300,44 +301,34 @@ export default function ChatPage() {
   // ════════════════════════════════════════════════════════════════════
 
   return (
-    <Box sx={{ display: 'flex', height: 'calc(100vh - 64px)', overflow: 'hidden' }}>
+    <Box sx={{ display: 'flex', height: 'calc(100vh - 56px)', overflow: 'hidden' }}>
 
-      {/* ═══ SIDEBAR ═══ */}
+      {/* ═══ CONVERSATION HISTORY ═══ */}
       <Box sx={{
-        width: 280, minWidth: 280,
+        width: 240, minWidth: 240,
         borderRight: '1px solid', borderColor: 'divider',
         display: 'flex', flexDirection: 'column',
-        bgcolor: '#0f172a',
+        bgcolor: '#1c1b1b',
       }}>
-        {/* New Chat */}
         <Box sx={{ p: 1.5 }}>
           <Button
             fullWidth
+            variant="outlined"
             onClick={createNewChat}
             startIcon={<Plus className="w-4 h-4" />}
-            sx={{
-              py: 1, justifyContent: 'flex-start', px: 2,
-              color: '#cbd5e1', bgcolor: 'rgba(255,255,255,0.05)',
-              border: '1px solid rgba(148,163,184,0.12)',
-              borderRadius: 2, fontWeight: 500, fontSize: '0.875rem',
-              '&:hover': { bgcolor: 'rgba(255,255,255,0.08)' },
-            }}
+            sx={{ justifyContent: 'flex-start' }}
           >
             New chat
           </Button>
         </Box>
 
-        {/* Conversation List */}
-        <Box sx={{
-          flex: 1, overflow: 'auto', px: 0.75,
-          '&::-webkit-scrollbar': { width: 0 },
-        }}>
+        <Box sx={{ flex: 1, overflow: 'auto', px: 1, '&::-webkit-scrollbar': { width: 0 } }}>
           {loadingConvs ? (
             <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
-              <CircularProgress size={20} sx={{ color: '#475569' }} />
+              <CircularProgress size={20} />
             </Box>
           ) : conversations.length === 0 ? (
-            <Typography sx={{ p: 3, color: '#475569', fontSize: '0.85rem', textAlign: 'center' }}>
+            <Typography sx={{ p: 3, color: 'text.disabled', fontSize: '0.8rem', textAlign: 'center' }}>
               No conversations yet
             </Typography>
           ) : (
@@ -349,14 +340,7 @@ export default function ChatPage() {
                     key={conv.id}
                     selected={active}
                     onClick={() => loadConversation(conv.id)}
-                    sx={{
-                      borderRadius: 2, mb: 0.25, py: 0.75, px: 1.5,
-                      '&.Mui-selected': {
-                        bgcolor: 'rgba(255,255,255,0.08)',
-                        '&:hover': { bgcolor: 'rgba(255,255,255,0.1)' },
-                      },
-                      '&:not(.Mui-selected):hover': { bgcolor: 'rgba(255,255,255,0.04)' },
-                    }}
+                    sx={{ borderRadius: '6px', mb: 0.25, py: 0.75, px: 1.5 }}
                   >
                     {renamingId === conv.id ? (
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flex: 1 }}>
@@ -367,12 +351,12 @@ export default function ChatPage() {
                             if (e.key === 'Enter') handleRename(conv.id);
                             if (e.key === 'Escape') setRenamingId(null);
                           }}
-                          sx={{ '& input': { fontSize: '0.8rem', py: 0.25, px: 0.5, color: '#e2e8f0' } }}
+                          sx={{ '& input': { fontSize: '0.8rem', py: 0.25 } }}
                         />
-                        <IconButton size="small" onClick={() => handleRename(conv.id)} sx={{ color: '#53e16f' }}>
+                        <IconButton size="small" onClick={() => handleRename(conv.id)} sx={{ color: 'secondary.main' }}>
                           <Check className="w-3 h-3" />
                         </IconButton>
-                        <IconButton size="small" onClick={() => setRenamingId(null)} sx={{ color: '#64748b' }}>
+                        <IconButton size="small" onClick={() => setRenamingId(null)} sx={{ color: 'text.disabled' }}>
                           <X className="w-3 h-3" />
                         </IconButton>
                       </Box>
@@ -381,9 +365,9 @@ export default function ChatPage() {
                         <ListItemText
                           primary={conv.title}
                           primaryTypographyProps={{
-                            fontSize: '0.85rem', noWrap: true,
-                            fontWeight: active ? 500 : 400,
-                            color: active ? '#e2e8f0' : '#94a3b8',
+                            fontSize: '0.8125rem', noWrap: true,
+                            fontWeight: active ? 600 : 400,
+                            color: active ? 'primary.main' : 'text.secondary',
                           }}
                         />
                         {active && (
@@ -394,12 +378,12 @@ export default function ChatPage() {
                           }}>
                             <IconButton size="small" onClick={(e) => {
                               e.stopPropagation(); setRenamingId(conv.id); setRenameValue(conv.title);
-                            }} sx={{ color: '#64748b', '&:hover': { color: '#e2e8f0' } }}>
+                            }} sx={{ color: 'text.disabled', '&:hover': { color: 'text.primary' } }}>
                               <Edit3 className="w-3 h-3" />
                             </IconButton>
                             <IconButton size="small" onClick={(e) => {
                               e.stopPropagation(); setDeleteId(conv.id);
-                            }} sx={{ color: '#64748b', '&:hover': { color: '#ef4444' } }}>
+                            }} sx={{ color: 'text.disabled', '&:hover': { color: 'error.main' } }}>
                               <Trash2 className="w-3 h-3" />
                             </IconButton>
                           </Box>
@@ -415,38 +399,29 @@ export default function ChatPage() {
       </Box>
 
       {/* ═══ MAIN CHAT ═══ */}
-      <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', bgcolor: 'background.default' }}>
+      <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', p: 3, minWidth: 0 }}>
 
-        {/* Top Bar */}
-        <Box sx={{
-          px: 2.5, py: 1,
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          borderBottom: '1px solid', borderColor: 'divider',
-          bgcolor: 'background.paper',
-        }}>
-          <Typography sx={{ fontWeight: 600, fontSize: '0.95rem' }}>
-            {activeConvId
-              ? conversations.find((c) => c.id === activeConvId)?.title || 'Chat'
-              : 'New chat'}
-          </Typography>
-
+        {/* Header: title + model select (PageHeader pattern) */}
+        <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb: 2 }}>
+          <Box>
+            <Typography variant="h5" sx={{ fontWeight: 600, letterSpacing: '-0.02em' }}>Chat</Typography>
+            <Typography sx={{ mt: 0.5, fontSize: '0.8125rem', color: 'text.secondary' }}>
+              Test prompts against your configured models
+            </Typography>
+          </Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <Select
               size="small"
               value={selectedModel}
               onChange={(e) => setSelectedModel(e.target.value)}
-              sx={{
-                minWidth: 160, fontSize: '0.8rem',
-                '& .MuiSelect-select': { py: 0.5, px: 1 },
-              }}
+              displayEmpty
+              sx={{ minWidth: 170, fontSize: '0.8125rem' }}
             >
+              {models.length === 0 && <MenuItem value="" sx={{ fontSize: '0.8125rem' }}>No models</MenuItem>}
               {models.map((m) => (
-                <MenuItem key={m.name} value={m.name} sx={{ fontSize: '0.8rem' }}>
-                  {m.name}
-                </MenuItem>
+                <MenuItem key={m.name} value={m.name} sx={{ fontSize: '0.8125rem' }}>{m.name}</MenuItem>
               ))}
             </Select>
-
             {activeConvId && messages.length > 0 && (
               <Tooltip title="Export as Markdown">
                 <IconButton size="small" onClick={handleExport} sx={{ color: 'text.secondary' }}>
@@ -459,40 +434,38 @@ export default function ChatPage() {
 
         {/* Messages */}
         <Box sx={{
-          flex: 1, overflow: 'auto', py: 3,
+          flex: 1, overflowY: 'auto', minHeight: 0, pr: 0.5,
+          display: 'flex', flexDirection: 'column',
           '&::-webkit-scrollbar': { width: 6 },
-          '&::-webkit-scrollbar-thumb': { bgcolor: 'rgba(148,163,184,0.1)', borderRadius: 3 },
+          '&::-webkit-scrollbar-thumb': { bgcolor: 'rgba(65,71,85,0.3)', borderRadius: 3 },
         }}>
-          {!activeConvId && messages.length === 0 ? (
+          {messages.length === 0 && !isStreaming ? (
             /* ─── Empty State ─── */
             <Box sx={{
-              height: '100%', display: 'flex', flexDirection: 'column',
+              flex: 1, display: 'flex', flexDirection: 'column',
               alignItems: 'center', justifyContent: 'center', gap: 2, px: 2,
             }}>
               <Box sx={{
-                width: 48, height: 48, borderRadius: '8px',
+                width: 44, height: 44, borderRadius: '8px',
                 bgcolor: 'rgba(173,198,255,0.1)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
-                <MessageSquare className="w-6 h-6" style={{ color: '#adc6ff' }} />
+                <MessageSquare className="w-5 h-5" style={{ color: '#adc6ff' }} />
               </Box>
-              <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, color: 'text.primary' }}>
-                What can I help with?
+              <Typography sx={{ fontSize: '1rem', fontWeight: 600, color: 'text.primary' }}>
+                Start a conversation
               </Typography>
-              <Box sx={{
-                display: 'flex', gap: 1, mt: 1, flexWrap: 'wrap', justifyContent: 'center',
-                maxWidth: 560,
-              }}>
+              <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', justifyContent: 'center', maxWidth: 560 }}>
                 {SUGGESTIONS.map((s) => (
                   <Box
                     key={s}
                     onClick={() => { setInput(s); inputRef.current?.focus(); }}
                     sx={{
-                      px: 2, py: 1, borderRadius: 6,
+                      px: 1.5, py: 0.75, borderRadius: '4px',
                       border: '1px solid', borderColor: 'divider',
-                      cursor: 'pointer', fontSize: '0.85rem', color: 'text.secondary',
-                      transition: 'background 0.15s',
-                      '&:hover': { bgcolor: 'action.hover' },
+                      cursor: 'pointer', fontSize: '0.8125rem', color: 'text.secondary',
+                      transition: 'all 0.15s',
+                      '&:hover': { bgcolor: 'action.hover', color: 'text.primary' },
                     }}
                   >
                     {s}
@@ -501,8 +474,8 @@ export default function ChatPage() {
               </Box>
             </Box>
           ) : (
-            /* ─── Messages ─── */
-            <Box sx={{ maxWidth: 720, mx: 'auto', px: 3 }}>
+            /* ─── Messages (aligned bubbles) ─── */
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, pb: 2 }}>
               {messages.map((msg) => (
                 <MessageRow
                   key={msg.id}
@@ -512,7 +485,7 @@ export default function ChatPage() {
                 />
               ))}
 
-              {/* Streaming */}
+              {/* Streaming bubble */}
               {isStreaming && streamText && (
                 <MessageRow
                   message={{ id: 'streaming', role: 'assistant', content: streamText, created_at: new Date().toISOString(), model: selectedModel }}
@@ -522,29 +495,25 @@ export default function ChatPage() {
                 />
               )}
 
-              {/* Thinking indicator */}
+              {/* Thinking indicator — on-brand assistant bubble with pulsing dots */}
               {isStreaming && !streamText && (
-                <Box sx={{ py: 2, px: 2, mx: -2 }}>
-                  <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'flex-start' }}>
-                    <ChatAvatar role="assistant" />
-                    <Box sx={{ pt: 0.5 }}>
-                      <Typography sx={{ fontWeight: 600, fontSize: '0.85rem', color: '#a78bfa', mb: 0.75 }}>
-                        VelocityLLM
-                      </Typography>
-                      <Box sx={{ display: 'flex', gap: 0.75, alignItems: 'center' }}>
-                        {[0, 1, 2].map((i) => (
-                          <Box key={i} sx={{
-                            width: 6, height: 6, borderRadius: '50%', bgcolor: '#8b5cf6',
-                            animation: 'dotPulse 1.4s ease-in-out infinite',
-                            animationDelay: `${i * 0.16}s`,
-                            '@keyframes dotPulse': {
-                              '0%, 80%, 100%': { opacity: 0.2, transform: 'scale(0.8)' },
-                              '40%': { opacity: 1, transform: 'scale(1)' },
-                            },
-                          }} />
-                        ))}
-                      </Box>
-                    </Box>
+                <Box sx={{
+                  alignSelf: 'flex-start', bgcolor: '#201f1f',
+                  border: '1px solid', borderColor: 'divider',
+                  borderRadius: '8px', px: 1.75, py: 1.25,
+                }}>
+                  <Box sx={{ display: 'flex', gap: 0.75, alignItems: 'center' }}>
+                    {[0, 1, 2].map((i) => (
+                      <Box key={i} sx={{
+                        width: 6, height: 6, borderRadius: '50%', bgcolor: '#adc6ff',
+                        animation: 'dotPulse 1.4s ease-in-out infinite',
+                        animationDelay: `${i * 0.16}s`,
+                        '@keyframes dotPulse': {
+                          '0%, 80%, 100%': { opacity: 0.2, transform: 'scale(0.8)' },
+                          '40%': { opacity: 1, transform: 'scale(1)' },
+                        },
+                      }} />
+                    ))}
                   </Box>
                 </Box>
               )}
@@ -554,73 +523,49 @@ export default function ChatPage() {
           )}
         </Box>
 
-        {/* Input Area */}
-        <Box sx={{ px: 3, pb: 2, pt: 1, position: 'sticky', bottom: 0, background: 'rgba(57,57,57,0.6)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', borderTop: '1px solid rgba(65,71,85,0.15)' }}>
-          <Box sx={{ maxWidth: 720, mx: 'auto' }}>
-            <Box sx={{
-              display: 'flex', alignItems: 'flex-end', gap: 1,
-              p: 1, borderRadius: 3,
-              border: '1px solid', borderColor: 'divider',
-              bgcolor: 'rgba(32,31,31,0.7)',
-              transition: 'border-color 0.15s',
-              '&:focus-within': { borderColor: 'primary.main' },
-            }}>
-              <TextField
-                inputRef={inputRef}
-                multiline maxRows={6} fullWidth
-                placeholder="Message VelocityLLM..."
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={handleKeyDown}
-                variant="standard"
-                slotProps={{
-                  input: {
-                    disableUnderline: true,
-                    sx: { fontSize: '0.95rem', px: 1 },
-                  },
-                }}
-              />
-
-              {isStreaming ? (
-                <IconButton onClick={stopStreaming} size="small" sx={{
-                  bgcolor: '#ef4444', color: '#fff', borderRadius: 2,
-                  width: 32, height: 32,
-                  '&:hover': { bgcolor: '#dc2626' },
-                }}>
-                  <Square className="w-3.5 h-3.5" style={{ fill: 'currentColor' }} />
-                </IconButton>
-              ) : (
-                <IconButton onClick={() => sendMessage()} disabled={!input.trim()} size="small" sx={{
-                  bgcolor: input.trim() ? '#adc6ff' : 'action.disabledBackground',
-                  color: input.trim() ? '#131313' : 'text.disabled',
-                  borderRadius: 2, width: 32, height: 32,
-                  '&:hover': { bgcolor: input.trim() ? '#8baee6' : 'action.disabledBackground' },
-                }}>
-                  <ArrowUp className="w-4 h-4" />
-                </IconButton>
-              )}
-            </Box>
-
-            <Typography sx={{ fontSize: '0.75rem', color: 'text.disabled', textAlign: 'center', mt: 0.75 }}>
-              {selectedModel} &middot; Enter to send, Shift+Enter for new line
-            </Typography>
-          </Box>
+        {/* Input row — Input (flex) + Send button */}
+        <Box sx={{ display: 'flex', gap: 1.25, mt: 2, alignItems: 'flex-end' }}>
+          <TextField
+            inputRef={inputRef}
+            multiline maxRows={6} fullWidth
+            placeholder="Send a message…"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+          />
+          {isStreaming ? (
+            <Button
+              variant="contained" color="error"
+              onClick={stopStreaming}
+              startIcon={<Square className="w-3.5 h-3.5" style={{ fill: 'currentColor' }} />}
+              sx={{ minWidth: 96 }}
+            >
+              Stop
+            </Button>
+          ) : (
+            <Button
+              variant="contained"
+              onClick={() => sendMessage()}
+              disabled={!input.trim()}
+              endIcon={<ArrowUp className="w-4 h-4" />}
+              sx={{ minWidth: 96 }}
+            >
+              Send
+            </Button>
+          )}
         </Box>
       </Box>
 
-      {/* Delete Dialog */}
-      <Dialog open={!!deleteId} onClose={() => setDeleteId(null)} maxWidth="xs">
-        <DialogTitle>Delete conversation?</DialogTitle>
-        <DialogContent>
-          <Typography sx={{ color: 'text.secondary' }}>
-            This will permanently delete this conversation and all messages.
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setDeleteId(null)}>Cancel</Button>
-          <Button onClick={handleDelete} color="error" variant="contained">Delete</Button>
-        </DialogActions>
-      </Dialog>
+      {/* Delete confirmation */}
+      <ConfirmDialog
+        open={!!deleteId}
+        title="Delete conversation?"
+        description="This will permanently delete this conversation and all messages. This cannot be undone."
+        confirmLabel="Delete"
+        destructive
+        onConfirm={handleDelete}
+        onClose={() => setDeleteId(null)}
+      />
     </Box>
   );
 }

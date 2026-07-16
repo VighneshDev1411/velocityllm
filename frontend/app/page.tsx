@@ -35,7 +35,7 @@ export default function LandingPage() {
                   width: 32,
                   height: 32,
                   borderRadius: '8px',
-                  background: 'linear-gradient(135deg, #adc6ff, #8b5cf6)',
+                  background: 'linear-gradient(135deg, #adc6ff, #4b8eff)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -176,7 +176,7 @@ export default function LandingPage() {
         <Grid container spacing={3}>
           {[
             { icon: <Zap className="w-7 h-7" style={{ color: '#adc6ff' }} />, title: 'Lightning Fast', description: 'Optimized inference engine with advanced caching and multi-level optimization strategies.' },
-            { icon: <Shield className="w-7 h-7" style={{ color: '#8b5cf6' }} />, title: 'Enterprise Security', description: 'JWT authentication, role-based access control, and comprehensive audit logging.' },
+            { icon: <Shield className="w-7 h-7" style={{ color: '#4b8eff' }} />, title: 'Enterprise Security', description: 'JWT authentication, role-based access control, and comprehensive audit logging.' },
             { icon: <BarChart3 className="w-7 h-7" style={{ color: '#53e16f' }} />, title: 'Real-time Monitoring', description: 'Live dashboards with worker metrics, streaming stats, and performance analytics.' },
             { icon: <Rocket className="w-7 h-7" style={{ color: '#ffb595' }} />, title: 'Production Ready', description: 'Built for scale with worker pools, request batching, and intelligent load balancing.' },
           ].map((feature, idx) => (
@@ -256,7 +256,7 @@ export default function LandingPage() {
       {/* CTA Section */}
       <Box
         sx={{
-          background: 'linear-gradient(135deg, #adc6ff, #8b5cf6)',
+          background: 'linear-gradient(135deg, #adc6ff, #4b8eff)',
           py: { xs: 8, md: 10 },
         }}
       >
