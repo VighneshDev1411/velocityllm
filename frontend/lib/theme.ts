@@ -30,6 +30,10 @@ const kinetic = {
 
 export const kineticTokens = { surface, ...kinetic };
 
+// Data font — apply to ALL numeric/ID/stat/table-data text (never Inter for data).
+// Usage: sx={{ fontFamily: monoFontFamily }} or the `.font-mono` utility class.
+export const monoFontFamily = 'var(--font-mono), "JetBrains Mono", monospace';
+
 export function buildTheme() {
   return createTheme({
     palette: {
@@ -63,7 +67,7 @@ export function buildTheme() {
     typography: {
       fontFamily: 'var(--font-inter), "Inter", "Helvetica", "Arial", sans-serif',
       h4: { fontWeight: 700, fontSize: '1.75rem', letterSpacing: '-0.04em', color: kinetic.onSurface },
-      h5: { fontWeight: 700, fontSize: '1.25rem', letterSpacing: '-0.02em', color: kinetic.onSurface },
+      h5: { fontWeight: 600, fontSize: '1.25rem', letterSpacing: '-0.02em', color: kinetic.onSurface },
       h6: { fontWeight: 600, fontSize: '1rem', color: kinetic.onSurface },
       subtitle1: { fontSize: '0.875rem', fontWeight: 500, color: kinetic.onSurfaceVariant },
       subtitle2: { fontSize: '0.8rem', fontWeight: 600, letterSpacing: '0.02em', color: kinetic.onSurfaceVariant },
@@ -149,31 +153,47 @@ export function buildTheme() {
       MuiButton: {
         defaultProps: { disableElevation: true, disableRipple: true },
         styleOverrides: {
+          // Console buttons: sentence case, flat accent, 4px radius (NOT a pill),
+          // 36px default height. The periwinkle→blue gradient is reserved for
+          // marketing/auth CTAs only (see README: gradient CTAs are marketing).
           root: {
-            textTransform: 'uppercase' as const,
+            textTransform: 'none' as const,
             fontWeight: 600,
-            borderRadius: 6,
-            padding: '7px 18px',
-            fontSize: '0.8125rem',
-            letterSpacing: '0.05em',
+            borderRadius: 4,
+            height: 36,
+            padding: '0 16px',
+            fontSize: '0.875rem',
+            letterSpacing: 0,
             transition: 'all 0.15s ease',
             '&:active': { transform: 'scale(0.95)' },
           },
+          sizeSmall: { height: 32, padding: '0 12px', fontSize: '0.6875rem' },
+          sizeLarge: { height: 40, padding: '0 32px', fontSize: '0.875rem' },
           contained: {
-            background: `linear-gradient(135deg, ${kinetic.primary}, ${kinetic.primaryContainer})`,
+            backgroundColor: kinetic.primary,
             color: '#131313',
             '&:hover': {
-              background: `linear-gradient(135deg, ${kinetic.primary}, ${kinetic.primaryContainer})`,
-              filter: 'brightness(1.1)',
+              backgroundColor: kinetic.primary,
+              filter: 'brightness(0.92)',
               boxShadow: 'none',
             },
           },
+          containedSecondary: {
+            backgroundColor: kinetic.secondary,
+            color: '#131313',
+            '&:hover': { backgroundColor: kinetic.secondary, filter: 'brightness(0.92)', boxShadow: 'none' },
+          },
+          containedError: {
+            backgroundColor: kinetic.error,
+            color: '#fff',
+            '&:hover': { backgroundColor: kinetic.error, filter: 'brightness(0.92)', boxShadow: 'none' },
+          },
           outlined: {
-            borderColor: 'rgba(65,71,85,0.2)',
+            borderColor: 'rgba(65,71,85,0.3)',
             color: kinetic.onSurface,
             '&:hover': {
               borderColor: 'rgba(65,71,85,0.4)',
-              backgroundColor: surface.bright,
+              backgroundColor: surface.containerHigh,
             },
           },
           text: {

@@ -26,6 +26,7 @@ import Alert from '@mui/material/Alert';
 import Chip from '@mui/material/Chip';
 import CircularProgress from '@mui/material/CircularProgress';
 import { PageHeader } from '@/components/PageHeader';
+import { ConfirmDialog } from '@/components/ConfirmDialog';
 
 interface APIKeyData {
   id: string;
@@ -374,54 +375,30 @@ export default function APIKeysPage() {
                     </Box>
                   </Box>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                    {/* Rotate */}
-                    {confirmAction?.type === 'rotate' && confirmAction.keyId === k.id ? (
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                        <Typography variant="caption" sx={{ color: '#ffb595' }}>Rotate?</Typography>
-                        <IconButton size="small" onClick={() => handleRotate(k.id)} sx={{ color: '#ffb595' }}>
-                          <Check size={16} />
-                        </IconButton>
-                        <IconButton size="small" onClick={() => setConfirmAction(null)} sx={{ color: 'text.disabled' }}>
-                          <X size={16} />
-                        </IconButton>
-                      </Box>
-                    ) : (
-                      <IconButton
-                        size="small"
-                        onClick={() => setConfirmAction({ type: 'rotate', keyId: k.id })}
-                        title="Rotate key"
-                        sx={{
-                          color: 'text.disabled',
-                          '&:hover': { color: '#ffb595', bgcolor: 'rgba(255,181,149,0.1)' },
-                        }}
-                      >
-                        <RefreshCw size={16} />
-                      </IconButton>
-                    )}
-                    {/* Revoke */}
-                    {confirmAction?.type === 'revoke' && confirmAction.keyId === k.id ? (
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                        <Typography variant="caption" sx={{ color: '#dc2626' }}>Revoke?</Typography>
-                        <IconButton size="small" onClick={() => handleRevoke(k.id)} sx={{ color: '#dc2626' }}>
-                          <Check size={16} />
-                        </IconButton>
-                        <IconButton size="small" onClick={() => setConfirmAction(null)} sx={{ color: 'text.disabled' }}>
-                          <X size={16} />
-                        </IconButton>
-                      </Box>
-                    ) : (
-                      <IconButton
-                        size="small"
-                        onClick={() => setConfirmAction({ type: 'revoke', keyId: k.id })}
-                        title="Revoke key"
-                        sx={{
-                          color: 'text.disabled',
-                          '&:hover': { color: '#dc2626', bgcolor: 'rgba(239,68,68,0.1)' },
-                        }}
-                      >
-                        <Ban size={16} />
-                      </IconButton>
-                    )}
+                    {/* Rotate — opens confirm modal */}
+                    <IconButton
+                      size="small"
+                      onClick={() => setConfirmAction({ type: 'rotate', keyId: k.id })}
+                      title="Rotate key"
+                      sx={{
+                        color: 'text.disabled',
+                        '&:hover': { color: '#ffb595', bgcolor: 'rgba(255,181,149,0.1)' },
+                      }}
+                    >
+                      <RefreshCw size={16} />
+                    </IconButton>
+                    {/* Revoke — opens confirm modal */}
+                    <IconButton
+                      size="small"
+                      onClick={() => setConfirmAction({ type: 'revoke', keyId: k.id })}
+                      title="Revoke key"
+                      sx={{
+                        color: 'text.disabled',
+                        '&:hover': { color: '#f87171', bgcolor: 'rgba(239,68,68,0.1)' },
+                      }}
+                    >
+                      <Ban size={16} />
+                    </IconButton>
                   </Box>
                 </Box>
 
@@ -650,6 +627,36 @@ export default function APIKeysPage() {
           </DialogActions>
         </form>
       </Dialog>
+
+      {/* Revoke / delete confirmation (destructive) */}
+      <ConfirmDialog
+        open={confirmAction?.type === 'revoke' || confirmAction?.type === 'delete'}
+        title={confirmAction?.type === 'delete' ? 'Delete API key?' : 'Revoke API key?'}
+        description={
+          confirmAction?.type === 'delete'
+            ? 'This permanently removes the key. This cannot be undone.'
+            : 'Requests using this key will be rejected immediately. This cannot be undone.'
+        }
+        confirmLabel={confirmAction?.type === 'delete' ? 'Delete' : 'Revoke'}
+        destructive
+        onConfirm={() => {
+          if (!confirmAction) return;
+          if (confirmAction.type === 'delete') handleDelete(confirmAction.keyId);
+          else handleRevoke(confirmAction.keyId);
+        }}
+        onClose={() => setConfirmAction(null)}
+      />
+
+      {/* Rotate confirmation (non-destructive) */}
+      <ConfirmDialog
+        open={confirmAction?.type === 'rotate'}
+        title="Rotate API key?"
+        description="A new key will be generated and the current key will be revoked immediately."
+        confirmLabel="Rotate"
+        destructive={false}
+        onConfirm={() => confirmAction && handleRotate(confirmAction.keyId)}
+        onClose={() => setConfirmAction(null)}
+      />
     </Box>
   );
 }

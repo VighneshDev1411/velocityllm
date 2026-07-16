@@ -26,7 +26,7 @@ export const PageHeader = React.memo(function PageHeader({ title, subtitle, acti
           variant="h5"
           sx={{
             color: '#e5e2e1',
-            fontWeight: 700,
+            fontWeight: 600,
             letterSpacing: '-0.02em',
           }}
         >

@@ -273,7 +273,7 @@ function ParameterSlider({
           type="number"
           value={value}
           size="small"
-          inputProps={{ min, max, step, style: { textAlign: 'right', fontSize: '0.875rem', padding: '4px 8px' } }}
+          inputProps={{ min, max, step, style: { textAlign: 'right', fontSize: '0.875rem', padding: '4px 8px', fontFamily: 'var(--font-mono), "JetBrains Mono", monospace' } }}
           onChange={(e) => {
             const v = parseFloat(e.target.value);
             if (!isNaN(v) && v >= min && v <= max) onChange(v);

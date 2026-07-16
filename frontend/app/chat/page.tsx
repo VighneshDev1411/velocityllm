@@ -661,83 +661,72 @@ function MessageRow({
 }) {
   const isUser = message.role === 'user';
   const [hovered, setHovered] = useState(false);
+  const monoFont = 'var(--font-mono), "JetBrains Mono", monospace';
 
   return (
     <Box
       sx={{
-        py: 2, px: 2, mx: -2,
-        borderRadius: 2,
-        transition: 'background-color 0.12s',
-        bgcolor: hovered ? 'rgba(148,163,184,0.04)' : 'transparent',
+        display: 'flex',
+        justifyContent: isUser ? 'flex-end' : 'flex-start',
+        mb: 2,
       }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'flex-start' }}>
-        <ChatAvatar role={message.role} />
+      <Box sx={{ maxWidth: '70%', display: 'flex', flexDirection: 'column', alignItems: isUser ? 'flex-end' : 'flex-start', minWidth: 0 }}>
+        {/* Assistant model caption (mono kicker) */}
+        {!isUser && message.model && (
+          <Typography sx={{
+            fontSize: '0.625rem', fontFamily: monoFont, letterSpacing: '0.1em',
+            textTransform: 'uppercase', color: 'text.disabled', mb: 0.5, ml: 0.25,
+          }}>
+            {message.model}
+          </Typography>
+        )}
 
-        <Box sx={{ flex: 1, minWidth: 0, pt: 0.25 }}>
-          {/* Name + model tag */}
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-            <Typography sx={{
-              fontWeight: 600, fontSize: '0.85rem',
-              color: isUser ? '#53e16f' : '#a78bfa',
+        {/* Bubble — user: accent bg + dark text; assistant: surface bg + 1px border */}
+        <Box sx={{
+          borderRadius: '8px',
+          padding: '10px 14px',
+          bgcolor: isUser ? '#adc6ff' : '#201f1f',
+          color: isUser ? '#131313' : 'text.primary',
+          border: isUser ? 'none' : '1px solid',
+          borderColor: 'divider',
+          fontSize: '0.875rem', lineHeight: 1.6,
+          whiteSpace: 'pre-wrap', wordBreak: 'break-word',
+          '& code': {
+            fontSize: '0.8rem',
+            bgcolor: isUser ? 'rgba(19,19,19,0.12)' : 'rgba(65,71,85,0.25)',
+            px: 0.75, py: 0.25, borderRadius: '4px',
+            fontFamily: monoFont,
+          },
+        }}>
+          <FormattedContent content={message.content} />
+          {isStreaming && (
+            <Box component="span" sx={{
+              display: 'inline-block', width: '2px', height: '1.1em',
+              bgcolor: isUser ? '#131313' : '#adc6ff', ml: '2px', verticalAlign: 'text-bottom',
+              animation: 'cBlink 1s step-end infinite',
+              '@keyframes cBlink': { '0%,100%': { opacity: 1 }, '50%': { opacity: 0 } },
+            }} />
+          )}
+        </Box>
+
+        {/* Action bar — appears on hover */}
+        <Box sx={{
+          display: 'flex', gap: 0.25, mt: 0.5,
+          opacity: hovered && !isStreaming ? 1 : 0,
+          transition: 'opacity 0.12s',
+        }}>
+          <Tooltip title={copied ? 'Copied!' : 'Copy'} placement="top">
+            <IconButton size="small" onClick={onCopy} sx={{
+              width: 26, height: 26, borderRadius: '4px',
+              color: copied ? '#53e16f' : 'text.disabled',
+              '&:hover': { bgcolor: 'rgba(229,226,225,0.06)', color: 'text.primary' },
             }}>
-              {isUser ? 'You' : 'VelocityLLM'}
-            </Typography>
-            {!isUser && message.model && (
-              <Typography sx={{
-                fontSize: '0.68rem', color: '#64748b',
-                bgcolor: 'rgba(148,163,184,0.08)',
-                px: 0.75, py: 0.1, borderRadius: 1,
-                fontWeight: 500,
-              }}>
-                {message.model}
-              </Typography>
-            )}
-          </Box>
-
-          {/* Message content */}
-          <Box sx={{
-            fontSize: '0.95rem', lineHeight: 1.7,
-            whiteSpace: 'pre-wrap', wordBreak: 'break-word',
-            color: 'text.primary',
-            // Style code blocks inline
-            '& code': {
-              fontSize: '0.85rem',
-              bgcolor: 'rgba(148,163,184,0.1)',
-              px: 0.75, py: 0.25, borderRadius: 1,
-              fontFamily: '"JetBrains Mono", "Fira Code", monospace',
-            },
-          }}>
-            <FormattedContent content={message.content} />
-            {isStreaming && (
-              <Box component="span" sx={{
-                display: 'inline-block', width: '2px', height: '1.1em',
-                bgcolor: '#8b5cf6', ml: '2px', verticalAlign: 'text-bottom',
-                animation: 'cBlink 1s step-end infinite',
-                '@keyframes cBlink': { '0%,100%': { opacity: 1 }, '50%': { opacity: 0 } },
-              }} />
-            )}
-          </Box>
-
-          {/* Action bar — appears on hover */}
-          <Box sx={{
-            display: 'flex', gap: 0.25, mt: 0.75,
-            opacity: hovered && !isStreaming ? 1 : 0,
-            transition: 'opacity 0.12s',
-          }}>
-            <Tooltip title={copied ? 'Copied!' : 'Copy'} placement="top">
-              <IconButton size="small" onClick={onCopy} sx={{
-                width: 28, height: 28, borderRadius: 1.5,
-                color: copied ? '#53e16f' : '#64748b',
-                bgcolor: copied ? 'rgba(83,225,111,0.08)' : 'transparent',
-                '&:hover': { bgcolor: 'rgba(148,163,184,0.08)', color: 'text.primary' },
-              }}>
-                {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-              </IconButton>
-            </Tooltip>
-          </Box>
+              {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+            </IconButton>
+          </Tooltip>
         </Box>
       </Box>
     </Box>

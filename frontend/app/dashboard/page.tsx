@@ -13,10 +13,11 @@ import Grid from '@mui/material/Grid';
 import {
   Activity, Zap, DollarSign, Clock, AlertCircle, RefreshCw
 } from 'lucide-react';
-import { useDashboardOverview, useTimeSeries, useModelComparison, useCostBreakdown } from '@/hooks/useAnalytics';
+import { useDashboardOverview, useTimeSeries, useModelComparison, useCostBreakdown, useRequestLog } from '@/hooks/useAnalytics';
 import { StatCard } from '@/components/StatCard';
 import { PageHeader } from '@/components/PageHeader';
 import ChartLoadingFallback from '@/components/ChartLoadingFallback';
+import { RecentRequests, ModelMix } from './ConsolePanels';
 
 const DashboardCharts = dynamic(() => import('./DashboardCharts'), {
   ssr: false,
@@ -30,6 +31,7 @@ export default function Dashboard() {
   const { data: timeSeries, isLoading: tsLoading } = useTimeSeries(timeRange);
   const { data: modelData } = useModelComparison();
   const { data: costData } = useCostBreakdown();
+  const { data: requestLog } = useRequestLog(8);
 
   if (overviewLoading) {
     return (
@@ -173,6 +175,19 @@ export default function Dashboard() {
           />
         </Grid>
       </Grid>
+
+      {/* Recent Requests (2fr) + Model Mix (1fr) — console signature panels */}
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: { xs: '1fr', lg: '2fr 1fr' },
+          gap: 2,
+          mb: 3,
+        }}
+      >
+        <RecentRequests data={requestLog} />
+        <ModelMix data={modelData} />
+      </Box>
 
       {/* Charts (dynamically loaded) */}
       <DashboardCharts

@@ -12,6 +12,17 @@ export function useDashboardOverview() {
   });
 }
 
+export function useRequestLog(limit: number = 8) {
+  return useQuery({
+    queryKey: ['request-log', limit],
+    queryFn: async () => {
+      const response = await analyticsAPI.getRequestLog({ limit });
+      return response.data?.data;
+    },
+    refetchInterval: 10000,
+  });
+}
+
 export function useTimeSeries(period: string = '24h') {
   return useQuery({
     queryKey: ['timeseries', period],
