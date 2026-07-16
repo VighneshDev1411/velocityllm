@@ -239,7 +239,7 @@ function JobCard({ job, onCancel }: { job: JobStatus; onCancel: (id: string) => 
   const getStatusIcon = () => {
     switch (job.status) {
       case 'completed':
-        return <CheckCircle size={18} style={{ color: '#16a34a' }} />;
+        return <CheckCircle size={18} style={{ color: '#05b046' }} />;
       case 'failed':
       case 'timeout':
       case 'cancelled':

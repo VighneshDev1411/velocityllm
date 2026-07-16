@@ -110,7 +110,7 @@ function ProviderCard({ name, provider, providerKey, testing, testResult, onTest
             width: 10,
             height: 10,
             borderRadius: '50%',
-            backgroundColor: configured ? '#22c55e' : '#f87171',
+            backgroundColor: configured ? '#53e16f' : '#f87171',
           }} />
           <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: 'text.primary' }}>{name}</Typography>
         </Box>
@@ -479,7 +479,7 @@ export default function SettingsPage() {
                           borderRadius: '4px',
                           backgroundColor:
                             (workerPool.status?.queue_utilization ?? 0) > 80 ? '#ef4444' :
-                            (workerPool.status?.queue_utilization ?? 0) > 50 ? '#ffb595' : '#22c55e',
+                            (workerPool.status?.queue_utilization ?? 0) > 50 ? '#ffb595' : '#53e16f',
                         },
                       }}
                     />

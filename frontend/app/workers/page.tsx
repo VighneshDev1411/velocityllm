@@ -168,7 +168,7 @@ function WorkerCard({ worker }: { worker: WorkerStats }) {
   };
 
   const getHealthColor = () => {
-    if (worker.health_score >= 80) return '#22c55e';
+    if (worker.health_score >= 80) return '#53e16f';
     if (worker.health_score >= 50) return '#ffb595';
     return '#ef4444';
   };

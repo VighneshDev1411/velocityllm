@@ -58,27 +58,26 @@ export default function SecurityPage() {
   const kpis = stats ? [
     { label: 'Total Scans', value: stats.total_scans, color: '#4b8eff', icon: Shield },
     { label: 'Vulnerabilities', value: stats.vulnerabilities, color: stats.critical_vulns > 0 ? '#ef4444' : '#f97316', icon: Bug },
-    { label: 'Critical', value: stats.critical_vulns, color: stats.critical_vulns > 0 ? '#ef4444' : '#22c55e', icon: AlertTriangle },
+    { label: 'Critical', value: stats.critical_vulns, color: stats.critical_vulns > 0 ? '#ef4444' : '#53e16f', icon: AlertTriangle },
     { label: 'Secrets Found', value: stats.secrets_detected, color: '#adc6ff', icon: Eye },
-    { label: 'Compliance', value: `${stats.compliance_score?.toFixed(0)}%`, color: stats.compliance_score >= 80 ? '#22c55e' : '#f97316', icon: CheckCircle },
+    { label: 'Compliance', value: `${stats.compliance_score?.toFixed(0)}%`, color: stats.compliance_score >= 80 ? '#53e16f' : '#f97316', icon: CheckCircle },
     { label: 'WAF Blocked', value: stats.waf_events_blocked, color: '#f97316', icon: Flame },
   ] : [];
 
   const severityColor = (s: string) => {
-    switch (s) { case 'critical': return '#ef4444'; case 'high': return '#f97316'; case 'medium': return '#ffb595'; case 'low': return '#22c55e'; default: return '#6b7280'; }
+    switch (s) { case 'critical': return '#ef4444'; case 'high': return '#f97316'; case 'medium': return '#ffb595'; case 'low': return '#53e16f'; default: return '#6b7280'; }
   };
 
   const scanStatusColor = (s: string) => {
-    switch (s) { case 'passed': return '#22c55e'; case 'failed': return '#ef4444'; case 'warning': return '#f97316'; default: return '#6b7280'; }
+    switch (s) { case 'passed': return '#53e16f'; case 'failed': return '#ef4444'; case 'warning': return '#f97316'; default: return '#6b7280'; }
   };
 
   const complianceColor = (s: string) => {
-    switch (s) { case 'compliant': return '#22c55e'; case 'non_compliant': return '#ef4444'; case 'partial': return '#ffb595'; default: return '#6b7280'; }
+    switch (s) { case 'compliant': return '#53e16f'; case 'non_compliant': return '#ef4444'; case 'partial': return '#ffb595'; default: return '#6b7280'; }
   };
 
   return (
-    <Box>
-      <PageHeader title="Security Hardening" subtitle="Vulnerability scanning, compliance, WAF, and security policies" />
+    <Box sx={{ p: { xs: 2, sm: 3 } }}>      <PageHeader title="Security Hardening" subtitle="Vulnerability scanning, compliance, WAF, and security policies" />
 
       <Grid container spacing={2} sx={{ mb: 3 }}>
         {kpis.map((k) => {
@@ -168,9 +167,9 @@ export default function SecurityPage() {
                       <TableCell sx={{ color: '#e5e2e1', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a', maxWidth: 250 }}>{v.title}</TableCell>
                       <TableCell sx={{ color: 'rgba(255,255,255,0.6)', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#2a2a2a' }}>{v.package}</TableCell>
                       <TableCell sx={{ color: '#ef4444', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#2a2a2a' }}>{v.version}</TableCell>
-                      <TableCell sx={{ color: '#22c55e', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#2a2a2a' }}>{v.fixed_in}</TableCell>
-                      <TableCell sx={{ color: v.cvss >= 7 ? '#ef4444' : v.cvss >= 4 ? '#ffb595' : '#22c55e', fontFamily: MONO, fontSize: '0.7rem', fontWeight: 700, borderColor: '#2a2a2a' }}>{v.cvss}</TableCell>
-                      <TableCell sx={{ borderColor: '#2a2a2a' }}><Chip label={v.status} size="small" sx={{ height: 20, fontSize: '0.6rem', fontFamily: MONO, backgroundColor: v.status === 'fixed' ? 'rgba(34,197,94,0.15)' : v.status === 'ignored' ? 'rgba(255,255,255,0.05)' : 'rgba(239,68,68,0.15)', color: v.status === 'fixed' ? '#22c55e' : v.status === 'ignored' ? 'rgba(255,255,255,0.4)' : '#ef4444' }} /></TableCell>
+                      <TableCell sx={{ color: '#53e16f', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#2a2a2a' }}>{v.fixed_in}</TableCell>
+                      <TableCell sx={{ color: v.cvss >= 7 ? '#ef4444' : v.cvss >= 4 ? '#ffb595' : '#53e16f', fontFamily: MONO, fontSize: '0.7rem', fontWeight: 700, borderColor: '#2a2a2a' }}>{v.cvss}</TableCell>
+                      <TableCell sx={{ borderColor: '#2a2a2a' }}><Chip label={v.status} size="small" sx={{ height: 20, fontSize: '0.6rem', fontFamily: MONO, backgroundColor: v.status === 'fixed' ? 'rgba(34,197,94,0.15)' : v.status === 'ignored' ? 'rgba(255,255,255,0.05)' : 'rgba(239,68,68,0.15)', color: v.status === 'fixed' ? '#53e16f' : v.status === 'ignored' ? 'rgba(255,255,255,0.4)' : '#ef4444' }} /></TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -190,11 +189,11 @@ export default function SecurityPage() {
                   <Box key={fw} sx={{ mb: 3 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1.5 }}>
                       <Typography sx={{ fontSize: '0.85rem', fontWeight: 700, color: '#e5e2e1', fontFamily: MONO }}>{fw}</Typography>
-                      <LinearProgress variant="determinate" value={pct} sx={{ flex: 1, height: 4, borderRadius: 2, backgroundColor: 'rgba(255,255,255,0.05)', '& .MuiLinearProgress-bar': { backgroundColor: pct === 100 ? '#22c55e' : '#ffb595', borderRadius: 2 } }} />
-                      <Typography sx={{ fontSize: '0.7rem', fontFamily: MONO, color: pct === 100 ? '#22c55e' : '#ffb595' }}>{passed}/{checks.length}</Typography>
+                      <LinearProgress variant="determinate" value={pct} sx={{ flex: 1, height: 4, borderRadius: 2, backgroundColor: 'rgba(255,255,255,0.05)', '& .MuiLinearProgress-bar': { backgroundColor: pct === 100 ? '#53e16f' : '#ffb595', borderRadius: 2 } }} />
+                      <Typography sx={{ fontSize: '0.7rem', fontFamily: MONO, color: pct === 100 ? '#53e16f' : '#ffb595' }}>{passed}/{checks.length}</Typography>
                     </Box>
                     {checks.map((c: any) => (
-                      <Box key={c.id} sx={{ pl: 2, py: 1, mb: 0.5, backgroundColor: '#141922', borderRadius: 1, border: '1px solid #2a2a2a', display: 'flex', justifyContent: 'space-between', alignItems: 'center', pr: 2 }}>
+                      <Box key={c.id} sx={{ pl: 2, py: 1, mb: 0.5, backgroundColor: '#201f1f', borderRadius: 1, border: '1px solid #2a2a2a', display: 'flex', justifyContent: 'space-between', alignItems: 'center', pr: 2 }}>
                         <Box>
                           <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
                             <Typography sx={{ fontSize: '0.7rem', fontWeight: 600, color: '#4b8eff', fontFamily: MONO }}>{c.control}</Typography>
@@ -244,16 +243,16 @@ export default function SecurityPage() {
             <Grid container spacing={1.5}>
               {policies.map((p: any) => (
                 <Grid key={p.name} size={{ xs: 12, md: 6 }}>
-                  <Box sx={{ p: 2, backgroundColor: '#141922', borderRadius: 1, border: '1px solid #2a2a2a', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Box sx={{ p: 2, backgroundColor: '#201f1f', borderRadius: 1, border: '1px solid #2a2a2a', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <Box>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.25 }}>
-                        <Box sx={{ color: p.enabled ? '#22c55e' : 'rgba(255,255,255,0.2)', display: 'flex' }}><Lock className="w-3.5 h-3.5" /></Box>
+                        <Box sx={{ color: p.enabled ? '#53e16f' : 'rgba(255,255,255,0.2)', display: 'flex' }}><Lock className="w-3.5 h-3.5" /></Box>
                         <Typography sx={{ fontSize: '0.8rem', fontWeight: 600, color: '#e5e2e1', fontFamily: MONO }}>{p.name}</Typography>
                       </Box>
                       <Typography sx={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.4)', fontFamily: MONO }}>{p.description}</Typography>
                       <Chip label={p.category} size="small" sx={{ height: 18, fontSize: '0.55rem', fontFamily: MONO, backgroundColor: 'rgba(75,142,255,0.1)', color: '#4b8eff', mt: 0.5 }} />
                     </Box>
-                    <Switch checked={p.enabled} onChange={() => togglePolicyMut.mutate(p.name)} size="small" sx={{ '& .MuiSwitch-switchBase.Mui-checked': { color: '#22c55e' }, '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': { backgroundColor: '#22c55e' } }} />
+                    <Switch checked={p.enabled} onChange={() => togglePolicyMut.mutate(p.name)} size="small" sx={{ '& .MuiSwitch-switchBase.Mui-checked': { color: '#53e16f' }, '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': { backgroundColor: '#53e16f' } }} />
                   </Box>
                 </Grid>
               ))}

@@ -32,7 +32,7 @@ function useCICDDeploys() { return useQuery({ queryKey: ['cicd-deploys'], queryF
 
 function KpiCard({ icon: Icon, label, value, sub, accent = '#4b8eff' }: { icon: React.ComponentType<{ className?: string }>; label: string; value: string | number; sub?: string; accent?: string }) {
   return (
-    <Paper elevation={0} sx={{ p: 2.5, backgroundColor: '#141922', border: '1px solid #2a2a2a', borderLeft: `3px solid ${accent}`, borderRadius: '8px' }}>
+    <Paper elevation={0} sx={{ p: 2.5, backgroundColor: '#201f1f', border: '1px solid #2a2a2a', borderLeft: `3px solid ${accent}`, borderRadius: '8px' }}>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
         <Icon className="w-4 h-4" />
         <Box>
@@ -45,7 +45,7 @@ function KpiCard({ icon: Icon, label, value, sub, accent = '#4b8eff' }: { icon: 
   );
 }
 
-const statusColors: Record<string, string> = { success: '#22c55e', failed: '#ef4444', running: '#4b8eff', pending: '#ffb595', cancelled: '#4b5563', skipped: '#4b5563' };
+const statusColors: Record<string, string> = { success: '#53e16f', failed: '#ef4444', running: '#4b8eff', pending: '#ffb595', cancelled: '#4b5563', skipped: '#4b5563' };
 const statusIcons: Record<string, React.ComponentType<{ className?: string }>> = { success: CheckCircle, failed: XCircle, running: RefreshCw, pending: Clock };
 
 function PipelineCard({ pipeline }: { pipeline: any }) {
@@ -55,11 +55,11 @@ function PipelineCard({ pipeline }: { pipeline: any }) {
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['cicd-runs'] }); queryClient.invalidateQueries({ queryKey: ['cicd-stats'] }); },
   });
 
-  const triggerColors: Record<string, string> = { push: '#4b8eff', pr: '#adc6ff', schedule: '#ffb595', manual: '#22c55e' };
+  const triggerColors: Record<string, string> = { push: '#4b8eff', pr: '#adc6ff', schedule: '#ffb595', manual: '#53e16f' };
   const envColors: Record<string, string> = { production: '#ef4444', staging: '#ffb595' };
 
   return (
-    <Paper elevation={0} sx={{ p: 2.5, backgroundColor: '#141922', border: '1px solid #2a2a2a', borderRadius: '8px' }}>
+    <Paper elevation={0} sx={{ p: 2.5, backgroundColor: '#201f1f', border: '1px solid #2a2a2a', borderRadius: '8px' }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1.5 }}>
         <Box>
           <Typography sx={{ fontSize: '0.9rem', fontFamily: MONO, color: '#e5e2e1', fontWeight: 700 }}>{pipeline.name}</Typography>
@@ -72,7 +72,7 @@ function PipelineCard({ pipeline }: { pipeline: any }) {
         <Button
           size="small" variant="outlined"
           onClick={() => trigger.mutate()} disabled={trigger.isPending}
-          sx={{ fontFamily: MONO, fontSize: '0.65rem', textTransform: 'none', borderColor: '#2a2a2a', color: '#22c55e' }}
+          sx={{ fontFamily: MONO, fontSize: '0.65rem', textTransform: 'none', borderColor: '#2a2a2a', color: '#53e16f' }}
         >
           <Play className="w-3 h-3" style={{ marginRight: 3 }} /> Run
         </Button>
@@ -82,7 +82,7 @@ function PipelineCard({ pipeline }: { pipeline: any }) {
       <Box sx={{ display: 'flex', gap: 0.5, alignItems: 'center' }}>
         {(pipeline.stages || []).map((s: any, i: number) => (
           <Box key={i} sx={{ flex: 1, textAlign: 'center' }}>
-            <Box sx={{ height: 4, borderRadius: 2, backgroundColor: '#22c55e40', mb: 0.5 }} />
+            <Box sx={{ height: 4, borderRadius: 2, backgroundColor: '#53e16f40', mb: 0.5 }} />
             <Typography sx={{ fontSize: '0.5rem', fontFamily: MONO, color: '#8b949e' }}>{s.name}</Typography>
           </Box>
         ))}
@@ -95,7 +95,7 @@ function RunsTable({ runs }: { runs: any[] }) {
   const [expanded, setExpanded] = useState<string | null>(null);
 
   return (
-    <Paper elevation={0} sx={{ p: 3, backgroundColor: '#141922', border: '1px solid #2a2a2a', borderRadius: '8px' }}>
+    <Paper elevation={0} sx={{ p: 3, backgroundColor: '#201f1f', border: '1px solid #2a2a2a', borderRadius: '8px' }}>
       <Typography sx={{ ...sectionLabelSx, mb: 2 }}>Pipeline Runs ({runs.length})</Typography>
       <Table size="small">
         <TableHead>
@@ -146,7 +146,7 @@ function RunsTable({ runs }: { runs: any[] }) {
                       <Box sx={{ p: 2, backgroundColor: '#0e0e0e' }}>
                         <Box sx={{ display: 'flex', gap: 1 }}>
                           {(run.stages || []).map((stage: any, si: number) => (
-                            <Box key={si} sx={{ flex: 1, p: 1.5, backgroundColor: '#141922', borderRadius: '6px', border: '1px solid #2a2a2a' }}>
+                            <Box key={si} sx={{ flex: 1, p: 1.5, backgroundColor: '#201f1f', borderRadius: '6px', border: '1px solid #2a2a2a' }}>
                               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 1 }}>
                                 <Box sx={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: statusColors[stage.status] || '#4b5563' }} />
                                 <Typography sx={{ fontSize: '0.7rem', fontFamily: MONO, color: '#e5e2e1', fontWeight: 600 }}>{stage.name}</Typography>
@@ -177,7 +177,7 @@ function RunsTable({ runs }: { runs: any[] }) {
 
 function DeploymentsPanel({ deployments }: { deployments: any[] }) {
   return (
-    <Paper elevation={0} sx={{ p: 3, backgroundColor: '#141922', border: '1px solid #2a2a2a', borderRadius: '8px' }}>
+    <Paper elevation={0} sx={{ p: 3, backgroundColor: '#201f1f', border: '1px solid #2a2a2a', borderRadius: '8px' }}>
       <Typography sx={{ ...sectionLabelSx, mb: 2 }}>Deployment History</Typography>
       <Table size="small">
         <TableHead>
@@ -195,7 +195,7 @@ function DeploymentsPanel({ deployments }: { deployments: any[] }) {
                 <Chip label={d.environment} size="small" sx={{ fontFamily: MONO, fontSize: '0.6rem', height: 20, backgroundColor: d.environment === 'production' ? '#ef444420' : '#ffb59520', color: d.environment === 'production' ? '#ef4444' : '#ffb595' }} />
               </TableCell>
               <TableCell sx={{ borderColor: '#2a2a2a' }}>
-                <Chip label={d.status} size="small" sx={{ fontFamily: MONO, fontSize: '0.6rem', height: 20, backgroundColor: d.status === 'deployed' ? '#22c55e20' : '#ef444420', color: d.status === 'deployed' ? '#22c55e' : '#ef4444' }} />
+                <Chip label={d.status} size="small" sx={{ fontFamily: MONO, fontSize: '0.6rem', height: 20, backgroundColor: d.status === 'deployed' ? '#53e16f20' : '#ef444420', color: d.status === 'deployed' ? '#53e16f' : '#ef4444' }} />
               </TableCell>
               <TableCell sx={{ color: '#8b949e', fontFamily: MONO, fontSize: '0.75rem', borderColor: '#2a2a2a' }}>{d.deployed_by}</TableCell>
               <TableCell sx={{ color: '#8b949e', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>{new Date(d.deployed_at).toLocaleString()}</TableCell>
@@ -220,15 +220,14 @@ export default function PipelinesPage() {
   const deployments = deploysData?.deployments || [];
 
   return (
-    <Box>
-      <PageHeader title="CI/CD Pipelines" subtitle="Build, test, scan, and deploy — automated pipeline management" />
+    <Box sx={{ p: { xs: 2, sm: 3 } }}>      <PageHeader title="CI/CD Pipelines" subtitle="Build, test, scan, and deploy — automated pipeline management" />
 
       <Grid container spacing={2} sx={{ mb: 3 }}>
         <Grid size={{ xs: 6, md: 2 }}><KpiCard icon={GitBranch} label="Pipelines" value={stats?.total_pipelines || 0} accent="#4b8eff" /></Grid>
         <Grid size={{ xs: 6, md: 2 }}><KpiCard icon={Activity} label="Total Runs" value={stats?.total_runs || 0} accent="#adc6ff" /></Grid>
-        <Grid size={{ xs: 6, md: 2 }}><KpiCard icon={CheckCircle} label="Success Rate" value={stats?.success_rate || '—'} accent="#22c55e" /></Grid>
+        <Grid size={{ xs: 6, md: 2 }}><KpiCard icon={CheckCircle} label="Success Rate" value={stats?.success_rate || '—'} accent="#53e16f" /></Grid>
         <Grid size={{ xs: 6, md: 2 }}><KpiCard icon={Clock} label="Avg Duration" value={stats?.avg_duration || '—'} accent="#ffb595" /></Grid>
-        <Grid size={{ xs: 6, md: 2 }}><KpiCard icon={Rocket} label="Deployments" value={stats?.deployments || 0} accent="#22c55e" /></Grid>
+        <Grid size={{ xs: 6, md: 2 }}><KpiCard icon={Rocket} label="Deployments" value={stats?.deployments || 0} accent="#53e16f" /></Grid>
         <Grid size={{ xs: 6, md: 2 }}><KpiCard icon={XCircle} label="Failed" value={stats?.failed_runs || 0} accent="#ef4444" /></Grid>
       </Grid>
 

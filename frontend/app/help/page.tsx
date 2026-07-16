@@ -25,11 +25,11 @@ const MONO = '"JetBrains Mono", monospace';
 const fetcher = (url: string) => fetch(url).then(r => r.json());
 
 const difficultyColor = (d: string) => {
-  switch (d) { case 'beginner': return '#22c55e'; case 'intermediate': return '#ffb595'; case 'advanced': return '#ef4444'; default: return '#6b7280'; }
+  switch (d) { case 'beginner': return '#53e16f'; case 'intermediate': return '#ffb595'; case 'advanced': return '#ef4444'; default: return '#6b7280'; }
 };
 
 const categoryColor = (c: string) => {
-  switch (c) { case 'getting-started': return '#22c55e'; case 'api': return '#4b8eff'; case 'platform': return '#adc6ff'; case 'deployment': return '#f97316'; case 'security': return '#ef4444'; default: return '#6b7280'; }
+  switch (c) { case 'getting-started': return '#53e16f'; case 'api': return '#4b8eff'; case 'platform': return '#adc6ff'; case 'deployment': return '#f97316'; case 'security': return '#ef4444'; default: return '#6b7280'; }
 };
 
 export default function HelpPage() {
@@ -58,13 +58,12 @@ export default function HelpPage() {
 
   const kpis = stats ? [
     { label: 'Guides', value: stats.guides, color: '#4b8eff', icon: BookOpen },
-    { label: 'FAQs', value: stats.faqs, color: '#22c55e', icon: MessageCircleQuestion },
+    { label: 'FAQs', value: stats.faqs, color: '#53e16f', icon: MessageCircleQuestion },
     { label: 'Tutorials', value: stats.tutorials, color: '#adc6ff', icon: GraduationCap },
   ] : [];
 
   return (
-    <Box>
-      <PageHeader title="Help Center" subtitle="Guides, FAQs, and tutorials to get you started" />
+    <Box sx={{ p: { xs: 2, sm: 3 } }}>      <PageHeader title="Help Center" subtitle="Guides, FAQs, and tutorials to get you started" />
 
       {/* KPIs */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
@@ -97,14 +96,14 @@ export default function HelpPage() {
             fullWidth
             InputProps={{
               startAdornment: <InputAdornment position="start"><Box sx={{ color: 'rgba(255,255,255,0.3)', display: 'flex' }}><Search className="w-4 h-4" /></Box></InputAdornment>,
-              sx: { fontFamily: MONO, fontSize: '0.8rem', backgroundColor: '#141922', '& fieldset': { borderColor: '#2a2a2a' } },
+              sx: { fontFamily: MONO, fontSize: '0.8rem', backgroundColor: '#201f1f', '& fieldset': { borderColor: '#2a2a2a' } },
             }}
           />
           {searchResults && search.length >= 2 && (
             <Box sx={{ mt: 2 }}>
               <Typography sx={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)', fontFamily: MONO, mb: 1 }}>{searchResults.total} results for "{search}"</Typography>
               {(searchResults.guides || []).map((g: any) => (
-                <Box key={g.id} sx={{ py: 1, px: 1.5, mb: 0.5, backgroundColor: '#141922', borderRadius: 1, border: '1px solid #2a2a2a' }}>
+                <Box key={g.id} sx={{ py: 1, px: 1.5, mb: 0.5, backgroundColor: '#201f1f', borderRadius: 1, border: '1px solid #2a2a2a' }}>
                   <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
                     <Chip label="Guide" size="small" sx={{ height: 18, fontSize: '0.55rem', fontFamily: MONO, backgroundColor: 'rgba(75,142,255,0.15)', color: '#4b8eff' }} />
                     <Typography sx={{ fontSize: '0.75rem', color: '#e5e2e1', fontFamily: MONO }}>{g.title}</Typography>
@@ -112,15 +111,15 @@ export default function HelpPage() {
                 </Box>
               ))}
               {(searchResults.faqs || []).map((f: any) => (
-                <Box key={f.id} sx={{ py: 1, px: 1.5, mb: 0.5, backgroundColor: '#141922', borderRadius: 1, border: '1px solid #2a2a2a' }}>
+                <Box key={f.id} sx={{ py: 1, px: 1.5, mb: 0.5, backgroundColor: '#201f1f', borderRadius: 1, border: '1px solid #2a2a2a' }}>
                   <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-                    <Chip label="FAQ" size="small" sx={{ height: 18, fontSize: '0.55rem', fontFamily: MONO, backgroundColor: 'rgba(34,197,94,0.15)', color: '#22c55e' }} />
+                    <Chip label="FAQ" size="small" sx={{ height: 18, fontSize: '0.55rem', fontFamily: MONO, backgroundColor: 'rgba(34,197,94,0.15)', color: '#53e16f' }} />
                     <Typography sx={{ fontSize: '0.75rem', color: '#e5e2e1', fontFamily: MONO }}>{f.question}</Typography>
                   </Box>
                 </Box>
               ))}
               {(searchResults.tutorials || []).map((t: any) => (
-                <Box key={t.id} sx={{ py: 1, px: 1.5, mb: 0.5, backgroundColor: '#141922', borderRadius: 1, border: '1px solid #2a2a2a' }}>
+                <Box key={t.id} sx={{ py: 1, px: 1.5, mb: 0.5, backgroundColor: '#201f1f', borderRadius: 1, border: '1px solid #2a2a2a' }}>
                   <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
                     <Chip label="Tutorial" size="small" sx={{ height: 18, fontSize: '0.55rem', fontFamily: MONO, backgroundColor: 'rgba(167,139,250,0.15)', color: '#adc6ff' }} />
                     <Typography sx={{ fontSize: '0.75rem', color: '#e5e2e1', fontFamily: MONO }}>{t.title}</Typography>
@@ -148,7 +147,7 @@ export default function HelpPage() {
                 <Grid key={g.id} size={{ xs: 12, md: selectedGuide === g.id ? 12 : 6 }}>
                   <Box
                     onClick={() => setSelectedGuide(selectedGuide === g.id ? null : g.id)}
-                    sx={{ p: 2, backgroundColor: '#141922', borderRadius: 1, border: `1px solid ${selectedGuide === g.id ? '#4b8eff' : '#2a2a2a'}`, cursor: 'pointer', transition: 'border-color 0.2s', '&:hover': { borderColor: '#4b8eff40' } }}
+                    sx={{ p: 2, backgroundColor: '#201f1f', borderRadius: 1, border: `1px solid ${selectedGuide === g.id ? '#4b8eff' : '#2a2a2a'}`, cursor: 'pointer', transition: 'border-color 0.2s', '&:hover': { borderColor: '#4b8eff40' } }}
                   >
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                       <Chip label={g.category} size="small" sx={{ height: 20, fontSize: '0.55rem', fontFamily: MONO, backgroundColor: `${categoryColor(g.category)}15`, color: categoryColor(g.category) }} />
@@ -179,7 +178,7 @@ export default function HelpPage() {
           {tab === 1 && (
             <Box>
               {faqs.sort((a: any, b: any) => b.votes - a.votes).map((f: any) => (
-                <Accordion key={f.id} sx={{ backgroundColor: '#141922', border: '1px solid #2a2a2a', mb: 1, '&:before': { display: 'none' }, '&.Mui-expanded': { margin: '0 0 8px 0' } }}>
+                <Accordion key={f.id} sx={{ backgroundColor: '#201f1f', border: '1px solid #2a2a2a', mb: 1, '&:before': { display: 'none' }, '&.Mui-expanded': { margin: '0 0 8px 0' } }}>
                   <AccordionSummary expandIcon={<Box sx={{ color: 'rgba(255,255,255,0.3)', display: 'flex' }}><ChevronDown className="w-4 h-4" /></Box>}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flex: 1 }}>
                       <Box sx={{ color: '#4b8eff', display: 'flex' }}><HelpCircle className="w-4 h-4" /></Box>
@@ -191,7 +190,7 @@ export default function HelpPage() {
                     <Typography sx={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.6)', fontFamily: MONO, lineHeight: 1.8, mb: 1.5 }}>{f.answer}</Typography>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                       <Button size="small" startIcon={<ThumbsUp className="w-3 h-3" />} onClick={() => voteMut.mutate(f.id)}
-                        sx={{ fontSize: '0.6rem', fontFamily: MONO, textTransform: 'none', color: 'rgba(255,255,255,0.4)', '&:hover': { color: '#22c55e' } }}>
+                        sx={{ fontSize: '0.6rem', fontFamily: MONO, textTransform: 'none', color: 'rgba(255,255,255,0.4)', '&:hover': { color: '#53e16f' } }}>
                         Helpful ({f.votes})
                       </Button>
                     </Box>
@@ -208,7 +207,7 @@ export default function HelpPage() {
                 <Grid key={t.id} size={{ xs: 12, md: selectedTutorial === t.id ? 12 : 6 }}>
                   <Box
                     onClick={() => setSelectedTutorial(selectedTutorial === t.id ? null : t.id)}
-                    sx={{ p: 2, backgroundColor: '#141922', borderRadius: 1, border: `1px solid ${selectedTutorial === t.id ? '#adc6ff' : '#2a2a2a'}`, cursor: 'pointer', transition: 'border-color 0.2s', '&:hover': { borderColor: '#adc6ff40' } }}
+                    sx={{ p: 2, backgroundColor: '#201f1f', borderRadius: 1, border: `1px solid ${selectedTutorial === t.id ? '#adc6ff' : '#2a2a2a'}`, cursor: 'pointer', transition: 'border-color 0.2s', '&:hover': { borderColor: '#adc6ff40' } }}
                   >
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                       <Chip label={t.difficulty} size="small" sx={{ height: 20, fontSize: '0.55rem', fontFamily: MONO, backgroundColor: `${difficultyColor(t.difficulty)}15`, color: difficultyColor(t.difficulty) }} />
@@ -228,7 +227,7 @@ export default function HelpPage() {
                             <Typography sx={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.6)', fontFamily: MONO, mb: s.code ? 1 : 0 }}>{s.content}</Typography>
                             {s.code && (
                               <Box sx={{ p: 1.5, backgroundColor: '#0e0e0e', borderRadius: 1, border: '1px solid #2a2a2a', mt: 0.5 }}>
-                                <Typography component="pre" sx={{ fontSize: '0.65rem', color: '#22c55e', fontFamily: MONO, m: 0, whiteSpace: 'pre-wrap' }}>{s.code}</Typography>
+                                <Typography component="pre" sx={{ fontSize: '0.65rem', color: '#53e16f', fontFamily: MONO, m: 0, whiteSpace: 'pre-wrap' }}>{s.code}</Typography>
                               </Box>
                             )}
                           </Box>

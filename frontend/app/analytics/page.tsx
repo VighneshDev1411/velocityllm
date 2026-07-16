@@ -508,7 +508,7 @@ export default function AnalyticsPage() {
                     </TableCell>
                     <TableCell align="center">
                       {r.cache_hit
-                        ? <Check style={{ width: 16, height: 16, color: '#22c55e', margin: '0 auto' }} />
+                        ? <Check style={{ width: 16, height: 16, color: '#53e16f', margin: '0 auto' }} />
                         : <Minus style={{ width: 16, height: 16, color: 'text.disabled', margin: '0 auto' }} />}
                     </TableCell>
                   </TableRow>

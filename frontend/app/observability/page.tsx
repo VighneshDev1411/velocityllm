@@ -57,10 +57,10 @@ export default function ObservabilityPage() {
 
   const kpis = stats ? [
     { label: 'Active Metrics', value: stats.active_metrics || 0, color: '#4b8eff', icon: Activity },
-    { label: 'Active Alerts', value: stats.active_alerts || 0, color: stats.active_alerts > 0 ? '#f97316' : '#22c55e', icon: AlertTriangle },
+    { label: 'Active Alerts', value: stats.active_alerts || 0, color: stats.active_alerts > 0 ? '#f97316' : '#53e16f', icon: AlertTriangle },
     { label: 'Log Entries', value: stats.log_entries || 0, color: '#adc6ff', icon: ScrollText },
     { label: 'Active Traces', value: stats.active_traces || 0, color: '#adc6ff', icon: GitBranch },
-    { label: 'SLOs Tracked', value: stats.slo_count || 0, color: '#22c55e', icon: Target },
+    { label: 'SLOs Tracked', value: stats.slo_count || 0, color: '#53e16f', icon: Target },
     { label: 'Alert Rules', value: stats.alert_rules || 0, color: '#ffb595', icon: AlertTriangle },
   ] : [];
 
@@ -73,8 +73,7 @@ export default function ObservabilityPage() {
   };
 
   return (
-    <Box>
-      <PageHeader title="Monitoring & Observability" subtitle="Metrics, alerts, logs, traces, and SLOs" />
+    <Box sx={{ p: { xs: 2, sm: 3 } }}>      <PageHeader title="Monitoring & Observability" subtitle="Metrics, alerts, logs, traces, and SLOs" />
 
       <Grid container spacing={2} sx={{ mb: 3 }}>
         {kpis.map((k) => {
@@ -110,7 +109,7 @@ export default function ObservabilityPage() {
             <Grid container spacing={2}>
               {metrics.map((m: any) => (
                 <Grid key={m.name} size={{ xs: 12, md: 6 }}>
-                  <Box sx={{ p: 2, backgroundColor: '#141922', borderRadius: 1, border: '1px solid #2a2a2a' }}>
+                  <Box sx={{ p: 2, backgroundColor: '#201f1f', borderRadius: 1, border: '1px solid #2a2a2a' }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                       <Typography sx={{ fontSize: '0.8rem', fontWeight: 600, color: '#e5e2e1', fontFamily: MONO }}>{m.name}</Typography>
                       <Chip label={m.type} size="small" sx={{ height: 20, fontSize: '0.6rem', fontFamily: MONO, backgroundColor: 'rgba(75,142,255,0.15)', color: '#4b8eff' }} />
@@ -160,8 +159,8 @@ export default function ObservabilityPage() {
                         <TableCell sx={{ color: '#e5e2e1', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>{a.message}</TableCell>
                         <TableCell sx={{ color: 'rgba(255,255,255,0.6)', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>{a.metric}</TableCell>
                         <TableCell sx={{ color: '#f97316', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>{typeof a.value === 'number' ? a.value.toFixed(2) : a.value}</TableCell>
-                        <TableCell sx={{ borderColor: '#2a2a2a' }}><Chip label={a.resolved ? 'Resolved' : 'Active'} size="small" sx={{ height: 20, fontSize: '0.6rem', fontFamily: MONO, backgroundColor: a.resolved ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)', color: a.resolved ? '#22c55e' : '#ef4444' }} /></TableCell>
-                        <TableCell sx={{ borderColor: '#2a2a2a' }}>{!a.resolved && <Button size="small" onClick={() => resolveMut.mutate(a.id)} sx={{ fontSize: '0.6rem', fontFamily: MONO, textTransform: 'none', color: '#22c55e' }}>Resolve</Button>}</TableCell>
+                        <TableCell sx={{ borderColor: '#2a2a2a' }}><Chip label={a.resolved ? 'Resolved' : 'Active'} size="small" sx={{ height: 20, fontSize: '0.6rem', fontFamily: MONO, backgroundColor: a.resolved ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)', color: a.resolved ? '#53e16f' : '#ef4444' }} /></TableCell>
+                        <TableCell sx={{ borderColor: '#2a2a2a' }}>{!a.resolved && <Button size="small" onClick={() => resolveMut.mutate(a.id)} sx={{ fontSize: '0.6rem', fontFamily: MONO, textTransform: 'none', color: '#53e16f' }}>Resolve</Button>}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -172,10 +171,10 @@ export default function ObservabilityPage() {
               <Grid container spacing={1.5}>
                 {alertRules.map((rule: any) => (
                   <Grid key={rule.id} size={{ xs: 12, md: 4 }}>
-                    <Box sx={{ p: 2, backgroundColor: '#141922', borderRadius: 1, border: '1px solid #2a2a2a' }}>
+                    <Box sx={{ p: 2, backgroundColor: '#201f1f', borderRadius: 1, border: '1px solid #2a2a2a' }}>
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
                         <Typography sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#e5e2e1', fontFamily: MONO }}>{rule.name}</Typography>
-                        <Chip label={rule.enabled ? 'Enabled' : 'Disabled'} size="small" sx={{ height: 18, fontSize: '0.55rem', fontFamily: MONO, backgroundColor: rule.enabled ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.05)', color: rule.enabled ? '#22c55e' : 'rgba(255,255,255,0.3)' }} />
+                        <Chip label={rule.enabled ? 'Enabled' : 'Disabled'} size="small" sx={{ height: 18, fontSize: '0.55rem', fontFamily: MONO, backgroundColor: rule.enabled ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.05)', color: rule.enabled ? '#53e16f' : 'rgba(255,255,255,0.3)' }} />
                       </Box>
                       <Typography sx={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.4)', fontFamily: MONO, mb: 1 }}>{rule.metric} {rule.condition} {rule.threshold}</Typography>
                       <Button size="small" onClick={() => toggleRuleMut.mutate(rule.id)} sx={{ fontSize: '0.6rem', fontFamily: MONO, textTransform: 'none', color: '#4b8eff' }}>{rule.enabled ? 'Disable' : 'Enable'}</Button>
@@ -215,7 +214,7 @@ export default function ObservabilityPage() {
           {tab === 3 && (
             <Box>
               {traces.map((t: any) => (
-                <Box key={t.trace_id} sx={{ mb: 2, p: 2, backgroundColor: '#141922', borderRadius: 1, border: '1px solid #2a2a2a' }}>
+                <Box key={t.trace_id} sx={{ mb: 2, p: 2, backgroundColor: '#201f1f', borderRadius: 1, border: '1px solid #2a2a2a' }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                     <Box>
                       <Typography sx={{ fontSize: '0.8rem', fontWeight: 600, color: '#e5e2e1', fontFamily: MONO }}>{t.name}</Typography>
@@ -223,7 +222,7 @@ export default function ObservabilityPage() {
                     </Box>
                     <Box sx={{ textAlign: 'right' }}>
                       <Typography sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#4b8eff', fontFamily: MONO }}>{t.duration}</Typography>
-                      <Chip label={t.status} size="small" sx={{ height: 18, fontSize: '0.55rem', fontFamily: MONO, backgroundColor: t.status === 'ok' ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)', color: t.status === 'ok' ? '#22c55e' : '#ef4444' }} />
+                      <Chip label={t.status} size="small" sx={{ height: 18, fontSize: '0.55rem', fontFamily: MONO, backgroundColor: t.status === 'ok' ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)', color: t.status === 'ok' ? '#53e16f' : '#ef4444' }} />
                     </Box>
                   </Box>
                   {t.spans && t.spans.map((s: any, i: number) => (
@@ -246,22 +245,22 @@ export default function ObservabilityPage() {
                 const met = slo.current >= slo.target;
                 return (
                   <Grid key={slo.id} size={{ xs: 12, md: 6 }}>
-                    <Box sx={{ p: 2, backgroundColor: '#141922', borderRadius: 1, border: '1px solid #2a2a2a' }}>
+                    <Box sx={{ p: 2, backgroundColor: '#201f1f', borderRadius: 1, border: '1px solid #2a2a2a' }}>
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                         <Typography sx={{ fontSize: '0.8rem', fontWeight: 600, color: '#e5e2e1', fontFamily: MONO }}>{slo.name}</Typography>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                          <Box sx={{ color: met ? '#22c55e' : '#ef4444', display: 'flex' }}>
+                          <Box sx={{ color: met ? '#53e16f' : '#ef4444', display: 'flex' }}>
                             {met ? <CheckCircle className="w-3.5 h-3.5" /> : <XCircle className="w-3.5 h-3.5" />}
                           </Box>
-                          <Typography sx={{ fontSize: '0.65rem', fontFamily: MONO, color: met ? '#22c55e' : '#ef4444' }}>{met ? 'Met' : 'Breached'}</Typography>
+                          <Typography sx={{ fontSize: '0.65rem', fontFamily: MONO, color: met ? '#53e16f' : '#ef4444' }}>{met ? 'Met' : 'Breached'}</Typography>
                         </Box>
                       </Box>
                       <Typography sx={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.4)', fontFamily: MONO, mb: 1 }}>{slo.description}</Typography>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 0.5 }}>
                         <Box sx={{ flex: 1 }}>
-                          <LinearProgress variant="determinate" value={Math.min(slo.current, 100)} sx={{ height: 6, borderRadius: 3, backgroundColor: 'rgba(255,255,255,0.05)', '& .MuiLinearProgress-bar': { backgroundColor: met ? '#22c55e' : '#ef4444', borderRadius: 3 } }} />
+                          <LinearProgress variant="determinate" value={Math.min(slo.current, 100)} sx={{ height: 6, borderRadius: 3, backgroundColor: 'rgba(255,255,255,0.05)', '& .MuiLinearProgress-bar': { backgroundColor: met ? '#53e16f' : '#ef4444', borderRadius: 3 } }} />
                         </Box>
-                        <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: met ? '#22c55e' : '#ef4444', fontFamily: MONO, minWidth: 50 }}>{slo.current?.toFixed(2)}%</Typography>
+                        <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: met ? '#53e16f' : '#ef4444', fontFamily: MONO, minWidth: 50 }}>{slo.current?.toFixed(2)}%</Typography>
                       </Box>
                       <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                         <Typography sx={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.3)', fontFamily: MONO }}>Target: {slo.target}%</Typography>

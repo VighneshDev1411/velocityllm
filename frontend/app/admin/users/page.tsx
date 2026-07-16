@@ -476,7 +476,7 @@ export default function AdminUsersPage() {
                                   width: 6,
                                   height: 6,
                                   borderRadius: '50%',
-                                  backgroundColor: u.active ? '#22c55e' : '#ef4444',
+                                  backgroundColor: u.active ? '#53e16f' : '#ef4444',
                                   display: 'inline-block',
                                   marginRight: '6px',
                                 },

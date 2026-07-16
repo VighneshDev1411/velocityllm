@@ -534,7 +534,7 @@ export default function VersioningPage() {
   const statusData = stats ? [
     { name: 'Draft', value: stats.versions_draft, color: '#c1c6d7' },
     { name: 'Active', value: stats.versions_active, color: '#4b8eff' },
-    { name: 'Deployed', value: stats.versions_deployed, color: '#22c55e' },
+    { name: 'Deployed', value: stats.versions_deployed, color: '#53e16f' },
     { name: 'Archived', value: stats.versions_archived, color: '#ffb595' },
   ] : [];
 
@@ -543,7 +543,7 @@ export default function VersioningPage() {
       <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 2 }}>
         <StatCard icon={Layers} label="Total Versions" value={stats?.total_versions || 0} color="#4b8eff" />
         <StatCard icon={CheckCircle} label="Active" value={stats?.versions_active || 0} color="#adc6ff" />
-        <StatCard icon={Rocket} label="Deployed" value={stats?.versions_deployed || 0} color="#22c55e" />
+        <StatCard icon={Rocket} label="Deployed" value={stats?.versions_deployed || 0} color="#53e16f" />
         <StatCard icon={FlaskConical} label="A/B Tests" value={stats?.total_abtests || 0} color="#ffb595" />
       </Box>
 

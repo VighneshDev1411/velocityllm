@@ -70,7 +70,7 @@ function KpiCard({ icon: Icon, label, value, accent = '#4b8eff' }: {
   icon: React.ComponentType<{ className?: string }>; label: string; value: string | number; accent?: string;
 }) {
   return (
-    <Paper elevation={0} sx={{ p: 2.5, backgroundColor: '#141922', border: '1px solid #2a2a2a', borderLeft: `3px solid ${accent}`, borderRadius: '8px' }}>
+    <Paper elevation={0} sx={{ p: 2.5, backgroundColor: '#201f1f', border: '1px solid #2a2a2a', borderLeft: `3px solid ${accent}`, borderRadius: '8px' }}>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
         <Icon className="w-4 h-4" />
         <Box>
@@ -87,7 +87,7 @@ function MembersPanel({ members }: { members: any[] }) {
   const queryClient = useQueryClient();
   const roleColors: Record<string, string> = { owner: '#ffb595', admin: '#adc6ff', editor: '#4b8eff', viewer: '#8b949e' };
   const roleIcons: Record<string, React.ComponentType<{ className?: string }>> = { owner: Crown, admin: Shield, editor: Edit3, viewer: Eye };
-  const statusColors: Record<string, string> = { online: '#22c55e', away: '#ffb595', offline: '#4b5563' };
+  const statusColors: Record<string, string> = { online: '#53e16f', away: '#ffb595', offline: '#4b5563' };
 
   const updateRole = useMutation({
     mutationFn: async ({ user_id, role }: { user_id: string; role: string }) => {
@@ -97,7 +97,7 @@ function MembersPanel({ members }: { members: any[] }) {
   });
 
   return (
-    <Paper elevation={0} sx={{ p: 3, backgroundColor: '#141922', border: '1px solid #2a2a2a', borderRadius: '8px' }}>
+    <Paper elevation={0} sx={{ p: 3, backgroundColor: '#201f1f', border: '1px solid #2a2a2a', borderRadius: '8px' }}>
       <Typography sx={{ ...sectionLabelSx, mb: 2 }}>Team Members ({members.length})</Typography>
       {members.map((m: any) => {
         const RoleIcon = roleIcons[m.role] || Eye;
@@ -126,7 +126,7 @@ function MembersPanel({ members }: { members: any[] }) {
                 <select
                   value={m.role}
                   onChange={(e) => updateRole.mutate({ user_id: m.user_id, role: e.target.value })}
-                  style={{ padding: '2px 6px', backgroundColor: '#141922', border: '1px solid #2a2a2a', borderRadius: '4px', color: '#8b949e', fontFamily: MONO, fontSize: '0.6rem' }}
+                  style={{ padding: '2px 6px', backgroundColor: '#201f1f', border: '1px solid #2a2a2a', borderRadius: '4px', color: '#8b949e', fontFamily: MONO, fontSize: '0.6rem' }}
                 >
                   <option value="admin">Admin</option>
                   <option value="editor">Editor</option>
@@ -146,10 +146,10 @@ function SharedResourcesPanel({ resources }: { resources: any[] }) {
   const typeIcons: Record<string, React.ComponentType<{ className?: string }>> = {
     prompt: FileText, workflow: GitBranch, dataset: Database, model_config: Settings,
   };
-  const typeColors: Record<string, string> = { prompt: '#4b8eff', workflow: '#adc6ff', dataset: '#22c55e', model_config: '#ffb595' };
+  const typeColors: Record<string, string> = { prompt: '#4b8eff', workflow: '#adc6ff', dataset: '#53e16f', model_config: '#ffb595' };
 
   return (
-    <Paper elevation={0} sx={{ p: 3, backgroundColor: '#141922', border: '1px solid #2a2a2a', borderRadius: '8px' }}>
+    <Paper elevation={0} sx={{ p: 3, backgroundColor: '#201f1f', border: '1px solid #2a2a2a', borderRadius: '8px' }}>
       <Typography sx={{ ...sectionLabelSx, mb: 2 }}>Shared Resources ({resources.length})</Typography>
       <Table size="small">
         <TableHead>
@@ -193,12 +193,12 @@ function SharedResourcesPanel({ resources }: { resources: any[] }) {
 /* ── Audit Log ────────────────────────────────────────── */
 function AuditLogPanel({ entries }: { entries: any[] }) {
   const actionColors: Record<string, string> = {
-    created: '#22c55e', shared: '#4b8eff', edited: '#ffb595', commented: '#adc6ff',
-    deployed: '#22c55e', invited: '#4b8eff', updated: '#ffb595',
+    created: '#53e16f', shared: '#4b8eff', edited: '#ffb595', commented: '#adc6ff',
+    deployed: '#53e16f', invited: '#4b8eff', updated: '#ffb595',
   };
 
   return (
-    <Paper elevation={0} sx={{ p: 3, backgroundColor: '#141922', border: '1px solid #2a2a2a', borderRadius: '8px' }}>
+    <Paper elevation={0} sx={{ p: 3, backgroundColor: '#201f1f', border: '1px solid #2a2a2a', borderRadius: '8px' }}>
       <Typography sx={{ ...sectionLabelSx, mb: 2 }}>Activity Log</Typography>
       {(entries || []).map((e: any) => (
         <Box key={e.id} sx={{ p: 1.5, mb: 0.5, backgroundColor: '#0e0e0e', borderRadius: '4px', border: '1px solid #2a2a2a', display: 'flex', alignItems: 'center', gap: 1.5 }}>
@@ -245,7 +245,7 @@ function AddMemberForm() {
   };
 
   return (
-    <Paper elevation={0} sx={{ p: 3, backgroundColor: '#141922', border: '1px solid #2a2a2a', borderRadius: '8px' }}>
+    <Paper elevation={0} sx={{ p: 3, backgroundColor: '#201f1f', border: '1px solid #2a2a2a', borderRadius: '8px' }}>
       <Typography sx={{ ...sectionLabelSx, mb: 2 }}>Invite Member</Typography>
       <Box sx={{ display: 'flex', gap: 1 }}>
         <TextField size="small" placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} sx={inputSx} />
@@ -259,7 +259,7 @@ function AddMemberForm() {
           <UserPlus className="w-3 h-3" style={{ marginRight: 4 }} /> Invite
         </Button>
       </Box>
-      {addMember.isSuccess && <Alert severity="success" sx={{ mt: 1, backgroundColor: '#0e0e0e', border: '1px solid #2a2a2a', '& .MuiAlert-message': { fontFamily: MONO, fontSize: '0.7rem', color: '#22c55e' } }}>Member invited successfully</Alert>}
+      {addMember.isSuccess && <Alert severity="success" sx={{ mt: 1, backgroundColor: '#0e0e0e', border: '1px solid #2a2a2a', '& .MuiAlert-message': { fontFamily: MONO, fontSize: '0.7rem', color: '#53e16f' } }}>Member invited successfully</Alert>}
     </Paper>
   );
 }
@@ -280,12 +280,11 @@ export default function CollaborationPage() {
   const auditEntries = auditData?.entries || [];
 
   return (
-    <Box>
-      <PageHeader title="Collaboration" subtitle="Team workspaces, shared resources, and activity tracking" />
+    <Box sx={{ p: { xs: 2, sm: 3 } }}>      <PageHeader title="Collaboration" subtitle="Team workspaces, shared resources, and activity tracking" />
 
       <Grid container spacing={2} sx={{ mb: 3 }}>
         <Grid size={{ xs: 6, md: 3 }}><KpiCard icon={Users} label="Members" value={stats?.total_members || 0} accent="#4b8eff" /></Grid>
-        <Grid size={{ xs: 6, md: 3 }}><KpiCard icon={Activity} label="Active" value={stats?.active_members || 0} accent="#22c55e" /></Grid>
+        <Grid size={{ xs: 6, md: 3 }}><KpiCard icon={Activity} label="Active" value={stats?.active_members || 0} accent="#53e16f" /></Grid>
         <Grid size={{ xs: 6, md: 3 }}><KpiCard icon={FileText} label="Shared Resources" value={stats?.shared_resources || 0} accent="#adc6ff" /></Grid>
         <Grid size={{ xs: 6, md: 3 }}><KpiCard icon={MessageSquare} label="Messages" value={stats?.messages_exchanged || 0} accent="#ffb595" /></Grid>
       </Grid>

@@ -23,7 +23,7 @@ const MONO = '"JetBrains Mono", monospace';
 const fetcher = (url: string) => fetch(url).then(r => r.json());
 
 const statusColor = (s: string) => {
-  switch (s) { case 'operational': return '#22c55e'; case 'degraded': return '#ffb595'; case 'outage': return '#ef4444'; case 'maintenance': return '#4b8eff'; default: return '#6b7280'; }
+  switch (s) { case 'operational': return '#53e16f'; case 'degraded': return '#ffb595'; case 'outage': return '#ef4444'; case 'maintenance': return '#4b8eff'; default: return '#6b7280'; }
 };
 
 const checkStatusIcon = (s: string) => {
@@ -36,7 +36,7 @@ const checkStatusIcon = (s: string) => {
 };
 
 const checkStatusColor = (s: string) => {
-  switch (s) { case 'passed': return '#22c55e'; case 'failed': return '#ef4444'; case 'warning': return '#ffb595'; case 'skipped': return '#6b7280'; default: return '#6b7280'; }
+  switch (s) { case 'passed': return '#53e16f'; case 'failed': return '#ef4444'; case 'warning': return '#ffb595'; case 'skipped': return '#6b7280'; default: return '#6b7280'; }
 };
 
 const categoryIcon = (c: string) => {
@@ -66,15 +66,14 @@ export default function StatusPage() {
   const launchProgress = stats ? ((stats.checks_passed || 0) / (stats.launch_checks || 1)) * 100 : 0;
 
   return (
-    <Box>
-      <PageHeader title="System Status & Launch" subtitle="Platform health, incidents, and launch readiness" />
+    <Box sx={{ p: { xs: 2, sm: 3 } }}>      <PageHeader title="System Status & Launch" subtitle="Platform health, incidents, and launch readiness" />
 
       {/* Overall Status Banner */}
       {stats && (
-        <Card sx={{ backgroundColor: stats.operational === stats.total_components ? '#0e0e0e' : '#1a1207', border: `1px solid ${stats.operational === stats.total_components ? '#22c55e40' : '#ffb59540'}`, mb: 3 }}>
+        <Card sx={{ backgroundColor: stats.operational === stats.total_components ? '#0e0e0e' : '#1a1207', border: `1px solid ${stats.operational === stats.total_components ? '#53e16f40' : '#ffb59540'}`, mb: 3 }}>
           <CardContent sx={{ py: 2, px: 3, '&:last-child': { pb: 2 }, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-              <Box sx={{ color: stats.operational === stats.total_components ? '#22c55e' : '#ffb595', display: 'flex' }}>
+              <Box sx={{ color: stats.operational === stats.total_components ? '#53e16f' : '#ffb595', display: 'flex' }}>
                 <CheckCircle className="w-5 h-5" />
               </Box>
               <Box>
@@ -88,11 +87,11 @@ export default function StatusPage() {
             </Box>
             <Box sx={{ display: 'flex', gap: 2 }}>
               <Box sx={{ textAlign: 'center' }}>
-                <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, color: stats.launch_ready ? '#22c55e' : '#ffb595', fontFamily: MONO }}>{stats.checks_passed}/{stats.launch_checks}</Typography>
+                <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, color: stats.launch_ready ? '#53e16f' : '#ffb595', fontFamily: MONO }}>{stats.checks_passed}/{stats.launch_checks}</Typography>
                 <Typography sx={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.4)', fontFamily: MONO }}>Launch Checks</Typography>
               </Box>
               <Box sx={{ textAlign: 'center' }}>
-                <Chip label={stats.launch_ready ? 'LAUNCH READY' : 'NOT READY'} sx={{ fontFamily: MONO, fontWeight: 700, fontSize: '0.7rem', backgroundColor: stats.launch_ready ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)', color: stats.launch_ready ? '#22c55e' : '#ef4444' }} />
+                <Chip label={stats.launch_ready ? 'LAUNCH READY' : 'NOT READY'} sx={{ fontFamily: MONO, fontWeight: 700, fontSize: '0.7rem', backgroundColor: stats.launch_ready ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)', color: stats.launch_ready ? '#53e16f' : '#ef4444' }} />
               </Box>
             </Box>
           </CardContent>
@@ -146,7 +145,7 @@ export default function StatusPage() {
                       <Chip label={inc.severity} size="small" sx={{ height: 18, fontSize: '0.55rem', fontFamily: MONO, backgroundColor: `${incidentSeverityColor(inc.severity)}15`, color: incidentSeverityColor(inc.severity) }} />
                       <Typography sx={{ fontSize: '0.8rem', fontWeight: 600, color: '#e5e2e1', fontFamily: MONO }}>{inc.title}</Typography>
                     </Box>
-                    <Chip label={inc.status} size="small" sx={{ height: 18, fontSize: '0.55rem', fontFamily: MONO, backgroundColor: inc.status === 'resolved' ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)', color: inc.status === 'resolved' ? '#22c55e' : '#ef4444' }} />
+                    <Chip label={inc.status} size="small" sx={{ height: 18, fontSize: '0.55rem', fontFamily: MONO, backgroundColor: inc.status === 'resolved' ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)', color: inc.status === 'resolved' ? '#53e16f' : '#ef4444' }} />
                   </Box>
                   <Typography sx={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.5)', fontFamily: MONO, mb: 0.5 }}>{inc.message}</Typography>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
@@ -168,9 +167,9 @@ export default function StatusPage() {
                   <Box sx={{ color: '#adc6ff', display: 'flex' }}><Rocket className="w-4 h-4" /></Box>
                   <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: '#e5e2e1', fontFamily: MONO, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Launch Readiness</Typography>
                 </Box>
-                <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: launchProgress === 100 ? '#22c55e' : '#ffb595', fontFamily: MONO }}>{launchProgress.toFixed(0)}%</Typography>
+                <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: launchProgress === 100 ? '#53e16f' : '#ffb595', fontFamily: MONO }}>{launchProgress.toFixed(0)}%</Typography>
               </Box>
-              <LinearProgress variant="determinate" value={launchProgress} sx={{ height: 6, borderRadius: 3, mb: 2, backgroundColor: 'rgba(255,255,255,0.05)', '& .MuiLinearProgress-bar': { backgroundColor: launchProgress === 100 ? '#22c55e' : '#adc6ff', borderRadius: 3 } }} />
+              <LinearProgress variant="determinate" value={launchProgress} sx={{ height: 6, borderRadius: 3, mb: 2, backgroundColor: 'rgba(255,255,255,0.05)', '& .MuiLinearProgress-bar': { backgroundColor: launchProgress === 100 ? '#53e16f' : '#adc6ff', borderRadius: 3 } }} />
 
               {launchCategories.map(cat => {
                 const checks = launchChecks.filter((c: any) => c.category === cat);

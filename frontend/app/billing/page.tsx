@@ -301,7 +301,7 @@ export default function BillingPage() {
               <Box sx={{ mt: 2, display: 'flex', flexWrap: 'wrap', gap: 1.5 }}>
                 {tierFeatures.map((feature, idx) => (
                   <Box key={idx} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                    <Check size={14} color="#16a34a" />
+                    <Check size={14} color="#05b046" />
                     <Typography variant="body2" sx={{ color: 'text.secondary', fontSize: '0.8rem' }}>{feature}</Typography>
                   </Box>
                 ))}
@@ -665,7 +665,7 @@ export default function BillingPage() {
                       <TableCell>
                         {invoice.status === 'paid' ? (
                           <Chip icon={<Check size={14} />} label={`Paid ${invoice.paid_at ? formatDate(invoice.paid_at) : ''}`} size="small"
-                            sx={{ bgcolor: 'rgba(16,185,129,0.1)', color: '#16a34a', fontWeight: 500, fontSize: '0.75rem', '& .MuiChip-icon': { color: '#16a34a' } }} />
+                            sx={{ bgcolor: 'rgba(16,185,129,0.1)', color: '#05b046', fontWeight: 500, fontSize: '0.75rem', '& .MuiChip-icon': { color: '#05b046' } }} />
                         ) : (
                           <Chip label="Pending" size="small" sx={{ bgcolor: 'rgba(245,158,11,0.1)', color: '#ffb595', fontWeight: 500, fontSize: '0.75rem' }} />
                         )}

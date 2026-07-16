@@ -102,7 +102,7 @@ function KpiCard({ icon: Icon, label, value, sub, accent = '#4b8eff' }: {
       elevation={0}
       sx={{
         p: 2.5,
-        backgroundColor: '#141922',
+        backgroundColor: '#201f1f',
         border: '1px solid #2a2a2a',
         borderLeft: `3px solid ${accent}`,
         borderRadius: '8px',
@@ -146,7 +146,7 @@ function EdgeLocationsPanel({ edges }: { edges: Record<string, any> }) {
   };
 
   return (
-    <Paper elevation={0} sx={{ p: 3, backgroundColor: '#141922', border: '1px solid #2a2a2a', borderRadius: '8px' }}>
+    <Paper elevation={0} sx={{ p: 3, backgroundColor: '#201f1f', border: '1px solid #2a2a2a', borderRadius: '8px' }}>
       <Typography sx={{ ...sectionLabelSx, mb: 2 }}>Edge Locations ({edgeList.length})</Typography>
       <Box sx={{ position: 'relative', height: 280, backgroundColor: '#0e0e0e', borderRadius: '8px', border: '1px solid #2a2a2a', overflow: 'hidden' }}>
         {/* Grid */}
@@ -159,7 +159,7 @@ function EdgeLocationsPanel({ edges }: { edges: Record<string, any> }) {
 
         {edgeList.map((edge: any) => {
           const pos = positions[edge.location] || { top: '50%', left: '50%', label: edge.location };
-          const color = edge.status === 'active' ? '#22c55e' : edge.status === 'draining' ? '#ffb595' : '#ef4444';
+          const color = edge.status === 'active' ? '#53e16f' : edge.status === 'draining' ? '#ffb595' : '#ef4444';
 
           return (
             <Box
@@ -206,7 +206,7 @@ function EdgeDetailsTable({ edges }: { edges: Record<string, any> }) {
   });
 
   return (
-    <Paper elevation={0} sx={{ p: 3, backgroundColor: '#141922', border: '1px solid #2a2a2a', borderRadius: '8px' }}>
+    <Paper elevation={0} sx={{ p: 3, backgroundColor: '#201f1f', border: '1px solid #2a2a2a', borderRadius: '8px' }}>
       <Typography sx={{ ...sectionLabelSx, mb: 2 }}>Edge Node Details</Typography>
       <Table size="small">
         <TableHead>
@@ -228,8 +228,8 @@ function EdgeDetailsTable({ edges }: { edges: Record<string, any> }) {
                   label={edge.status.toUpperCase()}
                   sx={{
                     height: 20, fontSize: '0.6rem', fontFamily: MONO,
-                    backgroundColor: edge.status === 'active' ? '#22c55e20' : edge.status === 'draining' ? '#ffb59520' : '#ef444420',
-                    color: edge.status === 'active' ? '#22c55e' : edge.status === 'draining' ? '#ffb595' : '#ef4444',
+                    backgroundColor: edge.status === 'active' ? '#53e16f20' : edge.status === 'draining' ? '#ffb59520' : '#ef444420',
+                    color: edge.status === 'active' ? '#53e16f' : edge.status === 'draining' ? '#ffb595' : '#ef4444',
                   }}
                 />
               </TableCell>
@@ -240,7 +240,7 @@ function EdgeDetailsTable({ edges }: { edges: Record<string, any> }) {
                     value={edge.hit_rate}
                     sx={{
                       width: 50, height: 4, borderRadius: 2, backgroundColor: '#2a2a2a',
-                      '& .MuiLinearProgress-bar': { backgroundColor: edge.hit_rate > 90 ? '#22c55e' : edge.hit_rate > 80 ? '#ffb595' : '#ef4444' },
+                      '& .MuiLinearProgress-bar': { backgroundColor: edge.hit_rate > 90 ? '#53e16f' : edge.hit_rate > 80 ? '#ffb595' : '#ef4444' },
                     }}
                   />
                   <Typography sx={{ fontSize: '0.7rem', fontFamily: MONO, color: '#e5e2e1' }}>{edge.hit_rate?.toFixed(1)}%</Typography>
@@ -268,7 +268,7 @@ function EdgeDetailsTable({ edges }: { edges: Record<string, any> }) {
                     location: edge.location,
                     status: edge.status === 'active' ? 'draining' : 'active',
                   })}
-                  sx={{ fontFamily: MONO, fontSize: '0.6rem', textTransform: 'none', color: edge.status === 'active' ? '#ffb595' : '#22c55e', minWidth: 0 }}
+                  sx={{ fontFamily: MONO, fontSize: '0.6rem', textTransform: 'none', color: edge.status === 'active' ? '#ffb595' : '#53e16f', minWidth: 0 }}
                 >
                   {edge.status === 'active' ? 'Drain' : 'Activate'}
                 </Button>
@@ -293,12 +293,12 @@ function OriginServers({ origins }: { origins: any[] }) {
   });
 
   return (
-    <Paper elevation={0} sx={{ p: 3, backgroundColor: '#141922', border: '1px solid #2a2a2a', borderRadius: '8px' }}>
+    <Paper elevation={0} sx={{ p: 3, backgroundColor: '#201f1f', border: '1px solid #2a2a2a', borderRadius: '8px' }}>
       <Typography sx={{ ...sectionLabelSx, mb: 2 }}>Origin Servers</Typography>
       {(origins || []).map((origin: any) => (
         <Box key={origin.id} sx={{ p: 2, mb: 1, backgroundColor: '#0e0e0e', borderRadius: '6px', border: '1px solid #2a2a2a', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Server className="w-4 h-4" style={{ color: origin.is_healthy ? '#22c55e' : '#ef4444' }} />
+            <Server className="w-4 h-4" style={{ color: origin.is_healthy ? '#53e16f' : '#ef4444' }} />
             <Box>
               <Typography sx={{ fontSize: '0.85rem', fontFamily: MONO, color: '#e5e2e1', fontWeight: 600 }}>
                 {origin.id}
@@ -317,15 +317,15 @@ function OriginServers({ origins }: { origins: any[] }) {
               size="small"
               sx={{
                 fontFamily: MONO, fontSize: '0.6rem', height: 22,
-                backgroundColor: origin.is_healthy ? '#22c55e20' : '#ef444420',
-                color: origin.is_healthy ? '#22c55e' : '#ef4444',
+                backgroundColor: origin.is_healthy ? '#53e16f20' : '#ef444420',
+                color: origin.is_healthy ? '#53e16f' : '#ef4444',
                 '& .MuiChip-icon': { color: 'inherit' },
               }}
             />
             <Button
               size="small"
               onClick={() => toggleHealth.mutate({ origin_id: origin.id, healthy: !origin.is_healthy })}
-              sx={{ fontFamily: MONO, fontSize: '0.6rem', textTransform: 'none', color: origin.is_healthy ? '#ef4444' : '#22c55e', minWidth: 0 }}
+              sx={{ fontFamily: MONO, fontSize: '0.6rem', textTransform: 'none', color: origin.is_healthy ? '#ef4444' : '#53e16f', minWidth: 0 }}
             >
               {origin.is_healthy ? 'Mark Down' : 'Mark Up'}
             </Button>
@@ -339,7 +339,7 @@ function OriginServers({ origins }: { origins: any[] }) {
 /* ── Cache Rules ──────────────────────────────────────── */
 function CacheRulesPanel({ rules }: { rules: any[] }) {
   return (
-    <Paper elevation={0} sx={{ p: 3, backgroundColor: '#141922', border: '1px solid #2a2a2a', borderRadius: '8px' }}>
+    <Paper elevation={0} sx={{ p: 3, backgroundColor: '#201f1f', border: '1px solid #2a2a2a', borderRadius: '8px' }}>
       <Typography sx={{ ...sectionLabelSx, mb: 2 }}>Cache Rules ({(rules || []).length})</Typography>
       <Table size="small">
         <TableHead>
@@ -364,8 +364,8 @@ function CacheRulesPanel({ rules }: { rules: any[] }) {
                     size="small"
                     sx={{
                       fontFamily: MONO, fontSize: '0.6rem', height: 20,
-                      backgroundColor: ttlSec === 0 ? '#ef444420' : '#22c55e20',
-                      color: ttlSec === 0 ? '#ef4444' : '#22c55e',
+                      backgroundColor: ttlSec === 0 ? '#ef444420' : '#53e16f20',
+                      color: ttlSec === 0 ? '#ef4444' : '#53e16f',
                     }}
                   />
                 </TableCell>
@@ -373,7 +373,7 @@ function CacheRulesPanel({ rules }: { rules: any[] }) {
                   {rule.cache_control || '—'}
                 </TableCell>
                 <TableCell sx={{ borderColor: '#2a2a2a' }}>
-                  {rule.compress ? <CheckCircle className="w-3 h-3" style={{ color: '#22c55e' }} /> : <XCircle className="w-3 h-3" style={{ color: '#4b5563' }} />}
+                  {rule.compress ? <CheckCircle className="w-3 h-3" style={{ color: '#53e16f' }} /> : <XCircle className="w-3 h-3" style={{ color: '#4b5563' }} />}
                 </TableCell>
                 <TableCell sx={{ color: '#8b949e', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>
                   {rule.bypass_cookie || '—'}
@@ -403,7 +403,7 @@ function InvalidationPanel({ invalidations }: { invalidations: any[] }) {
   });
 
   return (
-    <Paper elevation={0} sx={{ p: 3, backgroundColor: '#141922', border: '1px solid #2a2a2a', borderRadius: '8px' }}>
+    <Paper elevation={0} sx={{ p: 3, backgroundColor: '#201f1f', border: '1px solid #2a2a2a', borderRadius: '8px' }}>
       <Typography sx={{ ...sectionLabelSx, mb: 2 }}>Cache Invalidation</Typography>
 
       <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
@@ -454,8 +454,8 @@ function InvalidationPanel({ invalidations }: { invalidations: any[] }) {
                   size="small"
                   sx={{
                     height: 18, fontSize: '0.55rem', fontFamily: MONO,
-                    backgroundColor: inv.status === 'completed' ? '#22c55e20' : '#ffb59520',
-                    color: inv.status === 'completed' ? '#22c55e' : '#ffb595',
+                    backgroundColor: inv.status === 'completed' ? '#53e16f20' : '#ffb59520',
+                    color: inv.status === 'completed' ? '#53e16f' : '#ffb595',
                   }}
                 />
                 <Typography sx={{ fontSize: '0.7rem', fontFamily: MONO, color: '#e5e2e1' }}>
@@ -483,7 +483,7 @@ function CDNFeatures({ stats }: { stats: any }) {
   ];
 
   return (
-    <Paper elevation={0} sx={{ p: 3, backgroundColor: '#141922', border: '1px solid #2a2a2a', borderRadius: '8px' }}>
+    <Paper elevation={0} sx={{ p: 3, backgroundColor: '#201f1f', border: '1px solid #2a2a2a', borderRadius: '8px' }}>
       <Typography sx={{ ...sectionLabelSx, mb: 2 }}>Features</Typography>
       <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
         {features.map(f => {
@@ -496,9 +496,9 @@ function CDNFeatures({ stats }: { stats: any }) {
               size="small"
               sx={{
                 fontFamily: MONO, fontSize: '0.65rem', height: 28,
-                backgroundColor: f.enabled ? '#22c55e15' : '#2a2a2a',
-                color: f.enabled ? '#22c55e' : '#4b5563',
-                border: `1px solid ${f.enabled ? '#22c55e30' : '#2a2a2a'}`,
+                backgroundColor: f.enabled ? '#53e16f15' : '#2a2a2a',
+                color: f.enabled ? '#53e16f' : '#4b5563',
+                border: `1px solid ${f.enabled ? '#53e16f30' : '#2a2a2a'}`,
                 '& .MuiChip-icon': { color: 'inherit' },
               }}
             />
@@ -537,8 +537,7 @@ export default function CDNPage() {
   }
 
   return (
-    <Box>
-      <PageHeader
+    <Box sx={{ p: { xs: 2, sm: 3 } }}>      <PageHeader
         title="CDN"
         subtitle="Content delivery network — edge caching, origin failover, and cache invalidation"
       />
@@ -546,7 +545,7 @@ export default function CDNPage() {
       {/* KPI Cards */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
         <Grid size={{ xs: 6, md: 3 }}>
-          <KpiCard icon={Zap} label="Hit Rate" value={stats?.hit_rate || '—'} accent="#22c55e" />
+          <KpiCard icon={Zap} label="Hit Rate" value={stats?.hit_rate || '—'} accent="#53e16f" />
         </Grid>
         <Grid size={{ xs: 6, md: 3 }}>
           <KpiCard icon={Activity} label="Total Requests" value={(stats?.total_requests || 0).toLocaleString()} accent="#4b8eff" />

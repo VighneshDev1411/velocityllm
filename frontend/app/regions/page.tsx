@@ -79,7 +79,7 @@ function KpiCard({ icon: Icon, label, value, accent = '#4b8eff' }: {
       elevation={0}
       sx={{
         p: 2.5,
-        backgroundColor: '#141922',
+        backgroundColor: '#201f1f',
         border: '1px solid #2a2a2a',
         borderLeft: `3px solid ${accent}`,
         borderRadius: '8px',
@@ -110,7 +110,7 @@ function RegionHealthMap({ regions }: { regions: any[] }) {
   };
 
   return (
-    <Paper elevation={0} sx={{ p: 3, backgroundColor: '#141922', border: '1px solid #2a2a2a', borderRadius: '8px' }}>
+    <Paper elevation={0} sx={{ p: 3, backgroundColor: '#201f1f', border: '1px solid #2a2a2a', borderRadius: '8px' }}>
       <Typography sx={{ ...sectionLabelSx, mb: 2 }}>Region Health Map</Typography>
       <Box sx={{ position: 'relative', height: 300, backgroundColor: '#0e0e0e', borderRadius: '8px', border: '1px solid #2a2a2a', overflow: 'hidden' }}>
         {/* Grid lines */}
@@ -126,7 +126,7 @@ function RegionHealthMap({ regions }: { regions: any[] }) {
           const pos = regionPositions[region.region] || { top: '50%', left: '50%', label: region.region };
           const isHealthy = region.healthy > 0 && region.unhealthy === 0;
           const isDegraded = region.degraded > 0;
-          const color = isHealthy ? '#22c55e' : isDegraded ? '#ffb595' : region.instances > 0 ? '#ef4444' : '#4b5563';
+          const color = isHealthy ? '#53e16f' : isDegraded ? '#ffb595' : region.instances > 0 ? '#ef4444' : '#4b5563';
 
           return (
             <Box
@@ -179,7 +179,7 @@ function RegionHealthMap({ regions }: { regions: any[] }) {
 /* ── Region Details Table ─────────────────────────────── */
 function RegionDetailsTable({ regions }: { regions: any[] }) {
   return (
-    <Paper elevation={0} sx={{ p: 3, backgroundColor: '#141922', border: '1px solid #2a2a2a', borderRadius: '8px' }}>
+    <Paper elevation={0} sx={{ p: 3, backgroundColor: '#201f1f', border: '1px solid #2a2a2a', borderRadius: '8px' }}>
       <Typography sx={{ ...sectionLabelSx, mb: 2 }}>Region Details</Typography>
       <Table size="small">
         <TableHead>
@@ -198,7 +198,7 @@ function RegionDetailsTable({ regions }: { regions: any[] }) {
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <MapPin className="w-3 h-3" />
                     {r.region}
-                    {!r.is_failover && <Chip label="PRIMARY" size="small" sx={{ height: 16, fontSize: '0.55rem', backgroundColor: '#22c55e20', color: '#22c55e' }} />}
+                    {!r.is_failover && <Chip label="PRIMARY" size="small" sx={{ height: 16, fontSize: '0.55rem', backgroundColor: '#53e16f20', color: '#53e16f' }} />}
                   </Box>
                 </TableCell>
                 <TableCell sx={{ borderColor: '#2a2a2a' }}>
@@ -209,8 +209,8 @@ function RegionDetailsTable({ regions }: { regions: any[] }) {
                       height: 20,
                       fontSize: '0.65rem',
                       fontFamily: MONO,
-                      backgroundColor: r.unhealthy > 0 ? '#ffb59520' : r.instances > 0 ? '#22c55e20' : '#4b556320',
-                      color: r.unhealthy > 0 ? '#ffb595' : r.instances > 0 ? '#22c55e' : '#4b5563',
+                      backgroundColor: r.unhealthy > 0 ? '#ffb59520' : r.instances > 0 ? '#53e16f20' : '#4b556320',
+                      color: r.unhealthy > 0 ? '#ffb595' : r.instances > 0 ? '#53e16f' : '#4b5563',
                     }}
                   />
                 </TableCell>
@@ -227,7 +227,7 @@ function RegionDetailsTable({ regions }: { regions: any[] }) {
                         height: 4,
                         borderRadius: 2,
                         backgroundColor: '#2a2a2a',
-                        '& .MuiLinearProgress-bar': { backgroundColor: healthPct > 80 ? '#22c55e' : healthPct > 50 ? '#ffb595' : '#ef4444' },
+                        '& .MuiLinearProgress-bar': { backgroundColor: healthPct > 80 ? '#53e16f' : healthPct > 50 ? '#ffb595' : '#ef4444' },
                       }}
                     />
                     <Typography sx={{ fontSize: '0.7rem', fontFamily: MONO, color: '#8b949e' }}>{healthPct}%</Typography>
@@ -246,7 +246,7 @@ function RegionDetailsTable({ regions }: { regions: any[] }) {
                   <Typography sx={{
                     fontSize: '0.8rem',
                     fontFamily: MONO,
-                    color: r.error_rate > 5 ? '#ef4444' : r.error_rate > 1 ? '#ffb595' : '#22c55e',
+                    color: r.error_rate > 5 ? '#ef4444' : r.error_rate > 1 ? '#ffb595' : '#53e16f',
                   }}>
                     {r.error_rate.toFixed(2)}%
                   </Typography>
@@ -295,7 +295,7 @@ function LatencySimulator() {
   const regions = ['us-east-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1'];
 
   return (
-    <Paper elevation={0} sx={{ p: 3, backgroundColor: '#141922', border: '1px solid #2a2a2a', borderRadius: '8px' }}>
+    <Paper elevation={0} sx={{ p: 3, backgroundColor: '#201f1f', border: '1px solid #2a2a2a', borderRadius: '8px' }}>
       <Typography sx={{ ...sectionLabelSx, mb: 2 }}>Simulation Controls</Typography>
 
       <Grid container spacing={2}>
@@ -362,7 +362,7 @@ function LatencySimulator() {
             variant="outlined"
             onClick={() => testGeoRoute.mutate()}
             disabled={testGeoRoute.isPending}
-            sx={{ fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a', color: '#22c55e', textTransform: 'none' }}
+            sx={{ fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a', color: '#53e16f', textTransform: 'none' }}
           >
             <Navigation className="w-3 h-3" style={{ marginRight: 4 }} />
             Route
@@ -385,16 +385,16 @@ function GeoRoutingStats({ stats }: { stats: any }) {
   if (!stats) return null;
 
   const items = [
-    { label: 'Local Region', value: stats.local_region, color: '#22c55e' },
+    { label: 'Local Region', value: stats.local_region, color: '#53e16f' },
     { label: 'Local Zone', value: stats.local_zone, color: '#4b8eff' },
-    { label: 'Local Routes', value: stats.local_routes, color: '#22c55e' },
+    { label: 'Local Routes', value: stats.local_routes, color: '#53e16f' },
     { label: 'Cross-Region Routes', value: stats.cross_region_routes, color: '#ffb595' },
     { label: 'Failover Routes', value: stats.failover_routes, color: '#ef4444' },
     { label: 'Zone Preferred', value: stats.zone_preferred, color: '#adc6ff' },
   ];
 
   return (
-    <Paper elevation={0} sx={{ p: 3, backgroundColor: '#141922', border: '1px solid #2a2a2a', borderRadius: '8px' }}>
+    <Paper elevation={0} sx={{ p: 3, backgroundColor: '#201f1f', border: '1px solid #2a2a2a', borderRadius: '8px' }}>
       <Typography sx={{ ...sectionLabelSx, mb: 2 }}>Routing Statistics</Typography>
       <Grid container spacing={1.5}>
         {items.map((item) => (
@@ -437,7 +437,7 @@ function GeoRoutingStats({ stats }: { stats: any }) {
           Healthy Threshold: <span style={{ color: '#e5e2e1' }}>{stats.healthy_threshold}</span>
         </Typography>
         <Typography sx={{ fontSize: '0.65rem', fontFamily: MONO, color: '#8b949e' }}>
-          Zone Preference: <span style={{ color: stats.prefer_local_zone ? '#22c55e' : '#8b949e' }}>{stats.prefer_local_zone ? 'ON' : 'OFF'}</span>
+          Zone Preference: <span style={{ color: stats.prefer_local_zone ? '#53e16f' : '#8b949e' }}>{stats.prefer_local_zone ? 'ON' : 'OFF'}</span>
         </Typography>
       </Box>
     </Paper>
@@ -463,8 +463,7 @@ export default function RegionsPage() {
   }
 
   return (
-    <Box>
-      <PageHeader
+    <Box sx={{ p: { xs: 2, sm: 3 } }}>      <PageHeader
         title="Multi-Region"
         subtitle="Geo-aware routing, region health monitoring, and cross-region failover"
       />
@@ -478,7 +477,7 @@ export default function RegionsPage() {
           <KpiCard icon={Server} label="Total Instances" value={totalInstances} accent="#adc6ff" />
         </Grid>
         <Grid size={{ xs: 6, md: 3 }}>
-          <KpiCard icon={CheckCircle} label="Healthy" value={totalHealthy} accent="#22c55e" />
+          <KpiCard icon={CheckCircle} label="Healthy" value={totalHealthy} accent="#53e16f" />
         </Grid>
         <Grid size={{ xs: 6, md: 3 }}>
           <KpiCard icon={TrendingUp} label="Total Requests" value={totalRequests.toLocaleString()} accent="#ffb595" />

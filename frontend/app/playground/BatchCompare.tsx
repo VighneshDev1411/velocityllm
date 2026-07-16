@@ -92,9 +92,9 @@ const accentColor = '#adc6ff';
 // ---------------------------------------------------------------------------
 
 function latencyColor(latency: number, min: number, max: number): string {
-  if (max === min) return '#22c55e';
+  if (max === min) return '#53e16f';
   const ratio = (latency - min) / (max - min);
-  if (ratio < 0.33) return '#22c55e';
+  if (ratio < 0.33) return '#53e16f';
   if (ratio < 0.66) return '#eab308';
   return '#ef4444';
 }
@@ -357,13 +357,13 @@ export default function BatchCompare({ availableModels }: Props) {
                 </Typography>
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Zap className="w-4 h-4" style={{ color: '#22c55e' }} />
+                <Zap className="w-4 h-4" style={{ color: '#53e16f' }} />
                 <Typography variant="body2" sx={{ fontSize: '0.8rem' }}>
                   Fastest: <strong>{minLatency}ms</strong>
                 </Typography>
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <DollarSign className="w-4 h-4" style={{ color: '#22c55e' }} />
+                <DollarSign className="w-4 h-4" style={{ color: '#53e16f' }} />
                 <Typography variant="body2" sx={{ fontSize: '0.8rem' }}>
                   Cheapest: <strong>${minCost.toFixed(6)}</strong>
                 </Typography>
@@ -450,7 +450,7 @@ export default function BatchCompare({ availableModels }: Props) {
                           height: 14,
                           borderRadius: 7,
                           bgcolor: 'rgba(0,0,0,0.04)',
-                          '& .MuiLinearProgress-bar': { bgcolor: '#22c55e', borderRadius: 7 },
+                          '& .MuiLinearProgress-bar': { bgcolor: '#53e16f', borderRadius: 7 },
                         }}
                       />
                     </Box>
@@ -458,7 +458,7 @@ export default function BatchCompare({ availableModels }: Props) {
                       ${item.cost.toFixed(6)}
                     </Typography>
                     {item.cost === minCost && (
-                      <DollarSign className="w-3 h-3" style={{ color: '#22c55e', flexShrink: 0 }} />
+                      <DollarSign className="w-3 h-3" style={{ color: '#53e16f', flexShrink: 0 }} />
                     )}
                   </Box>
                 );
@@ -484,7 +484,7 @@ export default function BatchCompare({ availableModels }: Props) {
                     <Box sx={{ display: 'flex', gap: 0.5 }}>
                       {item.success && item.latency_ms === minLatency && (
                         <Tooltip title="Fastest">
-                          <Chip label="Fastest" size="small" sx={{ height: 20, fontSize: '0.6rem', bgcolor: 'rgba(34,197,94,0.1)', color: '#16a34a', fontWeight: 700 }} />
+                          <Chip label="Fastest" size="small" sx={{ height: 20, fontSize: '0.6rem', bgcolor: 'rgba(34,197,94,0.1)', color: '#05b046', fontWeight: 700 }} />
                         </Tooltip>
                       )}
                       {item.success && item.cost === minCost && (
@@ -509,7 +509,7 @@ export default function BatchCompare({ availableModels }: Props) {
                         <Typography variant="caption" sx={{ fontFamily: 'monospace' }}>{item.tokens} tokens</Typography>
                       </Box>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                        <DollarSign className="w-3 h-3" style={{ color: '#22c55e' }} />
+                        <DollarSign className="w-3 h-3" style={{ color: '#53e16f' }} />
                         <Typography variant="caption" sx={{ fontFamily: 'monospace' }}>${item.cost.toFixed(6)}</Typography>
                       </Box>
                     </Box>
