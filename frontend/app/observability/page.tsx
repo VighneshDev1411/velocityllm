@@ -59,9 +59,9 @@ export default function ObservabilityPage() {
     { label: 'Active Metrics', value: stats.active_metrics || 0, color: '#4b8eff', icon: Activity },
     { label: 'Active Alerts', value: stats.active_alerts || 0, color: stats.active_alerts > 0 ? '#f97316' : '#22c55e', icon: AlertTriangle },
     { label: 'Log Entries', value: stats.log_entries || 0, color: '#adc6ff', icon: ScrollText },
-    { label: 'Active Traces', value: stats.active_traces || 0, color: '#06b6d4', icon: GitBranch },
+    { label: 'Active Traces', value: stats.active_traces || 0, color: '#adc6ff', icon: GitBranch },
     { label: 'SLOs Tracked', value: stats.slo_count || 0, color: '#22c55e', icon: Target },
-    { label: 'Alert Rules', value: stats.alert_rules || 0, color: '#f59e0b', icon: AlertTriangle },
+    { label: 'Alert Rules', value: stats.alert_rules || 0, color: '#ffb595', icon: AlertTriangle },
   ] : [];
 
   const severityColor = (s: string) => {
@@ -81,7 +81,7 @@ export default function ObservabilityPage() {
           const Icon = k.icon;
           return (
             <Grid key={k.label} size={{ xs: 6, md: 2 }}>
-              <Card sx={{ backgroundColor: '#0d1117', border: '1px solid #1e2736', borderLeft: `3px solid ${k.color}` }}>
+              <Card sx={{ backgroundColor: '#0e0e0e', border: '1px solid #2a2a2a', borderLeft: `3px solid ${k.color}` }}>
                 <CardContent sx={{ py: 1.5, px: 2, '&:last-child': { pb: 1.5 } }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
                     <Box sx={{ color: k.color, display: 'flex' }}><Icon className="w-3.5 h-3.5" /></Box>
@@ -95,8 +95,8 @@ export default function ObservabilityPage() {
         })}
       </Grid>
 
-      <Card sx={{ backgroundColor: '#0d1117', border: '1px solid #1e2736' }}>
-        <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ borderBottom: '1px solid #1e2736', '& .MuiTab-root': { color: 'rgba(255,255,255,0.5)', fontFamily: MONO, fontSize: '0.75rem', textTransform: 'none', minHeight: 42 }, '& .Mui-selected': { color: '#4b8eff' }, '& .MuiTabs-indicator': { backgroundColor: '#4b8eff' } }}>
+      <Card sx={{ backgroundColor: '#0e0e0e', border: '1px solid #2a2a2a' }}>
+        <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ borderBottom: '1px solid #2a2a2a', '& .MuiTab-root': { color: 'rgba(255,255,255,0.5)', fontFamily: MONO, fontSize: '0.75rem', textTransform: 'none', minHeight: 42 }, '& .Mui-selected': { color: '#4b8eff' }, '& .MuiTabs-indicator': { backgroundColor: '#4b8eff' } }}>
           <Tab label="Metrics" />
           <Tab label="Alerts" />
           <Tab label="Logs" />
@@ -110,7 +110,7 @@ export default function ObservabilityPage() {
             <Grid container spacing={2}>
               {metrics.map((m: any) => (
                 <Grid key={m.name} size={{ xs: 12, md: 6 }}>
-                  <Box sx={{ p: 2, backgroundColor: '#141922', borderRadius: 1, border: '1px solid #1e2736' }}>
+                  <Box sx={{ p: 2, backgroundColor: '#141922', borderRadius: 1, border: '1px solid #2a2a2a' }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                       <Typography sx={{ fontSize: '0.8rem', fontWeight: 600, color: '#e5e2e1', fontFamily: MONO }}>{m.name}</Typography>
                       <Chip label={m.type} size="small" sx={{ height: 20, fontSize: '0.6rem', fontFamily: MONO, backgroundColor: 'rgba(75,142,255,0.15)', color: '#4b8eff' }} />
@@ -149,19 +149,19 @@ export default function ObservabilityPage() {
                   <TableHead>
                     <TableRow>
                       {['Severity', 'Message', 'Metric', 'Value', 'Status', 'Actions'].map(h => (
-                        <TableCell key={h} sx={{ color: 'rgba(255,255,255,0.4)', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#1e2736' }}>{h}</TableCell>
+                        <TableCell key={h} sx={{ color: 'rgba(255,255,255,0.4)', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#2a2a2a' }}>{h}</TableCell>
                       ))}
                     </TableRow>
                   </TableHead>
                   <TableBody>
                     {alerts.map((a: any) => (
                       <TableRow key={a.id}>
-                        <TableCell sx={{ borderColor: '#1e2736' }}><Chip label={a.severity} size="small" sx={{ height: 20, fontSize: '0.6rem', fontFamily: MONO, backgroundColor: `${severityColor(a.severity)}20`, color: severityColor(a.severity) }} /></TableCell>
-                        <TableCell sx={{ color: '#e5e2e1', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#1e2736' }}>{a.message}</TableCell>
-                        <TableCell sx={{ color: 'rgba(255,255,255,0.6)', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#1e2736' }}>{a.metric}</TableCell>
-                        <TableCell sx={{ color: '#f97316', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#1e2736' }}>{typeof a.value === 'number' ? a.value.toFixed(2) : a.value}</TableCell>
-                        <TableCell sx={{ borderColor: '#1e2736' }}><Chip label={a.resolved ? 'Resolved' : 'Active'} size="small" sx={{ height: 20, fontSize: '0.6rem', fontFamily: MONO, backgroundColor: a.resolved ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)', color: a.resolved ? '#22c55e' : '#ef4444' }} /></TableCell>
-                        <TableCell sx={{ borderColor: '#1e2736' }}>{!a.resolved && <Button size="small" onClick={() => resolveMut.mutate(a.id)} sx={{ fontSize: '0.6rem', fontFamily: MONO, textTransform: 'none', color: '#22c55e' }}>Resolve</Button>}</TableCell>
+                        <TableCell sx={{ borderColor: '#2a2a2a' }}><Chip label={a.severity} size="small" sx={{ height: 20, fontSize: '0.6rem', fontFamily: MONO, backgroundColor: `${severityColor(a.severity)}20`, color: severityColor(a.severity) }} /></TableCell>
+                        <TableCell sx={{ color: '#e5e2e1', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>{a.message}</TableCell>
+                        <TableCell sx={{ color: 'rgba(255,255,255,0.6)', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>{a.metric}</TableCell>
+                        <TableCell sx={{ color: '#f97316', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>{typeof a.value === 'number' ? a.value.toFixed(2) : a.value}</TableCell>
+                        <TableCell sx={{ borderColor: '#2a2a2a' }}><Chip label={a.resolved ? 'Resolved' : 'Active'} size="small" sx={{ height: 20, fontSize: '0.6rem', fontFamily: MONO, backgroundColor: a.resolved ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)', color: a.resolved ? '#22c55e' : '#ef4444' }} /></TableCell>
+                        <TableCell sx={{ borderColor: '#2a2a2a' }}>{!a.resolved && <Button size="small" onClick={() => resolveMut.mutate(a.id)} sx={{ fontSize: '0.6rem', fontFamily: MONO, textTransform: 'none', color: '#22c55e' }}>Resolve</Button>}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -172,7 +172,7 @@ export default function ObservabilityPage() {
               <Grid container spacing={1.5}>
                 {alertRules.map((rule: any) => (
                   <Grid key={rule.id} size={{ xs: 12, md: 4 }}>
-                    <Box sx={{ p: 2, backgroundColor: '#141922', borderRadius: 1, border: '1px solid #1e2736' }}>
+                    <Box sx={{ p: 2, backgroundColor: '#141922', borderRadius: 1, border: '1px solid #2a2a2a' }}>
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
                         <Typography sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#e5e2e1', fontFamily: MONO }}>{rule.name}</Typography>
                         <Chip label={rule.enabled ? 'Enabled' : 'Disabled'} size="small" sx={{ height: 18, fontSize: '0.55rem', fontFamily: MONO, backgroundColor: rule.enabled ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.05)', color: rule.enabled ? '#22c55e' : 'rgba(255,255,255,0.3)' }} />
@@ -193,17 +193,17 @@ export default function ObservabilityPage() {
                 <TableHead>
                   <TableRow>
                     {['Time', 'Level', 'Service', 'Message'].map(h => (
-                      <TableCell key={h} sx={{ backgroundColor: '#0d1117', color: 'rgba(255,255,255,0.4)', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#1e2736' }}>{h}</TableCell>
+                      <TableCell key={h} sx={{ backgroundColor: '#0e0e0e', color: 'rgba(255,255,255,0.4)', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#2a2a2a' }}>{h}</TableCell>
                     ))}
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {logs.map((log: any, i: number) => (
                     <TableRow key={i}>
-                      <TableCell sx={{ color: 'rgba(255,255,255,0.4)', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#1e2736', whiteSpace: 'nowrap' }}>{new Date(log.timestamp).toLocaleTimeString()}</TableCell>
-                      <TableCell sx={{ borderColor: '#1e2736' }}><Chip label={log.level} size="small" sx={{ height: 18, fontSize: '0.55rem', fontFamily: MONO, backgroundColor: `${levelColor(log.level)}20`, color: levelColor(log.level) }} /></TableCell>
-                      <TableCell sx={{ color: '#4b8eff', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#1e2736' }}>{log.service}</TableCell>
-                      <TableCell sx={{ color: '#e5e2e1', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#1e2736' }}>{log.message}</TableCell>
+                      <TableCell sx={{ color: 'rgba(255,255,255,0.4)', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#2a2a2a', whiteSpace: 'nowrap' }}>{new Date(log.timestamp).toLocaleTimeString()}</TableCell>
+                      <TableCell sx={{ borderColor: '#2a2a2a' }}><Chip label={log.level} size="small" sx={{ height: 18, fontSize: '0.55rem', fontFamily: MONO, backgroundColor: `${levelColor(log.level)}20`, color: levelColor(log.level) }} /></TableCell>
+                      <TableCell sx={{ color: '#4b8eff', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#2a2a2a' }}>{log.service}</TableCell>
+                      <TableCell sx={{ color: '#e5e2e1', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#2a2a2a' }}>{log.message}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -215,7 +215,7 @@ export default function ObservabilityPage() {
           {tab === 3 && (
             <Box>
               {traces.map((t: any) => (
-                <Box key={t.trace_id} sx={{ mb: 2, p: 2, backgroundColor: '#141922', borderRadius: 1, border: '1px solid #1e2736' }}>
+                <Box key={t.trace_id} sx={{ mb: 2, p: 2, backgroundColor: '#141922', borderRadius: 1, border: '1px solid #2a2a2a' }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                     <Box>
                       <Typography sx={{ fontSize: '0.8rem', fontWeight: 600, color: '#e5e2e1', fontFamily: MONO }}>{t.name}</Typography>
@@ -227,7 +227,7 @@ export default function ObservabilityPage() {
                     </Box>
                   </Box>
                   {t.spans && t.spans.map((s: any, i: number) => (
-                    <Box key={i} sx={{ ml: i * 2, pl: 1.5, borderLeft: '2px solid #1e2736', py: 0.5 }}>
+                    <Box key={i} sx={{ ml: i * 2, pl: 1.5, borderLeft: '2px solid #2a2a2a', py: 0.5 }}>
                       <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                         <Typography sx={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.6)', fontFamily: MONO }}>{s.name} <span style={{ color: 'rgba(255,255,255,0.3)' }}>({s.service})</span></Typography>
                         <Typography sx={{ fontSize: '0.65rem', color: '#f97316', fontFamily: MONO }}>{s.duration}</Typography>
@@ -246,7 +246,7 @@ export default function ObservabilityPage() {
                 const met = slo.current >= slo.target;
                 return (
                   <Grid key={slo.id} size={{ xs: 12, md: 6 }}>
-                    <Box sx={{ p: 2, backgroundColor: '#141922', borderRadius: 1, border: '1px solid #1e2736' }}>
+                    <Box sx={{ p: 2, backgroundColor: '#141922', borderRadius: 1, border: '1px solid #2a2a2a' }}>
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                         <Typography sx={{ fontSize: '0.8rem', fontWeight: 600, color: '#e5e2e1', fontFamily: MONO }}>{slo.name}</Typography>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>

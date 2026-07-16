@@ -60,7 +60,7 @@ function KpiCard({ icon: Icon, label, value, sub, accent = '#4b8eff' }: {
   icon: React.ComponentType<{ className?: string }>; label: string; value: string | number; sub?: string; accent?: string;
 }) {
   return (
-    <Paper elevation={0} sx={{ p: 2.5, backgroundColor: '#141922', border: '1px solid #1e2736', borderLeft: `3px solid ${accent}`, borderRadius: '8px' }}>
+    <Paper elevation={0} sx={{ p: 2.5, backgroundColor: '#141922', border: '1px solid #2a2a2a', borderLeft: `3px solid ${accent}`, borderRadius: '8px' }}>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
         <Icon className="w-4 h-4" />
         <Box>
@@ -101,7 +101,7 @@ function ModelCard({ model }: { model: any }) {
   });
 
   const statusColors: Record<string, string> = {
-    running: '#22c55e', stopped: '#4b5563', deploying: '#f59e0b', failed: '#ef4444', scaling: '#4b8eff',
+    running: '#22c55e', stopped: '#4b5563', deploying: '#ffb595', failed: '#ef4444', scaling: '#4b8eff',
   };
   const frameworkColors: Record<string, string> = {
     pytorch: '#ee4c2c', tensorflow: '#ff6f00', onnx: '#005CED', triton: '#76b900',
@@ -109,7 +109,7 @@ function ModelCard({ model }: { model: any }) {
   const isRunning = model.status === 'running';
 
   return (
-    <Paper elevation={0} sx={{ p: 3, backgroundColor: '#141922', border: '1px solid #1e2736', borderRadius: '8px' }}>
+    <Paper elevation={0} sx={{ p: 3, backgroundColor: '#141922', border: '1px solid #2a2a2a', borderRadius: '8px' }}>
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
         <Box>
@@ -124,10 +124,10 @@ function ModelCard({ model }: { model: any }) {
 
       {/* Specs Row */}
       <Box sx={{ display: 'flex', gap: 1.5, mb: 2, flexWrap: 'wrap' }}>
-        <Chip icon={<Cpu className="w-3 h-3" />} label={model.gpu} size="small" sx={{ fontFamily: MONO, fontSize: '0.6rem', height: 22, backgroundColor: '#1e2736', color: '#c1c6d7', '& .MuiChip-icon': { color: '#c1c6d7' } }} />
-        <Chip label={`${model.replicas} replica${model.replicas !== 1 ? 's' : ''}`} size="small" sx={{ fontFamily: MONO, fontSize: '0.6rem', height: 22, backgroundColor: '#1e2736', color: '#c1c6d7' }} />
+        <Chip icon={<Cpu className="w-3 h-3" />} label={model.gpu} size="small" sx={{ fontFamily: MONO, fontSize: '0.6rem', height: 22, backgroundColor: '#2a2a2a', color: '#c1c6d7', '& .MuiChip-icon': { color: '#c1c6d7' } }} />
+        <Chip label={`${model.replicas} replica${model.replicas !== 1 ? 's' : ''}`} size="small" sx={{ fontFamily: MONO, fontSize: '0.6rem', height: 22, backgroundColor: '#2a2a2a', color: '#c1c6d7' }} />
         {model.quantization !== 'none' && <Chip label={`Q:${model.quantization}`} size="small" sx={{ fontFamily: MONO, fontSize: '0.6rem', height: 22, backgroundColor: '#adc6ff20', color: '#adc6ff' }} />}
-        <Chip label={`$${(model.cost_per_hour * model.replicas).toFixed(2)}/hr`} size="small" sx={{ fontFamily: MONO, fontSize: '0.6rem', height: 22, backgroundColor: '#f59e0b20', color: '#f59e0b' }} />
+        <Chip label={`$${(model.cost_per_hour * model.replicas).toFixed(2)}/hr`} size="small" sx={{ fontFamily: MONO, fontSize: '0.6rem', height: 22, backgroundColor: '#ffb59520', color: '#ffb595' }} />
       </Box>
 
       {/* Metrics */}
@@ -135,37 +135,37 @@ function ModelCard({ model }: { model: any }) {
         <Box sx={{ mb: 2 }}>
           <Grid container spacing={1}>
             <Grid size={{ xs: 6 }}>
-              <Box sx={{ p: 1, backgroundColor: '#0d1117', borderRadius: '4px', border: '1px solid #1e2736' }}>
+              <Box sx={{ p: 1, backgroundColor: '#0e0e0e', borderRadius: '4px', border: '1px solid #2a2a2a' }}>
                 <Typography sx={{ fontSize: '0.55rem', fontFamily: MONO, color: '#8b949e' }}>GPU UTIL</Typography>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <LinearProgress variant="determinate" value={model.metrics.gpu_utilization} sx={{ flex: 1, height: 4, borderRadius: 2, backgroundColor: '#1e2736', '& .MuiLinearProgress-bar': { backgroundColor: model.metrics.gpu_utilization > 80 ? '#ef4444' : model.metrics.gpu_utilization > 60 ? '#f59e0b' : '#22c55e' } }} />
+                  <LinearProgress variant="determinate" value={model.metrics.gpu_utilization} sx={{ flex: 1, height: 4, borderRadius: 2, backgroundColor: '#2a2a2a', '& .MuiLinearProgress-bar': { backgroundColor: model.metrics.gpu_utilization > 80 ? '#ef4444' : model.metrics.gpu_utilization > 60 ? '#ffb595' : '#22c55e' } }} />
                   <Typography sx={{ fontSize: '0.7rem', fontFamily: MONO, color: '#e5e2e1' }}>{model.metrics.gpu_utilization.toFixed(0)}%</Typography>
                 </Box>
               </Box>
             </Grid>
             <Grid size={{ xs: 6 }}>
-              <Box sx={{ p: 1, backgroundColor: '#0d1117', borderRadius: '4px', border: '1px solid #1e2736' }}>
+              <Box sx={{ p: 1, backgroundColor: '#0e0e0e', borderRadius: '4px', border: '1px solid #2a2a2a' }}>
                 <Typography sx={{ fontSize: '0.55rem', fontFamily: MONO, color: '#8b949e' }}>MEMORY</Typography>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <LinearProgress variant="determinate" value={(model.metrics.memory_used_gb / model.metrics.memory_total_gb) * 100} sx={{ flex: 1, height: 4, borderRadius: 2, backgroundColor: '#1e2736', '& .MuiLinearProgress-bar': { backgroundColor: '#4b8eff' } }} />
+                  <LinearProgress variant="determinate" value={(model.metrics.memory_used_gb / model.metrics.memory_total_gb) * 100} sx={{ flex: 1, height: 4, borderRadius: 2, backgroundColor: '#2a2a2a', '& .MuiLinearProgress-bar': { backgroundColor: '#4b8eff' } }} />
                   <Typography sx={{ fontSize: '0.7rem', fontFamily: MONO, color: '#e5e2e1' }}>{model.metrics.memory_used_gb.toFixed(1)}G</Typography>
                 </Box>
               </Box>
             </Grid>
             <Grid size={{ xs: 4 }}>
-              <Box sx={{ p: 1, backgroundColor: '#0d1117', borderRadius: '4px', border: '1px solid #1e2736', textAlign: 'center' }}>
+              <Box sx={{ p: 1, backgroundColor: '#0e0e0e', borderRadius: '4px', border: '1px solid #2a2a2a', textAlign: 'center' }}>
                 <Typography sx={{ fontSize: '0.55rem', fontFamily: MONO, color: '#8b949e' }}>LATENCY</Typography>
                 <Typography sx={{ fontSize: '0.85rem', fontFamily: MONO, color: '#e5e2e1', fontWeight: 600 }}>{model.metrics.avg_latency_ms.toFixed(0)}ms</Typography>
               </Box>
             </Grid>
             <Grid size={{ xs: 4 }}>
-              <Box sx={{ p: 1, backgroundColor: '#0d1117', borderRadius: '4px', border: '1px solid #1e2736', textAlign: 'center' }}>
+              <Box sx={{ p: 1, backgroundColor: '#0e0e0e', borderRadius: '4px', border: '1px solid #2a2a2a', textAlign: 'center' }}>
                 <Typography sx={{ fontSize: '0.55rem', fontFamily: MONO, color: '#8b949e' }}>THROUGHPUT</Typography>
                 <Typography sx={{ fontSize: '0.85rem', fontFamily: MONO, color: '#e5e2e1', fontWeight: 600 }}>{model.metrics.tokens_per_second.toFixed(0)} t/s</Typography>
               </Box>
             </Grid>
             <Grid size={{ xs: 4 }}>
-              <Box sx={{ p: 1, backgroundColor: '#0d1117', borderRadius: '4px', border: '1px solid #1e2736', textAlign: 'center' }}>
+              <Box sx={{ p: 1, backgroundColor: '#0e0e0e', borderRadius: '4px', border: '1px solid #2a2a2a', textAlign: 'center' }}>
                 <Typography sx={{ fontSize: '0.55rem', fontFamily: MONO, color: '#8b949e' }}>UPTIME</Typography>
                 <Typography sx={{ fontSize: '0.85rem', fontFamily: MONO, color: '#22c55e', fontWeight: 600 }}>{model.metrics.uptime}</Typography>
               </Box>
@@ -182,7 +182,7 @@ function ModelCard({ model }: { model: any }) {
               <ArrowUpDown className="w-3 h-3" style={{ marginRight: 3 }} /> Scale Up
             </Button>
             {model.replicas > 1 && (
-              <Button size="small" onClick={() => scaleModel.mutate(model.replicas - 1)} sx={{ fontFamily: MONO, fontSize: '0.6rem', textTransform: 'none', color: '#f59e0b', minWidth: 0 }}>
+              <Button size="small" onClick={() => scaleModel.mutate(model.replicas - 1)} sx={{ fontFamily: MONO, fontSize: '0.6rem', textTransform: 'none', color: '#ffb595', minWidth: 0 }}>
                 Scale Down
               </Button>
             )}
@@ -221,11 +221,11 @@ function DeployDialog({ open, onClose }: { open: boolean; onClose: () => void })
     },
   });
 
-  const inputSx = { '& .MuiOutlinedInput-root': { backgroundColor: '#0d1117', color: '#e5e2e1', fontFamily: MONO, fontSize: '0.8rem', '& fieldset': { borderColor: '#1e2736' } } };
-  const selectStyle = { width: '100%', padding: '10px 12px', backgroundColor: '#0d1117', border: '1px solid #1e2736', borderRadius: '6px', color: '#e5e2e1', fontFamily: MONO, fontSize: '0.8rem' };
+  const inputSx = { '& .MuiOutlinedInput-root': { backgroundColor: '#0e0e0e', color: '#e5e2e1', fontFamily: MONO, fontSize: '0.8rem', '& fieldset': { borderColor: '#2a2a2a' } } };
+  const selectStyle = { width: '100%', padding: '10px 12px', backgroundColor: '#0e0e0e', border: '1px solid #2a2a2a', borderRadius: '6px', color: '#e5e2e1', fontFamily: MONO, fontSize: '0.8rem' };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth PaperProps={{ sx: { backgroundColor: '#141922', border: '1px solid #1e2736', borderRadius: '12px' } }}>
+    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth PaperProps={{ sx: { backgroundColor: '#141922', border: '1px solid #2a2a2a', borderRadius: '12px' } }}>
       <DialogTitle sx={{ fontFamily: MONO, color: '#e5e2e1', fontSize: '1rem' }}>Deploy Custom Model</DialogTitle>
       <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: '16px !important' }}>
         <TextField label="Model Name" size="small" fullWidth value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} sx={inputSx} InputLabelProps={{ sx: { color: '#8b949e', fontFamily: MONO, fontSize: '0.75rem' } }} />
@@ -305,7 +305,7 @@ export default function HostingPage() {
         <Grid size={{ xs: 6, md: 2 }}><KpiCard icon={Server} label="Models" value={stats?.total_models || 0} accent="#4b8eff" /></Grid>
         <Grid size={{ xs: 6, md: 2 }}><KpiCard icon={Activity} label="Running" value={stats?.running_models || 0} accent="#22c55e" /></Grid>
         <Grid size={{ xs: 6, md: 2 }}><KpiCard icon={Cpu} label="GPUs" value={stats?.total_gpus || 0} accent="#adc6ff" /></Grid>
-        <Grid size={{ xs: 6, md: 2 }}><KpiCard icon={Gauge} label="Avg GPU" value={`${(stats?.avg_gpu_utilization || 0).toFixed(0)}%`} accent="#f59e0b" /></Grid>
+        <Grid size={{ xs: 6, md: 2 }}><KpiCard icon={Gauge} label="Avg GPU" value={`${(stats?.avg_gpu_utilization || 0).toFixed(0)}%`} accent="#ffb595" /></Grid>
         <Grid size={{ xs: 6, md: 2 }}><KpiCard icon={Zap} label="Requests" value={(stats?.total_requests || 0).toLocaleString()} accent="#22c55e" /></Grid>
         <Grid size={{ xs: 6, md: 2 }}><KpiCard icon={DollarSign} label="Cost/hr" value={`$${(stats?.total_cost_per_hour || 0).toFixed(2)}`} accent="#ef4444" /></Grid>
       </Grid>
@@ -331,7 +331,7 @@ export default function HostingPage() {
       </Grid>
 
       {models.length === 0 && (
-        <Alert severity="info" sx={{ mt: 2, backgroundColor: '#141922', border: '1px solid #1e2736', '& .MuiAlert-message': { fontFamily: MONO, fontSize: '0.8rem', color: '#e5e2e1' } }}>
+        <Alert severity="info" sx={{ mt: 2, backgroundColor: '#141922', border: '1px solid #2a2a2a', '& .MuiAlert-message': { fontFamily: MONO, fontSize: '0.8rem', color: '#e5e2e1' } }}>
           No models deployed yet. Click "Deploy New Model" to get started.
         </Alert>
       )}

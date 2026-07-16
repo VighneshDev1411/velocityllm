@@ -101,7 +101,7 @@ export default function MeshPage() {
             <Chip
               label={`${stats?.region || 'unknown'} / ${stats?.zone || 'unknown'}`}
               size="small"
-              sx={{ fontFamily: MONO, fontSize: '0.625rem', backgroundColor: 'rgba(6,182,212,0.15)', color: '#06b6d4' }}
+              sx={{ fontFamily: MONO, fontSize: '0.625rem', backgroundColor: 'rgba(6,182,212,0.15)', color: '#adc6ff' }}
             />
             <RefreshCw className="w-3 h-3 animate-spin" style={{ color: '#adc6ff' }} />
           </Box>
@@ -135,7 +135,7 @@ export default function MeshPage() {
             <KpiCard label="Retries" value={(stats?.retries || 0).toLocaleString()} color="#4b8eff" icon={<RotateCcw className="w-3.5 h-3.5" />} />
           </Grid>
           <Grid size={{ xs: 6, md: 2 }}>
-            <KpiCard label="Canary Requests" value={(stats?.canary_requests || 0).toLocaleString()} color="#06b6d4" icon={<GitBranch className="w-3.5 h-3.5" />} />
+            <KpiCard label="Canary Requests" value={(stats?.canary_requests || 0).toLocaleString()} color="#adc6ff" icon={<GitBranch className="w-3.5 h-3.5" />} />
           </Grid>
         </Grid>
 
@@ -147,7 +147,7 @@ export default function MeshPage() {
             <KpiCard label="Total Services" value={topologyData.total_services || 0} color="#4b8eff" icon={<Network className="w-3.5 h-3.5" />} />
           </Grid>
           <Grid size={{ xs: 6, md: 3 }}>
-            <KpiCard label="Total Instances" value={topologyData.total_instances || 0} color="#06b6d4" icon={<Server className="w-3.5 h-3.5" />} />
+            <KpiCard label="Total Instances" value={topologyData.total_instances || 0} color="#adc6ff" icon={<Server className="w-3.5 h-3.5" />} />
           </Grid>
           <Grid size={{ xs: 6, md: 3 }}>
             <KpiCard label="Health Passed" value={(stats?.health_checks_passed || 0).toLocaleString()} color="#53e16f" icon={<CheckCircle className="w-3.5 h-3.5" />} />
@@ -252,7 +252,7 @@ export default function MeshPage() {
                         sx={{
                           fontFamily: MONO, fontSize: '0.625rem',
                           backgroundColor: p.canary_enabled ? 'rgba(6,182,212,0.15)' : 'rgba(255,255,255,0.05)',
-                          color: p.canary_enabled ? '#06b6d4' : 'text.secondary',
+                          color: p.canary_enabled ? '#adc6ff' : 'text.secondary',
                         }}
                       />
                     </TableCell>
@@ -305,7 +305,7 @@ export default function MeshPage() {
                   min={1}
                   max={100}
                   valueLabelDisplay="auto"
-                  sx={{ color: '#06b6d4' }}
+                  sx={{ color: '#adc6ff' }}
                 />
               </Grid>
             )}

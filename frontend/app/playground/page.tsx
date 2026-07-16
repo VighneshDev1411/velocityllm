@@ -649,8 +649,8 @@ export default function PlaygroundPage() {
         sx={{
           mb: 3,
           '& .MuiTab-root': { textTransform: 'none', fontWeight: 600, fontSize: '0.875rem', minHeight: 40 },
-          '& .Mui-selected': { color: '#06b6d4' },
-          '& .MuiTabs-indicator': { bgcolor: '#06b6d4' },
+          '& .Mui-selected': { color: '#adc6ff' },
+          '& .MuiTabs-indicator': { bgcolor: '#adc6ff' },
         }}
       >
         <Tab icon={<Terminal className="w-4 h-4" />} iconPosition="start" label="Playground" />
@@ -667,7 +667,7 @@ export default function PlaygroundPage() {
             <Paper sx={paperSx}>
               <Box sx={sectionHeaderSx}>
                 <Typography variant="body2" sx={{ fontWeight: 600, color: 'text.primary', display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Sparkles className="w-4 h-4 text-blue-500" />
+                  <Sparkles className="w-4 h-4" style={{ color: "#adc6ff" }} />
                   Prompt
                 </Typography>
                 <Typography variant="caption" sx={{ color: 'text.disabled' }}>
@@ -1001,7 +1001,7 @@ export default function PlaygroundPage() {
                 }}
               >
                 <Typography variant="body2" sx={{ fontWeight: 600, color: 'text.primary', display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <History className="w-4 h-4 text-purple-500" />
+                  <History className="w-4 h-4" style={{ color: "#adc6ff" }} />
                   Request History
                   {history.length > 0 && (
                     <Chip
@@ -1134,7 +1134,7 @@ export default function PlaygroundPage() {
                   max={4096}
                   step={1}
                   onChange={setMaxTokens}
-                  icon={<Hash className="w-3.5 h-3.5 text-blue-500" />}
+                  icon={<Hash className="w-3.5 h-3.5" style={{ color: '#adc6ff' }} />}
                 />
                 <ParameterSlider
                   label="Top-P"
@@ -1175,7 +1175,7 @@ export default function PlaygroundPage() {
             <Paper sx={paperSx}>
               <Box sx={sectionHeaderSx}>
                 <Typography variant="body2" sx={{ fontWeight: 600, color: 'text.primary', display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Code2 className="w-4 h-4 text-indigo-500" />
+                  <Code2 className="w-4 h-4" style={{ color: "#adc6ff" }} />
                   Code Examples
                 </Typography>
               </Box>

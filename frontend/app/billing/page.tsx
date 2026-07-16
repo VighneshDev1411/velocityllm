@@ -224,7 +224,7 @@ export default function BillingPage() {
   const tierFeatures = buildTierFeatures(limits);
   const TierIcon = tierStyle.icon;
 
-  const progressColor = (pct: number) => pct >= 90 ? '#dc2626' : pct >= 75 ? '#d97706' : '#4b8eff';
+  const progressColor = (pct: number) => pct >= 90 ? '#dc2626' : pct >= 75 ? '#ffb595' : '#4b8eff';
 
   return (
     <Box sx={{ p: { xs: 2, sm: 3 }, maxWidth: '1200px', mx: 'auto' }}>
@@ -667,7 +667,7 @@ export default function BillingPage() {
                           <Chip icon={<Check size={14} />} label={`Paid ${invoice.paid_at ? formatDate(invoice.paid_at) : ''}`} size="small"
                             sx={{ bgcolor: 'rgba(16,185,129,0.1)', color: '#16a34a', fontWeight: 500, fontSize: '0.75rem', '& .MuiChip-icon': { color: '#16a34a' } }} />
                         ) : (
-                          <Chip label="Pending" size="small" sx={{ bgcolor: 'rgba(245,158,11,0.1)', color: '#d97706', fontWeight: 500, fontSize: '0.75rem' }} />
+                          <Chip label="Pending" size="small" sx={{ bgcolor: 'rgba(245,158,11,0.1)', color: '#ffb595', fontWeight: 500, fontSize: '0.75rem' }} />
                         )}
                       </TableCell>
                       <TableCell align="right">

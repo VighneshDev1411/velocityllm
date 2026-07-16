@@ -17,7 +17,7 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
 } from 'recharts';
 
-const CHART_COLORS = ['#adc6ff', '#4b8eff', '#53e16f', '#ffb595', '#ef4444', '#ffb595', '#06b6d4', '#84cc16'];
+const CHART_COLORS = ['#adc6ff', '#4b8eff', '#53e16f', '#ffb595', '#ef4444', '#ffb595', '#adc6ff', '#84cc16'];
 const PROVIDER_COLORS: Record<string, string> = {
   openai: '#53e16f',
   anthropic: '#ffb595',

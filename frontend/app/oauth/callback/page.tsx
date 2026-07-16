@@ -50,31 +50,31 @@ export default function OAuthCallbackPage() {
   }, [searchParams, router, setAuthFromTokens]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <div className="bg-white rounded-xl shadow-lg p-8 max-w-sm w-full text-center">
+    <div className="min-h-screen bg-[#131313] flex items-center justify-center p-4">
+      <div className="bg-[#201f1f] rounded-lg border border-[#2a2a2a] p-8 max-w-sm w-full text-center">
         {status === 'loading' && (
           <>
-            <Loader2 className="w-12 h-12 text-blue-600 animate-spin mx-auto mb-4" />
-            <p className="text-gray-700 font-medium">{message}</p>
+            <Loader2 className="w-12 h-12 text-[#adc6ff] animate-spin mx-auto mb-4" />
+            <p className="text-[#c1c6d7] font-medium">{message}</p>
           </>
         )}
         {status === 'success' && (
           <>
-            <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-4" />
-            <p className="text-gray-900 font-semibold">{message}</p>
-            <p className="text-sm text-gray-500 mt-2">Redirecting to dashboard...</p>
+            <CheckCircle className="w-12 h-12 text-[#53e16f] mx-auto mb-4" />
+            <p className="text-[#e5e2e1] font-semibold">{message}</p>
+            <p className="text-sm text-[#c1c6d7] mt-2">Redirecting to dashboard…</p>
           </>
         )}
         {status === 'error' && (
           <>
-            <XCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-            <p className="text-gray-900 font-semibold">Authentication Failed</p>
-            <p className="text-sm text-red-600 mt-2">{message}</p>
+            <XCircle className="w-12 h-12 text-[#f87171] mx-auto mb-4" />
+            <p className="text-[#e5e2e1] font-semibold">Authentication failed</p>
+            <p className="text-sm text-[#f87171] mt-2">{message}</p>
             <button
               onClick={() => router.push('/login')}
-              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm"
+              className="mt-4 px-4 py-2 bg-[#adc6ff] text-[#131313] font-medium rounded hover:brightness-90 transition text-sm"
             >
-              Back to Login
+              Back to login
             </button>
           </>
         )}

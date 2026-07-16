@@ -151,7 +151,7 @@ export default function QueuesPage() {
             <KpiCard label="Dead Lettered" value={(stats?.dead_lettered || 0).toLocaleString()} color="#f472b6" icon={<Skull className="w-3.5 h-3.5" />} />
           </Grid>
           <Grid size={{ xs: 6, md: 2 }}>
-            <KpiCard label="Avg Latency" value={`${(stats?.avg_latency_ms || 0).toFixed(1)}ms`} color="#06b6d4" icon={<Clock className="w-3.5 h-3.5" />} />
+            <KpiCard label="Avg Latency" value={`${(stats?.avg_latency_ms || 0).toFixed(1)}ms`} color="#adc6ff" icon={<Clock className="w-3.5 h-3.5" />} />
           </Grid>
         </Grid>
 
@@ -212,9 +212,9 @@ export default function QueuesPage() {
           </Grid>
 
           <Grid size={{ xs: 12, md: 6 }}>
-            <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 3, boxShadow: 'inset 3px 0 0 0 #06b6d4' }}>
+            <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 3, boxShadow: 'inset 3px 0 0 0 #adc6ff' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                <Activity className="w-4 h-4" style={{ color: '#06b6d4' }} />
+                <Activity className="w-4 h-4" style={{ color: '#adc6ff' }} />
                 <Typography sx={sectionLabelSx}>Consumer</Typography>
               </Box>
               <MetricRow label="Consumer Group" value={stats?.consumer_group || 'N/A'} />

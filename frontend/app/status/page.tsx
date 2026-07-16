@@ -23,7 +23,7 @@ const MONO = '"JetBrains Mono", monospace';
 const fetcher = (url: string) => fetch(url).then(r => r.json());
 
 const statusColor = (s: string) => {
-  switch (s) { case 'operational': return '#22c55e'; case 'degraded': return '#f59e0b'; case 'outage': return '#ef4444'; case 'maintenance': return '#4b8eff'; default: return '#6b7280'; }
+  switch (s) { case 'operational': return '#22c55e'; case 'degraded': return '#ffb595'; case 'outage': return '#ef4444'; case 'maintenance': return '#4b8eff'; default: return '#6b7280'; }
 };
 
 const checkStatusIcon = (s: string) => {
@@ -36,7 +36,7 @@ const checkStatusIcon = (s: string) => {
 };
 
 const checkStatusColor = (s: string) => {
-  switch (s) { case 'passed': return '#22c55e'; case 'failed': return '#ef4444'; case 'warning': return '#f59e0b'; case 'skipped': return '#6b7280'; default: return '#6b7280'; }
+  switch (s) { case 'passed': return '#22c55e'; case 'failed': return '#ef4444'; case 'warning': return '#ffb595'; case 'skipped': return '#6b7280'; default: return '#6b7280'; }
 };
 
 const categoryIcon = (c: string) => {
@@ -44,7 +44,7 @@ const categoryIcon = (c: string) => {
 };
 
 const incidentSeverityColor = (s: string) => {
-  switch (s) { case 'critical': return '#ef4444'; case 'major': return '#f97316'; case 'minor': return '#f59e0b'; default: return '#6b7280'; }
+  switch (s) { case 'critical': return '#ef4444'; case 'major': return '#f97316'; case 'minor': return '#ffb595'; default: return '#6b7280'; }
 };
 
 export default function StatusPage() {
@@ -71,10 +71,10 @@ export default function StatusPage() {
 
       {/* Overall Status Banner */}
       {stats && (
-        <Card sx={{ backgroundColor: stats.operational === stats.total_components ? '#0d1117' : '#1a1207', border: `1px solid ${stats.operational === stats.total_components ? '#22c55e40' : '#f59e0b40'}`, mb: 3 }}>
+        <Card sx={{ backgroundColor: stats.operational === stats.total_components ? '#0e0e0e' : '#1a1207', border: `1px solid ${stats.operational === stats.total_components ? '#22c55e40' : '#ffb59540'}`, mb: 3 }}>
           <CardContent sx={{ py: 2, px: 3, '&:last-child': { pb: 2 }, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-              <Box sx={{ color: stats.operational === stats.total_components ? '#22c55e' : '#f59e0b', display: 'flex' }}>
+              <Box sx={{ color: stats.operational === stats.total_components ? '#22c55e' : '#ffb595', display: 'flex' }}>
                 <CheckCircle className="w-5 h-5" />
               </Box>
               <Box>
@@ -88,7 +88,7 @@ export default function StatusPage() {
             </Box>
             <Box sx={{ display: 'flex', gap: 2 }}>
               <Box sx={{ textAlign: 'center' }}>
-                <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, color: stats.launch_ready ? '#22c55e' : '#f59e0b', fontFamily: MONO }}>{stats.checks_passed}/{stats.launch_checks}</Typography>
+                <Typography sx={{ fontSize: '1.25rem', fontWeight: 700, color: stats.launch_ready ? '#22c55e' : '#ffb595', fontFamily: MONO }}>{stats.checks_passed}/{stats.launch_checks}</Typography>
                 <Typography sx={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.4)', fontFamily: MONO }}>Launch Checks</Typography>
               </Box>
               <Box sx={{ textAlign: 'center' }}>
@@ -107,11 +107,11 @@ export default function StatusPage() {
           { title: 'External Providers', items: externalComponents },
         ].map(({ title, items }) => (
           <Grid key={title} size={{ xs: 12, md: 4 }}>
-            <Card sx={{ backgroundColor: '#0d1117', border: '1px solid #1e2736', height: '100%' }}>
+            <Card sx={{ backgroundColor: '#0e0e0e', border: '1px solid #2a2a2a', height: '100%' }}>
               <CardContent>
                 <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: '#e5e2e1', fontFamily: MONO, mb: 1.5, textTransform: 'uppercase', letterSpacing: '0.1em' }}>{title}</Typography>
                 {items.map((c: any) => (
-                  <Box key={c.name} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', py: 1, borderBottom: '1px solid #1e273640' }}>
+                  <Box key={c.name} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', py: 1, borderBottom: '1px solid #2a2a2a40' }}>
                     <Box>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <Box sx={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: statusColor(c.status) }} />
@@ -135,12 +135,12 @@ export default function StatusPage() {
       <Grid container spacing={2}>
         {/* Recent Incidents */}
         <Grid size={{ xs: 12, md: 5 }}>
-          <Card sx={{ backgroundColor: '#0d1117', border: '1px solid #1e2736', height: '100%' }}>
+          <Card sx={{ backgroundColor: '#0e0e0e', border: '1px solid #2a2a2a', height: '100%' }}>
             <CardContent>
               <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: '#e5e2e1', fontFamily: MONO, mb: 2, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Recent Incidents</Typography>
               {incidents.length === 0 && <Typography sx={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.3)', fontFamily: MONO }}>No recent incidents</Typography>}
               {incidents.map((inc: any) => (
-                <Box key={inc.id} sx={{ mb: 2, pb: 2, borderBottom: '1px solid #1e273640' }}>
+                <Box key={inc.id} sx={{ mb: 2, pb: 2, borderBottom: '1px solid #2a2a2a40' }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                       <Chip label={inc.severity} size="small" sx={{ height: 18, fontSize: '0.55rem', fontFamily: MONO, backgroundColor: `${incidentSeverityColor(inc.severity)}15`, color: incidentSeverityColor(inc.severity) }} />
@@ -161,14 +161,14 @@ export default function StatusPage() {
 
         {/* Launch Readiness Checklist */}
         <Grid size={{ xs: 12, md: 7 }}>
-          <Card sx={{ backgroundColor: '#0d1117', border: '1px solid #1e2736' }}>
+          <Card sx={{ backgroundColor: '#0e0e0e', border: '1px solid #2a2a2a' }}>
             <CardContent>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Box sx={{ color: '#adc6ff', display: 'flex' }}><Rocket className="w-4 h-4" /></Box>
                   <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: '#e5e2e1', fontFamily: MONO, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Launch Readiness</Typography>
                 </Box>
-                <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: launchProgress === 100 ? '#22c55e' : '#f59e0b', fontFamily: MONO }}>{launchProgress.toFixed(0)}%</Typography>
+                <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: launchProgress === 100 ? '#22c55e' : '#ffb595', fontFamily: MONO }}>{launchProgress.toFixed(0)}%</Typography>
               </Box>
               <LinearProgress variant="determinate" value={launchProgress} sx={{ height: 6, borderRadius: 3, mb: 2, backgroundColor: 'rgba(255,255,255,0.05)', '& .MuiLinearProgress-bar': { backgroundColor: launchProgress === 100 ? '#22c55e' : '#adc6ff', borderRadius: 3 } }} />
 

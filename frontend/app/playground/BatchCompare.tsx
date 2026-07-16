@@ -85,7 +85,7 @@ const sectionHeaderSx = {
   justifyContent: 'space-between',
 };
 
-const accentColor = '#06b6d4';
+const accentColor = '#adc6ff';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -102,7 +102,7 @@ function latencyColor(latency: number, min: number, max: number): string {
 function providerColor(provider: string): string {
   const p = provider.toLowerCase();
   if (p.includes('openai')) return '#10a37f';
-  if (p.includes('anthropic')) return '#d97706';
+  if (p.includes('anthropic')) return '#ffb595';
   if (p.includes('google')) return '#4285f4';
   if (p.includes('cohere')) return '#4b8eff';
   return '#6b7280';
@@ -276,7 +276,7 @@ export default function BatchCompare({ availableModels }: Props) {
           startIcon={loading ? <CircularProgress size={16} color="inherit" /> : <Play className="w-4 h-4" />}
           sx={{
             bgcolor: accentColor,
-            '&:hover': { bgcolor: '#0891b2' },
+            '&:hover': { bgcolor: '#4b8eff' },
             textTransform: 'none',
             fontWeight: 600,
             borderRadius: '8px',

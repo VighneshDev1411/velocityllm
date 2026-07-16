@@ -200,7 +200,7 @@ export default function TokensPage() {
                   size="small"
                   sx={{
                     backgroundColor: 'rgba(16,185,129,0.1)',
-                    color: '#059669',
+                    color: '#53e16f',
                     fontWeight: 600,
                     fontSize: '0.7rem',
                   }}

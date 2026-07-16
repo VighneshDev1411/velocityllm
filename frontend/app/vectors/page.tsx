@@ -83,7 +83,7 @@ interface Document {
 
 const DOC_COLORS = [
   '#adc6ff', '#ef4444', '#53e16f', '#ffb595', '#4b8eff',
-  '#ec4899', '#06b6d4', '#f97316', '#14b8a6', '#4b8eff',
+  '#ec4899', '#adc6ff', '#f97316', '#14b8a6', '#4b8eff',
 ];
 
 function getDocColor(docId: string, docColorMap: Record<string, string>): string {

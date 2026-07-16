@@ -188,7 +188,7 @@ export default function AnalyticsCharts({ timeSeries, tsLoading, latency }: Anal
       <Grid size={{ xs: 12, lg: 6 }}>
         <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 3 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-            <DollarSign style={{ width: 16, height: 16, color: '#059669' }} />
+            <DollarSign style={{ width: 16, height: 16, color: '#53e16f' }} />
             <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: 'text.primary' }}>
               Cumulative Cost
             </Typography>

@@ -88,7 +88,7 @@ function initials(u: TeamMember['user']) {
 }
 
 function avatarColor(name: string) {
-  const colors = ['#adc6ff', '#4b8eff', '#53e16f', '#ffb595', '#ef4444', '#0891b2'];
+  const colors = ['#adc6ff', '#4b8eff', '#53e16f', '#ffb595', '#ef4444', '#4b8eff'];
   let h = 0;
   for (let i = 0; i < name.length; i++) h = name.charCodeAt(i) + ((h << 5) - h);
   return colors[Math.abs(h) % colors.length];

@@ -65,7 +65,7 @@ export default function SecurityPage() {
   ] : [];
 
   const severityColor = (s: string) => {
-    switch (s) { case 'critical': return '#ef4444'; case 'high': return '#f97316'; case 'medium': return '#f59e0b'; case 'low': return '#22c55e'; default: return '#6b7280'; }
+    switch (s) { case 'critical': return '#ef4444'; case 'high': return '#f97316'; case 'medium': return '#ffb595'; case 'low': return '#22c55e'; default: return '#6b7280'; }
   };
 
   const scanStatusColor = (s: string) => {
@@ -73,7 +73,7 @@ export default function SecurityPage() {
   };
 
   const complianceColor = (s: string) => {
-    switch (s) { case 'compliant': return '#22c55e'; case 'non_compliant': return '#ef4444'; case 'partial': return '#f59e0b'; default: return '#6b7280'; }
+    switch (s) { case 'compliant': return '#22c55e'; case 'non_compliant': return '#ef4444'; case 'partial': return '#ffb595'; default: return '#6b7280'; }
   };
 
   return (
@@ -85,7 +85,7 @@ export default function SecurityPage() {
           const Icon = k.icon;
           return (
             <Grid key={k.label} size={{ xs: 6, md: 2 }}>
-              <Card sx={{ backgroundColor: '#0d1117', border: '1px solid #1e2736', borderLeft: `3px solid ${k.color}` }}>
+              <Card sx={{ backgroundColor: '#0e0e0e', border: '1px solid #2a2a2a', borderLeft: `3px solid ${k.color}` }}>
                 <CardContent sx={{ py: 1.5, px: 2, '&:last-child': { pb: 1.5 } }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
                     <Box sx={{ color: k.color, display: 'flex' }}><Icon className="w-3.5 h-3.5" /></Box>
@@ -99,8 +99,8 @@ export default function SecurityPage() {
         })}
       </Grid>
 
-      <Card sx={{ backgroundColor: '#0d1117', border: '1px solid #1e2736' }}>
-        <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ borderBottom: '1px solid #1e2736', '& .MuiTab-root': { color: 'rgba(255,255,255,0.5)', fontFamily: MONO, fontSize: '0.75rem', textTransform: 'none', minHeight: 42 }, '& .Mui-selected': { color: '#4b8eff' }, '& .MuiTabs-indicator': { backgroundColor: '#4b8eff' } }}>
+      <Card sx={{ backgroundColor: '#0e0e0e', border: '1px solid #2a2a2a' }}>
+        <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ borderBottom: '1px solid #2a2a2a', '& .MuiTab-root': { color: 'rgba(255,255,255,0.5)', fontFamily: MONO, fontSize: '0.75rem', textTransform: 'none', minHeight: 42 }, '& .Mui-selected': { color: '#4b8eff' }, '& .MuiTabs-indicator': { backgroundColor: '#4b8eff' } }}>
           <Tab label="Scans" />
           <Tab label="Vulnerabilities" />
           <Tab label="Compliance" />
@@ -115,7 +115,7 @@ export default function SecurityPage() {
               <Box sx={{ display: 'flex', gap: 1, mb: 2, flexWrap: 'wrap' }}>
                 {['vulnerability', 'dependency', 'sast', 'container', 'secret'].map(t => (
                   <Button key={t} size="small" variant="outlined" onClick={() => runScanMut.mutate(t)} disabled={runScanMut.isPending}
-                    sx={{ fontSize: '0.65rem', fontFamily: MONO, textTransform: 'none', borderColor: '#1e2736', color: '#4b8eff', '&:hover': { borderColor: '#4b8eff' } }}>
+                    sx={{ fontSize: '0.65rem', fontFamily: MONO, textTransform: 'none', borderColor: '#2a2a2a', color: '#4b8eff', '&:hover': { borderColor: '#4b8eff' } }}>
                     Run {t} scan
                   </Button>
                 ))}
@@ -125,22 +125,22 @@ export default function SecurityPage() {
                   <TableHead>
                     <TableRow>
                       {['Type', 'Status', 'Findings', 'Critical', 'High', 'Medium', 'Low', 'Duration', 'Completed'].map(h => (
-                        <TableCell key={h} sx={{ color: 'rgba(255,255,255,0.4)', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#1e2736' }}>{h}</TableCell>
+                        <TableCell key={h} sx={{ color: 'rgba(255,255,255,0.4)', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#2a2a2a' }}>{h}</TableCell>
                       ))}
                     </TableRow>
                   </TableHead>
                   <TableBody>
                     {scans.map((s: any) => (
                       <TableRow key={s.id}>
-                        <TableCell sx={{ color: '#e5e2e1', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#1e2736' }}>{s.type}</TableCell>
-                        <TableCell sx={{ borderColor: '#1e2736' }}><Chip label={s.status} size="small" sx={{ height: 20, fontSize: '0.6rem', fontFamily: MONO, backgroundColor: `${scanStatusColor(s.status)}20`, color: scanStatusColor(s.status) }} /></TableCell>
-                        <TableCell sx={{ color: '#e5e2e1', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#1e2736', fontWeight: 600 }}>{s.findings}</TableCell>
-                        <TableCell sx={{ color: s.critical > 0 ? '#ef4444' : 'rgba(255,255,255,0.3)', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#1e2736' }}>{s.critical}</TableCell>
-                        <TableCell sx={{ color: s.high > 0 ? '#f97316' : 'rgba(255,255,255,0.3)', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#1e2736' }}>{s.high}</TableCell>
-                        <TableCell sx={{ color: s.medium > 0 ? '#f59e0b' : 'rgba(255,255,255,0.3)', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#1e2736' }}>{s.medium}</TableCell>
-                        <TableCell sx={{ color: 'rgba(255,255,255,0.3)', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#1e2736' }}>{s.low}</TableCell>
-                        <TableCell sx={{ color: 'rgba(255,255,255,0.5)', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#1e2736' }}>{s.duration}</TableCell>
-                        <TableCell sx={{ color: 'rgba(255,255,255,0.4)', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#1e2736' }}>{new Date(s.completed_at).toLocaleString()}</TableCell>
+                        <TableCell sx={{ color: '#e5e2e1', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>{s.type}</TableCell>
+                        <TableCell sx={{ borderColor: '#2a2a2a' }}><Chip label={s.status} size="small" sx={{ height: 20, fontSize: '0.6rem', fontFamily: MONO, backgroundColor: `${scanStatusColor(s.status)}20`, color: scanStatusColor(s.status) }} /></TableCell>
+                        <TableCell sx={{ color: '#e5e2e1', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a', fontWeight: 600 }}>{s.findings}</TableCell>
+                        <TableCell sx={{ color: s.critical > 0 ? '#ef4444' : 'rgba(255,255,255,0.3)', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>{s.critical}</TableCell>
+                        <TableCell sx={{ color: s.high > 0 ? '#f97316' : 'rgba(255,255,255,0.3)', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>{s.high}</TableCell>
+                        <TableCell sx={{ color: s.medium > 0 ? '#ffb595' : 'rgba(255,255,255,0.3)', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>{s.medium}</TableCell>
+                        <TableCell sx={{ color: 'rgba(255,255,255,0.3)', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>{s.low}</TableCell>
+                        <TableCell sx={{ color: 'rgba(255,255,255,0.5)', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>{s.duration}</TableCell>
+                        <TableCell sx={{ color: 'rgba(255,255,255,0.4)', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#2a2a2a' }}>{new Date(s.completed_at).toLocaleString()}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -156,21 +156,21 @@ export default function SecurityPage() {
                 <TableHead>
                   <TableRow>
                     {['Severity', 'CVE', 'Title', 'Package', 'Version', 'Fixed In', 'CVSS', 'Status'].map(h => (
-                      <TableCell key={h} sx={{ color: 'rgba(255,255,255,0.4)', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#1e2736' }}>{h}</TableCell>
+                      <TableCell key={h} sx={{ color: 'rgba(255,255,255,0.4)', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#2a2a2a' }}>{h}</TableCell>
                     ))}
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {vulns.map((v: any) => (
                     <TableRow key={v.id}>
-                      <TableCell sx={{ borderColor: '#1e2736' }}><Chip label={v.severity} size="small" sx={{ height: 20, fontSize: '0.6rem', fontFamily: MONO, backgroundColor: `${severityColor(v.severity)}20`, color: severityColor(v.severity) }} /></TableCell>
-                      <TableCell sx={{ color: '#4b8eff', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#1e2736' }}>{v.cve}</TableCell>
-                      <TableCell sx={{ color: '#e5e2e1', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#1e2736', maxWidth: 250 }}>{v.title}</TableCell>
-                      <TableCell sx={{ color: 'rgba(255,255,255,0.6)', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#1e2736' }}>{v.package}</TableCell>
-                      <TableCell sx={{ color: '#ef4444', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#1e2736' }}>{v.version}</TableCell>
-                      <TableCell sx={{ color: '#22c55e', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#1e2736' }}>{v.fixed_in}</TableCell>
-                      <TableCell sx={{ color: v.cvss >= 7 ? '#ef4444' : v.cvss >= 4 ? '#f59e0b' : '#22c55e', fontFamily: MONO, fontSize: '0.7rem', fontWeight: 700, borderColor: '#1e2736' }}>{v.cvss}</TableCell>
-                      <TableCell sx={{ borderColor: '#1e2736' }}><Chip label={v.status} size="small" sx={{ height: 20, fontSize: '0.6rem', fontFamily: MONO, backgroundColor: v.status === 'fixed' ? 'rgba(34,197,94,0.15)' : v.status === 'ignored' ? 'rgba(255,255,255,0.05)' : 'rgba(239,68,68,0.15)', color: v.status === 'fixed' ? '#22c55e' : v.status === 'ignored' ? 'rgba(255,255,255,0.4)' : '#ef4444' }} /></TableCell>
+                      <TableCell sx={{ borderColor: '#2a2a2a' }}><Chip label={v.severity} size="small" sx={{ height: 20, fontSize: '0.6rem', fontFamily: MONO, backgroundColor: `${severityColor(v.severity)}20`, color: severityColor(v.severity) }} /></TableCell>
+                      <TableCell sx={{ color: '#4b8eff', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#2a2a2a' }}>{v.cve}</TableCell>
+                      <TableCell sx={{ color: '#e5e2e1', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a', maxWidth: 250 }}>{v.title}</TableCell>
+                      <TableCell sx={{ color: 'rgba(255,255,255,0.6)', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#2a2a2a' }}>{v.package}</TableCell>
+                      <TableCell sx={{ color: '#ef4444', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#2a2a2a' }}>{v.version}</TableCell>
+                      <TableCell sx={{ color: '#22c55e', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#2a2a2a' }}>{v.fixed_in}</TableCell>
+                      <TableCell sx={{ color: v.cvss >= 7 ? '#ef4444' : v.cvss >= 4 ? '#ffb595' : '#22c55e', fontFamily: MONO, fontSize: '0.7rem', fontWeight: 700, borderColor: '#2a2a2a' }}>{v.cvss}</TableCell>
+                      <TableCell sx={{ borderColor: '#2a2a2a' }}><Chip label={v.status} size="small" sx={{ height: 20, fontSize: '0.6rem', fontFamily: MONO, backgroundColor: v.status === 'fixed' ? 'rgba(34,197,94,0.15)' : v.status === 'ignored' ? 'rgba(255,255,255,0.05)' : 'rgba(239,68,68,0.15)', color: v.status === 'fixed' ? '#22c55e' : v.status === 'ignored' ? 'rgba(255,255,255,0.4)' : '#ef4444' }} /></TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -190,11 +190,11 @@ export default function SecurityPage() {
                   <Box key={fw} sx={{ mb: 3 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1.5 }}>
                       <Typography sx={{ fontSize: '0.85rem', fontWeight: 700, color: '#e5e2e1', fontFamily: MONO }}>{fw}</Typography>
-                      <LinearProgress variant="determinate" value={pct} sx={{ flex: 1, height: 4, borderRadius: 2, backgroundColor: 'rgba(255,255,255,0.05)', '& .MuiLinearProgress-bar': { backgroundColor: pct === 100 ? '#22c55e' : '#f59e0b', borderRadius: 2 } }} />
-                      <Typography sx={{ fontSize: '0.7rem', fontFamily: MONO, color: pct === 100 ? '#22c55e' : '#f59e0b' }}>{passed}/{checks.length}</Typography>
+                      <LinearProgress variant="determinate" value={pct} sx={{ flex: 1, height: 4, borderRadius: 2, backgroundColor: 'rgba(255,255,255,0.05)', '& .MuiLinearProgress-bar': { backgroundColor: pct === 100 ? '#22c55e' : '#ffb595', borderRadius: 2 } }} />
+                      <Typography sx={{ fontSize: '0.7rem', fontFamily: MONO, color: pct === 100 ? '#22c55e' : '#ffb595' }}>{passed}/{checks.length}</Typography>
                     </Box>
                     {checks.map((c: any) => (
-                      <Box key={c.id} sx={{ pl: 2, py: 1, mb: 0.5, backgroundColor: '#141922', borderRadius: 1, border: '1px solid #1e2736', display: 'flex', justifyContent: 'space-between', alignItems: 'center', pr: 2 }}>
+                      <Box key={c.id} sx={{ pl: 2, py: 1, mb: 0.5, backgroundColor: '#141922', borderRadius: 1, border: '1px solid #2a2a2a', display: 'flex', justifyContent: 'space-between', alignItems: 'center', pr: 2 }}>
                         <Box>
                           <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
                             <Typography sx={{ fontSize: '0.7rem', fontWeight: 600, color: '#4b8eff', fontFamily: MONO }}>{c.control}</Typography>
@@ -218,20 +218,20 @@ export default function SecurityPage() {
                 <TableHead>
                   <TableRow>
                     {['Time', 'Rule', 'Category', 'Action', 'Source IP', 'Method', 'Path'].map(h => (
-                      <TableCell key={h} sx={{ backgroundColor: '#0d1117', color: 'rgba(255,255,255,0.4)', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#1e2736' }}>{h}</TableCell>
+                      <TableCell key={h} sx={{ backgroundColor: '#0e0e0e', color: 'rgba(255,255,255,0.4)', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#2a2a2a' }}>{h}</TableCell>
                     ))}
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {wafEvents.map((e: any) => (
                     <TableRow key={e.id}>
-                      <TableCell sx={{ color: 'rgba(255,255,255,0.4)', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#1e2736', whiteSpace: 'nowrap' }}>{new Date(e.timestamp).toLocaleTimeString()}</TableCell>
-                      <TableCell sx={{ color: '#4b8eff', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#1e2736' }}>{e.rule}</TableCell>
-                      <TableCell sx={{ borderColor: '#1e2736' }}><Chip label={e.category} size="small" sx={{ height: 20, fontSize: '0.55rem', fontFamily: MONO, backgroundColor: e.category === 'sqli' || e.category === 'rce' ? 'rgba(239,68,68,0.15)' : 'rgba(249,115,22,0.15)', color: e.category === 'sqli' || e.category === 'rce' ? '#ef4444' : '#f97316' }} /></TableCell>
-                      <TableCell sx={{ borderColor: '#1e2736' }}><Chip label={e.action} size="small" sx={{ height: 20, fontSize: '0.55rem', fontFamily: MONO, backgroundColor: 'rgba(239,68,68,0.15)', color: '#ef4444' }} /></TableCell>
-                      <TableCell sx={{ color: 'rgba(255,255,255,0.5)', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#1e2736' }}>{e.source_ip}</TableCell>
-                      <TableCell sx={{ color: 'rgba(255,255,255,0.5)', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#1e2736' }}>{e.method}</TableCell>
-                      <TableCell sx={{ color: '#e5e2e1', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#1e2736' }}>{e.path}</TableCell>
+                      <TableCell sx={{ color: 'rgba(255,255,255,0.4)', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#2a2a2a', whiteSpace: 'nowrap' }}>{new Date(e.timestamp).toLocaleTimeString()}</TableCell>
+                      <TableCell sx={{ color: '#4b8eff', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#2a2a2a' }}>{e.rule}</TableCell>
+                      <TableCell sx={{ borderColor: '#2a2a2a' }}><Chip label={e.category} size="small" sx={{ height: 20, fontSize: '0.55rem', fontFamily: MONO, backgroundColor: e.category === 'sqli' || e.category === 'rce' ? 'rgba(239,68,68,0.15)' : 'rgba(249,115,22,0.15)', color: e.category === 'sqli' || e.category === 'rce' ? '#ef4444' : '#f97316' }} /></TableCell>
+                      <TableCell sx={{ borderColor: '#2a2a2a' }}><Chip label={e.action} size="small" sx={{ height: 20, fontSize: '0.55rem', fontFamily: MONO, backgroundColor: 'rgba(239,68,68,0.15)', color: '#ef4444' }} /></TableCell>
+                      <TableCell sx={{ color: 'rgba(255,255,255,0.5)', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#2a2a2a' }}>{e.source_ip}</TableCell>
+                      <TableCell sx={{ color: 'rgba(255,255,255,0.5)', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#2a2a2a' }}>{e.method}</TableCell>
+                      <TableCell sx={{ color: '#e5e2e1', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#2a2a2a' }}>{e.path}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -244,7 +244,7 @@ export default function SecurityPage() {
             <Grid container spacing={1.5}>
               {policies.map((p: any) => (
                 <Grid key={p.name} size={{ xs: 12, md: 6 }}>
-                  <Box sx={{ p: 2, backgroundColor: '#141922', borderRadius: 1, border: '1px solid #1e2736', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Box sx={{ p: 2, backgroundColor: '#141922', borderRadius: 1, border: '1px solid #2a2a2a', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <Box>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.25 }}>
                         <Box sx={{ color: p.enabled ? '#22c55e' : 'rgba(255,255,255,0.2)', display: 'flex' }}><Lock className="w-3.5 h-3.5" /></Box>

@@ -98,7 +98,7 @@ const NODE_TYPES = [
   { type: 'llm_call',  label: 'LLM Call',  icon: Cpu,          color: '#ffb595', desc: 'Send prompt to an LLM provider',                 configFields: ['model', 'temperature', 'max_tokens', 'top_p'] },
   { type: 'condition', label: 'Condition', icon: Filter,       color: '#ef4444', desc: 'Branch based on a condition',                    configFields: ['condition_expr', 'true_label', 'false_label'] },
   { type: 'transform', label: 'Transform', icon: Settings,     color: '#53e16f', desc: 'Parse, extract, or transform data',              configFields: ['transform_type', 'expression', 'output_key'] },
-  { type: 'output',    label: 'Output',    icon: FileOutput,   color: '#06b6d4', desc: 'Final output or webhook delivery',               configFields: ['output_format', 'destination'] },
+  { type: 'output',    label: 'Output',    icon: FileOutput,   color: '#adc6ff', desc: 'Final output or webhook delivery',               configFields: ['output_format', 'destination'] },
 ];
 
 function getNodeMeta(type: string) {

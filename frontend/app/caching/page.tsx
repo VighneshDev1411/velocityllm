@@ -205,7 +205,7 @@ export default function CachingPage() {
 
             <Grid container spacing={2}>
               <Grid size={{ xs: 6, md: 2 }}>
-                <KpiCard label="Cluster Nodes" value={distStats.cluster_nodes || 1} color="#06b6d4" />
+                <KpiCard label="Cluster Nodes" value={distStats.cluster_nodes || 1} color="#adc6ff" />
               </Grid>
               <Grid size={{ xs: 6, md: 2 }}>
                 <KpiCard label="Cache Epoch" value={distStats.current_epoch || 0} color="#4b8eff" />
@@ -227,9 +227,9 @@ export default function CachingPage() {
             <Grid container spacing={3}>
               {/* Hash Ring */}
               <Grid size={{ xs: 12, md: 6 }}>
-                <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 3, boxShadow: 'inset 3px 0 0 0 #06b6d4' }}>
+                <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 3, boxShadow: 'inset 3px 0 0 0 #adc6ff' }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                    <GitBranch className="w-4 h-4" style={{ color: '#06b6d4' }} />
+                    <GitBranch className="w-4 h-4" style={{ color: '#adc6ff' }} />
                     <Typography sx={sectionLabelSx}>Consistent Hash Ring</Typography>
                   </Box>
                   <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
@@ -251,7 +251,7 @@ export default function CachingPage() {
                             fontFamily: MONO,
                             fontSize: '0.625rem',
                             backgroundColor: node === distStats.node_id ? 'rgba(6,182,212,0.15)' : 'rgba(255,255,255,0.05)',
-                            borderColor: node === distStats.node_id ? '#06b6d4' : 'divider',
+                            borderColor: node === distStats.node_id ? '#adc6ff' : 'divider',
                             border: '1px solid',
                           }}
                         />
@@ -269,7 +269,7 @@ export default function CachingPage() {
                     <Typography sx={sectionLabelSx}>Cross-Node Sync</Typography>
                   </Box>
                   <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                    <MetricRow label="Current Node" value={distStats.node_id || 'unknown'} color="#06b6d4" />
+                    <MetricRow label="Current Node" value={distStats.node_id || 'unknown'} color="#adc6ff" />
                     <MetricRow label="Local Misses" value={(distStats.local_misses || 0).toLocaleString()} color="#ef4444" />
                     <MetricRow label="Remote Misses" value={(distStats.remote_misses || 0).toLocaleString()} color="#ef4444" />
                     <MetricRow label="Last Sync" value={distStats.last_sync ? new Date(distStats.last_sync).toLocaleTimeString() : 'Never'} />

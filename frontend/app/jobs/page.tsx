@@ -254,7 +254,7 @@ function JobCard({ job, onCancel }: { job: JobStatus; onCancel: (id: string) => 
   const getStatusChipSx = () => {
     switch (job.status) {
       case 'completed':
-        return { backgroundColor: 'rgba(16,185,129,0.1)', color: '#059669' };
+        return { backgroundColor: 'rgba(16,185,129,0.1)', color: '#53e16f' };
       case 'failed':
       case 'timeout':
       case 'cancelled':

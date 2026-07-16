@@ -70,7 +70,7 @@ function KpiCard({ icon: Icon, label, value, accent = '#4b8eff' }: {
   icon: React.ComponentType<{ className?: string }>; label: string; value: string | number; accent?: string;
 }) {
   return (
-    <Paper elevation={0} sx={{ p: 2.5, backgroundColor: '#141922', border: '1px solid #1e2736', borderLeft: `3px solid ${accent}`, borderRadius: '8px' }}>
+    <Paper elevation={0} sx={{ p: 2.5, backgroundColor: '#141922', border: '1px solid #2a2a2a', borderLeft: `3px solid ${accent}`, borderRadius: '8px' }}>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
         <Icon className="w-4 h-4" />
         <Box>
@@ -85,9 +85,9 @@ function KpiCard({ icon: Icon, label, value, accent = '#4b8eff' }: {
 /* ── Members Panel ────────────────────────────────────── */
 function MembersPanel({ members }: { members: any[] }) {
   const queryClient = useQueryClient();
-  const roleColors: Record<string, string> = { owner: '#f59e0b', admin: '#adc6ff', editor: '#4b8eff', viewer: '#8b949e' };
+  const roleColors: Record<string, string> = { owner: '#ffb595', admin: '#adc6ff', editor: '#4b8eff', viewer: '#8b949e' };
   const roleIcons: Record<string, React.ComponentType<{ className?: string }>> = { owner: Crown, admin: Shield, editor: Edit3, viewer: Eye };
-  const statusColors: Record<string, string> = { online: '#22c55e', away: '#f59e0b', offline: '#4b5563' };
+  const statusColors: Record<string, string> = { online: '#22c55e', away: '#ffb595', offline: '#4b5563' };
 
   const updateRole = useMutation({
     mutationFn: async ({ user_id, role }: { user_id: string; role: string }) => {
@@ -97,18 +97,18 @@ function MembersPanel({ members }: { members: any[] }) {
   });
 
   return (
-    <Paper elevation={0} sx={{ p: 3, backgroundColor: '#141922', border: '1px solid #1e2736', borderRadius: '8px' }}>
+    <Paper elevation={0} sx={{ p: 3, backgroundColor: '#141922', border: '1px solid #2a2a2a', borderRadius: '8px' }}>
       <Typography sx={{ ...sectionLabelSx, mb: 2 }}>Team Members ({members.length})</Typography>
       {members.map((m: any) => {
         const RoleIcon = roleIcons[m.role] || Eye;
         return (
-          <Box key={m.user_id} sx={{ p: 1.5, mb: 1, backgroundColor: '#0d1117', borderRadius: '6px', border: '1px solid #1e2736', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Box key={m.user_id} sx={{ p: 1.5, mb: 1, backgroundColor: '#0e0e0e', borderRadius: '6px', border: '1px solid #2a2a2a', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
               <Box sx={{ position: 'relative' }}>
                 <Avatar sx={{ width: 32, height: 32, fontSize: '0.7rem', fontFamily: MONO, backgroundColor: roleColors[m.role] + '30', color: roleColors[m.role] }}>
                   {m.avatar}
                 </Avatar>
-                <Box sx={{ position: 'absolute', bottom: -1, right: -1, width: 10, height: 10, borderRadius: '50%', backgroundColor: statusColors[m.status] || '#4b5563', border: '2px solid #0d1117' }} />
+                <Box sx={{ position: 'absolute', bottom: -1, right: -1, width: 10, height: 10, borderRadius: '50%', backgroundColor: statusColors[m.status] || '#4b5563', border: '2px solid #0e0e0e' }} />
               </Box>
               <Box>
                 <Typography sx={{ fontSize: '0.8rem', fontFamily: MONO, color: '#e5e2e1', fontWeight: 600 }}>{m.name}</Typography>
@@ -126,7 +126,7 @@ function MembersPanel({ members }: { members: any[] }) {
                 <select
                   value={m.role}
                   onChange={(e) => updateRole.mutate({ user_id: m.user_id, role: e.target.value })}
-                  style={{ padding: '2px 6px', backgroundColor: '#141922', border: '1px solid #1e2736', borderRadius: '4px', color: '#8b949e', fontFamily: MONO, fontSize: '0.6rem' }}
+                  style={{ padding: '2px 6px', backgroundColor: '#141922', border: '1px solid #2a2a2a', borderRadius: '4px', color: '#8b949e', fontFamily: MONO, fontSize: '0.6rem' }}
                 >
                   <option value="admin">Admin</option>
                   <option value="editor">Editor</option>
@@ -146,16 +146,16 @@ function SharedResourcesPanel({ resources }: { resources: any[] }) {
   const typeIcons: Record<string, React.ComponentType<{ className?: string }>> = {
     prompt: FileText, workflow: GitBranch, dataset: Database, model_config: Settings,
   };
-  const typeColors: Record<string, string> = { prompt: '#4b8eff', workflow: '#adc6ff', dataset: '#22c55e', model_config: '#f59e0b' };
+  const typeColors: Record<string, string> = { prompt: '#4b8eff', workflow: '#adc6ff', dataset: '#22c55e', model_config: '#ffb595' };
 
   return (
-    <Paper elevation={0} sx={{ p: 3, backgroundColor: '#141922', border: '1px solid #1e2736', borderRadius: '8px' }}>
+    <Paper elevation={0} sx={{ p: 3, backgroundColor: '#141922', border: '1px solid #2a2a2a', borderRadius: '8px' }}>
       <Typography sx={{ ...sectionLabelSx, mb: 2 }}>Shared Resources ({resources.length})</Typography>
       <Table size="small">
         <TableHead>
           <TableRow>
             {['Resource', 'Type', 'Shared By', 'Permission', 'Version', 'Updated'].map(h => (
-              <TableCell key={h} sx={{ color: '#8b949e', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#1e2736' }}>{h}</TableCell>
+              <TableCell key={h} sx={{ color: '#8b949e', fontFamily: MONO, fontSize: '0.65rem', borderColor: '#2a2a2a' }}>{h}</TableCell>
             ))}
           </TableRow>
         </TableHead>
@@ -164,21 +164,21 @@ function SharedResourcesPanel({ resources }: { resources: any[] }) {
             const Icon = typeIcons[r.type] || FileText;
             return (
               <TableRow key={r.id} sx={{ '&:hover': { backgroundColor: '#1a2332' } }}>
-                <TableCell sx={{ color: '#e5e2e1', fontFamily: MONO, fontSize: '0.8rem', borderColor: '#1e2736' }}>
+                <TableCell sx={{ color: '#e5e2e1', fontFamily: MONO, fontSize: '0.8rem', borderColor: '#2a2a2a' }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <Box sx={{ color: typeColors[r.type], display: 'flex' }}><Icon className="w-3 h-3" /></Box>
                     {r.name}
                   </Box>
                 </TableCell>
-                <TableCell sx={{ borderColor: '#1e2736' }}>
+                <TableCell sx={{ borderColor: '#2a2a2a' }}>
                   <Chip label={r.type} size="small" sx={{ fontFamily: MONO, fontSize: '0.6rem', height: 20, backgroundColor: typeColors[r.type] + '20', color: typeColors[r.type] }} />
                 </TableCell>
-                <TableCell sx={{ color: '#8b949e', fontFamily: MONO, fontSize: '0.75rem', borderColor: '#1e2736' }}>{r.shared_by}</TableCell>
-                <TableCell sx={{ borderColor: '#1e2736' }}>
-                  <Chip label={r.permission} size="small" sx={{ fontFamily: MONO, fontSize: '0.6rem', height: 20, backgroundColor: '#1e2736', color: '#c1c6d7' }} />
+                <TableCell sx={{ color: '#8b949e', fontFamily: MONO, fontSize: '0.75rem', borderColor: '#2a2a2a' }}>{r.shared_by}</TableCell>
+                <TableCell sx={{ borderColor: '#2a2a2a' }}>
+                  <Chip label={r.permission} size="small" sx={{ fontFamily: MONO, fontSize: '0.6rem', height: 20, backgroundColor: '#2a2a2a', color: '#c1c6d7' }} />
                 </TableCell>
-                <TableCell sx={{ color: '#e5e2e1', fontFamily: MONO, fontSize: '0.75rem', borderColor: '#1e2736' }}>v{r.version}</TableCell>
-                <TableCell sx={{ color: '#8b949e', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#1e2736' }}>
+                <TableCell sx={{ color: '#e5e2e1', fontFamily: MONO, fontSize: '0.75rem', borderColor: '#2a2a2a' }}>v{r.version}</TableCell>
+                <TableCell sx={{ color: '#8b949e', fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a' }}>
                   {new Date(r.updated_at).toLocaleDateString()}
                 </TableCell>
               </TableRow>
@@ -193,15 +193,15 @@ function SharedResourcesPanel({ resources }: { resources: any[] }) {
 /* ── Audit Log ────────────────────────────────────────── */
 function AuditLogPanel({ entries }: { entries: any[] }) {
   const actionColors: Record<string, string> = {
-    created: '#22c55e', shared: '#4b8eff', edited: '#f59e0b', commented: '#adc6ff',
-    deployed: '#22c55e', invited: '#4b8eff', updated: '#f59e0b',
+    created: '#22c55e', shared: '#4b8eff', edited: '#ffb595', commented: '#adc6ff',
+    deployed: '#22c55e', invited: '#4b8eff', updated: '#ffb595',
   };
 
   return (
-    <Paper elevation={0} sx={{ p: 3, backgroundColor: '#141922', border: '1px solid #1e2736', borderRadius: '8px' }}>
+    <Paper elevation={0} sx={{ p: 3, backgroundColor: '#141922', border: '1px solid #2a2a2a', borderRadius: '8px' }}>
       <Typography sx={{ ...sectionLabelSx, mb: 2 }}>Activity Log</Typography>
       {(entries || []).map((e: any) => (
-        <Box key={e.id} sx={{ p: 1.5, mb: 0.5, backgroundColor: '#0d1117', borderRadius: '4px', border: '1px solid #1e2736', display: 'flex', alignItems: 'center', gap: 1.5 }}>
+        <Box key={e.id} sx={{ p: 1.5, mb: 0.5, backgroundColor: '#0e0e0e', borderRadius: '4px', border: '1px solid #2a2a2a', display: 'flex', alignItems: 'center', gap: 1.5 }}>
           <Box sx={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: actionColors[e.action] || '#8b949e', flexShrink: 0 }} />
           <Box sx={{ flex: 1 }}>
             <Typography sx={{ fontSize: '0.75rem', fontFamily: MONO, color: '#e5e2e1' }}>
@@ -239,13 +239,13 @@ function AddMemberForm() {
 
   const inputSx = {
     '& .MuiOutlinedInput-root': {
-      backgroundColor: '#0d1117', color: '#e5e2e1', fontFamily: MONO, fontSize: '0.8rem',
-      '& fieldset': { borderColor: '#1e2736' },
+      backgroundColor: '#0e0e0e', color: '#e5e2e1', fontFamily: MONO, fontSize: '0.8rem',
+      '& fieldset': { borderColor: '#2a2a2a' },
     },
   };
 
   return (
-    <Paper elevation={0} sx={{ p: 3, backgroundColor: '#141922', border: '1px solid #1e2736', borderRadius: '8px' }}>
+    <Paper elevation={0} sx={{ p: 3, backgroundColor: '#141922', border: '1px solid #2a2a2a', borderRadius: '8px' }}>
       <Typography sx={{ ...sectionLabelSx, mb: 2 }}>Invite Member</Typography>
       <Box sx={{ display: 'flex', gap: 1 }}>
         <TextField size="small" placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} sx={inputSx} />
@@ -254,12 +254,12 @@ function AddMemberForm() {
           size="small" variant="outlined"
           onClick={() => addMember.mutate()}
           disabled={addMember.isPending || !name || !email}
-          sx={{ fontFamily: MONO, fontSize: '0.7rem', borderColor: '#1e2736', color: '#4b8eff', textTransform: 'none' }}
+          sx={{ fontFamily: MONO, fontSize: '0.7rem', borderColor: '#2a2a2a', color: '#4b8eff', textTransform: 'none' }}
         >
           <UserPlus className="w-3 h-3" style={{ marginRight: 4 }} /> Invite
         </Button>
       </Box>
-      {addMember.isSuccess && <Alert severity="success" sx={{ mt: 1, backgroundColor: '#0d1117', border: '1px solid #1e2736', '& .MuiAlert-message': { fontFamily: MONO, fontSize: '0.7rem', color: '#22c55e' } }}>Member invited successfully</Alert>}
+      {addMember.isSuccess && <Alert severity="success" sx={{ mt: 1, backgroundColor: '#0e0e0e', border: '1px solid #2a2a2a', '& .MuiAlert-message': { fontFamily: MONO, fontSize: '0.7rem', color: '#22c55e' } }}>Member invited successfully</Alert>}
     </Paper>
   );
 }
@@ -287,7 +287,7 @@ export default function CollaborationPage() {
         <Grid size={{ xs: 6, md: 3 }}><KpiCard icon={Users} label="Members" value={stats?.total_members || 0} accent="#4b8eff" /></Grid>
         <Grid size={{ xs: 6, md: 3 }}><KpiCard icon={Activity} label="Active" value={stats?.active_members || 0} accent="#22c55e" /></Grid>
         <Grid size={{ xs: 6, md: 3 }}><KpiCard icon={FileText} label="Shared Resources" value={stats?.shared_resources || 0} accent="#adc6ff" /></Grid>
-        <Grid size={{ xs: 6, md: 3 }}><KpiCard icon={MessageSquare} label="Messages" value={stats?.messages_exchanged || 0} accent="#f59e0b" /></Grid>
+        <Grid size={{ xs: 6, md: 3 }}><KpiCard icon={MessageSquare} label="Messages" value={stats?.messages_exchanged || 0} accent="#ffb595" /></Grid>
       </Grid>
 
       <Grid container spacing={2}>
