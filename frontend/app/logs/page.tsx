@@ -155,7 +155,8 @@ function DetailBlock({ label, value }: { label: string; value: string }) {
       <Box
         component="pre"
         sx={{
-          mt: 0.25, p: 1, bgcolor: 'text.primary', color: 'divider', borderRadius: '6px',
+          mt: 0.25, p: 1, bgcolor: '#0e0e0e', color: '#c1c6d7', borderRadius: '6px',
+          fontFamily: 'var(--font-mono), "JetBrains Mono", monospace',
           fontSize: '0.75rem', overflowX: 'auto', whiteSpace: 'pre-wrap', wordBreak: 'break-all', m: 0,
         }}
       >
