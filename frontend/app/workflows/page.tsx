@@ -131,7 +131,7 @@ function StatCard({ icon: Icon, label, value, color }: {
           <Icon className="w-5 h-5" />
         </Box>
         <Box>
-          <Typography variant="h5" sx={{ fontWeight: 700 }}>{value}</Typography>
+          <Typography variant="h5" sx={{ fontWeight: 700, fontFamily: 'var(--font-mono), "JetBrains Mono", monospace' }}>{value}</Typography>
           <Typography variant="caption" sx={{ color: 'text.secondary' }}>{label}</Typography>
         </Box>
       </Box>

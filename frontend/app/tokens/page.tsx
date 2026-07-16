@@ -228,7 +228,7 @@ function MetricRow({ label, value, max, color = 'blue' }: any) {
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
         <Typography sx={{ fontSize: '0.875rem', fontWeight: 500, color: 'text.primary' }}>{label}</Typography>
-        <Typography sx={{ fontSize: '0.875rem', fontWeight: 700, color: 'text.primary' }}>{value}</Typography>
+        <Typography sx={{ fontSize: '0.875rem', fontWeight: 700, color: 'text.primary', fontFamily: 'var(--font-mono), "JetBrains Mono", monospace' }}>{value}</Typography>
       </Box>
       {max && (
         <LinearProgress

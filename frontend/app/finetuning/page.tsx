@@ -112,7 +112,7 @@ function StatCard({ icon: Icon, label, value, color }: {
         </Box>
         <Box>
           <Typography variant="body2" sx={{ color: 'text.secondary', fontSize: '0.75rem' }}>{label}</Typography>
-          <Typography variant="h6" sx={{ fontWeight: 700, lineHeight: 1.2 }}>{value}</Typography>
+          <Typography variant="h6" sx={{ fontWeight: 700, lineHeight: 1.2, fontFamily: 'var(--font-mono), "JetBrains Mono", monospace' }}>{value}</Typography>
         </Box>
       </Box>
     </Paper>

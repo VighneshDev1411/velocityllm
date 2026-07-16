@@ -99,7 +99,7 @@ function StatCard({ icon: Icon, label, value, color }: {
           {label}
         </Typography>
       </Box>
-      <Typography variant="h5" sx={{ fontWeight: 700 }}>{value}</Typography>
+      <Typography variant="h5" sx={{ fontWeight: 700, fontFamily: 'var(--font-mono), "JetBrains Mono", monospace' }}>{value}</Typography>
     </Paper>
   );
 }

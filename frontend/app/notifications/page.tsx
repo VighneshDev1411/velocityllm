@@ -84,7 +84,7 @@ function StatCard({ icon: Icon, label, value, color }: {
       <Box sx={{ p: 1, borderRadius: 1.5, bgcolor: `${color}18`, display: 'inline-flex', mb: 1 }}>
         <Icon size={20} color={color} />
       </Box>
-      <Typography variant="h5" sx={{ fontWeight: 700 }}>{value}</Typography>
+      <Typography variant="h5" sx={{ fontWeight: 700, fontFamily: 'var(--font-mono), "JetBrains Mono", monospace' }}>{value}</Typography>
       <Typography variant="caption" color="text.secondary">{label}</Typography>
     </Paper>
   );

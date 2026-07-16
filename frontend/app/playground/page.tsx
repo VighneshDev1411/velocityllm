@@ -326,9 +326,9 @@ function HistoryItem({
         }}
       >
         {isExpanded ? (
-          <ChevronDown className="w-4 h-4 text-gray-400 shrink-0" />
+          <ChevronDown className="w-4 h-4 shrink-0" />
         ) : (
-          <ChevronRight className="w-4 h-4 text-gray-400 shrink-0" />
+          <ChevronRight className="w-4 h-4 shrink-0" />
         )}
         <Box sx={{ flex: 1, minWidth: 0 }}>
           <Typography variant="body2" sx={{ fontWeight: 500, color: 'text.primary', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -1012,9 +1012,9 @@ export default function PlaygroundPage() {
                   )}
                 </Typography>
                 {isHistoryOpen ? (
-                  <ChevronDown className="w-4 h-4 text-gray-400" />
+                  <ChevronDown className="w-4 h-4" />
                 ) : (
-                  <ChevronRight className="w-4 h-4 text-gray-400" />
+                  <ChevronRight className="w-4 h-4" />
                 )}
               </Box>
 
@@ -1113,7 +1113,7 @@ export default function PlaygroundPage() {
             <Paper sx={paperSx}>
               <Box sx={sectionHeaderSx}>
                 <Typography variant="body2" sx={{ fontWeight: 600, color: 'text.primary', display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Settings2 className="w-4 h-4 text-gray-500" />
+                  <Settings2 className="w-4 h-4" />
                   Parameters
                 </Typography>
               </Box>
@@ -1239,7 +1239,7 @@ export default function PlaygroundPage() {
             <Paper sx={paperSx}>
               <Box sx={sectionHeaderSx}>
                 <Typography variant="body2" sx={{ fontWeight: 600, color: 'text.primary', display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <AlertCircle className="w-4 h-4 text-gray-400" />
+                  <AlertCircle className="w-4 h-4" />
                   API Reference
                 </Typography>
               </Box>

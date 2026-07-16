@@ -53,7 +53,7 @@ function StatCard({
         </Box>
         <Typography variant="body2" color="text.secondary">{label}</Typography>
       </Box>
-      <Typography variant="h4" sx={{ fontWeight: 700 }}>{value}</Typography>
+      <Typography variant="h4" sx={{ fontWeight: 700, fontFamily: 'var(--font-mono), "JetBrains Mono", monospace' }}>{value}</Typography>
       {subtitle && (
         <Typography variant="caption" color="text.secondary">{subtitle}</Typography>
       )}

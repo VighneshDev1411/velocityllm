@@ -332,7 +332,7 @@ export default function KnowledgeBasePage() {
               <stat.icon className="w-5 h-5" style={{ color: stat.color }} />
             </Box>
             <Box>
-              <Typography variant="h6" sx={{ fontWeight: 700 }}>{stat.value}</Typography>
+              <Typography variant="h6" sx={{ fontWeight: 700, fontFamily: 'var(--font-mono), "JetBrains Mono", monospace' }}>{stat.value}</Typography>
               <Typography variant="caption" color="text.secondary">{stat.label}</Typography>
             </Box>
           </Paper>

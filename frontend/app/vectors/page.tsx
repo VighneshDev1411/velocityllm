@@ -251,7 +251,7 @@ export default function VectorDBPage() {
           {label}
         </Typography>
       </Box>
-      <Typography variant="h5" sx={{ fontWeight: 700, color: 'text.primary' }}>{value}</Typography>
+      <Typography variant="h5" sx={{ fontWeight: 700, color: 'text.primary', fontFamily: 'var(--font-mono), "JetBrains Mono", monospace' }}>{value}</Typography>
     </Paper>
   );
 
