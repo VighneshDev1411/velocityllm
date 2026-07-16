@@ -1007,7 +1007,7 @@ export default function PlaygroundPage() {
                     <Chip
                       label={history.length}
                       size="small"
-                      sx={{ ml: 0.5, height: 20, fontSize: '0.7rem', fontWeight: 500, bgcolor: 'rgba(139,92,246,0.1)', color: '#8b5cf6' }}
+                      sx={{ ml: 0.5, height: 20, fontSize: '0.7rem', fontWeight: 500, bgcolor: 'rgba(139,92,246,0.1)', color: '#4b8eff' }}
                     />
                   )}
                 </Typography>

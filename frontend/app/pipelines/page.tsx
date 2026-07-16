@@ -55,7 +55,7 @@ function PipelineCard({ pipeline }: { pipeline: any }) {
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['cicd-runs'] }); queryClient.invalidateQueries({ queryKey: ['cicd-stats'] }); },
   });
 
-  const triggerColors: Record<string, string> = { push: '#4b8eff', pr: '#a78bfa', schedule: '#f59e0b', manual: '#22c55e' };
+  const triggerColors: Record<string, string> = { push: '#4b8eff', pr: '#adc6ff', schedule: '#f59e0b', manual: '#22c55e' };
   const envColors: Record<string, string> = { production: '#ef4444', staging: '#f59e0b' };
 
   return (
@@ -225,7 +225,7 @@ export default function PipelinesPage() {
 
       <Grid container spacing={2} sx={{ mb: 3 }}>
         <Grid size={{ xs: 6, md: 2 }}><KpiCard icon={GitBranch} label="Pipelines" value={stats?.total_pipelines || 0} accent="#4b8eff" /></Grid>
-        <Grid size={{ xs: 6, md: 2 }}><KpiCard icon={Activity} label="Total Runs" value={stats?.total_runs || 0} accent="#a78bfa" /></Grid>
+        <Grid size={{ xs: 6, md: 2 }}><KpiCard icon={Activity} label="Total Runs" value={stats?.total_runs || 0} accent="#adc6ff" /></Grid>
         <Grid size={{ xs: 6, md: 2 }}><KpiCard icon={CheckCircle} label="Success Rate" value={stats?.success_rate || '—'} accent="#22c55e" /></Grid>
         <Grid size={{ xs: 6, md: 2 }}><KpiCard icon={Clock} label="Avg Duration" value={stats?.avg_duration || '—'} accent="#f59e0b" /></Grid>
         <Grid size={{ xs: 6, md: 2 }}><KpiCard icon={Rocket} label="Deployments" value={stats?.deployments || 0} accent="#22c55e" /></Grid>

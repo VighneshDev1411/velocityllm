@@ -133,7 +133,7 @@ export default function ProfilePage() {
       case 'admin':
         return { bg: 'rgba(239,68,68,0.1)', color: 'error.dark' };
       case 'developer':
-        return { bg: 'rgba(139,92,246,0.1)', color: '#8b5cf6' };
+        return { bg: 'rgba(139,92,246,0.1)', color: '#4b8eff' };
       default:
         return { bg: 'rgba(173,198,255,0.1)', color: '#adc6ff' };
     }
@@ -230,7 +230,7 @@ export default function ProfilePage() {
             sx={{
               width: 72,
               height: 72,
-              background: 'linear-gradient(135deg, #adc6ff, #8b5cf6)',
+              background: 'linear-gradient(135deg, #adc6ff, #4b8eff)',
               fontSize: '1.75rem',
               fontWeight: 700,
             }}

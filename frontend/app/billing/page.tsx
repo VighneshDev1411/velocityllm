@@ -96,7 +96,7 @@ function buildTierFeatures(tierLimits: TierLimits | null): string[] {
   ];
 }
 
-const PIE_COLORS = ['#adc6ff', '#8b5cf6', '#53e16f', '#ffb595', '#ef4444', '#67e8f9', '#a78bfa', '#f472b6'];
+const PIE_COLORS = ['#adc6ff', '#4b8eff', '#53e16f', '#ffb595', '#ef4444', '#67e8f9', '#adc6ff', '#f472b6'];
 
 const headerSx = { fontWeight: 700, color: 'text.secondary', fontSize: '0.625rem', textTransform: 'uppercase', letterSpacing: '0.2em', fontFamily: 'var(--font-mono), "JetBrains Mono", monospace' } as const;
 

@@ -15,7 +15,7 @@ import LinearProgress from '@mui/material/LinearProgress';
 
 const CHART_BLUE = '#adc6ff';
 const CHART_GREEN = '#53e16f';
-const CHART_PURPLE = '#8b5cf6';
+const CHART_PURPLE = '#4b8eff';
 const CHART_YELLOW = '#ffb595';
 const CHART_RED = '#ef4444';
 
@@ -120,7 +120,7 @@ export default function AnalyticsCharts({ timeSeries, tsLoading, latency }: Anal
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             <PercentileBar label="P50 (Median)" value={latency.p50_ms || 0} max={latency.p99_ms || 100} color="#53e16f" />
             <PercentileBar label="P90" value={latency.p90_ms || 0} max={latency.p99_ms || 100} color="#ffb595" />
-            <PercentileBar label="P95" value={latency.p95_ms || 0} max={latency.p99_ms || 100} color="#8b5cf6" />
+            <PercentileBar label="P95" value={latency.p95_ms || 0} max={latency.p99_ms || 100} color="#4b8eff" />
             <PercentileBar label="P99" value={latency.p99_ms || 0} max={latency.p99_ms || 100} color="#ef4444" />
           </Box>
           <Box sx={{ mt: 3, pt: 2, borderTop: '1px solid', borderColor: 'divider' }}>

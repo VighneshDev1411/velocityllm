@@ -124,7 +124,7 @@ function DeploymentsPanel({ deployments, ns }: { deployments: any[]; ns: string 
                 <Box sx={{ display: 'flex', gap: 0.5 }}>
                   <Button size="small" onClick={() => scale.mutate({ name: d.name, replicas: d.replicas + 1 })} sx={{ fontFamily: MONO, fontSize: '0.55rem', textTransform: 'none', color: '#4b8eff', minWidth: 0, px: 1 }}>+1</Button>
                   {d.replicas > 1 && <Button size="small" onClick={() => scale.mutate({ name: d.name, replicas: d.replicas - 1 })} sx={{ fontFamily: MONO, fontSize: '0.55rem', textTransform: 'none', color: '#f59e0b', minWidth: 0, px: 1 }}>-1</Button>}
-                  <Button size="small" onClick={() => restart.mutate(d.name)} sx={{ fontFamily: MONO, fontSize: '0.55rem', textTransform: 'none', color: '#a78bfa', minWidth: 0, px: 1 }}><RefreshCw className="w-3 h-3" /></Button>
+                  <Button size="small" onClick={() => restart.mutate(d.name)} sx={{ fontFamily: MONO, fontSize: '0.55rem', textTransform: 'none', color: '#adc6ff', minWidth: 0, px: 1 }}><RefreshCw className="w-3 h-3" /></Button>
                 </Box>
               </TableCell>
             </TableRow>
@@ -243,7 +243,7 @@ export default function KubernetesPage() {
       <Grid container spacing={2} sx={{ mb: 3 }}>
         <Grid size={{ xs: 6, md: 2 }}><KpiCard icon={Server} label="Nodes" value={`${stats?.ready_nodes}/${stats?.total_nodes}`} accent="#4b8eff" /></Grid>
         <Grid size={{ xs: 6, md: 2 }}><KpiCard icon={BoxIcon} label="Pods" value={`${stats?.running_pods}/${stats?.total_pods}`} accent="#22c55e" /></Grid>
-        <Grid size={{ xs: 6, md: 2 }}><KpiCard icon={Layers} label="Deployments" value={stats?.total_deployments || 0} accent="#a78bfa" /></Grid>
+        <Grid size={{ xs: 6, md: 2 }}><KpiCard icon={Layers} label="Deployments" value={stats?.total_deployments || 0} accent="#adc6ff" /></Grid>
         <Grid size={{ xs: 6, md: 2 }}><KpiCard icon={Network} label="Services" value={stats?.total_services || 0} accent="#f59e0b" /></Grid>
         <Grid size={{ xs: 6, md: 2 }}><KpiCard icon={Activity} label="Namespaces" value={stats?.total_namespaces || 0} accent="#22c55e" /></Grid>
         <Grid size={{ xs: 6, md: 2 }}><KpiCard icon={ArrowUpDown} label="Scale Events" value={stats?.scale_events || 0} accent="#ef4444" /></Grid>

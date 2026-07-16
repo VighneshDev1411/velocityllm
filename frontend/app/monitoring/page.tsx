@@ -309,7 +309,7 @@ export default function MonitoringPage() {
           <Grid size={{ xs: 12, lg: 4 }}>
             <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 3, height: '100%' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                <TrendingUp className="w-4 h-4" style={{ color: '#8b5cf6' }} />
+                <TrendingUp className="w-4 h-4" style={{ color: '#4b8eff' }} />
                 <Typography sx={sectionLabelSx}>Queue Status</Typography>
               </Box>
               <Box>
@@ -664,7 +664,7 @@ function MetricBox({ label, value, color }: { label: string; value: number; colo
 function PoolCard({ icon, title, data, color }: { icon: React.ReactNode; title: string; data: any; color: string }) {
   const colorMap: Record<string, string> = {
     blue: '#adc6ff',
-    purple: '#8b5cf6',
+    purple: '#4b8eff',
     green: '#53e16f',
   };
 

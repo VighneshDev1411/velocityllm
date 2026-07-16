@@ -58,7 +58,7 @@ export default function ObservabilityPage() {
   const kpis = stats ? [
     { label: 'Active Metrics', value: stats.active_metrics || 0, color: '#4b8eff', icon: Activity },
     { label: 'Active Alerts', value: stats.active_alerts || 0, color: stats.active_alerts > 0 ? '#f97316' : '#22c55e', icon: AlertTriangle },
-    { label: 'Log Entries', value: stats.log_entries || 0, color: '#a78bfa', icon: ScrollText },
+    { label: 'Log Entries', value: stats.log_entries || 0, color: '#adc6ff', icon: ScrollText },
     { label: 'Active Traces', value: stats.active_traces || 0, color: '#06b6d4', icon: GitBranch },
     { label: 'SLOs Tracked', value: stats.slo_count || 0, color: '#22c55e', icon: Target },
     { label: 'Alert Rules', value: stats.alert_rules || 0, color: '#f59e0b', icon: AlertTriangle },

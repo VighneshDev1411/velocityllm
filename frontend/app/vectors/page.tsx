@@ -82,8 +82,8 @@ interface Document {
 // ─── Color palette for documents ─────────────────────────────────────────────
 
 const DOC_COLORS = [
-  '#adc6ff', '#ef4444', '#53e16f', '#ffb595', '#8b5cf6',
-  '#ec4899', '#06b6d4', '#f97316', '#14b8a6', '#8b5cf6',
+  '#adc6ff', '#ef4444', '#53e16f', '#ffb595', '#4b8eff',
+  '#ec4899', '#06b6d4', '#f97316', '#14b8a6', '#4b8eff',
 ];
 
 function getDocColor(docId: string, docColorMap: Record<string, string>): string {
@@ -641,7 +641,7 @@ export default function VectorDBPage() {
           <Box sx={{ display: 'flex', gap: 2, mb: 4, flexWrap: 'wrap' }}>
             <StatCard label="Total Vectors" value={stats.total_vectors.toLocaleString()} icon={Database} color="#adc6ff" />
             <StatCard label="Documents" value={stats.total_documents} icon={FileText} color="#53e16f" />
-            <StatCard label="Collections" value={stats.total_collections} icon={Layers} color="#8b5cf6" />
+            <StatCard label="Collections" value={stats.total_collections} icon={Layers} color="#4b8eff" />
             <StatCard label="Embedding Dim" value={stats.embedding_dim} icon={Sparkles} color="#ffb595" />
             <StatCard label="Avg Tokens/Chunk" value={Math.round(stats.avg_token_count)} icon={BarChart3} color="#ec4899" />
           </Box>
@@ -688,7 +688,7 @@ export default function VectorDBPage() {
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
         <Box sx={{
           p: 1.5, borderRadius: '8px',
-          background: 'linear-gradient(135deg, #8b5cf6, #adc6ff)',
+          background: 'linear-gradient(135deg, #4b8eff, #adc6ff)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
           <Waypoints className="w-6 h-6" style={{ color: '#fff' }} />

@@ -423,7 +423,7 @@ export default function BatchCompare({ availableModels }: Props) {
                         height: 14,
                         borderRadius: 7,
                         bgcolor: 'rgba(0,0,0,0.04)',
-                        '& .MuiLinearProgress-bar': { bgcolor: '#8b5cf6', borderRadius: 7 },
+                        '& .MuiLinearProgress-bar': { bgcolor: '#4b8eff', borderRadius: 7 },
                       }}
                     />
                   </Box>
@@ -505,7 +505,7 @@ export default function BatchCompare({ availableModels }: Props) {
                         </Typography>
                       </Box>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                        <Hash className="w-3 h-3" style={{ color: '#8b5cf6' }} />
+                        <Hash className="w-3 h-3" style={{ color: '#4b8eff' }} />
                         <Typography variant="caption" sx={{ fontFamily: 'monospace' }}>{item.tokens} tokens</Typography>
                       </Box>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>

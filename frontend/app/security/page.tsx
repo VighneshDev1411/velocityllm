@@ -59,7 +59,7 @@ export default function SecurityPage() {
     { label: 'Total Scans', value: stats.total_scans, color: '#4b8eff', icon: Shield },
     { label: 'Vulnerabilities', value: stats.vulnerabilities, color: stats.critical_vulns > 0 ? '#ef4444' : '#f97316', icon: Bug },
     { label: 'Critical', value: stats.critical_vulns, color: stats.critical_vulns > 0 ? '#ef4444' : '#22c55e', icon: AlertTriangle },
-    { label: 'Secrets Found', value: stats.secrets_detected, color: '#a78bfa', icon: Eye },
+    { label: 'Secrets Found', value: stats.secrets_detected, color: '#adc6ff', icon: Eye },
     { label: 'Compliance', value: `${stats.compliance_score?.toFixed(0)}%`, color: stats.compliance_score >= 80 ? '#22c55e' : '#f97316', icon: CheckCircle },
     { label: 'WAF Blocked', value: stats.waf_events_blocked, color: '#f97316', icon: Flame },
   ] : [];

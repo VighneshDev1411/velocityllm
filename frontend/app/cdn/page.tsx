@@ -552,7 +552,7 @@ export default function CDNPage() {
           <KpiCard icon={Activity} label="Total Requests" value={(stats?.total_requests || 0).toLocaleString()} accent="#4b8eff" />
         </Grid>
         <Grid size={{ xs: 6, md: 3 }}>
-          <KpiCard icon={ArrowUpDown} label="Bandwidth Saved" value={stats?.bandwidth_savings || '—'} sub={formatBytes(stats?.bytes_saved || 0)} accent="#a78bfa" />
+          <KpiCard icon={ArrowUpDown} label="Bandwidth Saved" value={stats?.bandwidth_savings || '—'} sub={formatBytes(stats?.bytes_saved || 0)} accent="#adc6ff" />
         </Grid>
         <Grid size={{ xs: 6, md: 3 }}>
           <KpiCard icon={Shield} label="WAF Blocked" value={(stats?.waf_blocked || 0).toLocaleString()} accent="#ef4444" />

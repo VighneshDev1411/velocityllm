@@ -108,7 +108,7 @@ function StatCard({ icon: Icon, label, value, color }: {
 
 const categoryColors: Record<string, string> = {
   development: '#adc6ff',
-  'text-processing': '#8b5cf6',
+  'text-processing': '#4b8eff',
   translation: '#53e16f',
   general: '#ffb595',
   analysis: '#ef4444',
@@ -296,7 +296,7 @@ export default function PromptLibraryPage() {
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
         <Box sx={{
           width: 44, height: 44, borderRadius: '8px',
-          background: 'linear-gradient(135deg, #8b5cf6, #8b5cf6)',
+          background: 'linear-gradient(135deg, #4b8eff, #4b8eff)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
           <BookTemplate className="w-6 h-6" style={{ color: '#fff' }} />
@@ -384,7 +384,7 @@ export default function PromptLibraryPage() {
                       : ('rgba(255,255,255,0.02)'),
                     transition: 'all 0.15s',
                     '&:hover': {
-                      borderColor: '#8b5cf6',
+                      borderColor: '#4b8eff',
                       backgroundColor: 'rgba(139,92,246,0.06)',
                     },
                   }}
@@ -804,7 +804,7 @@ export default function PromptLibraryPage() {
         <Box>
           {/* Stat Cards */}
           <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr 1fr', md: '1fr 1fr 1fr 1fr' }, gap: 2, mb: 3 }}>
-            <StatCard icon={FileText} label="Total Templates" value={stats?.total_templates || templates.length} color="#8b5cf6" />
+            <StatCard icon={FileText} label="Total Templates" value={stats?.total_templates || templates.length} color="#4b8eff" />
             <StatCard icon={BarChart3} label="Total Usage" value={stats?.total_usage || 0} color="#adc6ff" />
             <StatCard
               icon={CheckCircle}
@@ -845,7 +845,7 @@ export default function PromptLibraryPage() {
                       borderRadius: 8,
                     }}
                   />
-                  <Bar dataKey="usage" fill="#8b5cf6" name="Total Usage" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="usage" fill="#4b8eff" name="Total Usage" radius={[4, 4, 0, 0]} />
                   <Bar dataKey="success" fill="#53e16f" name="Success" radius={[4, 4, 0, 0]} />
                   <Bar dataKey="failure" fill="#ef4444" name="Failure" radius={[4, 4, 0, 0]} />
                 </BarChart>

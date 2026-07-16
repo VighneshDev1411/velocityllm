@@ -71,15 +71,15 @@ export default function RealtimeCharts({ chartData }: RealtimeChartsProps) {
             <AreaChart data={chartData}>
               <defs>
                 <linearGradient id="goGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
+                  <stop offset="5%" stopColor="#4b8eff" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#4b8eff" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(65,71,85,0.2)" />
               <XAxis dataKey="time" stroke="#c1c6d7" fontSize={11} />
               <YAxis stroke="#c1c6d7" fontSize={11} />
               <Tooltip contentStyle={{ backgroundColor: '#201f1f', border: '1px solid rgba(65,71,85,0.3)', borderRadius: 6, color: '#e5e2e1' }} />
-              <Area type="monotone" dataKey="goroutines" stroke="#8b5cf6" strokeWidth={2} fill="url(#goGradient)" name="Goroutines" isAnimationActive={false} />
+              <Area type="monotone" dataKey="goroutines" stroke="#4b8eff" strokeWidth={2} fill="url(#goGradient)" name="Goroutines" isAnimationActive={false} />
             </AreaChart>
           </ResponsiveContainer>
         </Paper>

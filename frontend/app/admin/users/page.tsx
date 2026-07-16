@@ -223,7 +223,7 @@ export default function AdminUsersPage() {
 
   const getActionChipColor = (action: string): { bg: string; color: string } => {
     if (action.includes('delete')) return { bg: 'rgba(239,68,68,0.1)', color: '#dc2626' };
-    if (action.includes('role')) return { bg: 'rgba(139,92,246,0.1)', color: '#8b5cf6' };
+    if (action.includes('role')) return { bg: 'rgba(139,92,246,0.1)', color: '#4b8eff' };
     if (action.includes('login')) return { bg: 'rgba(83,225,111,0.1)', color: '#53e16f' };
     if (action.includes('create')) return { bg: 'rgba(173,198,255,0.1)', color: '#adc6ff' };
     return { bg: 'background.default', color: 'text.secondary' };
@@ -393,7 +393,7 @@ export default function AdminUsersPage() {
                                 sx={{
                                   width: 36,
                                   height: 36,
-                                  background: 'linear-gradient(135deg, #adc6ff, #8b5cf6)',
+                                  background: 'linear-gradient(135deg, #adc6ff, #4b8eff)',
                                   fontSize: '0.875rem',
                                   fontWeight: 700,
                                 }}

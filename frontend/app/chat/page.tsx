@@ -579,7 +579,7 @@ function ChatAvatar({ role }: { role: string }) {
   return (
     <Box sx={{
       width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
-      bgcolor: isUser ? '#53e16f' : '#8b5cf6',
+      bgcolor: isUser ? '#53e16f' : '#4b8eff',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
     }}>
       {isUser

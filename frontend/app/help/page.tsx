@@ -29,7 +29,7 @@ const difficultyColor = (d: string) => {
 };
 
 const categoryColor = (c: string) => {
-  switch (c) { case 'getting-started': return '#22c55e'; case 'api': return '#4b8eff'; case 'platform': return '#a78bfa'; case 'deployment': return '#f97316'; case 'security': return '#ef4444'; default: return '#6b7280'; }
+  switch (c) { case 'getting-started': return '#22c55e'; case 'api': return '#4b8eff'; case 'platform': return '#adc6ff'; case 'deployment': return '#f97316'; case 'security': return '#ef4444'; default: return '#6b7280'; }
 };
 
 export default function HelpPage() {
@@ -59,7 +59,7 @@ export default function HelpPage() {
   const kpis = stats ? [
     { label: 'Guides', value: stats.guides, color: '#4b8eff', icon: BookOpen },
     { label: 'FAQs', value: stats.faqs, color: '#22c55e', icon: MessageCircleQuestion },
-    { label: 'Tutorials', value: stats.tutorials, color: '#a78bfa', icon: GraduationCap },
+    { label: 'Tutorials', value: stats.tutorials, color: '#adc6ff', icon: GraduationCap },
   ] : [];
 
   return (
@@ -122,7 +122,7 @@ export default function HelpPage() {
               {(searchResults.tutorials || []).map((t: any) => (
                 <Box key={t.id} sx={{ py: 1, px: 1.5, mb: 0.5, backgroundColor: '#141922', borderRadius: 1, border: '1px solid #1e2736' }}>
                   <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-                    <Chip label="Tutorial" size="small" sx={{ height: 18, fontSize: '0.55rem', fontFamily: MONO, backgroundColor: 'rgba(167,139,250,0.15)', color: '#a78bfa' }} />
+                    <Chip label="Tutorial" size="small" sx={{ height: 18, fontSize: '0.55rem', fontFamily: MONO, backgroundColor: 'rgba(167,139,250,0.15)', color: '#adc6ff' }} />
                     <Typography sx={{ fontSize: '0.75rem', color: '#e5e2e1', fontFamily: MONO }}>{t.title}</Typography>
                   </Box>
                 </Box>
@@ -208,7 +208,7 @@ export default function HelpPage() {
                 <Grid key={t.id} size={{ xs: 12, md: selectedTutorial === t.id ? 12 : 6 }}>
                   <Box
                     onClick={() => setSelectedTutorial(selectedTutorial === t.id ? null : t.id)}
-                    sx={{ p: 2, backgroundColor: '#141922', borderRadius: 1, border: `1px solid ${selectedTutorial === t.id ? '#a78bfa' : '#1e2736'}`, cursor: 'pointer', transition: 'border-color 0.2s', '&:hover': { borderColor: '#a78bfa40' } }}
+                    sx={{ p: 2, backgroundColor: '#141922', borderRadius: 1, border: `1px solid ${selectedTutorial === t.id ? '#adc6ff' : '#1e2736'}`, cursor: 'pointer', transition: 'border-color 0.2s', '&:hover': { borderColor: '#adc6ff40' } }}
                   >
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                       <Chip label={t.difficulty} size="small" sx={{ height: 20, fontSize: '0.55rem', fontFamily: MONO, backgroundColor: `${difficultyColor(t.difficulty)}15`, color: difficultyColor(t.difficulty) }} />

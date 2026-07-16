@@ -390,7 +390,7 @@ function GeoRoutingStats({ stats }: { stats: any }) {
     { label: 'Local Routes', value: stats.local_routes, color: '#22c55e' },
     { label: 'Cross-Region Routes', value: stats.cross_region_routes, color: '#f59e0b' },
     { label: 'Failover Routes', value: stats.failover_routes, color: '#ef4444' },
-    { label: 'Zone Preferred', value: stats.zone_preferred, color: '#a78bfa' },
+    { label: 'Zone Preferred', value: stats.zone_preferred, color: '#adc6ff' },
   ];
 
   return (
@@ -475,7 +475,7 @@ export default function RegionsPage() {
           <KpiCard icon={Globe} label="Regions" value={regions.length} accent="#4b8eff" />
         </Grid>
         <Grid size={{ xs: 6, md: 3 }}>
-          <KpiCard icon={Server} label="Total Instances" value={totalInstances} accent="#a78bfa" />
+          <KpiCard icon={Server} label="Total Instances" value={totalInstances} accent="#adc6ff" />
         </Grid>
         <Grid size={{ xs: 6, md: 3 }}>
           <KpiCard icon={CheckCircle} label="Healthy" value={totalHealthy} accent="#22c55e" />

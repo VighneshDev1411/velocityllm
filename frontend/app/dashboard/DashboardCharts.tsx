@@ -15,7 +15,7 @@ import {
 } from 'recharts';
 import { useTheme } from '@mui/material/styles';
 
-const COLORS = ['#adc6ff', '#8b5cf6', '#53e16f', '#ffb595', '#ef4444', '#ffb595'];
+const COLORS = ['#adc6ff', '#4b8eff', '#53e16f', '#ffb595', '#ef4444', '#ffb595'];
 
 interface DashboardChartsProps {
   timeSeries: any;
@@ -98,7 +98,7 @@ export default function DashboardCharts({ timeSeries, tsLoading, modelData, cost
         <Grid size={{ xs: 12, lg: 6 }}>
           <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: '8px' }}>
             <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: 'text.primary', mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Clock className="w-4 h-4" style={{ color: '#8b5cf6' }} />
+              <Clock className="w-4 h-4" style={{ color: '#4b8eff' }} />
               Latency Distribution
             </Typography>
             <Box sx={{ height: 260 }}>
@@ -264,7 +264,7 @@ export default function DashboardCharts({ timeSeries, tsLoading, modelData, cost
         <Grid size={{ xs: 12, lg: 4 }}>
           <Paper elevation={0} sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: '8px' }}>
             <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: 'text.primary', mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Clock className="w-4 h-4" style={{ color: '#8b5cf6' }} />
+              <Clock className="w-4 h-4" style={{ color: '#4b8eff' }} />
               Latency Percentiles
             </Typography>
             <Box sx={{ '& > * + *': { mt: 2 } }}>

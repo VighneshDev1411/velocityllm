@@ -12,7 +12,7 @@ import LinearProgress from '@mui/material/LinearProgress';
 import { StatusChip } from '@/components/StatusChip';
 import { monoFontFamily } from '@/lib/theme';
 
-const MODEL_COLORS = ['#adc6ff', '#53e16f', '#ffb595', '#8b5cf6', '#4b8eff'];
+const MODEL_COLORS = ['#adc6ff', '#53e16f', '#ffb595', '#ef4444', '#4b8eff'];
 
 const mono = { fontFamily: monoFontFamily };
 

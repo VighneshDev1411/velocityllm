@@ -165,12 +165,12 @@ export default function StatusPage() {
             <CardContent>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Box sx={{ color: '#a78bfa', display: 'flex' }}><Rocket className="w-4 h-4" /></Box>
+                  <Box sx={{ color: '#adc6ff', display: 'flex' }}><Rocket className="w-4 h-4" /></Box>
                   <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: '#e5e2e1', fontFamily: MONO, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Launch Readiness</Typography>
                 </Box>
                 <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: launchProgress === 100 ? '#22c55e' : '#f59e0b', fontFamily: MONO }}>{launchProgress.toFixed(0)}%</Typography>
               </Box>
-              <LinearProgress variant="determinate" value={launchProgress} sx={{ height: 6, borderRadius: 3, mb: 2, backgroundColor: 'rgba(255,255,255,0.05)', '& .MuiLinearProgress-bar': { backgroundColor: launchProgress === 100 ? '#22c55e' : '#a78bfa', borderRadius: 3 } }} />
+              <LinearProgress variant="determinate" value={launchProgress} sx={{ height: 6, borderRadius: 3, mb: 2, backgroundColor: 'rgba(255,255,255,0.05)', '& .MuiLinearProgress-bar': { backgroundColor: launchProgress === 100 ? '#22c55e' : '#adc6ff', borderRadius: 3 } }} />
 
               {launchCategories.map(cat => {
                 const checks = launchChecks.filter((c: any) => c.category === cat);

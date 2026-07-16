@@ -132,7 +132,7 @@ export default function MeshPage() {
             <KpiCard label="Circuit Breaks" value={(stats?.circuit_breaks || 0).toLocaleString()} color="#ffb595" icon={<Shield className="w-3.5 h-3.5" />} />
           </Grid>
           <Grid size={{ xs: 6, md: 2 }}>
-            <KpiCard label="Retries" value={(stats?.retries || 0).toLocaleString()} color="#8b5cf6" icon={<RotateCcw className="w-3.5 h-3.5" />} />
+            <KpiCard label="Retries" value={(stats?.retries || 0).toLocaleString()} color="#4b8eff" icon={<RotateCcw className="w-3.5 h-3.5" />} />
           </Grid>
           <Grid size={{ xs: 6, md: 2 }}>
             <KpiCard label="Canary Requests" value={(stats?.canary_requests || 0).toLocaleString()} color="#06b6d4" icon={<GitBranch className="w-3.5 h-3.5" />} />
@@ -144,7 +144,7 @@ export default function MeshPage() {
 
         <Grid container spacing={2}>
           <Grid size={{ xs: 6, md: 3 }}>
-            <KpiCard label="Total Services" value={topologyData.total_services || 0} color="#8b5cf6" icon={<Network className="w-3.5 h-3.5" />} />
+            <KpiCard label="Total Services" value={topologyData.total_services || 0} color="#4b8eff" icon={<Network className="w-3.5 h-3.5" />} />
           </Grid>
           <Grid size={{ xs: 6, md: 3 }}>
             <KpiCard label="Total Instances" value={topologyData.total_instances || 0} color="#06b6d4" icon={<Server className="w-3.5 h-3.5" />} />
@@ -179,7 +179,7 @@ export default function MeshPage() {
                   instances.map((inst: any) => (
                     <TableRow key={inst.id} sx={{ '&:hover': { backgroundColor: 'rgba(32,31,31,0.3)' } }}>
                       <TableCell>
-                        <Chip label={svcName} size="small" sx={{ fontFamily: MONO, fontSize: '0.625rem', backgroundColor: 'rgba(139,92,246,0.15)', color: '#8b5cf6' }} />
+                        <Chip label={svcName} size="small" sx={{ fontFamily: MONO, fontSize: '0.625rem', backgroundColor: 'rgba(139,92,246,0.15)', color: '#4b8eff' }} />
                       </TableCell>
                       <TableCell sx={{ fontFamily: MONO, fontSize: '0.7rem' }}>{inst.id}</TableCell>
                       <TableCell sx={{ fontFamily: MONO, fontSize: '0.75rem' }}>{inst.endpoint}</TableCell>
@@ -266,7 +266,7 @@ export default function MeshPage() {
         {/* ── POLICY CONTROLS ── */}
         <Typography sx={sectionLabelSx}>Configure Traffic Policy</Typography>
 
-        <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 3, boxShadow: 'inset 3px 0 0 0 #8b5cf6' }}>
+        <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 3, boxShadow: 'inset 3px 0 0 0 #4b8eff' }}>
           <Grid container spacing={3}>
             <Grid size={{ xs: 12, md: 4 }}>
               <Typography sx={{ fontSize: '0.6875rem', color: 'text.secondary', mb: 0.5 }}>Load Balancing Algorithm</Typography>

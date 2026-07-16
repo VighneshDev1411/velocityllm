@@ -491,7 +491,7 @@ export default function FineTuningPage() {
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
       <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 2 }}>
         <StatCard icon={Database} label="Total Datasets" value={stats?.total_datasets ?? 0} color="#adc6ff" />
-        <StatCard icon={Cpu} label="Total Jobs" value={stats?.total_jobs ?? 0} color="#8b5cf6" />
+        <StatCard icon={Cpu} label="Total Jobs" value={stats?.total_jobs ?? 0} color="#4b8eff" />
         <StatCard icon={CheckCircle} label="Completed" value={stats?.jobs_completed ?? 0} color="#4caf50" />
         <StatCard icon={Sparkles} label="Fine-Tuned Models" value={stats?.total_models ?? 0} color="#ffb595" />
       </Box>

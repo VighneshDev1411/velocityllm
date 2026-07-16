@@ -94,7 +94,7 @@ interface Stats {
 
 const NODE_TYPES = [
   { type: 'input',     label: 'Input',     icon: FileInput,    color: '#adc6ff', desc: 'Accepts user input or data feed',                configFields: ['variable_name', 'default_value', 'input_type'] },
-  { type: 'prompt',    label: 'Prompt',    icon: MessageSquare, color: '#8b5cf6', desc: 'Template with variable interpolation',           configFields: ['template', 'system_prompt'] },
+  { type: 'prompt',    label: 'Prompt',    icon: MessageSquare, color: '#4b8eff', desc: 'Template with variable interpolation',           configFields: ['template', 'system_prompt'] },
   { type: 'llm_call',  label: 'LLM Call',  icon: Cpu,          color: '#ffb595', desc: 'Send prompt to an LLM provider',                 configFields: ['model', 'temperature', 'max_tokens', 'top_p'] },
   { type: 'condition', label: 'Condition', icon: Filter,       color: '#ef4444', desc: 'Branch based on a condition',                    configFields: ['condition_expr', 'true_label', 'false_label'] },
   { type: 'transform', label: 'Transform', icon: Settings,     color: '#53e16f', desc: 'Parse, extract, or transform data',              configFields: ['transform_type', 'expression', 'output_key'] },
@@ -781,7 +781,7 @@ export default function WorkflowsPage() {
       {/* Header */}
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-          <Box sx={{ color: '#8b5cf6' }}><GitMerge className="w-7 h-7" /></Box>
+          <Box sx={{ color: '#4b8eff' }}><GitMerge className="w-7 h-7" /></Box>
           <Box>
             <Typography variant="h5" sx={{ fontWeight: 700 }}>Workflow Builder</Typography>
             <Typography variant="body2" sx={{ color: 'text.secondary' }}>
@@ -1120,7 +1120,7 @@ export default function WorkflowsPage() {
       {tab === 3 && stats && (
         <Box>
           <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 2, mb: 3 }}>
-            <StatCard icon={Layers} label="Total Workflows" value={stats.total_workflows} color="#8b5cf6" />
+            <StatCard icon={Layers} label="Total Workflows" value={stats.total_workflows} color="#4b8eff" />
             <StatCard icon={Zap} label="Active Workflows" value={stats.workflows_active} color="#53e16f" />
             <StatCard icon={Play} label="Total Runs" value={stats.total_runs} color="#adc6ff" />
             <StatCard icon={CheckCircle} label="Success Rate" value={`${stats.success_rate.toFixed(1)}%`} color="#ffb595" />

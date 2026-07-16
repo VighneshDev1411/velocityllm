@@ -136,7 +136,7 @@ export default function AdminDashboardPage() {
             </Grid>
             <Grid size={{ xs: 6, md: 3 }}>
               <Box sx={{ backgroundColor: 'rgba(139,92,246,0.1)', borderRadius: '10px', p: 2 }}>
-                <Typography sx={{ fontSize: '0.8rem', fontWeight: 500, color: '#8b5cf6' }}>Memory (Alloc)</Typography>
+                <Typography sx={{ fontSize: '0.8rem', fontWeight: 500, color: '#4b8eff' }}>Memory (Alloc)</Typography>
                 <Typography sx={{ fontSize: '1.1rem', fontWeight: 700, color: '#e5e2e1' }}>{health.memory.alloc_mb.toFixed(1)} MB</Typography>
               </Box>
             </Grid>
@@ -251,7 +251,7 @@ export default function AdminDashboardPage() {
                     const colorMap: Record<string, string> = {
                       free: 'text.disabled',
                       pro: '#adc6ff',
-                      enterprise: '#8b5cf6',
+                      enterprise: '#4b8eff',
                     };
                     return (
                       <Box key={tier.tier}>

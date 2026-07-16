@@ -85,7 +85,7 @@ function KpiCard({ icon: Icon, label, value, accent = '#4b8eff' }: {
 /* ── Members Panel ────────────────────────────────────── */
 function MembersPanel({ members }: { members: any[] }) {
   const queryClient = useQueryClient();
-  const roleColors: Record<string, string> = { owner: '#f59e0b', admin: '#a78bfa', editor: '#4b8eff', viewer: '#8b949e' };
+  const roleColors: Record<string, string> = { owner: '#f59e0b', admin: '#adc6ff', editor: '#4b8eff', viewer: '#8b949e' };
   const roleIcons: Record<string, React.ComponentType<{ className?: string }>> = { owner: Crown, admin: Shield, editor: Edit3, viewer: Eye };
   const statusColors: Record<string, string> = { online: '#22c55e', away: '#f59e0b', offline: '#4b5563' };
 
@@ -146,7 +146,7 @@ function SharedResourcesPanel({ resources }: { resources: any[] }) {
   const typeIcons: Record<string, React.ComponentType<{ className?: string }>> = {
     prompt: FileText, workflow: GitBranch, dataset: Database, model_config: Settings,
   };
-  const typeColors: Record<string, string> = { prompt: '#4b8eff', workflow: '#a78bfa', dataset: '#22c55e', model_config: '#f59e0b' };
+  const typeColors: Record<string, string> = { prompt: '#4b8eff', workflow: '#adc6ff', dataset: '#22c55e', model_config: '#f59e0b' };
 
   return (
     <Paper elevation={0} sx={{ p: 3, backgroundColor: '#141922', border: '1px solid #1e2736', borderRadius: '8px' }}>
@@ -193,7 +193,7 @@ function SharedResourcesPanel({ resources }: { resources: any[] }) {
 /* ── Audit Log ────────────────────────────────────────── */
 function AuditLogPanel({ entries }: { entries: any[] }) {
   const actionColors: Record<string, string> = {
-    created: '#22c55e', shared: '#4b8eff', edited: '#f59e0b', commented: '#a78bfa',
+    created: '#22c55e', shared: '#4b8eff', edited: '#f59e0b', commented: '#adc6ff',
     deployed: '#22c55e', invited: '#4b8eff', updated: '#f59e0b',
   };
 
@@ -286,7 +286,7 @@ export default function CollaborationPage() {
       <Grid container spacing={2} sx={{ mb: 3 }}>
         <Grid size={{ xs: 6, md: 3 }}><KpiCard icon={Users} label="Members" value={stats?.total_members || 0} accent="#4b8eff" /></Grid>
         <Grid size={{ xs: 6, md: 3 }}><KpiCard icon={Activity} label="Active" value={stats?.active_members || 0} accent="#22c55e" /></Grid>
-        <Grid size={{ xs: 6, md: 3 }}><KpiCard icon={FileText} label="Shared Resources" value={stats?.shared_resources || 0} accent="#a78bfa" /></Grid>
+        <Grid size={{ xs: 6, md: 3 }}><KpiCard icon={FileText} label="Shared Resources" value={stats?.shared_resources || 0} accent="#adc6ff" /></Grid>
         <Grid size={{ xs: 6, md: 3 }}><KpiCard icon={MessageSquare} label="Messages" value={stats?.messages_exchanged || 0} accent="#f59e0b" /></Grid>
       </Grid>
 

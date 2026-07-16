@@ -191,7 +191,7 @@ export default function CachingPage() {
             <KpiCard label="L1 Hit Rate" value={`${(l1HitRate * 100).toFixed(1)}%`} color="#adc6ff" progress={l1HitRate * 100} />
           </Grid>
           <Grid size={{ xs: 6, md: 3 }}>
-            <KpiCard label="L2 Hit Rate" value={`${(l2HitRate * 100).toFixed(1)}%`} color="#8b5cf6" progress={l2HitRate * 100} />
+            <KpiCard label="L2 Hit Rate" value={`${(l2HitRate * 100).toFixed(1)}%`} color="#4b8eff" progress={l2HitRate * 100} />
           </Grid>
           <Grid size={{ xs: 6, md: 3 }}>
             <KpiCard label="Total Requests" value={totalReqs.toLocaleString()} color="#ffb595" />
@@ -208,7 +208,7 @@ export default function CachingPage() {
                 <KpiCard label="Cluster Nodes" value={distStats.cluster_nodes || 1} color="#06b6d4" />
               </Grid>
               <Grid size={{ xs: 6, md: 2 }}>
-                <KpiCard label="Cache Epoch" value={distStats.current_epoch || 0} color="#8b5cf6" />
+                <KpiCard label="Cache Epoch" value={distStats.current_epoch || 0} color="#4b8eff" />
               </Grid>
               <Grid size={{ xs: 6, md: 2 }}>
                 <KpiCard label="Local Hits" value={(distStats.local_hits || 0).toLocaleString()} color="#53e16f" />
@@ -321,9 +321,9 @@ export default function CachingPage() {
 
           {/* L2 Redis */}
           <Grid size={{ xs: 12, md: 6 }}>
-            <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 3, boxShadow: 'inset 3px 0 0 0 #8b5cf6' }}>
+            <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 3, boxShadow: 'inset 3px 0 0 0 #4b8eff' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                <Database className="w-4 h-4" style={{ color: '#8b5cf6' }} />
+                <Database className="w-4 h-4" style={{ color: '#4b8eff' }} />
                 <Typography sx={sectionLabelSx}>L2 — Redis</Typography>
               </Box>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
@@ -440,7 +440,7 @@ export default function CachingPage() {
                 <KpiCard label="Bytes Served" value={formatBytes(analyticsData.bytes_served || 0)} color="#adc6ff" />
               </Grid>
               <Grid size={{ xs: 12, md: 4 }}>
-                <KpiCard label="Total Hits" value={(analyticsData.total_hits || 0).toLocaleString()} color="#8b5cf6" />
+                <KpiCard label="Total Hits" value={(analyticsData.total_hits || 0).toLocaleString()} color="#4b8eff" />
               </Grid>
             </Grid>
           </>

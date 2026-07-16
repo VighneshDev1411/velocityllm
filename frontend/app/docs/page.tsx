@@ -320,7 +320,7 @@ const METHOD_COLORS: Record<HttpMethod, string> = {
   GET: '#53e16f',
   POST: '#adc6ff',
   PUT: '#ffb595',
-  PATCH: '#8b5cf6',
+  PATCH: '#4b8eff',
   DELETE: '#ef4444',
 };
 

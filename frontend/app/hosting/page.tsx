@@ -126,7 +126,7 @@ function ModelCard({ model }: { model: any }) {
       <Box sx={{ display: 'flex', gap: 1.5, mb: 2, flexWrap: 'wrap' }}>
         <Chip icon={<Cpu className="w-3 h-3" />} label={model.gpu} size="small" sx={{ fontFamily: MONO, fontSize: '0.6rem', height: 22, backgroundColor: '#1e2736', color: '#c1c6d7', '& .MuiChip-icon': { color: '#c1c6d7' } }} />
         <Chip label={`${model.replicas} replica${model.replicas !== 1 ? 's' : ''}`} size="small" sx={{ fontFamily: MONO, fontSize: '0.6rem', height: 22, backgroundColor: '#1e2736', color: '#c1c6d7' }} />
-        {model.quantization !== 'none' && <Chip label={`Q:${model.quantization}`} size="small" sx={{ fontFamily: MONO, fontSize: '0.6rem', height: 22, backgroundColor: '#a78bfa20', color: '#a78bfa' }} />}
+        {model.quantization !== 'none' && <Chip label={`Q:${model.quantization}`} size="small" sx={{ fontFamily: MONO, fontSize: '0.6rem', height: 22, backgroundColor: '#adc6ff20', color: '#adc6ff' }} />}
         <Chip label={`$${(model.cost_per_hour * model.replicas).toFixed(2)}/hr`} size="small" sx={{ fontFamily: MONO, fontSize: '0.6rem', height: 22, backgroundColor: '#f59e0b20', color: '#f59e0b' }} />
       </Box>
 
@@ -304,7 +304,7 @@ export default function HostingPage() {
       <Grid container spacing={2} sx={{ mb: 3 }}>
         <Grid size={{ xs: 6, md: 2 }}><KpiCard icon={Server} label="Models" value={stats?.total_models || 0} accent="#4b8eff" /></Grid>
         <Grid size={{ xs: 6, md: 2 }}><KpiCard icon={Activity} label="Running" value={stats?.running_models || 0} accent="#22c55e" /></Grid>
-        <Grid size={{ xs: 6, md: 2 }}><KpiCard icon={Cpu} label="GPUs" value={stats?.total_gpus || 0} accent="#a78bfa" /></Grid>
+        <Grid size={{ xs: 6, md: 2 }}><KpiCard icon={Cpu} label="GPUs" value={stats?.total_gpus || 0} accent="#adc6ff" /></Grid>
         <Grid size={{ xs: 6, md: 2 }}><KpiCard icon={Gauge} label="Avg GPU" value={`${(stats?.avg_gpu_utilization || 0).toFixed(0)}%`} accent="#f59e0b" /></Grid>
         <Grid size={{ xs: 6, md: 2 }}><KpiCard icon={Zap} label="Requests" value={(stats?.total_requests || 0).toLocaleString()} accent="#22c55e" /></Grid>
         <Grid size={{ xs: 6, md: 2 }}><KpiCard icon={DollarSign} label="Cost/hr" value={`$${(stats?.total_cost_per_hour || 0).toFixed(2)}`} accent="#ef4444" /></Grid>

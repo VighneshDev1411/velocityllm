@@ -163,7 +163,7 @@ export default function QueuesPage() {
             <Grid key={q.name} size={{ xs: 6, md: 4 }}>
               <Paper elevation={0} sx={{
                 p: 2, borderRadius: '8px',
-                boxShadow: q.label === 'Dead Letter' ? 'inset 3px 0 0 0 #f472b6' : 'inset 3px 0 0 0 #8b5cf6',
+                boxShadow: q.label === 'Dead Letter' ? 'inset 3px 0 0 0 #f472b6' : 'inset 3px 0 0 0 #4b8eff',
                 transition: 'background-color 0.15s',
                 '&:hover': { backgroundColor: '#2a2a2a' },
               }}>
@@ -172,7 +172,7 @@ export default function QueuesPage() {
                     {q.label === 'Dead Letter' ? (
                       <Skull className="w-4 h-4" style={{ color: '#f472b6' }} />
                     ) : (
-                      <Inbox className="w-4 h-4" style={{ color: '#8b5cf6' }} />
+                      <Inbox className="w-4 h-4" style={{ color: '#4b8eff' }} />
                     )}
                     <Typography sx={{ fontSize: '0.75rem', fontWeight: 600 }}>{q.label}</Typography>
                   </Box>
@@ -182,7 +182,7 @@ export default function QueuesPage() {
                     sx={{
                       fontFamily: MONO, fontSize: '0.75rem', fontWeight: 700,
                       backgroundColor: q.depth > 0 ? 'rgba(139,92,246,0.15)' : 'rgba(255,255,255,0.05)',
-                      color: q.depth > 0 ? '#8b5cf6' : 'text.secondary',
+                      color: q.depth > 0 ? '#4b8eff' : 'text.secondary',
                     }}
                   />
                 </Box>
