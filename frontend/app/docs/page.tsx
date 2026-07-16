@@ -453,7 +453,7 @@ function EndpointDetail({ endpoint }: { endpoint: Endpoint }) {
         </Tabs>
         <Paper
           sx={{
-            backgroundColor: '#0f172a',
+            backgroundColor: '#131313',
             borderRadius: '0 0 8px 8px',
             p: 2,
             overflow: 'auto',
@@ -480,7 +480,7 @@ function EndpointDetail({ endpoint }: { endpoint: Endpoint }) {
           <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>Example Response</Typography>
           <CopyButton text={endpoint.responseExample} />
         </Box>
-        <Paper sx={{ backgroundColor: '#0f172a', borderRadius: 2, p: 2, overflow: 'auto' }}>
+        <Paper sx={{ backgroundColor: '#131313', borderRadius: 2, p: 2, overflow: 'auto' }}>
           <Typography
             component="pre"
             sx={{
@@ -645,7 +645,7 @@ export default function DocsPage() {
                   All API requests require a Bearer token in the <code>Authorization</code> header.
                   Create scoped keys on the API Keys page. Never expose keys client-side.
                 </Typography>
-                <Paper sx={{ backgroundColor: '#0f172a', borderRadius: 2, p: 2 }}>
+                <Paper sx={{ backgroundColor: '#131313', borderRadius: 2, p: 2 }}>
                   <Typography component="pre" sx={{ fontFamily: 'monospace', fontSize: '0.82rem', color: 'divider', m: 0 }}>
                     {`Authorization: Bearer vel_sk_prod_xxxxxxxxxxxxxxxxxxxx`}
                   </Typography>
@@ -664,7 +664,7 @@ export default function DocsPage() {
                   <code>429 Too Many Requests</code> with a <code>Retry-After</code> header
                   indicating when you can retry.
                 </Typography>
-                <Paper sx={{ backgroundColor: '#0f172a', borderRadius: 2, p: 2 }}>
+                <Paper sx={{ backgroundColor: '#131313', borderRadius: 2, p: 2 }}>
                   <Typography component="pre" sx={{ fontFamily: 'monospace', fontSize: '0.82rem', color: 'divider', m: 0 }}>
                     {`HTTP/1.1 429 Too Many Requests
 Retry-After: 12

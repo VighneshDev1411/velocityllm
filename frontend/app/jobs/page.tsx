@@ -245,7 +245,7 @@ function JobCard({ job, onCancel }: { job: JobStatus; onCancel: (id: string) => 
       case 'cancelled':
         return <XCircle size={18} style={{ color: '#dc2626' }} />;
       case 'running':
-        return <CircularProgress size={18} sx={{ color: '#2563eb' }} />;
+        return <CircularProgress size={18} sx={{ color: '#4b8eff' }} />;
       default:
         return <Clock size={18} style={{ color: '#ca8a04' }} />;
     }
@@ -260,7 +260,7 @@ function JobCard({ job, onCancel }: { job: JobStatus; onCancel: (id: string) => 
       case 'cancelled':
         return { backgroundColor: 'rgba(239,68,68,0.1)', color: '#dc2626' };
       case 'running':
-        return { backgroundColor: 'rgba(59,130,246,0.1)', color: '#2563eb' };
+        return { backgroundColor: 'rgba(59,130,246,0.1)', color: '#4b8eff' };
       default:
         return { backgroundColor: '#fefce8', color: '#ca8a04' };
     }
@@ -273,7 +273,7 @@ function JobCard({ job, onCancel }: { job: JobStatus; onCancel: (id: string) => 
       case 'high':
         return { backgroundColor: 'rgba(245,158,11,0.1)', color: '#ea580c' };
       case 'normal':
-        return { backgroundColor: 'rgba(59,130,246,0.1)', color: '#2563eb' };
+        return { backgroundColor: 'rgba(59,130,246,0.1)', color: '#4b8eff' };
       default:
         return { backgroundColor: 'action.hover', color: 'text.secondary' };
     }

@@ -308,7 +308,7 @@ export default function LandingPage() {
       </Container>
 
       {/* ─── CTA band ─── */}
-      <Box sx={{ background: 'linear-gradient(135deg, #adc6ff, #4b8eff)', py: { xs: 7, md: 9 } }}>
+      {/* <Box sx={{ background: 'linear-gradient(135deg, #adc6ff, #4b8eff)', py: { xs: 7, md: 9 } }}>
         <Container maxWidth="sm" sx={{ textAlign: 'center' }}>
           <Typography sx={{ fontSize: { xs: '1.75rem', md: '2.25rem' }, fontWeight: 700, color: '#131313', mb: 1.5, letterSpacing: '-0.02em' }}>
             Ready to get started?
@@ -324,7 +324,7 @@ export default function LandingPage() {
             </Button>
           )}
         </Container>
-      </Box>
+      </Box> */}
 
       {/* ─── Footer ─── */}
       <Box component="footer" sx={{ bgcolor: '#0e0e0e', borderTop: '1px solid', borderColor: 'divider' }}>

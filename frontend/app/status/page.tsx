@@ -23,7 +23,7 @@ const MONO = '"JetBrains Mono", monospace';
 const fetcher = (url: string) => fetch(url).then(r => r.json());
 
 const statusColor = (s: string) => {
-  switch (s) { case 'operational': return '#22c55e'; case 'degraded': return '#f59e0b'; case 'outage': return '#ef4444'; case 'maintenance': return '#3b82f6'; default: return '#6b7280'; }
+  switch (s) { case 'operational': return '#22c55e'; case 'degraded': return '#f59e0b'; case 'outage': return '#ef4444'; case 'maintenance': return '#4b8eff'; default: return '#6b7280'; }
 };
 
 const checkStatusIcon = (s: string) => {

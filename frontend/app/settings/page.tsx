@@ -356,7 +356,7 @@ export default function SettingsPage() {
       {/* LLM Providers */}
       <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 3, mb: 3 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2.5 }}>
-          <Cpu style={{ width: 16, height: 16, color: '#7c3aed' }} />
+          <Cpu style={{ width: 16, height: 16, color: '#4b8eff' }} />
           <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: 'text.primary' }}>
             LLM Providers
           </Typography>

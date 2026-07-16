@@ -104,7 +104,7 @@ function providerColor(provider: string): string {
   if (p.includes('openai')) return '#10a37f';
   if (p.includes('anthropic')) return '#d97706';
   if (p.includes('google')) return '#4285f4';
-  if (p.includes('cohere')) return '#7c3aed';
+  if (p.includes('cohere')) return '#4b8eff';
   return '#6b7280';
 }
 

@@ -79,7 +79,7 @@ export default function AnalyticsCharts({ timeSeries, tsLoading, latency }: Anal
       <Grid size={{ xs: 12, lg: 6 }}>
         <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 3 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-            <Clock style={{ width: 16, height: 16, color: '#7c3aed' }} />
+            <Clock style={{ width: 16, height: 16, color: '#4b8eff' }} />
             <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: 'text.primary' }}>
               Latency Percentiles Over Time
             </Typography>
@@ -112,7 +112,7 @@ export default function AnalyticsCharts({ timeSeries, tsLoading, latency }: Anal
       <Grid size={{ xs: 12, lg: 6 }}>
         <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 3 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-            <BarChart3 style={{ width: 16, height: 16, color: '#7c3aed' }} />
+            <BarChart3 style={{ width: 16, height: 16, color: '#4b8eff' }} />
             <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: 'text.primary' }}>
               Latency Distribution
             </Typography>
@@ -152,7 +152,7 @@ export default function AnalyticsCharts({ timeSeries, tsLoading, latency }: Anal
       <Grid size={{ xs: 12, lg: 6 }}>
         <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 3 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-            <Zap style={{ width: 16, height: 16, color: '#2563eb' }} />
+            <Zap style={{ width: 16, height: 16, color: '#4b8eff' }} />
             <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: 'text.primary' }}>
               Request Throughput
             </Typography>

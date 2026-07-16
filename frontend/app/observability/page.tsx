@@ -65,11 +65,11 @@ export default function ObservabilityPage() {
   ] : [];
 
   const severityColor = (s: string) => {
-    switch (s) { case 'critical': return '#ef4444'; case 'warning': return '#f97316'; case 'info': return '#3b82f6'; default: return '#6b7280'; }
+    switch (s) { case 'critical': return '#ef4444'; case 'warning': return '#f97316'; case 'info': return '#4b8eff'; default: return '#6b7280'; }
   };
 
   const levelColor = (l: string) => {
-    switch (l) { case 'ERROR': return '#ef4444'; case 'WARN': return '#f97316'; case 'INFO': return '#3b82f6'; case 'DEBUG': return '#6b7280'; default: return '#9ca3af'; }
+    switch (l) { case 'ERROR': return '#ef4444'; case 'WARN': return '#f97316'; case 'INFO': return '#4b8eff'; case 'DEBUG': return '#6b7280'; default: return '#9ca3af'; }
   };
 
   return (

@@ -227,7 +227,7 @@ export default function AnalyticsPage() {
     return (
       <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <Box sx={{ textAlign: 'center' }}>
-          <CircularProgress size={48} sx={{ color: '#2563eb' }} />
+          <CircularProgress size={48} sx={{ color: '#4b8eff' }} />
           <Typography sx={{ mt: 2, color: 'text.secondary' }}>Loading analytics...</Typography>
         </Box>
       </Box>
@@ -285,7 +285,7 @@ export default function AnalyticsPage() {
                 color: 'text.secondary',
                 '&.Mui-selected': {
                   backgroundColor: 'background.paper',
-                  color: '#2563eb',
+                  color: '#4b8eff',
                   boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
                   '&:hover': { backgroundColor: 'rgba(173,198,255,0.08)' },
                 },
@@ -339,7 +339,7 @@ export default function AnalyticsPage() {
         {/* Model Comparison Table */}
         <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '8px', p: 3 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-            <BarChart3 style={{ width: 16, height: 16, color: '#2563eb' }} />
+            <BarChart3 style={{ width: 16, height: 16, color: '#4b8eff' }} />
             <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: 'text.primary' }}>
               Model Comparison
             </Typography>
@@ -570,7 +570,7 @@ export default function AnalyticsPage() {
               onClick={exportCSV}
               sx={{
                 fontSize: '0.875rem', fontWeight: 500, textTransform: 'none', borderRadius: '8px',
-                backgroundColor: '#2563eb', '&:hover': { backgroundColor: '#1d4ed8' },
+                backgroundColor: '#4b8eff', '&:hover': { backgroundColor: '#1d4ed8' },
               }}
             >
               Export as CSV

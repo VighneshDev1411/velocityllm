@@ -705,11 +705,11 @@ function FormattedContent({ content }: { content: string }) {
               {lang && (
                 <Box sx={{
                   px: 1.5, py: 0.5,
-                  bgcolor: 'rgba(148,163,184,0.06)',
+                  bgcolor: 'rgba(193,198,215,0.06)',
                   borderBottom: '1px solid', borderColor: 'divider',
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                 }}>
-                  <Typography sx={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 500, textTransform: 'lowercase' }}>
+                  <Typography sx={{ fontSize: '0.72rem', color: '#c1c6d7', fontWeight: 500, textTransform: 'lowercase' }}>
                     {lang}
                   </Typography>
                 </Box>
@@ -723,9 +723,9 @@ function FormattedContent({ content }: { content: string }) {
                   overflowX: 'auto',
                   fontSize: '0.84rem', lineHeight: 1.6,
                   fontFamily: '"JetBrains Mono", "Fira Code", "SF Mono", monospace',
-                  color: '#e2e8f0',
+                  color: '#e5e2e1',
                   '&::-webkit-scrollbar': { height: 4 },
-                  '&::-webkit-scrollbar-thumb': { bgcolor: 'rgba(148,163,184,0.15)', borderRadius: 2 },
+                  '&::-webkit-scrollbar-thumb': { bgcolor: 'rgba(193,198,215,0.15)', borderRadius: 2 },
                 }}
               >
                 {code}
@@ -746,7 +746,7 @@ function FormattedContent({ content }: { content: string }) {
                 return (
                   <Box key={j} component="code" sx={{
                     fontSize: '0.85rem',
-                    bgcolor: 'rgba(148,163,184,0.1)',
+                    bgcolor: 'rgba(193,198,215,0.1)',
                     px: 0.75, py: 0.15, borderRadius: 1,
                     fontFamily: '"JetBrains Mono", "Fira Code", monospace',
                   }}>

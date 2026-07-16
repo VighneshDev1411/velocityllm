@@ -82,7 +82,7 @@ interface Invoice {
 const TIER_STYLE: Record<string, { name: string; color: string; bg: string; border: string; icon: typeof Shield }> = {
   free: { name: 'Free', color: 'text.primary', bg: 'background.default', border: 'divider', icon: Shield },
   pro: { name: 'Pro', color: 'primary.dark', bg: 'rgba(59,130,246,0.1)', border: '#bfdbfe', icon: Zap },
-  enterprise: { name: 'Enterprise', color: '#7c3aed', bg: '#f5f3ff', border: '#ddd6fe', icon: Crown },
+  enterprise: { name: 'Enterprise', color: '#4b8eff', bg: '#f5f3ff', border: '#ddd6fe', icon: Crown },
 };
 
 function buildTierFeatures(tierLimits: TierLimits | null): string[] {
@@ -224,7 +224,7 @@ export default function BillingPage() {
   const tierFeatures = buildTierFeatures(limits);
   const TierIcon = tierStyle.icon;
 
-  const progressColor = (pct: number) => pct >= 90 ? '#dc2626' : pct >= 75 ? '#d97706' : '#2563eb';
+  const progressColor = (pct: number) => pct >= 90 ? '#dc2626' : pct >= 75 ? '#d97706' : '#4b8eff';
 
   return (
     <Box sx={{ p: { xs: 2, sm: 3 }, maxWidth: '1200px', mx: 'auto' }}>
@@ -404,8 +404,8 @@ export default function BillingPage() {
                     <AreaChart data={chartData}>
                       <defs>
                         <linearGradient id="costGradient" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#2563eb" stopOpacity={0.15} />
-                          <stop offset="95%" stopColor="#2563eb" stopOpacity={0} />
+                          <stop offset="5%" stopColor="#4b8eff" stopOpacity={0.15} />
+                          <stop offset="95%" stopColor="#4b8eff" stopOpacity={0} />
                         </linearGradient>
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" stroke="var(--mui-palette-divider)" />
@@ -415,7 +415,7 @@ export default function BillingPage() {
                         contentStyle={tooltipStyle}
                         formatter={(value: number) => [`$${value.toFixed(4)}`, 'Cost']}
                       />
-                      <Area type="monotone" dataKey="cost" stroke="#2563eb" strokeWidth={2} fill="url(#costGradient)" />
+                      <Area type="monotone" dataKey="cost" stroke="#4b8eff" strokeWidth={2} fill="url(#costGradient)" />
                     </AreaChart>
                   </ResponsiveContainer>
                 ) : (
@@ -441,7 +441,7 @@ export default function BillingPage() {
                         contentStyle={tooltipStyle}
                         formatter={(value: number) => [value.toLocaleString(), 'Requests']}
                       />
-                      <Bar dataKey="requests" fill="#7c3aed" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="requests" fill="#4b8eff" radius={[4, 4, 0, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
                 ) : (
@@ -618,7 +618,7 @@ export default function BillingPage() {
                           fullWidth variant="contained" onClick={() => handleUpgrade(tier)}
                           sx={{
                             textTransform: 'none', borderRadius: '8px', py: 1.25, fontWeight: 600,
-                            bgcolor: tier === 'pro' ? '#2563eb' : '#7c3aed',
+                            bgcolor: tier === 'pro' ? '#4b8eff' : '#4b8eff',
                             '&:hover': { bgcolor: tier === 'pro' ? '#1d4ed8' : '#6d28d9' },
                           }}
                         >

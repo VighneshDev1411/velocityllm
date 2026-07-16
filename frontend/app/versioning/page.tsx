@@ -532,7 +532,7 @@ export default function VersioningPage() {
   // ── Tab: Stats ──────────────────────────────────────────────────────────
 
   const statusData = stats ? [
-    { name: 'Draft', value: stats.versions_draft, color: '#94a3b8' },
+    { name: 'Draft', value: stats.versions_draft, color: '#c1c6d7' },
     { name: 'Active', value: stats.versions_active, color: '#4b8eff' },
     { name: 'Deployed', value: stats.versions_deployed, color: '#22c55e' },
     { name: 'Archived', value: stats.versions_archived, color: '#ffb595' },
