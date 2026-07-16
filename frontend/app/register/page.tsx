@@ -92,22 +92,28 @@ export default function RegisterPage() {
           >
             <Typography sx={{ color: '#fff', fontWeight: 700, fontSize: '1.25rem' }}>V</Typography>
           </Box>
-          <Typography variant="h4" sx={{ fontWeight: 700, color: 'text.primary' }}>
+          <Typography sx={{
+            fontFamily: 'var(--font-mono), "JetBrains Mono", monospace',
+            fontSize: '0.625rem', letterSpacing: '0.2em', textTransform: 'uppercase',
+            color: 'text.disabled', mb: 1,
+          }}>
+            Get started
+          </Typography>
+          <Typography variant="h4" sx={{ fontWeight: 700, color: 'text.primary', letterSpacing: '-0.02em' }}>
             Create account
           </Typography>
-          <Typography sx={{ color: 'text.secondary', mt: 0.5 }}>
+          <Typography sx={{ color: 'text.secondary', mt: 0.75, fontSize: '0.875rem' }}>
             Get started with VelocityLLM
           </Typography>
         </Box>
 
-        {/* Form */}
+        {/* Form — flat card: 1px border, no drop shadow (per design system) */}
         <Paper
           elevation={0}
           sx={{
             p: 4,
             borderRadius: '8px',
             border: '1px solid', borderColor: 'divider',
-            boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
           }}
         >
           {error && (
@@ -193,8 +199,7 @@ export default function RegisterPage() {
               variant="contained"
               fullWidth
               disabled={isLoading}
-              size="large"
-              sx={{ py: 1.5, fontSize: '0.95rem' }}
+              sx={{ height: 46, fontSize: '0.9rem', mt: 0.5 }}
             >
               {isLoading ? (
                 <CircularProgress size={22} color="inherit" />

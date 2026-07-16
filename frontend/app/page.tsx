@@ -67,7 +67,7 @@ export default function LandingPage() {
                     Login
                   </Button>
                   <Button component={Link} href="/register" variant="contained" size="small">
-                    Sign Up
+                    Sign up
                   </Button>
                 </>
               )}
@@ -79,13 +79,24 @@ export default function LandingPage() {
       {/* Hero Section */}
       <Container maxWidth="lg" sx={{ pt: { xs: 10, md: 16 }, pb: { xs: 8, md: 12 } }}>
         <Box sx={{ textAlign: 'center' }}>
+          <Typography sx={{
+            fontFamily: 'var(--font-mono), "JetBrains Mono", monospace',
+            fontSize: '0.75rem', letterSpacing: '0.2em', textTransform: 'uppercase',
+            color: 'primary.main', mb: 2.5,
+          }}>
+            Production-grade LLM inference
+          </Typography>
           <Typography
             variant="h1"
             sx={{
               fontSize: { xs: '2.5rem', md: '3.75rem' },
               fontWeight: 800,
               mb: 3,
-              color: 'text.primary',
+              letterSpacing: '-0.04em',
+              background: 'linear-gradient(135deg, #e5e2e1 0%, #adc6ff 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
             }}
           >
             VelocityLLM
@@ -132,9 +143,9 @@ export default function LandingPage() {
                   href="/register"
                   variant="contained"
                   size="large"
-                  sx={{ px: 5, py: 1.75, fontSize: '1rem', boxShadow: '0 4px 14px 0 rgb(173 198 255 / 0.3)' }}
+                  sx={{ px: 5, height: 48, fontSize: '1rem', boxShadow: '0 4px 14px 0 rgb(173 198 255 / 0.3)' }}
                 >
-                  Get Started Free
+                  Get started free
                 </Button>
                 <Button
                   component={Link}
@@ -143,14 +154,14 @@ export default function LandingPage() {
                   size="large"
                   sx={{
                     px: 5,
-                    py: 1.75,
+                    height: 48,
                     fontSize: '1rem',
                     borderColor: 'divider',
                     color: 'text.primary',
                     '&:hover': { borderColor: 'divider', backgroundColor: 'background.default' },
                   }}
                 >
-                  Sign In
+                  Sign in
                 </Button>
               </>
             )}
@@ -175,10 +186,10 @@ export default function LandingPage() {
 
         <Grid container spacing={3}>
           {[
-            { icon: <Zap className="w-7 h-7" style={{ color: '#adc6ff' }} />, title: 'Lightning Fast', description: 'Optimized inference engine with advanced caching and multi-level optimization strategies.' },
-            { icon: <Shield className="w-7 h-7" style={{ color: '#4b8eff' }} />, title: 'Enterprise Security', description: 'JWT authentication, role-based access control, and comprehensive audit logging.' },
-            { icon: <BarChart3 className="w-7 h-7" style={{ color: '#53e16f' }} />, title: 'Real-time Monitoring', description: 'Live dashboards with worker metrics, streaming stats, and performance analytics.' },
-            { icon: <Rocket className="w-7 h-7" style={{ color: '#ffb595' }} />, title: 'Production Ready', description: 'Built for scale with worker pools, request batching, and intelligent load balancing.' },
+            { icon: <Zap className="w-7 h-7" style={{ color: '#adc6ff' }} />, accent: '#adc6ff', title: 'Lightning fast', description: 'Optimized inference engine with advanced caching and multi-level optimization strategies.' },
+            { icon: <Shield className="w-7 h-7" style={{ color: '#4b8eff' }} />, accent: '#4b8eff', title: 'Enterprise security', description: 'JWT authentication, role-based access control, and comprehensive audit logging.' },
+            { icon: <BarChart3 className="w-7 h-7" style={{ color: '#53e16f' }} />, accent: '#53e16f', title: 'Real-time monitoring', description: 'Live dashboards with worker metrics, streaming stats, and performance analytics.' },
+            { icon: <Rocket className="w-7 h-7" style={{ color: '#ffb595' }} />, accent: '#ffb595', title: 'Production ready', description: 'Built for scale with worker pools, request batching, and intelligent load balancing.' },
           ].map((feature, idx) => (
             <Grid size={{ xs: 12, sm: 6, lg: 3 }} key={idx}>
               <Paper
@@ -188,8 +199,10 @@ export default function LandingPage() {
                   height: '100%',
                   border: '1px solid', borderColor: 'divider',
                   borderRadius: '8px',
-                  transition: 'all 0.2s',
-                  '&:hover': { boxShadow: '0 10px 25px -5px rgb(0 0 0 / 0.1)', transform: 'translateY(-2px)' },
+                  // Signature inset accent + flat hover (surface steps lighter)
+                  boxShadow: `inset 3px 0 0 0 ${feature.accent}`,
+                  transition: 'background-color 0.2s ease',
+                  '&:hover': { backgroundColor: '#2a2a2a' },
                 }}
               >
                 <Box sx={{ mb: 2 }}>{feature.icon}</Box>
@@ -261,10 +274,10 @@ export default function LandingPage() {
         }}
       >
         <Container maxWidth="sm" sx={{ textAlign: 'center' }}>
-          <Typography sx={{ fontSize: { xs: '1.75rem', md: '2.25rem' }, fontWeight: 700, color: '#e5e2e1', mb: 2 }}>
-            Ready to Get Started?
+          <Typography sx={{ fontSize: { xs: '1.75rem', md: '2.25rem' }, fontWeight: 700, color: '#131313', mb: 2, letterSpacing: '-0.02em' }}>
+            Ready to get started?
           </Typography>
-          <Typography sx={{ fontSize: '1.15rem', color: 'rgba(219,234,254,0.9)', mb: 4 }}>
+          <Typography sx={{ fontSize: '1.15rem', color: 'rgba(19,19,19,0.7)', mb: 4 }}>
             Deploy production-grade LLM infrastructure in minutes.
           </Typography>
           {!isAuthenticated && (
@@ -275,15 +288,14 @@ export default function LandingPage() {
               size="large"
               sx={{
                 px: 5,
-                py: 1.75,
+                height: 48,
                 fontSize: '1rem',
-                backgroundColor: 'background.paper',
-                color: '#adc6ff',
-                '&:hover': { backgroundColor: 'action.hover' },
-                boxShadow: '0 4px 14px 0 rgb(0 0 0 / 0.15)',
+                backgroundColor: '#131313',
+                color: '#e5e2e1',
+                '&:hover': { backgroundColor: '#201f1f' },
               }}
             >
-              Create Free Account
+              Create free account
             </Button>
           )}
         </Container>
@@ -293,13 +305,14 @@ export default function LandingPage() {
       <Box
         component="footer"
         sx={{
-          backgroundColor: 'text.primary',
+          backgroundColor: '#0e0e0e',
+          borderTop: '1px solid rgba(65,71,85,0.15)',
           py: 4,
           textAlign: 'center',
         }}
       >
         <Typography sx={{ color: 'text.disabled', fontSize: '0.875rem' }}>
-          &copy; 2026 VelocityLLM. Production-Grade LLM Inference Engine.
+          &copy; 2026 VelocityLLM. Production-grade LLM inference engine.
         </Typography>
       </Box>
     </Box>
