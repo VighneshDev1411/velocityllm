@@ -16,9 +16,15 @@ func NewProvider() *Provider {
 	}
 }
 
-// Complete routes a completion request to the appropriate provider
+// Complete routes a completion request to the appropriate provider.
+// A Claude model is NEVER routed to OpenAI — if Anthropic isn't configured we
+// return a clear error instead of silently sending a claude-* model to OpenAI
+// (which OpenAI rejects, producing an empty response in the UI).
 func (p *Provider) Complete(prompt string, model string, temperature float64, maxTokens int, topP float64) (*CompletionResult, error) {
-	if IsAnthropicModel(model) && p.anthropic.IsAvailable() {
+	if IsAnthropicModel(model) {
+		if !p.anthropic.IsAvailable() {
+			return nil, fmt.Errorf("model %q requires Anthropic, but ANTHROPIC_API_KEY is not configured", model)
+		}
 		return p.anthropic.Complete(prompt, model, temperature, maxTokens, topP)
 	}
 
@@ -29,9 +35,13 @@ func (p *Provider) Complete(prompt string, model string, temperature float64, ma
 	return nil, fmt.Errorf("no LLM provider available for model: %s", model)
 }
 
-// StreamComplete routes a streaming request to the appropriate provider
+// StreamComplete routes a streaming request to the appropriate provider.
+// See Complete for why Claude models are not routed to OpenAI.
 func (p *Provider) StreamComplete(prompt string, model string, temperature float64, maxTokens int, topP float64, onToken func(string) error) (*CompletionResult, error) {
-	if IsAnthropicModel(model) && p.anthropic.IsAvailable() {
+	if IsAnthropicModel(model) {
+		if !p.anthropic.IsAvailable() {
+			return nil, fmt.Errorf("model %q requires Anthropic, but ANTHROPIC_API_KEY is not configured", model)
+		}
 		return p.anthropic.StreamComplete(prompt, model, temperature, maxTokens, topP, onToken)
 	}
 
@@ -59,9 +69,13 @@ func (p *Provider) AvailableProviders() []string {
 	return providers
 }
 
-// ChatStreamComplete routes a multi-turn streaming request to the appropriate provider
+// ChatStreamComplete routes a multi-turn streaming request to the appropriate
+// provider. See Complete for why Claude models are not routed to OpenAI.
 func (p *Provider) ChatStreamComplete(messages []ChatMessage, model string, temperature float64, maxTokens int, topP float64, onToken func(string) error) (*CompletionResult, error) {
-	if IsAnthropicModel(model) && p.anthropic.IsAvailable() {
+	if IsAnthropicModel(model) {
+		if !p.anthropic.IsAvailable() {
+			return nil, fmt.Errorf("model %q requires Anthropic, but ANTHROPIC_API_KEY is not configured", model)
+		}
 		return p.anthropic.ChatStreamComplete(messages, model, temperature, maxTokens, topP, onToken)
 	}
 

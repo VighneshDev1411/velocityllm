@@ -27,14 +27,22 @@ type AnthropicMessage struct {
 	Content string `json:"content"`
 }
 
-// AnthropicRequest represents an Anthropic messages API request
+// AnthropicThinking configures extended thinking. We disable it so responses
+// stream text immediately (no adaptive-thinking pause) and don't consume the
+// small max_tokens budget on hidden reasoning.
+type AnthropicThinking struct {
+	Type string `json:"type"`
+}
+
+// AnthropicRequest represents an Anthropic messages API request.
+// NOTE: temperature/top_p are intentionally omitted — current models
+// (claude-opus-4-8, claude-sonnet-5) reject sampling parameters with a 400.
 type AnthropicRequest struct {
-	Model       string             `json:"model"`
-	MaxTokens   int                `json:"max_tokens"`
-	Messages    []AnthropicMessage `json:"messages"`
-	Temperature float64            `json:"temperature,omitempty"`
-	TopP        float64            `json:"top_p,omitempty"`
-	Stream      bool               `json:"stream,omitempty"`
+	Model     string             `json:"model"`
+	MaxTokens int                `json:"max_tokens"`
+	Messages  []AnthropicMessage `json:"messages"`
+	Thinking  *AnthropicThinking `json:"thinking,omitempty"`
+	Stream    bool               `json:"stream,omitempty"`
 }
 
 // AnthropicResponse represents an Anthropic messages API response
@@ -102,9 +110,8 @@ func (c *AnthropicClient) Complete(prompt string, model string, temperature floa
 		Messages: []AnthropicMessage{
 			{Role: "user", Content: prompt},
 		},
-		Temperature: temperature,
-		TopP:        topP,
-		Stream:      false,
+		Thinking: &AnthropicThinking{Type: "disabled"},
+		Stream:   false,
 	}
 
 	jsonBody, err := json.Marshal(reqBody)
@@ -176,9 +183,8 @@ func (c *AnthropicClient) StreamComplete(prompt string, model string, temperatur
 		Messages: []AnthropicMessage{
 			{Role: "user", Content: prompt},
 		},
-		Temperature: temperature,
-		TopP:        topP,
-		Stream:      true,
+		Thinking: &AnthropicThinking{Type: "disabled"},
+		Stream:   true,
 	}
 
 	jsonBody, err := json.Marshal(reqBody)
@@ -279,12 +285,11 @@ func (c *AnthropicClient) ChatStreamComplete(messages []ChatMessage, model strin
 	}
 
 	reqBody := AnthropicRequest{
-		Model:       anthropicModel,
-		MaxTokens:   maxTokens,
-		Messages:    anthropicMsgs,
-		Temperature: temperature,
-		TopP:        topP,
-		Stream:      true,
+		Model:     anthropicModel,
+		MaxTokens: maxTokens,
+		Messages:  anthropicMsgs,
+		Thinking:  &AnthropicThinking{Type: "disabled"},
+		Stream:    true,
 	}
 
 	jsonBody, err := json.Marshal(reqBody)
@@ -355,17 +360,20 @@ func (c *AnthropicClient) ChatStreamComplete(messages []ChatMessage, model strin
 	}, nil
 }
 
-// mapToAnthropicModel maps our internal model names to Anthropic API model names
+// mapToAnthropicModel maps our internal model names to current, valid Anthropic
+// API model IDs (see the Claude model catalog). Substring matching handles the
+// various display names ("claude-3-opus", "claude-3-5-sonnet", etc.).
 func mapToAnthropicModel(model string) string {
-	switch model {
-	case "claude-3-opus", "claude-opus":
-		return "claude-sonnet-4-20250514"
-	case "claude-3-sonnet", "claude-sonnet":
-		return "claude-sonnet-4-20250514"
-	case "claude-3-haiku", "claude-haiku":
-		return "claude-haiku-4-20250514"
+	m := strings.ToLower(model)
+	switch {
+	case strings.Contains(m, "opus"):
+		return "claude-opus-4-8"
+	case strings.Contains(m, "haiku"):
+		return "claude-haiku-4-5"
+	case strings.Contains(m, "sonnet"):
+		return "claude-sonnet-5"
 	default:
-		return "claude-sonnet-4-20250514"
+		return "claude-sonnet-5"
 	}
 }
 
