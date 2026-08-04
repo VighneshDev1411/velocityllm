@@ -1,0 +1,42 @@
+/* ─── VelocityLLM — Typography tokens ─────────────────────────────────────
+   Source uses next/font/google for Inter (UI) and JetBrains Mono (data/labels).
+   No static font files exist in the repo (next/font self-hosts at build time),
+   so this system loads the identical families from Google Fonts CDN — see
+   the <link> tag documented in guidelines/type.card.html and every UI kit
+   index.html. These are the exact same families/weights the product ships,
+   not a substitution. */
+
+:root {
+  --font-sans: "Inter", "Helvetica", "Arial", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  /* Type scale (from MUI theme.typography + inline overrides in components) */
+  --text-display:      2.5rem;   /* 40px — marketing hero (mobile); 3.75rem/60px at desktop */
+  --text-h1-desktop:   3.75rem;  /* 60px */
+  --text-h3:           2.25rem;  /* 36px — section headings */
+  --text-h4:           1.75rem;  /* 28px */
+  --text-h5:           1.25rem;  /* 20px — page titles (PageHeader) */
+  --text-h6:           1rem;     /* 16px */
+  --text-subtitle1:    0.875rem; /* 14px */
+  --text-subtitle2:    0.8rem;   /* 12.8px */
+  --text-body:         0.875rem; /* 14px — default body/UI text */
+  --text-body-sm:      0.8rem;   /* 12.8px */
+  --text-caption:       0.6875rem; /* 11px */
+  --text-label:        0.625rem;  /* 10px — mono uppercase kicker labels (StatCard) */
+
+  --weight-regular: 400;
+  --weight-medium:  500;
+  --weight-semibold:600;
+  --weight-bold:    700;
+  --weight-black:   800;
+
+  --leading-tight: 1.2;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.7;
+
+  --tracking-tight:  -0.04em; /* display headings */
+  --tracking-snug:   -0.02em; /* h5/page titles */
+  --tracking-wide:    0.02em; /* eyebrow/kicker text */
+  --tracking-wider:   0.05em; /* uppercase small labels */
+  --tracking-widest:  0.2em;  /* mono kicker labels (StatCard, table heads) */
+}

@@ -1,0 +1,30 @@
+/* ─── VelocityLLM — Elevation, blur, motion tokens ───────────────────────── */
+
+:root {
+  /* Shadows — the product is mostly flat (elevation:0 everywhere in MUI
+     overrides); the few real shadows are on floating surfaces. */
+  --shadow-none: none;
+  --shadow-card: none; /* cards use a 1px border, not a drop shadow */
+  --shadow-floating: 0 20px 40px rgba(0, 0, 0, 0.4); /* menus, dialogs */
+  --shadow-button-accent: 0 4px 14px 0 rgb(173 198 255 / 0.3); /* marketing CTA buttons */
+
+  /* Inset accent border used on StatCard / active sidebar items */
+  --inset-accent-width: 3px;
+
+  /* Blur (glass panels, sticky nav, dialog backdrop) */
+  --blur-nav: blur(16px); /* @kind other */
+  --blur-panel: blur(12px); /* @kind other */
+  --blur-backdrop: blur(8px); /* @kind other */
+
+  /* Motion */
+  --ease-standard: ease; /* @kind other */
+  --duration-fast: 0.15s; /* @kind other */
+  --duration-base: 0.2s; /* @kind other */
+
+  --transition-color: background-color var(--duration-base) var(--ease-standard);
+  --transition-all-fast: all var(--duration-fast) var(--ease-standard);
+
+  /* Press / hover feedback */
+  --press-scale: 0.95; /* @kind other */     /* buttons */
+  --press-scale-icon: 0.9; /* @kind other */ /* icon buttons */
+}

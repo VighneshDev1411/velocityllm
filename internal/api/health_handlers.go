@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/VighneshDev1411/velocityllm/internal/cache"
-	"github.com/VighneshDev1411/velocityllm/internal/cluster"
 	"github.com/VighneshDev1411/velocityllm/internal/database"
 )
 
@@ -46,15 +45,6 @@ func ReadinessHandler(w http.ResponseWriter, r *http.Request) {
 	if err := cache.HealthCheck(); err != nil {
 		issues = append(issues, "redis: "+err.Error())
 		status = http.StatusServiceUnavailable
-	}
-
-	// Check node drain state
-	if reg := cluster.GetGlobalNodeRegistry(); reg != nil {
-		info := reg.GetNodeInfo()
-		if info.Status == "draining" || info.Status == "stopped" {
-			issues = append(issues, "node is "+string(info.Status))
-			status = http.StatusServiceUnavailable
-		}
 	}
 
 	ready := status == http.StatusOK
