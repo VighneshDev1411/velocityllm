@@ -1,0 +1,90 @@
+/* ─── VelocityLLM — "Kinetic Console" color tokens ───────────────────────────
+   Extracted from frontend/globals.css, frontend/lib/theme.ts and
+   frontend/tailwind.config.js in the source repo. The product is a dark-mode-
+   first console; a lighter "marketing" surface is layered on for the public
+   site (see --marketing-* aliases at the bottom). */
+
+:root {
+  /* Base surfaces (dark console) */
+  --surface-lowest:   #0e0e0e;
+  --surface-base:     #131313;
+  --surface-low:       #1c1b1b;
+  --surface:            #201f1f;
+  --surface-high:      #2a2a2a;
+  --surface-highest:  #353534;
+  --surface-bright:    #393939;
+
+  /* Accent palette ("kinetic") */
+  --color-primary:            #adc6ff; /* periwinkle — primary actions, links, focus */
+  --color-primary-container:  #4b8eff; /* deeper blue, gradient partner */
+  --color-secondary:          #53e16f; /* signal green — success, cost/savings */
+  --color-secondary-container:#05b046;
+  --color-tertiary:           #ffb595; /* warm peach — warnings, tertiary accents */
+  --color-tertiary-container: #ef6719;
+  --color-error:              #ef4444;
+  --color-error-light:        #f87171;
+
+  /* Text on dark surfaces */
+  --on-surface:          #e5e2e1; /* primary text */
+  --on-surface-variant:  #c1c6d7; /* secondary/muted text */
+  --outline-variant:     #414755;
+
+  /* Semantic aliases used across components */
+  --text-primary:    var(--on-surface);
+  --text-secondary:  var(--on-surface-variant);
+  --text-disabled:   rgba(193, 198, 215, 0.4);
+  --text-on-accent:  #131313; /* text drawn on top of the light accent colors */
+
+  --bg-page:      var(--surface-base);
+  --bg-surface:   var(--surface);
+  --bg-surface-hover: var(--surface-high);
+  --bg-sunken:    var(--surface-low);
+
+  --border-default: rgba(65, 71, 85, 0.15);
+  --border-strong:  rgba(65, 71, 85, 0.3);
+  --border-focus:   rgba(173, 198, 255, 0.4);
+
+  --state-hover:    rgba(229, 226, 225, 0.05);
+  --state-selected: rgba(229, 226, 225, 0.08);
+  --state-active-accent: rgba(173, 198, 255, 0.12);
+  --state-pressed:  rgba(229, 226, 225, 0.56);
+
+  /* Status colors (badges, chips, pulse dots) */
+  --status-healthy-bg:   rgba(83, 225, 111, 0.1);
+  --status-healthy-fg:   #53e16f;
+  --status-healthy-border: rgba(83, 225, 111, 0.2);
+
+  --status-degraded-bg:   rgba(255, 181, 149, 0.1);
+  --status-degraded-fg:   #ffb595;
+  --status-degraded-border: rgba(255, 181, 149, 0.2);
+
+  --status-critical-bg:   rgba(239, 68, 68, 0.1);
+  --status-critical-fg:   #f87171;
+  --status-critical-border: rgba(239, 68, 68, 0.2);
+
+  --status-idle-bg:       rgba(53, 53, 52, 0.5);
+  --status-idle-fg:       #c1c6d7;
+
+  --status-busy-bg:       rgba(173, 198, 255, 0.1);
+  --status-busy-fg:       #adc6ff;
+  --status-busy-border:   rgba(173, 198, 255, 0.2);
+
+  /* Sidebar-specific tokens */
+  --sidebar-bg:         var(--surface-low);
+  --sidebar-bg-active:  var(--surface);
+  --sidebar-text:       rgba(229, 226, 225, 0.5);
+  --sidebar-text-active:var(--color-primary);
+  --sidebar-text-hover: var(--on-surface);
+  --sidebar-border:     rgba(53, 53, 52, 0.15);
+  --sidebar-width:      260px;
+  --sidebar-width-collapsed: 72px;
+
+  /* ─── Marketing (light) surface — public/landing pages ─────────────────── */
+  --marketing-bg:            #ffffff;
+  --marketing-bg-alt:        #f9fafb; /* gray-50 */
+  --marketing-border:        #e5e7eb; /* gray-200 */
+  --marketing-text-primary:  #111827; /* gray-900 */
+  --marketing-text-secondary:#4b5563; /* gray-600 */
+  --marketing-accent-from:   #2563eb; /* blue-600 */
+  --marketing-accent-to:     #9333ea; /* purple-600 */
+}

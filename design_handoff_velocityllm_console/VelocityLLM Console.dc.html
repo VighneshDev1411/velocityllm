@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/velocityllm-design-system-359391b4-5004-4885-b07e-f0b59f25d31c/tokens/colors.css">
+<link rel="stylesheet" href="_ds/velocityllm-design-system-359391b4-5004-4885-b07e-f0b59f25d31c/tokens/typography.css">
+<link rel="stylesheet" href="_ds/velocityllm-design-system-359391b4-5004-4885-b07e-f0b59f25d31c/tokens/spacing.css">
+<link rel="stylesheet" href="_ds/velocityllm-design-system-359391b4-5004-4885-b07e-f0b59f25d31c/tokens/effects.css">
+<link rel="stylesheet" href="_ds/velocityllm-design-system-359391b4-5004-4885-b07e-f0b59f25d31c/styles.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="_ds/velocityllm-design-system-359391b4-5004-4885-b07e-f0b59f25d31c/_ds_bundle.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: var(--font-sans, 'Inter', sans-serif); background: oklch(0.96 0 0); }
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-thumb { background: var(--surface-highest); border-radius: 10px; }
+</style>
+</helmet>
+
+<div style="display:flex; flex-direction:column; align-items:center; gap:56px; padding:56px 24px 96px;">
+
+  <!-- SCREEN 1: DASHBOARD -->
+  <div style="width:100%; max-width:1440px; display:flex; flex-direction:column; gap:14px;">
+    <div style="font-family:var(--font-mono); font-size:11px; letter-spacing:0.15em; text-transform:uppercase; color:oklch(0.5 0 0);">01 — Dashboard</div>
+    <div style="width:1440px; height:900px; border-radius:12px; overflow:hidden; box-shadow:0 24px 64px rgba(0,0,0,0.35); display:flex;">
+      <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.Sidebar" sections="{{ navSections }}" active-href="dashboard" hint-size="260px,900px"></x-import>
+      <div style="flex:1; display:flex; flex-direction:column; min-width:0; background:var(--surface-base); height:900px;">
+        <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.TopBar" title="Dashboard" user-initial="A" user-name="admin" hint-size="100%,56px"></x-import>
+        <div style="flex:1; overflow-y:auto; padding:24px;">
+          <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.PageHeader" title="Dashboard" subtitle="Real-time system monitoring & analytics" action="{{ dashboardTabs }}" hint-size="100%,48px"></x-import>
+          <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:20px;">
+            <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.StatCard" icon="{{ iconActivity }}" label="Total Requests" value="12.4K" subtext="4.20 req/s" color="blue" hint-size="100%,96px"></x-import>
+            <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.StatCard" icon="{{ iconDollar }}" label="Total Cost" value="$18.20" subtext="Avg $0.0021/req" color="green" hint-size="100%,96px"></x-import>
+            <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.StatCard" icon="{{ iconClock }}" label="Avg Latency" value="184ms" subtext="P99: 640ms" color="purple" hint-size="100%,96px"></x-import>
+            <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.StatCard" icon="{{ iconAlert }}" label="Error Rate" value="0.42%" subtext="12 total errors" color="orange" hint-size="100%,96px"></x-import>
+          </div>
+          <div style="display:grid; grid-template-columns:2fr 1fr; gap:16px;">
+            <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.Card" hint-size="100%,420px">
+              <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.CardHeader" hint-size="100%,auto">
+                <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.CardTitle" hint-size="auto,auto">Recent Requests</x-import>
+                <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.CardDescription" hint-size="auto,auto">Latest inference calls across all models.</x-import>
+              </x-import>
+              <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.CardContent" style="{{ noPadTop }}" hint-size="100%,auto">
+                <table style="width:100%; border-collapse:collapse; font-size:13px;">
+                  <thead>
+                    <tr style="text-align:left; color:var(--text-secondary); font-family:var(--font-mono); font-size:10px; text-transform:uppercase; letter-spacing:0.15em;">
+                      <th style="padding:8px 0;">Request</th><th>Model</th><th>Tokens</th><th>Latency</th><th>Cost</th><th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <sc-for list="{{ dashboardRows }}" as="r" hint-placeholder-count="4">
+                      <tr style="border-top:1px solid var(--border-default);">
+                        <td style="padding:10px 0; font-family:var(--font-mono); color:var(--text-primary);">{{ r.id }}</td>
+                        <td style="color:var(--text-secondary);">{{ r.model }}</td>
+                        <td style="color:var(--text-secondary);">{{ r.tokens }}</td>
+                        <td style="color:var(--text-secondary);">{{ r.latency }}</td>
+                        <td style="color:var(--text-secondary);">{{ r.cost }}</td>
+                        <td><x-import component-from-global-scope="VelocityLLMDesignSystem_359391.StatusChip" label="{{ r.statusLabel }}" status="{{ r.statusKind }}" hint-size="auto,22px"></x-import></td>
+                      </tr>
+                    </sc-for>
+                  </tbody>
+                </table>
+              </x-import>
+            </x-import>
+            <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.Card" hint-size="100%,420px">
+              <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.CardHeader" hint-size="100%,auto">
+                <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.CardTitle" hint-size="auto,auto">Model Mix</x-import>
+                <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.CardDescription" hint-size="auto,auto">Share of requests by model, last 24h.</x-import>
+              </x-import>
+              <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.CardContent" hint-size="100%,auto">
+                <div style="display:flex; flex-direction:column; gap:16px; padding-top:4px;">
+                  <sc-for list="{{ modelMix }}" as="m" hint-placeholder-count="3">
+                    <div>
+                      <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:6px;">
+                        <span style="color:var(--text-primary); font-weight:500;">{{ m.name }}</span>
+                        <span style="font-family:var(--font-mono); color:var(--text-secondary);">{{ m.pct }}</span>
+                      </div>
+                      <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.Progress" value="{{ m.value }}" hint-size="100%,8px"></x-import>
+                    </div>
+                  </sc-for>
+                </div>
+              </x-import>
+            </x-import>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN 2: CHAT -->
+  <div style="width:100%; max-width:1440px; display:flex; flex-direction:column; gap:14px;">
+    <div style="font-family:var(--font-mono); font-size:11px; letter-spacing:0.15em; text-transform:uppercase; color:oklch(0.5 0 0);">02 — Chat</div>
+    <div style="width:1440px; height:900px; border-radius:12px; overflow:hidden; box-shadow:0 24px 64px rgba(0,0,0,0.35); display:flex;">
+      <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.Sidebar" sections="{{ navSections }}" active-href="chat" hint-size="260px,900px"></x-import>
+      <div style="flex:1; display:flex; flex-direction:column; min-width:0; background:var(--surface-base); height:900px;">
+        <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.TopBar" title="Chat" user-initial="A" user-name="admin" hint-size="100%,56px"></x-import>
+        <div style="flex:1; display:flex; flex-direction:column; padding:24px; min-height:0;">
+          <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.PageHeader" title="Chat" subtitle="Test prompts against your configured models" hint-size="100%,48px"></x-import>
+          <div style="flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:12px; padding-bottom:16px;">
+            <sc-for list="{{ chatMessages }}" as="m" hint-placeholder-count="2">
+              <div style="{{ m.bubbleStyle }}">{{ m.text }}</div>
+            </sc-for>
+          </div>
+          <div style="display:flex; gap:10px;">
+            <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.Input" placeholder="Send a message…" value="{{ chatDraft }}" onChange="{{ setChatDraft }}" style="{{ flexOne }}" hint-size="100%,40px"></x-import>
+            <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.Button" onClick="{{ sendChat }}" hint-size="90px,40px">Send</x-import>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN 3: PLAYGROUND -->
+  <div style="width:100%; max-width:1440px; display:flex; flex-direction:column; gap:14px;">
+    <div style="font-family:var(--font-mono); font-size:11px; letter-spacing:0.15em; text-transform:uppercase; color:oklch(0.5 0 0);">03 — Playground</div>
+    <div style="width:1440px; height:900px; border-radius:12px; overflow:hidden; box-shadow:0 24px 64px rgba(0,0,0,0.35); display:flex;">
+      <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.Sidebar" sections="{{ navSections }}" active-href="playground" hint-size="260px,900px"></x-import>
+      <div style="flex:1; display:flex; flex-direction:column; min-width:0; background:var(--surface-base); height:900px;">
+        <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.TopBar" title="Playground" user-initial="A" user-name="admin" hint-size="100%,56px"></x-import>
+        <div style="flex:1; overflow-y:auto; padding:24px;">
+          <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.PageHeader" title="Playground" subtitle="Test prompts with full parameter control" hint-size="100%,48px"></x-import>
+          <div style="display:grid; grid-template-columns:320px 1fr; gap:16px; align-items:start;">
+            <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.Card" hint-size="100%,auto">
+              <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.CardHeader" hint-size="100%,auto">
+                <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.CardTitle" hint-size="auto,auto">Configuration</x-import>
+              </x-import>
+              <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.CardContent" style="{{ configContentStyle }}" hint-size="100%,auto">
+                <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.Label" hint-size="auto,auto">Model</x-import>
+                <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.Select" options="{{ modelOptions }}" value="{{ pgModel }}" onChange="{{ setPgModel }}" hint-size="100%,40px"></x-import>
+                <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.Label" hint-size="auto,auto">System prompt</x-import>
+                <textarea rows="4" value="{{ pgSystemPrompt }}" onChange="{{ setPgSystemPrompt }}" style="{{ textareaStyle }}"></textarea>
+                <div>
+                  <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                    <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.Label" hint-size="auto,auto">Temperature</x-import>
+                    <span style="font-family:var(--font-mono); font-size:12px; color:var(--text-secondary);">{{ pgTempLabel }}</span>
+                  </div>
+                  <input type="range" min="0" max="2" step="0.05" value="{{ pgTemp }}" onChange="{{ setPgTemp }}" style="{{ rangeStyle }}" />
+                </div>
+                <div>
+                  <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                    <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.Label" hint-size="auto,auto">Max tokens</x-import>
+                    <span style="font-family:var(--font-mono); font-size:12px; color:var(--text-secondary);">{{ pgMaxTokens }}</span>
+                  </div>
+                  <input type="range" min="1" max="4096" step="1" value="{{ pgMaxTokens }}" onChange="{{ setPgMaxTokens }}" style="{{ rangeStyle }}" />
+                </div>
+                <div>
+                  <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                    <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.Label" hint-size="auto,auto">Top P</x-import>
+                    <span style="font-family:var(--font-mono); font-size:12px; color:var(--text-secondary);">{{ pgTopPLabel }}</span>
+                  </div>
+                  <input type="range" min="0" max="1" step="0.05" value="{{ pgTopP }}" onChange="{{ setPgTopP }}" style="{{ rangeStyle }}" />
+                </div>
+                <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.Button" variant="outline" onClick="{{ resetPlayground }}" hint-size="100%,40px">Reset to defaults</x-import>
+              </x-import>
+            </x-import>
+            <div style="display:flex; flex-direction:column; gap:16px;">
+              <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.Card" hint-size="100%,auto">
+                <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.CardHeader" hint-size="100%,auto">
+                  <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.CardTitle" hint-size="auto,auto">Prompt</x-import>
+                </x-import>
+                <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.CardContent" style="{{ noPadTop }}" hint-size="100%,auto">
+                  <textarea rows="4" value="{{ pgPrompt }}" onChange="{{ setPgPrompt }}" style="{{ textareaStyle }}"></textarea>
+                  <div style="display:flex; justify-content:flex-end; margin-top:10px;">
+                    <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.Button" onClick="{{ runPrompt }}" hint-size="150px,40px">
+                      <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.Icon" name="play" size="16" hint-size="16px,16px"></x-import>
+                      Send request
+                    </x-import>
+                  </div>
+                </x-import>
+              </x-import>
+              <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.Card" hint-size="100%,auto">
+                <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.CardHeader" hint-size="100%,auto">
+                  <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.CardTitle" hint-size="auto,auto">Response</x-import>
+                </x-import>
+                <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.CardContent" style="{{ noPadTop }}" hint-size="100%,auto">
+                  <div style="{{ responseBoxStyle }}">{{ pgResponse }}</div>
+                  <div style="display:flex; gap:8px; margin-top:12px;">
+                    <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.Badge" variant="outline" hint-size="auto,24px">218 tokens</x-import>
+                    <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.Badge" variant="outline" hint-size="auto,24px">312ms</x-import>
+                    <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.Badge" variant="outline" hint-size="auto,24px">$0.0043</x-import>
+                  </div>
+                </x-import>
+              </x-import>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN 4: API KEYS -->
+  <div style="width:100%; max-width:1440px; display:flex; flex-direction:column; gap:14px;">
+    <div style="font-family:var(--font-mono); font-size:11px; letter-spacing:0.15em; text-transform:uppercase; color:oklch(0.5 0 0);">04 — API Keys</div>
+    <div style="width:1440px; height:900px; border-radius:12px; overflow:hidden; box-shadow:0 24px 64px rgba(0,0,0,0.35); display:flex;">
+      <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.Sidebar" sections="{{ navSections }}" active-href="keys" hint-size="260px,900px"></x-import>
+      <div style="flex:1; display:flex; flex-direction:column; min-width:0; background:var(--surface-base); height:900px;">
+        <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.TopBar" title="API Keys" user-initial="A" user-name="admin" hint-size="100%,56px"></x-import>
+        <div style="flex:1; overflow-y:auto; padding:24px;">
+          <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.PageHeader" title="API Keys" subtitle="Manage keys used to authenticate requests" action="{{ newKeyButton }}" hint-size="100%,48px"></x-import>
+          <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:20px;">
+            <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.StatCard" icon="{{ iconKey }}" label="Total Keys" value="3" subtext="2 active" color="blue" hint-size="100%,96px"></x-import>
+            <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.StatCard" icon="{{ iconShield }}" label="Requests Today" value="6.1K" subtext="Across all keys" color="green" hint-size="100%,96px"></x-import>
+            <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.StatCard" icon="{{ iconAlert }}" label="Stale Keys" value="1" subtext="Unused 90+ days" color="orange" hint-size="100%,96px"></x-import>
+          </div>
+          <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.Card" hint-size="100%,auto">
+            <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.CardContent" style="{{ keysListStyle }}" hint-size="100%,auto">
+              <sc-for list="{{ keysList }}" as="k" hint-placeholder-count="3">
+                <div style="display:flex; align-items:center; justify-content:space-between; padding:14px 4px; border-bottom:1px solid var(--border-default);">
+                  <div>
+                    <div style="font-weight:600; font-size:14px; color:var(--text-primary);">{{ k.label }}</div>
+                    <div style="font-family:var(--font-mono); font-size:12px; color:var(--text-secondary);">{{ k.id }} · created {{ k.created }} · {{ k.requests }} req · last used {{ k.lastUsed }}</div>
+                  </div>
+                  <div style="display:flex; align-items:center; gap:12px;">
+                    <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.StatusChip" label="{{ k.statusLabel }}" status="{{ k.statusKind }}" hint-size="auto,22px"></x-import>
+                    <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.DropdownMenu" align="end" trigger="{{ moreTrigger }}" items="{{ k.menuItems }}" hint-size="32px,32px"></x-import>
+                  </div>
+                </div>
+              </sc-for>
+            </x-import>
+          </x-import>
+        </div>
+      </div>
+    </div>
+    <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.Dialog" open="{{ keysDialogOpen }}" onClose="{{ closeKeysDialog }}" title="Revoke API key?" description="Requests using this key will be rejected immediately. This cannot be undone." footer="{{ revokeFooter }}" hint-size="1px,1px"></x-import>
+  </div>
+
+  <!-- SCREEN 5: SETTINGS -->
+  <div style="width:100%; max-width:1440px; display:flex; flex-direction:column; gap:14px;">
+    <div style="font-family:var(--font-mono); font-size:11px; letter-spacing:0.15em; text-transform:uppercase; color:oklch(0.5 0 0);">05 — Settings</div>
+    <div style="width:1440px; height:900px; border-radius:12px; overflow:hidden; box-shadow:0 24px 64px rgba(0,0,0,0.35); display:flex;">
+      <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.Sidebar" sections="{{ navSections }}" active-href="settings" hint-size="260px,900px"></x-import>
+      <div style="flex:1; display:flex; flex-direction:column; min-width:0; background:var(--surface-base); height:900px;">
+        <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.TopBar" title="Settings" user-initial="A" user-name="admin" hint-size="100%,56px"></x-import>
+        <div style="flex:1; overflow-y:auto; padding:24px;">
+          <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.PageHeader" title="Settings" subtitle="Workspace defaults, usage & billing" hint-size="100%,48px"></x-import>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; max-width:960px;">
+            <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.Card" hint-size="100%,auto">
+              <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.CardHeader" hint-size="100%,auto">
+                <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.CardTitle" hint-size="auto,auto">Workspace</x-import>
+              </x-import>
+              <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.CardContent" style="{{ configContentStyle }}" hint-size="100%,auto">
+                <div>
+                  <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.Label" hint-size="auto,auto">Workspace name</x-import>
+                  <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.Input" default-value="Acme Production" hint-size="100%,40px"></x-import>
+                </div>
+                <div>
+                  <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.Label" hint-size="auto,auto">Default model</x-import>
+                  <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.Select" options="{{ modelOptions }}" value="{{ settingsModel }}" onChange="{{ setSettingsModel }}" hint-size="100%,40px"></x-import>
+                </div>
+                <div style="display:flex; justify-content:flex-end;">
+                  <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.Button" hint-size="140px,40px">Save changes</x-import>
+                </div>
+              </x-import>
+            </x-import>
+            <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.Card" hint-size="100%,auto">
+              <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.CardHeader" hint-size="100%,auto">
+                <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.CardTitle" hint-size="auto,auto">Usage & billing</x-import>
+              </x-import>
+              <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.CardContent" style="{{ configContentStyle }}" hint-size="100%,auto">
+                <div style="display:flex; justify-content:space-between; font-size:13px;">
+                  <span style="color:var(--text-secondary);">Plan</span>
+                  <span style="font-family:var(--font-mono); color:var(--text-primary);">Team — $199/mo</span>
+                </div>
+                <div>
+                  <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:13px;">
+                    <span style="color:var(--text-secondary);">Monthly budget used</span>
+                    <span style="font-family:var(--font-mono); color:var(--text-primary);">$758 / $2,000</span>
+                  </div>
+                  <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.Progress" value="38" hint-size="100%,8px"></x-import>
+                </div>
+                <div style="display:flex; justify-content:flex-end;">
+                  <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.Button" variant="outline" hint-size="140px,40px">View invoices</x-import>
+                </div>
+              </x-import>
+            </x-import>
+            <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.Card" style="{{ spanTwo }}" hint-size="100%,auto">
+              <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.CardHeader" hint-size="100%,auto">
+                <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.CardTitle" hint-size="auto,auto">Danger zone</x-import>
+              </x-import>
+              <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.CardContent" style="{{ configContentStyle }}" hint-size="100%,auto">
+                <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.Alert" icon="{{ iconAlertTriangle }}" title="Delete this workspace" hint-size="100%,auto">
+                  This permanently removes all keys, workers, and usage history. This cannot be undone.
+                </x-import>
+                <div style="display:flex; justify-content:flex-end;">
+                  <x-import component-from-global-scope="VelocityLLMDesignSystem_359391.Button" variant="destructive" hint-size="170px,40px">Delete workspace</x-import>
+                </div>
+              </x-import>
+            </x-import>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = {
+    dashboardRange: '24h',
+    chatDraft: '',
+    chatMessages: [
+      { role: 'user', text: 'Summarize the latest load test results.' },
+      { role: 'assistant', text: 'The last run sustained 640 req/s at P99 640ms with a 0.4% error rate — well within the 1% SLA target.' },
+    ],
+    pgModel: 'gpt-4',
+    pgSystemPrompt: 'You are a helpful assistant embedded in an internal tools console.',
+    pgTemp: 0.7,
+    pgMaxTokens: 512,
+    pgTopP: 1,
+    pgPrompt: 'Explain the difference between P95 and P99 latency in one paragraph.',
+    keysDialogOpen: false,
+    revokeTarget: null,
+    keys: [
+      { id: 'sk-live-…4f2a', label: 'Production', created: '2026-04-02', requests: '812K', lastUsed: '2m ago', statusLabel: 'Active', statusKind: 'success' },
+      { id: 'sk-test-…9b31', label: 'Staging', created: '2026-05-18', requests: '94K', lastUsed: '1h ago', statusLabel: 'Active', statusKind: 'success' },
+      { id: 'sk-live-…0e77', label: 'Legacy integration', created: '2025-11-09', requests: '2.1K', lastUsed: '94d ago', statusLabel: 'Unused 90d', statusKind: 'warning' },
+    ],
+    settingsModel: 'gpt-4',
+  };
+
+  navSections = [
+    { title: 'Main', links: [
+      { href: 'dashboard', label: 'Dashboard', icon: 'layout-dashboard' },
+      { href: 'chat', label: 'Chat', icon: 'message-square' },
+      { href: 'playground', label: 'Playground', icon: 'flask-conical' },
+      { href: 'analytics', label: 'Analytics', icon: 'bar-chart-3' },
+      { href: 'monitoring', label: 'Monitoring', icon: 'activity' },
+    ]},
+    { title: 'Infrastructure', links: [
+      { href: 'workers', label: 'Workers', icon: 'cpu' },
+      { href: 'keys', label: 'API Keys', icon: 'key' },
+      { href: 'billing', label: 'Billing', icon: 'credit-card' },
+    ]},
+    { title: 'Admin', links: [
+      { href: 'settings', label: 'Settings', icon: 'settings' },
+    ]},
+  ];
+
+  modelOptions = [
+    { value: 'gpt-4', label: 'GPT-4' },
+    { value: 'claude', label: 'Claude 3 Opus' },
+    { value: 'llama', label: 'Llama 3 70B' },
+  ];
+
+  dashboardRows = [
+    { id: 'req_8f21', model: 'gpt-4', tokens: '1,204', latency: '412ms', cost: '$0.0182', statusLabel: 'success', statusKind: 'success' },
+    { id: 'req_7ab9', model: 'claude-3-opus', tokens: '842', latency: '298ms', cost: '$0.0094', statusLabel: 'success', statusKind: 'success' },
+    { id: 'req_66c3', model: 'llama-3-70b', tokens: '2,104', latency: '1.2s', cost: '$0.0031', statusLabel: 'warning', statusKind: 'warning' },
+    { id: 'req_51fe', model: 'gpt-4', tokens: '318', latency: '—', cost: '$0.0000', statusLabel: 'error', statusKind: 'error' },
+  ];
+
+  modelMix = [
+    { name: 'gpt-4', pct: '48%', value: 48 },
+    { name: 'claude-3-opus', pct: '31%', value: 31 },
+    { name: 'llama-3-70b', pct: '21%', value: 21 },
+  ];
+
+  Icon(name, size) {
+    const I = window.VelocityLLMDesignSystem_359391 && window.VelocityLLMDesignSystem_359391.Icon;
+    return I ? React.createElement(I, { name, size: size || 18 }) : null;
+  }
+
+  renderVals() {
+    const s = this.state;
+    const setChatDraft = (e) => this.setState({ chatDraft: e.target.value });
+    const sendChat = () => {
+      if (!s.chatDraft.trim()) return;
+      this.setState({ chatMessages: [...s.chatMessages, { role: 'user', text: s.chatDraft }], chatDraft: '' });
+    };
+    const chatMessages = s.chatMessages.map(m => ({
+      text: m.text,
+      bubbleStyle: {
+        alignSelf: m.role === 'user' ? 'flex-end' : 'flex-start', maxWidth: '70%',
+        background: m.role === 'user' ? 'var(--color-primary)' : 'var(--bg-surface)',
+        color: m.role === 'user' ? 'var(--text-on-accent)' : 'var(--text-primary)',
+        border: m.role === 'user' ? 'none' : '1px solid var(--border-default)',
+        borderRadius: 'var(--radius-lg)', padding: '10px 14px', fontSize: 14,
+      },
+    }));
+
+    const keysList = s.keys.map(k => ({
+      ...k,
+      menuItems: [
+        { label: 'Rotate' },
+        { separator: true },
+        { label: 'Revoke', danger: true, onClick: () => this.setState({ keysDialogOpen: true, revokeTarget: k.id }) },
+      ],
+    }));
+    const confirmRevoke = () => {
+      this.setState({ keys: this.state.keys.filter(k => k.id !== this.state.revokeTarget), keysDialogOpen: false, revokeTarget: null });
+    };
+    const closeKeysDialog = () => this.setState({ keysDialogOpen: false });
+
+    return {
+      navSections: this.navSections,
+      modelOptions: this.modelOptions,
+      dashboardRows: this.dashboardRows,
+      modelMix: this.modelMix,
+      noPadTop: { paddingTop: 0 },
+      flexOne: { flex: 1 },
+      spanTwo: { gridColumn: '1 / -1' },
+      configContentStyle: { paddingTop: 24, display: 'flex', flexDirection: 'column', gap: 16 },
+      keysListStyle: { paddingTop: 24, display: 'flex', flexDirection: 'column', gap: 4 },
+      textareaStyle: { width: '100%', background: 'var(--bg-surface)', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)', color: 'var(--text-primary)', fontFamily: 'var(--font-sans)', fontSize: 13, padding: '10px 12px', resize: 'vertical' },
+      rangeStyle: { width: '100%', accentColor: 'var(--color-primary)' },
+      responseBoxStyle: { background: 'var(--bg-surface)', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)', padding: '14px 16px', fontSize: 14, color: 'var(--text-primary)', lineHeight: 1.6, minHeight: 96 },
+
+      dashboardTabs: React.createElement(window.VelocityLLMDesignSystem_359391.Tabs, {
+        value: s.dashboardRange, onChange: (v) => this.setState({ dashboardRange: v }),
+        tabs: [{ value: '1h', label: '1h' }, { value: '6h', label: '6h' }, { value: '24h', label: '24h' }, { value: '7d', label: '7d' }],
+      }),
+      newKeyButton: React.createElement(window.VelocityLLMDesignSystem_359391.Button, {}, this.Icon('plus', 16), ' New key'),
+      moreTrigger: React.createElement(window.VelocityLLMDesignSystem_359391.Button, { variant: 'ghost', size: 'icon' }, this.Icon('more-vertical', 16)),
+      revokeFooter: React.createElement(React.Fragment, null,
+        React.createElement(window.VelocityLLMDesignSystem_359391.Button, { variant: 'outline', onClick: closeKeysDialog }, 'Cancel'),
+        React.createElement(window.VelocityLLMDesignSystem_359391.Button, { variant: 'destructive', onClick: confirmRevoke }, 'Revoke')
+      ),
+
+      iconActivity: this.Icon('activity', 18),
+      iconDollar: this.Icon('dollar-sign', 18),
+      iconClock: this.Icon('clock', 18),
+      iconAlert: this.Icon('alert-circle', 18),
+      iconKey: this.Icon('key', 18),
+      iconShield: this.Icon('shield-check', 18),
+      iconAlertTriangle: this.Icon('alert-triangle', 18),
+
+      chatMessages,
+      chatDraft: s.chatDraft,
+      setChatDraft,
+      sendChat,
+
+      pgModel: s.pgModel,
+      setPgModel: (v) => this.setState({ pgModel: v }),
+      pgSystemPrompt: s.pgSystemPrompt,
+      setPgSystemPrompt: (e) => this.setState({ pgSystemPrompt: e.target.value }),
+      pgTemp: s.pgTemp,
+      pgTempLabel: s.pgTemp.toFixed(2),
+      setPgTemp: (e) => this.setState({ pgTemp: parseFloat(e.target.value) }),
+      pgMaxTokens: s.pgMaxTokens,
+      setPgMaxTokens: (e) => this.setState({ pgMaxTokens: parseInt(e.target.value, 10) }),
+      pgTopP: s.pgTopP,
+      pgTopPLabel: s.pgTopP.toFixed(2),
+      setPgTopP: (e) => this.setState({ pgTopP: parseFloat(e.target.value) }),
+      resetPlayground: () => this.setState({ pgTemp: 0.7, pgMaxTokens: 512, pgTopP: 1 }),
+      pgPrompt: s.pgPrompt,
+      setPgPrompt: (e) => this.setState({ pgPrompt: e.target.value }),
+      runPrompt: () => {},
+      pgResponse: 'P95 and P99 latency both describe tail performance, but at different severities: P95 is the response time under which 95% of requests complete, while P99 is the far stricter bar under which 99% complete. A system can have a tight P95 but a much wider P99 if a small fraction of requests hit cold caches, GC pauses, or slow downstream calls — which is why SLAs are usually written against P99, not the average.',
+
+      keysList,
+      keysDialogOpen: s.keysDialogOpen,
+      closeKeysDialog,
+
+      settingsModel: s.settingsModel,
+      setSettingsModel: (v) => this.setState({ settingsModel: v }),
+    };
+  }
+}
+</script>
+</body>
+</html>

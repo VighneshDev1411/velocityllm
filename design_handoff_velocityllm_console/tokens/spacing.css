@@ -1,0 +1,32 @@
+/* ─── VelocityLLM — Spacing & radius tokens ───────────────────────────────
+   Spacing follows MUI's default 8px unit (sx prop values are multiples of 8px).
+   Radius values are the project's own tailwind.config.js overrides — they
+   deliberately diverge from Tailwind/shadcn defaults, so keep them exact. */
+
+:root {
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* Radius scale — from tailwind.config.js theme.extend.borderRadius */
+  --radius-sm:   0.125rem; /* 2px — status badges, chips */
+  --radius-md:   0.25rem;  /* 4px — buttons, inputs, table chips */
+  --radius-lg:   0.5rem;   /* 8px — cards, panels, dialogs, dropdowns */
+  --radius-xl:   0.5rem;   /* 8px — same as lg in this system */
+  --radius-full: 0.75rem;  /* 12px — NOTE: intentionally not a pill; source overrides "full" to 12px */
+  --radius-card-shadcn: 0.75rem; /* 12px — rounded-xl used by the shadcn Card primitive */
+
+  /* Component-specific sizes */
+  --control-h-sm: 32px;  /* button/input sm */
+  --control-h-md: 36px;  /* button/input default */
+  --control-h-lg: 40px;  /* button lg */
+
+  --sidebar-item-radius: 6px;
+}
