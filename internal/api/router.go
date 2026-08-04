@@ -5,52 +5,35 @@ import (
 	"strings"
 
 	"github.com/VighneshDev1411/velocityllm/internal/auth"
-	"github.com/VighneshDev1411/velocityllm/internal/websocket"
 	"github.com/VighneshDev1411/velocityllm/pkg/types"
 	"github.com/VighneshDev1411/velocityllm/pkg/utils"
 )
 
-// SetupRoutes configures all API routes
+// SetupRoutes configures the lean core API surface.
 func SetupRoutes() {
-	// ── Health probes (Day 33) ──
+	// ── Health probes ──
 	http.HandleFunc("/health", HealthHandler)
-	http.HandleFunc("/health/live", LivenessHandler)      // liveness:  is the process alive?
-	http.HandleFunc("/health/ready", ReadinessHandler)    // readiness: safe to send traffic?
-	http.HandleFunc("/health/startup", StartupHandler)    // startup:   init complete?
+	http.HandleFunc("/health/live", LivenessHandler)
+	http.HandleFunc("/health/ready", ReadinessHandler)
+	http.HandleFunc("/health/startup", StartupHandler)
 
-	// ============================================
-	// COMPLETION ENDPOINTS
-	// ============================================
+	// ── Completions (Playground) ──
 	http.HandleFunc("/api/v1/completions", CompletionHandler)
 	http.HandleFunc("/api/v1/completions/async", CompletionAsyncHandler)
-
-	// Streaming endpoints (Day 6 - NEW)
-	http.HandleFunc("/api/v1/completions/stream", StreamingCompletionHandler)
-	http.HandleFunc("/api/v1/completions/stream/simple", SimpleStreamingHandler)
-
-	// Job status checking
 	http.HandleFunc("/api/v1/jobs/", JobStatusHandler)
 
-	// ============================================
-	// MODEL ENDPOINTS
-	// ============================================
+	// ── Models ──
 	http.HandleFunc("/api/v1/models", ModelsHandler)
 	http.HandleFunc("/api/v1/models/", ModelDetailHandler)
 
-	// ============================================
-	// REQUEST HISTORY ENDPOINTS
-	// ============================================
+	// ── Request history ──
 	http.HandleFunc("/api/v1/requests", RequestsHandler)
 	http.HandleFunc("/api/v1/requests/stats", RequestStatsHandler)
 
-	// ============================================
-	// CACHE ENDPOINTS
-	// ============================================
+	// ── Cache (Caching page) ──
 	http.HandleFunc("/api/v1/cache/stats", CacheStatsHandler)
 	http.HandleFunc("/api/v1/cache/clear", CacheClearHandler)
 	http.HandleFunc("/api/v1/cache/warm", CacheWarmHandler)
-
-	// Advanced caching endpoints (Day 7)
 	http.HandleFunc("/api/v1/cache/analytics", GetCacheAnalyticsHandler)
 	http.HandleFunc("/api/v1/cache/multilevel/stats", GetMultiLevelStatsHandler)
 	http.HandleFunc("/api/v1/cache/semantic/stats", GetSemanticCacheStatsHandler)
@@ -60,380 +43,40 @@ func SetupRoutes() {
 	http.HandleFunc("/api/v1/cache/invalidate", InvalidateCacheByTagHandler)
 	http.HandleFunc("/api/v1/cache/response/stats", GetResponseCacheStatsHandler)
 
-	// Distributed caching endpoints (Day 48)
-	http.HandleFunc("/api/v1/cache/distributed/stats", GetDistributedCacheStatsHandler)
-	http.HandleFunc("/api/v1/cache/distributed/ring", GetHashRingHandler)
-	http.HandleFunc("/api/v1/cache/distributed/routing", GetKeyRoutingHandler)
-	http.HandleFunc("/api/v1/cache/distributed/invalidate", DistributedInvalidateHandler)
-	http.HandleFunc("/api/v1/cache/distributed/clear", DistributedClearHandler)
-	http.HandleFunc("/api/v1/cache/distributed/nodes/add", AddCacheNodeHandler)
-	http.HandleFunc("/api/v1/cache/distributed/nodes/remove", RemoveCacheNodeHandler)
-
-	// ============================================
-	// MESSAGE QUEUE ENDPOINTS (Day 49)
-	// ============================================
-	http.HandleFunc("/api/v1/queues", ListQueuesHandler)
-	http.HandleFunc("/api/v1/queues/stats", GetQueueStatsHandler)
-	http.HandleFunc("/api/v1/queues/info", GetQueueInfoHandler)
-	http.HandleFunc("/api/v1/queues/publish", PublishMessageHandler)
-	http.HandleFunc("/api/v1/queues/dlq", GetDeadLetterHandler)
-	http.HandleFunc("/api/v1/queues/dlq/replay", ReplayDeadLetterHandler)
-
-	// ============================================
-	// SERVICE MESH ENDPOINTS (Day 50)
-	// ============================================
-	http.HandleFunc("/api/v1/mesh/stats", GetMeshStatsHandler)
-	http.HandleFunc("/api/v1/mesh/topology", GetMeshTopologyHandler)
-	http.HandleFunc("/api/v1/mesh/discover", DiscoverServiceHandler)
-	http.HandleFunc("/api/v1/mesh/route", RouteServiceHandler)
-	http.HandleFunc("/api/v1/mesh/policy", GetTrafficPolicyHandler)
-	http.HandleFunc("/api/v1/mesh/policy/update", SetTrafficPolicyHandler)
-	http.HandleFunc("/api/v1/mesh/health/update", UpdateInstanceHealthHandler)
-
-	// ============================================
-	// GEO-ROUTING / MULTI-REGION ENDPOINTS (Day 51)
-	// ============================================
-	http.HandleFunc("/api/v1/geo/regions", GetRegionStatusesHandler)
-	http.HandleFunc("/api/v1/geo/stats", GetGeoStatsHandler)
-	http.HandleFunc("/api/v1/geo/route", GeoRouteHandler)
-	http.HandleFunc("/api/v1/geo/config", GetGeoConfigHandler)
-	http.HandleFunc("/api/v1/geo/latency", RecordRegionLatencyHandler)
-	http.HandleFunc("/api/v1/geo/error", RecordRegionErrorHandler)
-
-	// ============================================
-	// CDN ENDPOINTS (Day 52)
-	// ============================================
-	http.HandleFunc("/api/v1/cdn/stats", GetCDNStatsHandler)
-	http.HandleFunc("/api/v1/cdn/status", GetCDNStatusHandler)
-	http.HandleFunc("/api/v1/cdn/edges", GetCDNEdgesHandler)
-	http.HandleFunc("/api/v1/cdn/edges/status", SetEdgeStatusHandler)
-	http.HandleFunc("/api/v1/cdn/invalidate", InvalidateCDNCacheHandler)
-	http.HandleFunc("/api/v1/cdn/invalidations", GetCDNInvalidationsHandler)
-	http.HandleFunc("/api/v1/cdn/origins", GetCDNOriginsHandler)
-	http.HandleFunc("/api/v1/cdn/origins/health", SetOriginHealthHandler)
-	http.HandleFunc("/api/v1/cdn/rules", GetCDNCacheRulesHandler)
-	http.HandleFunc("/api/v1/cdn/rules/add", AddCDNCacheRuleHandler)
-
-	// ============================================
-	// COLLABORATION ENDPOINTS (Day 53)
-	// ============================================
-	http.HandleFunc("/api/v1/collab/stats", GetCollabStatsHandler)
-	http.HandleFunc("/api/v1/collab/workspaces", GetWorkspacesHandler)
-	http.HandleFunc("/api/v1/collab/workspace", GetWorkspaceHandler)
-	http.HandleFunc("/api/v1/collab/resources", GetSharedResourcesHandler)
-	http.HandleFunc("/api/v1/collab/resources/share", ShareResourceHandler)
-	http.HandleFunc("/api/v1/collab/audit", GetAuditLogHandler)
-	http.HandleFunc("/api/v1/collab/members/add", AddCollabMemberHandler)
-	http.HandleFunc("/api/v1/collab/members/role", UpdateMemberRoleHandler)
-	http.HandleFunc("/api/v1/collab/comments", GetCollabCommentsHandler)
-
-	// ============================================
-	// CUSTOM MODEL HOSTING ENDPOINTS (Day 54)
-	// ============================================
-	http.HandleFunc("/api/v1/hosting/stats", GetHostingStatsHandler)
-	http.HandleFunc("/api/v1/hosting/models", GetHostedModelsHandler)
-	http.HandleFunc("/api/v1/hosting/model", GetHostedModelHandler)
-	http.HandleFunc("/api/v1/hosting/deploy", DeployModelHandler)
-	http.HandleFunc("/api/v1/hosting/scale", ScaleModelHandler)
-	http.HandleFunc("/api/v1/hosting/stop", StopHostedModelHandler)
-	http.HandleFunc("/api/v1/hosting/start", StartHostedModelHandler)
-	http.HandleFunc("/api/v1/hosting/delete", DeleteHostedModelHandler)
-
-	// ============================================
-	// KUBERNETES ENDPOINTS (Day 55)
-	// ============================================
-	http.HandleFunc("/api/v1/k8s/stats", GetK8sStatsHandler)
-	http.HandleFunc("/api/v1/k8s/nodes", GetK8sNodesHandler)
-	http.HandleFunc("/api/v1/k8s/namespaces", GetK8sNamespacesHandler)
-	http.HandleFunc("/api/v1/k8s/deployments", GetK8sDeploymentsHandler)
-	http.HandleFunc("/api/v1/k8s/pods", GetK8sPodsHandler)
-	http.HandleFunc("/api/v1/k8s/services", GetK8sServicesHandler)
-	http.HandleFunc("/api/v1/k8s/hpas", GetK8sHPAsHandler)
-	http.HandleFunc("/api/v1/k8s/events", GetK8sEventsHandler)
-	http.HandleFunc("/api/v1/k8s/scale", ScaleK8sDeploymentHandler)
-	http.HandleFunc("/api/v1/k8s/restart", RestartK8sDeploymentHandler)
-
-	// ============================================
-	// CI/CD PIPELINE ENDPOINTS (Day 56)
-	// ============================================
-	http.HandleFunc("/api/v1/cicd/stats", GetCICDStatsHandler)
-	http.HandleFunc("/api/v1/cicd/pipelines", GetPipelinesHandler)
-	http.HandleFunc("/api/v1/cicd/runs", GetPipelineRunsHandler)
-	http.HandleFunc("/api/v1/cicd/run", GetPipelineRunHandler)
-	http.HandleFunc("/api/v1/cicd/deployments", GetCICDDeploymentsHandler)
-	http.HandleFunc("/api/v1/cicd/trigger", TriggerPipelineHandler)
-
-	// ============================================
-	// MONITORING & OBSERVABILITY ENDPOINTS (Day 57)
-	// ============================================
-	http.HandleFunc("/api/v1/monitoring/stats", GetMonitoringStatsHandler)
-	http.HandleFunc("/api/v1/monitoring/metrics", GetMonitoringMetricsHandler)
-	http.HandleFunc("/api/v1/monitoring/alerts", GetMonitoringAlertsHandler)
-	http.HandleFunc("/api/v1/monitoring/alerts/resolve", ResolveAlertHandler)
-	http.HandleFunc("/api/v1/monitoring/alerts/toggle", ToggleAlertRuleHandler)
-	http.HandleFunc("/api/v1/monitoring/logs", GetMonitoringLogsHandler)
-	http.HandleFunc("/api/v1/monitoring/traces", GetMonitoringTracesHandler)
-	http.HandleFunc("/api/v1/monitoring/slos", GetMonitoringSLOsHandler)
-
-	// ============================================
-	// SECURITY HARDENING ENDPOINTS (Day 58)
-	// ============================================
-	http.HandleFunc("/api/v1/security/stats", GetSecurityStatsHandler)
-	http.HandleFunc("/api/v1/security/scans", GetSecurityScansHandler)
-	http.HandleFunc("/api/v1/security/scans/run", RunSecurityScanHandler)
-	http.HandleFunc("/api/v1/security/vulnerabilities", GetVulnerabilitiesHandler)
-	http.HandleFunc("/api/v1/security/secrets", GetSecretFindingsHandler)
-	http.HandleFunc("/api/v1/security/compliance", GetComplianceChecksHandler)
-	http.HandleFunc("/api/v1/security/waf", GetWAFEventsHandler)
-	http.HandleFunc("/api/v1/security/policies", GetSecurityPoliciesHandler)
-	http.HandleFunc("/api/v1/security/policies/toggle", ToggleSecurityPolicyHandler)
-
-	// ============================================
-	// HELP CENTER ENDPOINTS (Day 59)
-	// ============================================
-	http.HandleFunc("/api/v1/help/stats", GetHelpCenterStatsHandler)
-	http.HandleFunc("/api/v1/help/guides", GetGuidesHandler)
-	http.HandleFunc("/api/v1/help/faqs", GetFAQsHandler)
-	http.HandleFunc("/api/v1/help/tutorials", GetTutorialsHandler)
-	http.HandleFunc("/api/v1/help/search", SearchHelpCenterHandler)
-	http.HandleFunc("/api/v1/help/faqs/vote", VoteFAQHandler)
-
-	// ============================================
-	// SYSTEM STATUS & LAUNCH ENDPOINTS (Day 60)
-	// ============================================
-	http.HandleFunc("/api/v1/status/stats", GetStatusStatsHandler)
-	http.HandleFunc("/api/v1/status/components", GetStatusComponentsHandler)
-	http.HandleFunc("/api/v1/status/incidents", GetStatusIncidentsHandler)
-	http.HandleFunc("/api/v1/status/launch", GetLaunchChecksHandler)
-
-	// ============================================
-	// ORCHESTRATION ENDPOINTS (Day 8)
-	// ============================================
-	http.HandleFunc("/api/v1/orchestration/chain", ExecuteChainHandler)
-	http.HandleFunc("/api/v1/orchestration/parallel", ExecuteParallelCompositionHandler)
-	http.HandleFunc("/api/v1/orchestration/conditional", ConditionalRouteHandler)
-	http.HandleFunc("/api/v1/orchestration/stats", GetOrchestrationStatsHandler)
-	http.HandleFunc("/api/v1/orchestration/strategies", GetCompositionStrategiesHandler)
-
-	// ============================================
-	// PROMPT TEMPLATE ENDPOINTS (Day 9)
-	// ============================================
-	http.HandleFunc("/api/v1/prompts/templates", ListTemplatesHandler)
-	http.HandleFunc("/api/v1/prompts/template", GetTemplateHandler)
-	http.HandleFunc("/api/v1/prompts/render", RenderTemplateHandler)
-	http.HandleFunc("/api/v1/prompts/create", CreateTemplateHandler)
-	http.HandleFunc("/api/v1/prompts/versions", ListVersionsHandler)
-	http.HandleFunc("/api/v1/prompts/abtest/create", CreateABTestHandler)
-	http.HandleFunc("/api/v1/prompts/abtest/results", GetABTestResultsHandler)
-	http.HandleFunc("/api/v1/prompts/abtest/stop", StopABTestHandler)
-	http.HandleFunc("/api/v1/prompts/search", SearchTemplatesHandler)
-	http.HandleFunc("/api/v1/prompts/stats", GetTemplateStatsHandler)
-
-	// ============================================
-	// ROUTER ENDPOINTS (Day 4)
-	// ============================================
-
-	// Router statistics and configuration
-	http.HandleFunc("/api/v1/router/stats", GetRouterStatsHandler)
-	http.HandleFunc("/api/v1/router/config", GetRouterConfigHandler)
-	http.HandleFunc("/api/v1/router/strategy", UpdateRouterStrategyHandler)
-	http.HandleFunc("/api/v1/router/stats/reset", ResetRouterStatsHandler)
-
-	// Circuit breaker monitoring
-	http.HandleFunc("/api/v1/router/circuit-breakers", GetCircuitBreakerStatsHandler)
-
-	// Health checking
-	http.HandleFunc("/api/v1/router/health/stats", GetHealthStatsHandler)
-	http.HandleFunc("/api/v1/router/health/models", GetModelHealthHandler)
-
-	// Routing analysis
-	http.HandleFunc("/api/v1/router/analyze", AnalyzePromptHandler)
-	http.HandleFunc("/api/v1/router/decision", GetRoutingDecisionHandler)
-
-	// ============================================
-	// WORKER POOL ENDPOINTS (Day 5 Morning)
-	// ============================================
-
-	// Worker pool statistics
-	http.HandleFunc("/api/v1/workers/stats", GetWorkerPoolStatsHandler)
-	http.HandleFunc("/api/v1/workers/health", GetWorkerPoolHealthHandler)
-	http.HandleFunc("/api/v1/workers/metrics", GetWorkerPoolMetricsHandler)
-
-	// Individual workers
-	http.HandleFunc("/api/v1/workers", GetWorkersHandler)
-
-	// Queue management
-	http.HandleFunc("/api/v1/workers/queue", GetWorkerQueueInfoHandler)
-
-	// Dynamic scaling
-	http.HandleFunc("/api/v1/workers/resize", ResizeWorkerPoolHandler)
-
-	// ============================================
-	// METRICS ENDPOINTS (Day 5 Afternoon)
-	// ============================================
-
-	// Performance metrics
+	// ── Metrics ──
 	http.HandleFunc("/api/v1/metrics/snapshot", GetMetricsSnapshotHandler)
 	http.HandleFunc("/api/v1/metrics/latency", GetLatencyMetricsHandler)
 	http.HandleFunc("/api/v1/metrics/throughput", GetThroughputMetricsHandler)
 	http.HandleFunc("/api/v1/metrics/cost", GetCostMetricsHandler)
 	http.HandleFunc("/api/v1/metrics/errors", GetErrorMetricsHandler)
 	http.HandleFunc("/api/v1/metrics/models", GetModelMetricsHandler)
-	http.HandleFunc("/api/v1/metrics/reset", ResetMetricsHandler)
 
-	// Rate limiter metrics
-	http.HandleFunc("/api/v1/metrics/rate-limiter", GetRateLimiterStatsHandler)
-	http.HandleFunc("/api/v1/metrics/rate-limiter/user", GetRateLimiterUserStatusHandler)
-
-	// Backpressure metrics
-	http.HandleFunc("/api/v1/metrics/backpressure", GetBackpressureStatsHandler)
-	http.HandleFunc("/api/v1/metrics/backpressure/status", GetBackpressureStatusHandler)
-	http.HandleFunc("/api/v1/metrics/backpressure/reset", ResetBackpressureStatsHandler)
-
-	// System health
-	http.HandleFunc("/api/v1/system/health", GetSystemHealthHandler)
-
-	// ============================================
-	// OPTIMIZATION ENDPOINTS (Day 5 Evening)
-	// ============================================
-
-	// Connection pool statistics
-	http.HandleFunc("/api/v1/optimization/pools/db", GetDBPoolStatsHandler)
-	http.HandleFunc("/api/v1/optimization/pools/redis", GetRedisPoolStatsHandler)
-	http.HandleFunc("/api/v1/optimization/pools/http", GetHTTPPoolStatsHandler)
-	http.HandleFunc("/api/v1/optimization/pools", GetAllPoolStatsHandler)
-
-	// Pool management
-	http.HandleFunc("/api/v1/optimization/pools/db/resize", ResizeDBPoolHandler)
-
-	// Request batching
-	http.HandleFunc("/api/v1/optimization/batcher/stats", GetBatcherStatsHandler)
-	http.HandleFunc("/api/v1/optimization/batcher/pending", GetBatcherPendingHandler)
-
-	// Optimization summary
-	http.HandleFunc("/api/v1/optimization/summary", GetOptimizationSummaryHandler)
-	http.HandleFunc("/api/v1/optimization/metrics", GetOptimizationMetricsHandler)
-
-	// ============================================
-	// STREAMING ENDPOINTS (Day 6 - NEW)
-	// ============================================
-
-	// Streaming statistics
-	http.HandleFunc("/api/v1/streaming/stats", GetStreamStatsHandler)
-
-	// Test SSE endpoint
-	http.HandleFunc("/api/v1/streaming/test", TestSSEHandler)
-
-	// ============================================
-	// TOKEN MANAGEMENT ENDPOINTS (Day 10)
-	// ============================================
-
-	// Token counting
-	http.HandleFunc("/api/v1/tokens/count", CountTokensHandler)
-	http.HandleFunc("/api/v1/tokens/truncate", TruncateTextHandler)
-	http.HandleFunc("/api/v1/tokens/estimate", EstimateResponseTokensHandler)
-	http.HandleFunc("/api/v1/tokens/cache", GetTokenCounterCacheHandler)
-
-	// Context management
-	http.HandleFunc("/api/v1/context/create", CreateContextHandler)
-	http.HandleFunc("/api/v1/context/get", GetContextHandler)
-	http.HandleFunc("/api/v1/context/message", AddMessageHandler)
-	http.HandleFunc("/api/v1/context/clear", ClearContextHandler)
-	http.HandleFunc("/api/v1/context/delete", DeleteContextHandler)
-	http.HandleFunc("/api/v1/context/list", ListContextsHandler)
-	http.HandleFunc("/api/v1/context/stats", GetContextStatsHandler)
-
-	// Budget allocation
-	http.HandleFunc("/api/v1/budget/allocate", AllocateBudgetHandler)
-	http.HandleFunc("/api/v1/budget/get", GetBudgetHandler)
-	http.HandleFunc("/api/v1/budget/use", UseTokensHandler)
-
-	// ============================================
-	// ANALYTICS / DASHBOARD ENDPOINTS (Day 13)
-	// ============================================
-
-	// Dashboard overview (aggregated data)
+	// ── Analytics (Dashboard) ──
 	http.HandleFunc("/api/v1/analytics/dashboard", GetDashboardOverviewHandler)
-
-	// Time-series data for charts
 	http.HandleFunc("/api/v1/analytics/timeseries", GetRequestTimeSeriesHandler)
-
-	// Model comparison data
 	http.HandleFunc("/api/v1/analytics/models", GetModelComparisonHandler)
-
-	// Cost breakdown for pie/bar charts
 	http.HandleFunc("/api/v1/analytics/cost-breakdown", GetCostBreakdownHandler)
-
-	// Request log with filtering (Day 16)
 	http.HandleFunc("/api/v1/analytics/requests", GetRequestLogHandler)
-
-	// Comprehensive analytics summary (Day 16)
 	http.HandleFunc("/api/v1/analytics/summary", GetAnalyticsSummaryHandler)
 
-	// ============================================
-	// SETTINGS ENDPOINTS (Day 17)
-	// ============================================
-
-	// Get all system settings
+	// ── Settings ──
 	http.HandleFunc("/api/v1/settings", GetSettingsHandler)
-
-	// Update routing strategy
 	http.HandleFunc("/api/v1/settings/routing/strategy", UpdateRoutingStrategySettingHandler)
-
-	// Test provider connectivity
 	http.HandleFunc("/api/v1/settings/providers/test", TestProviderHandler)
 
-	// ============================================
-	// AUTHENTICATION ENDPOINTS (Day 12)
-	// ============================================
-
-	// Public auth endpoints
+	// ── Auth ──
 	http.HandleFunc("/api/v1/auth/register", RegisterHandler)
 	http.HandleFunc("/api/v1/auth/login", LoginHandler)
 	http.HandleFunc("/api/v1/auth/refresh", RefreshTokenHandler)
-
-	// OAuth2 endpoints (Day 18)
 	http.HandleFunc("/api/v1/auth/oauth/providers", OAuthProvidersHandler)
 	http.HandleFunc("/api/v1/auth/oauth/redirect", OAuthRedirectHandler)
 	http.HandleFunc("/api/v1/auth/oauth/callback", OAuthCallbackHandler)
-
-	// Protected auth endpoints (require authentication)
 	http.Handle("/api/v1/auth/profile", auth.AuthMiddleware(http.HandlerFunc(GetProfileHandler)))
 	http.Handle("/api/v1/auth/profile/update", auth.AuthMiddleware(http.HandlerFunc(UpdateProfileHandler)))
 	http.Handle("/api/v1/auth/password/change", auth.AuthMiddleware(http.HandlerFunc(ChangePasswordHandler)))
 	http.Handle("/api/v1/auth/logout", auth.AuthMiddleware(http.HandlerFunc(LogoutHandler)))
 
-	// Admin endpoints
-	http.Handle("/api/v1/auth/users", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(ListUsersHandler))))
-
-	// ============================================
-	// USER MANAGEMENT ENDPOINTS (Day 19)
-	// ============================================
-
-	// User CRUD (admin only)
-	http.Handle("/api/v1/admin/users/get", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(AdminGetUserHandler))))
-	http.Handle("/api/v1/admin/users/update", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(AdminUpdateUserHandler))))
-	http.Handle("/api/v1/admin/users/delete", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(AdminDeleteUserHandler))))
-	http.Handle("/api/v1/admin/users/search", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(SearchUsersHandler))))
-
-	// Role management (admin only)
-	http.Handle("/api/v1/admin/users/role", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(UpdateUserRoleHandler))))
-	http.Handle("/api/v1/admin/users/stats", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(GetUserStatsHandler))))
-
-	// Activity logs (admin only)
-	http.Handle("/api/v1/admin/activity", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(GetActivityLogsHandler))))
-
-	// Team management (admin/developer)
-	http.Handle("/api/v1/admin/teams", auth.AuthMiddleware(auth.RequireRole(auth.RoleAdmin, auth.RoleDeveloper)(http.HandlerFunc(ListTeamsHandler))))
-	http.Handle("/api/v1/admin/teams/create", auth.AuthMiddleware(auth.RequireRole(auth.RoleAdmin, auth.RoleDeveloper)(http.HandlerFunc(CreateTeamHandler))))
-	http.Handle("/api/v1/admin/teams/members", auth.AuthMiddleware(auth.RequireRole(auth.RoleAdmin, auth.RoleDeveloper)(http.HandlerFunc(GetTeamMembersHandler))))
-	http.Handle("/api/v1/admin/teams/members/manage", auth.AuthMiddleware(auth.RequireRole(auth.RoleAdmin, auth.RoleDeveloper)(http.HandlerFunc(ManageTeamMemberHandler))))
-	http.Handle("/api/v1/admin/teams/delete", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(DeleteTeamHandler))))
-
-	// ============================================
-	// API KEY MANAGEMENT ENDPOINTS (Day 20)
-	// ============================================
-
+	// ── API Keys ──
 	http.Handle("/api/v1/keys", auth.AuthMiddleware(http.HandlerFunc(ListAPIKeysHandler)))
 	http.Handle("/api/v1/keys/create", auth.AuthMiddleware(http.HandlerFunc(CreateAPIKeyHandler)))
 	http.Handle("/api/v1/keys/revoke", auth.AuthMiddleware(http.HandlerFunc(RevokeAPIKeyHandler)))
@@ -441,82 +84,7 @@ func SetupRoutes() {
 	http.Handle("/api/v1/keys/delete", auth.AuthMiddleware(http.HandlerFunc(DeleteAPIKeyHandler)))
 	http.Handle("/api/v1/keys/usage", auth.AuthMiddleware(http.HandlerFunc(GetAPIKeyUsageHandler)))
 
-	// ============================================
-	// BILLING & USAGE TRACKING ENDPOINTS (Day 21)
-	// ============================================
-
-	http.Handle("/api/v1/billing/subscription", auth.AuthMiddleware(http.HandlerFunc(GetSubscriptionHandler)))
-	http.Handle("/api/v1/billing/subscription/update", auth.AuthMiddleware(http.HandlerFunc(UpdateSubscriptionHandler)))
-	http.Handle("/api/v1/billing/usage", auth.AuthMiddleware(http.HandlerFunc(GetUsageStatsHandler)))
-	http.Handle("/api/v1/billing/usage/history", auth.AuthMiddleware(http.HandlerFunc(GetUsageHistoryHandler)))
-	http.Handle("/api/v1/billing/usage/export", auth.AuthMiddleware(http.HandlerFunc(ExportUsageHandler)))
-	http.Handle("/api/v1/billing/invoices", auth.AuthMiddleware(http.HandlerFunc(ListInvoicesHandler)))
-	http.Handle("/api/v1/billing/invoices/generate", auth.AuthMiddleware(http.HandlerFunc(GenerateInvoiceHandler)))
-
-	// ============================================
-	// QUOTA MANAGEMENT ENDPOINTS (Day 22)
-	// ============================================
-
-	// User quota endpoints
-	http.Handle("/api/v1/quota/usage", auth.AuthMiddleware(http.HandlerFunc(GetMyQuotaUsageHandler)))
-	http.Handle("/api/v1/quota/quotas", auth.AuthMiddleware(http.HandlerFunc(GetMyQuotasHandler)))
-	http.Handle("/api/v1/quota/alerts/config", auth.AuthMiddleware(http.HandlerFunc(GetMyAlertConfigHandler)))
-	http.Handle("/api/v1/quota/alerts/config/update", auth.AuthMiddleware(http.HandlerFunc(UpdateMyAlertConfigHandler)))
-	http.Handle("/api/v1/quota/rate-limits", auth.AuthMiddleware(http.HandlerFunc(GetMyRateLimitEventsHandler)))
-
-	// Admin quota endpoints
-	http.Handle("/api/v1/admin/quota/set", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(AdminSetUserQuotaHandler))))
-	http.Handle("/api/v1/admin/quota/user", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(AdminGetUserQuotasHandler))))
-	http.Handle("/api/v1/admin/quota/all", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(AdminGetAllQuotasHandler))))
-	http.Handle("/api/v1/admin/quota/delete", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(AdminDeleteUserQuotaHandler))))
-	http.Handle("/api/v1/admin/quota/stats", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(AdminGetRateLimitStatsHandler))))
-
-	// ============================================
-	// LOAD TESTING ENDPOINTS (Day 23)
-	// ============================================
-
-	// Load test configuration
-	http.Handle("/api/v1/loadtest/configs", auth.AuthMiddleware(http.HandlerFunc(ListLoadTestsHandler)))
-	http.Handle("/api/v1/loadtest/config", auth.AuthMiddleware(http.HandlerFunc(GetLoadTestHandler)))
-	http.Handle("/api/v1/loadtest/create", auth.AuthMiddleware(http.HandlerFunc(CreateLoadTestHandler)))
-
-	// Load test execution
-	http.Handle("/api/v1/loadtest/start", auth.AuthMiddleware(http.HandlerFunc(StartLoadTestHandler)))
-	http.Handle("/api/v1/loadtest/stop", auth.AuthMiddleware(http.HandlerFunc(StopLoadTestHandler)))
-	http.Handle("/api/v1/loadtest/runs", auth.AuthMiddleware(http.HandlerFunc(ListTestRunsHandler)))
-	http.Handle("/api/v1/loadtest/run", auth.AuthMiddleware(http.HandlerFunc(GetTestRunHandler)))
-	http.Handle("/api/v1/loadtest/metrics", auth.AuthMiddleware(http.HandlerFunc(GetTestMetricsHandler)))
-
-	// Quick benchmark
-	http.Handle("/api/v1/loadtest/quick", auth.AuthMiddleware(http.HandlerFunc(QuickBenchmarkHandler)))
-
-	// ============================================
-	// WEBHOOK & EVENT ENDPOINTS (Day 24)
-	// ============================================
-
-	http.Handle("/api/v1/webhooks", auth.AuthMiddleware(http.HandlerFunc(ListWebhooksHandler)))
-	http.Handle("/api/v1/webhooks/create", auth.AuthMiddleware(http.HandlerFunc(CreateWebhookHandler)))
-	http.Handle("/api/v1/webhooks/update", auth.AuthMiddleware(http.HandlerFunc(UpdateWebhookHandler)))
-	http.Handle("/api/v1/webhooks/delete", auth.AuthMiddleware(http.HandlerFunc(DeleteWebhookHandler)))
-	http.Handle("/api/v1/webhooks/toggle", auth.AuthMiddleware(http.HandlerFunc(ToggleWebhookHandler)))
-	http.Handle("/api/v1/webhooks/deliveries", auth.AuthMiddleware(http.HandlerFunc(GetWebhookDeliveriesHandler)))
-	http.Handle("/api/v1/webhooks/stats", auth.AuthMiddleware(http.HandlerFunc(GetWebhookStatsHandler)))
-	http.Handle("/api/v1/webhooks/events", auth.AuthMiddleware(http.HandlerFunc(GetAvailableEventsHandler)))
-	http.Handle("/api/v1/events/logs", auth.AuthMiddleware(http.HandlerFunc(GetEventLogsHandler)))
-
-	// ============================================
-	// ADMIN DASHBOARD ENDPOINTS (Day 25)
-	// ============================================
-
-	http.Handle("/api/v1/admin/dashboard/health", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(AdminSystemHealthHandler))))
-	http.Handle("/api/v1/admin/dashboard/overview", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(AdminDashboardOverviewHandler))))
-	http.Handle("/api/v1/admin/dashboard/events", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(AdminRecentEventsHandler))))
-	http.Handle("/api/v1/admin/dashboard/database", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(AdminDatabaseStatsHandler))))
-
-	// ============================================
-	// CHAT ENDPOINTS (Day 36)
-	// ============================================
-
+	// ── Chat ──
 	http.HandleFunc("/api/v1/chat/conversations", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
@@ -547,201 +115,5 @@ func SetupRoutes() {
 	})
 	http.HandleFunc("/api/v1/chat/stats", ChatStatsHandler)
 
-	// ============================================
-	// RAG ENDPOINTS (Day 37)
-	// ============================================
-
-	http.HandleFunc("/api/v1/rag/documents", func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case http.MethodGet:
-			ListDocumentsHandler(w, r)
-		case http.MethodPost:
-			UploadDocumentHandler(w, r)
-		default:
-			types.WriteError(w, http.StatusMethodNotAllowed, "Method not allowed")
-		}
-	})
-	http.HandleFunc("/api/v1/rag/documents/", func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case http.MethodGet:
-			GetDocumentHandler(w, r)
-		case http.MethodDelete:
-			DeleteDocumentHandler(w, r)
-		default:
-			types.WriteError(w, http.StatusMethodNotAllowed, "Method not allowed")
-		}
-	})
-	http.HandleFunc("/api/v1/rag/query", RAGQueryHandler)
-	http.HandleFunc("/api/v1/rag/stats", RAGStatsHandler)
-
-	// ============================================
-	// VECTOR DB ENDPOINTS (Day 38)
-	// ============================================
-
-	http.HandleFunc("/api/v1/vectors/search", VectorSearchHandler)
-	http.HandleFunc("/api/v1/vectors/neighbors", VectorNearestNeighborsHandler)
-	http.HandleFunc("/api/v1/vectors/projection", VectorProjectionHandler)
-	http.HandleFunc("/api/v1/vectors/stats", VectorStatsHandler)
-	http.HandleFunc("/api/v1/vectors/collections", CollectionsHandler)
-	http.HandleFunc("/api/v1/vectors/collections/", func(w http.ResponseWriter, r *http.Request) {
-		path := r.URL.Path
-		switch {
-		case strings.HasSuffix(path, "/documents") || strings.Contains(path, "/documents/"):
-			if r.Method == http.MethodPost {
-				AddDocToCollectionHandler(w, r)
-			} else if r.Method == http.MethodDelete {
-				RemoveDocFromCollectionHandler(w, r)
-			} else {
-				types.WriteError(w, http.StatusMethodNotAllowed, "Method not allowed")
-			}
-		default:
-			if r.Method == http.MethodDelete {
-				DeleteCollectionHandler(w, r)
-			} else {
-				types.WriteError(w, http.StatusMethodNotAllowed, "Method not allowed")
-			}
-		}
-	})
-
-	// ============================================
-	// FINE-TUNING ENDPOINTS (Day 40)
-	// ============================================
-
-	http.HandleFunc("/api/v1/finetuning/datasets", func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case http.MethodGet:
-			ListDatasetsHandler(w, r)
-		case http.MethodPost:
-			CreateDatasetHandler(w, r)
-		default:
-			types.WriteError(w, http.StatusMethodNotAllowed, "Method not allowed")
-		}
-	})
-	http.HandleFunc("/api/v1/finetuning/datasets/get", GetDatasetHandler)
-	http.HandleFunc("/api/v1/finetuning/datasets/delete", DeleteDatasetHandler)
-	http.HandleFunc("/api/v1/finetuning/jobs", func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case http.MethodGet:
-			ListJobsHandler(w, r)
-		case http.MethodPost:
-			CreateJobHandler(w, r)
-		default:
-			types.WriteError(w, http.StatusMethodNotAllowed, "Method not allowed")
-		}
-	})
-	http.HandleFunc("/api/v1/finetuning/jobs/cancel", CancelJobHandler)
-	http.HandleFunc("/api/v1/finetuning/models", ListFineTunedModelsHandler)
-	http.HandleFunc("/api/v1/finetuning/stats", GetFineTuningStatsHandler)
-
-	// ============================================
-	// MODEL VERSIONING ENDPOINTS (Day 41)
-	// ============================================
-
-	http.HandleFunc("/api/v1/versioning/versions", func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case http.MethodGet:
-			ListVersionsHandler2(w, r)
-		case http.MethodPost:
-			CreateVersionHandler2(w, r)
-		default:
-			types.WriteError(w, http.StatusMethodNotAllowed, "Method not allowed")
-		}
-	})
-	http.HandleFunc("/api/v1/versioning/versions/get", GetVersionHandler2)
-	http.HandleFunc("/api/v1/versioning/versions/promote", PromoteVersionHandler)
-	http.HandleFunc("/api/v1/versioning/versions/archive", ArchiveVersionHandler)
-	http.HandleFunc("/api/v1/versioning/abtests", func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case http.MethodGet:
-			ListABTestsHandler2(w, r)
-		case http.MethodPost:
-			CreateABTestHandler2(w, r)
-		default:
-			types.WriteError(w, http.StatusMethodNotAllowed, "Method not allowed")
-		}
-	})
-	http.HandleFunc("/api/v1/versioning/abtests/stop", StopABTestHandler2)
-	http.HandleFunc("/api/v1/versioning/stats", GetVersioningStatsHandler)
-
-	// ============================================
-	// LOAD BALANCER ENDPOINTS (Day 33)
-	// ============================================
-	http.HandleFunc("/api/v1/lb/stats", GetLBStatsHandler)
-	http.HandleFunc("/api/v1/lb/backends", GetLBBackendsHandler)
-	http.Handle("/api/v1/lb/algorithm", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(UpdateLBAlgorithmHandler))))
-	http.Handle("/api/v1/lb/backends/weight", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(UpdateBackendWeightHandler))))
-
-	// ============================================
-	// CLUSTER / HORIZONTAL SCALING ENDPOINTS (Day 32)
-	// ============================================
-
-	// Public cluster info (for health checks from load balancers)
-	http.HandleFunc("/api/v1/cluster/status", GetClusterStatusHandler)
-	http.HandleFunc("/api/v1/cluster/nodes", GetClusterNodesHandler)
-	http.HandleFunc("/api/v1/cluster/leader", GetClusterLeaderHandler)
-
-	// Admin-only cluster operations
-	http.Handle("/api/v1/cluster/drain", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(DrainNodeHandler))))
-	http.Handle("/api/v1/cluster/lock/acquire", auth.AuthMiddleware(auth.RequireAdmin(http.HandlerFunc(AcquireLockHandler))))
-
-	// ============================================
-	// WORKFLOW BUILDER ENDPOINTS (Day 42)
-	// ============================================
-
-	http.HandleFunc("/api/v1/workflows/workflows", func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case http.MethodGet:
-			ListWorkflowsHandler(w, r)
-		case http.MethodPost:
-			CreateWorkflowHandler(w, r)
-		default:
-			types.WriteError(w, http.StatusMethodNotAllowed, "Method not allowed")
-		}
-	})
-	http.HandleFunc("/api/v1/workflows/workflows/get", GetWorkflowHandler)
-	http.HandleFunc("/api/v1/workflows/workflows/update", UpdateWorkflowHandler)
-	http.HandleFunc("/api/v1/workflows/workflows/delete", DeleteWorkflowHandler)
-	http.HandleFunc("/api/v1/workflows/workflows/execute", ExecuteWorkflowHandler)
-	http.HandleFunc("/api/v1/workflows/runs", ListWorkflowRunsHandler)
-	http.HandleFunc("/api/v1/workflows/stats", GetWorkflowStatsHandler)
-
-	// ============================================
-	// BATCH COMPARISON ENDPOINTS (Day 45)
-	// ============================================
-
-	http.HandleFunc("/api/v1/completions/batch", BatchCompletionHandler)
-	http.HandleFunc("/api/v1/completions/batch/history", BatchCompletionHistoryHandler)
-
-	// ============================================
-	// NOTIFICATION ENDPOINTS (Day 44)
-	// ============================================
-
-	http.HandleFunc("/api/v1/notifications", ListNotificationsHandler)
-	http.HandleFunc("/api/v1/notifications/read", MarkNotificationReadHandler)
-	http.HandleFunc("/api/v1/notifications/read-all", MarkAllReadHandler)
-	http.HandleFunc("/api/v1/notifications/delete", DeleteNotificationHandler)
-	http.HandleFunc("/api/v1/notifications/send", SendNotificationHandler)
-	http.HandleFunc("/api/v1/notifications/preferences", func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case http.MethodGet:
-			GetNotificationPreferencesHandler(w, r)
-		case http.MethodPut:
-			UpdateNotificationPreferencesHandler(w, r)
-		default:
-			types.WriteError(w, http.StatusMethodNotAllowed, "Method not allowed")
-		}
-	})
-	http.HandleFunc("/api/v1/notifications/stats", GetNotificationStatsHandler)
-
-	// ============================================
-	// WEBSOCKET ENDPOINT (Day 43)
-	// ============================================
-
-	// Start WebSocket hub
-	hub := websocket.GetHub()
-	go hub.Run()
-
-	http.HandleFunc("/api/v1/ws", WebSocketHandler)
-
-	utils.Info("All routes configured successfully")
+	utils.Info("Routes configured (lean core)")
 }
