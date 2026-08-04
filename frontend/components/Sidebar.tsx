@@ -14,10 +14,8 @@ import IconButton from '@mui/material/IconButton';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import {
-  LayoutDashboard, FlaskConical, BarChart3, Activity, MessageSquare, Library,
-  Cpu, Briefcase, Radio, Coins, Key, CreditCard, Gauge, Zap, Webhook,
-  Shield, Users, ChevronLeft, ChevronRight, Settings, ScrollText, UsersRound,
-  BookOpen, Waypoints, BookTemplate, Sparkles, GitBranch, GitMerge, Bell, BarChart2, Layers, Inbox, Globe, Server, UserCog, Container, Rocket, HelpCircle, Signal,
+  LayoutDashboard, FlaskConical, MessageSquare, Key, Layers,
+  ChevronLeft, ChevronRight, Settings,
 } from 'lucide-react';
 import { sidebarTheme } from '@/lib/theme';
 
@@ -33,51 +31,9 @@ interface NavItem {
 const mainLinks: NavItem[] = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/chat', label: 'Chat', icon: MessageSquare },
-  { href: '/knowledge', label: 'Knowledge Base', icon: Library },
-  { href: '/vectors', label: 'Vector DB', icon: Waypoints },
-  { href: '/prompts', label: 'Prompt Library', icon: BookTemplate },
-  { href: '/finetuning', label: 'Fine-Tuning', icon: Sparkles },
-  { href: '/versioning', label: 'Versioning', icon: GitBranch },
-  { href: '/workflows', label: 'Workflows', icon: GitMerge },
-  { href: '/realtime', label: 'Real-Time', icon: Radio },
-  { href: '/notifications', label: 'Notifications', icon: Bell },
   { href: '/playground', label: 'Playground', icon: FlaskConical },
-  { href: '/analytics', label: 'Analytics', icon: BarChart3 },
-  { href: '/visualization', label: 'Visualization', icon: BarChart2 },
-  { href: '/monitoring', label: 'Monitoring', icon: Activity },
-  { href: '/observability', label: 'Observability', icon: Activity },
-  { href: '/security', label: 'Security', icon: Shield },
-  { href: '/docs', label: 'API Docs', icon: BookOpen },
-  { href: '/help', label: 'Help Center', icon: HelpCircle },
-  { href: '/status', label: 'System Status', icon: Signal },
-];
-
-const infraLinks: NavItem[] = [
-  { href: '/workers', label: 'Workers', icon: Cpu },
-  { href: '/jobs', label: 'Jobs', icon: Briefcase },
-  { href: '/queues', label: 'Queues', icon: Inbox },
-  { href: '/streams', label: 'Streams', icon: Radio },
-  { href: '/tokens', label: 'Tokens', icon: Coins },
-  { href: '/keys', label: 'API Keys', icon: Key },
-  { href: '/billing', label: 'Billing', icon: CreditCard },
-  { href: '/quota', label: 'Quota', icon: Gauge },
   { href: '/caching', label: 'Caching', icon: Layers },
-  { href: '/mesh', label: 'Service Mesh', icon: GitMerge },
-  { href: '/regions', label: 'Multi-Region', icon: Globe },
-  { href: '/cdn', label: 'CDN', icon: Zap },
-  { href: '/collaboration', label: 'Collaboration', icon: UserCog },
-  { href: '/hosting', label: 'Model Hosting', icon: Server },
-  { href: '/kubernetes', label: 'Kubernetes', icon: Container },
-  { href: '/pipelines', label: 'CI/CD', icon: Rocket },
-  { href: '/loadtest', label: 'Load Test', icon: Zap },
-  { href: '/webhooks', label: 'Webhooks', icon: Webhook },
-  { href: '/logs', label: 'Logs', icon: ScrollText },
-  { href: '/teams', label: 'Teams', icon: UsersRound },
-];
-
-const adminLinks: NavItem[] = [
-  { href: '/admin/dashboard', label: 'Admin Dashboard', icon: Shield },
-  { href: '/admin/users', label: 'User Management', icon: Users },
+  { href: '/keys', label: 'API Keys', icon: Key },
 ];
 
 const bottomLinks: NavItem[] = [
@@ -237,9 +193,7 @@ export function Sidebar({ mobileOpen, onMobileClose, collapsed, onToggleCollapse
 
       {/* Navigation */}
       <Box sx={{ flex: 1, overflow: 'auto', py: 1, '&::-webkit-scrollbar': { width: 0 } }}>
-        {renderNavSection('Main', mainLinks)}
-        {renderNavSection('Infrastructure', infraLinks)}
-        {renderNavSection('Admin', adminLinks)}
+        {renderNavSection('', mainLinks)}
       </Box>
 
       {/* Bottom */}

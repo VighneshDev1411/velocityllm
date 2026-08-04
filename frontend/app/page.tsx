@@ -357,8 +357,8 @@ export default function LandingPage() {
             <Grid size={{ xs: 12, md: 8 }}>
               <Grid container spacing={4}>
                 {[
-                  { title: 'Product', links: [['Dashboard', '/dashboard'], ['Playground', '/playground'], ['Chat', '/chat'], ['API Keys', '/keys']] },
-                  { title: 'Developers', links: [['API Docs', '/docs'], ['System Status', '/status'], ['Help Center', '/help']] },
+                  { title: 'Product', links: [['Dashboard', '/dashboard'], ['Chat', '/chat'], ['Playground', '/playground']] },
+                  { title: 'Platform', links: [['Caching', '/caching'], ['API Keys', '/keys'], ['Settings', '/settings']] },
                   { title: 'Account', links: [['Sign in', '/login'], ['Create account', '/register']] },
                 ].map((col) => (
                   <Grid size={{ xs: 6, sm: 4 }} key={col.title}>
@@ -395,7 +395,7 @@ export default function LandingPage() {
                 © 2026 VelocityLLM · Production-grade LLM inference
               </Typography>
               <Box sx={{ display: 'flex', gap: 3 }}>
-                {[['Status', '/status'], ['Docs', '/docs'], ['Help', '/help']].map(([label, href]) => (
+                {[['Dashboard', '/dashboard'], ['Chat', '/chat'], ['Caching', '/caching']].map(([label, href]) => (
                   <Link key={href} href={href} style={{ textDecoration: 'none' }}>
                     <Typography sx={{ fontSize: '0.75rem', color: 'text.disabled', '&:hover': { color: 'text.secondary' } }}>
                       {label}
